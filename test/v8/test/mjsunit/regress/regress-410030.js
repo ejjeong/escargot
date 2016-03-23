@@ -16,7 +16,6 @@ try {
 }
 
 
-/*
 try {
   throw 0;
 } catch(e) {
@@ -24,7 +23,6 @@ try {
     assertSame(3, eval("delete x2; const x2=3; x2"));
   }
 }
-*/
 
 
 (function f() {

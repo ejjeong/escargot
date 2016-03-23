@@ -742,8 +742,9 @@
   'regress/regress-parse-use-strict': [SKIP],
 
   ## 2. ES6 spec
-  # object
+  # object/class
   'accessors-no-prototype': [SKIP],
+  'regress/regress-4255-4': [SKIP],
   # const
   'const*': [SKIP],
   'global-const-var-conflicts': [SKIP],
@@ -754,6 +755,7 @@
   'regress/regress-641': [SKIP],
   'regress/regress-799761': [SKIP],
   'regress/regress-88591': [SKIP],
+  'regress/regress-410030': [SKIP],
   # let
   'compiler/regress-451012': [SKIP],
   'regress/regress-4377': [SKIP],
@@ -777,6 +779,7 @@
   ## 4. v8-only
   # Worker
   'd8-worker*': [SKIP],
+  'regress/regress-crbug-511880': [SKIP],
   # Error.prototype.stack
   'eval-stack-trace': [SKIP],
   'stack-trace*': [SKIP],

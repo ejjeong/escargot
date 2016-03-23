@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   91 tests will be skipped
+ *   94 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2092 tests are expected to pass
+ * 2089 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2232 tests
+Running 2229 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -118,7 +118,7 @@ Done running mjsunit/function: FAIL
 Done running mjsunit/fuzz-accessors: FAIL
 Done running mjsunit/get-own-property-descriptor-non-objects: FAIL
 Done running mjsunit/get-own-property-descriptor: FAIL
-Done running mjsunit/get-prototype-of: FAIL
+Done running mjsunit/get-prototype-of: pass
 Done running mjsunit/getter-in-prototype: FAIL
 Done running mjsunit/getter-in-value-prototype: pass
 Done running mjsunit/global-accessors: pass
@@ -205,7 +205,7 @@ Done running mjsunit/object-freeze-global: pass
 Done running mjsunit/object-get-own-property-names: FAIL
 Done running mjsunit/object-is: FAIL
 Done running mjsunit/object-literal-conversions: pass
-Done running mjsunit/object-literal-multiple-fields: FAIL
+Done running mjsunit/object-literal-multiple-fields: pass
 Done running mjsunit/object-literal-multiple-proto-fields: pass
 Done running mjsunit/object-literal: FAIL
 Done running mjsunit/object-seal-global: pass
@@ -740,14 +740,12 @@ Done running mjsunit/regress/regress-396: FAIL
 Done running mjsunit/regress/regress-399: pass
 Done running mjsunit/regress/regress-404981: pass
 Done running mjsunit/regress/regress-406: pass
-Done running mjsunit/regress/regress-410030: FAIL
 Done running mjsunit/regress/regress-416: pass
 Done running mjsunit/regress/regress-416416: pass
 Done running mjsunit/regress/regress-423633: pass
 Done running mjsunit/regress/regress-4255-1: pass
 Done running mjsunit/regress/regress-4255-2: pass
 Done running mjsunit/regress/regress-4255-3: pass
-Done running mjsunit/regress/regress-4255-4: FAIL
 Done running mjsunit/regress/regress-425551: FAIL
 Done running mjsunit/regress/regress-4271: pass
 Done running mjsunit/regress/regress-4279: pass
@@ -936,7 +934,6 @@ Done running mjsunit/regress/regress-crbug-504729: pass
 Done running mjsunit/regress/regress-crbug-505778: pass
 Done running mjsunit/regress/regress-crbug-506549: pass
 Done running mjsunit/regress/regress-crbug-510426: pass
-Done running mjsunit/regress/regress-crbug-511880: FAIL
 Done running mjsunit/regress/regress-crbug-513472: pass
 Done running mjsunit/regress/regress-crbug-513602: pass
 Done running mjsunit/regress/regress-crbug-514081: pass
@@ -1079,7 +1076,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is 
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"hest">, stack: undefined}
 === mjsunit/for-in.js ===
 --- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'in'. Expect ';'. (Parse Error 68 line)
+Uncaught MjsUnitAssertionError {message: Failure: expected <["2147483650"]> found <["2147483650","__proto__"]>, stack: undefined}
 === mjsunit/function-arguments-null.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1107,9 +1104,6 @@ Uncaught TypeError: Object.getOwnPropertyDescriptor: first argument is not objec
 === mjsunit/get-own-property-descriptor.js ===
 --- stdout ---
 Uncaught ReferenceError: x is not defined
-=== mjsunit/get-prototype-of.js ===
---- stdout ---
-Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 78 line)
 === mjsunit/getter-in-prototype.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1179,9 +1173,6 @@ Uncaught TypeError: Object.getOwnPropertyNames: first argument is not object
 === mjsunit/object-is.js ===
 --- stdout ---
 Uncaught TypeError: Callee is not a function object
-=== mjsunit/object-literal-multiple-fields.js ===
---- stdout ---
-Uncaught SyntaxError: p (Parse Error 55 line)
 === mjsunit/object-literal.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
@@ -1739,12 +1730,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, st
 === mjsunit/regress/regress-396.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"1995"> found <"1970">, stack: undefined}
-=== mjsunit/regress/regress-410030.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
-=== mjsunit/regress/regress-4255-4.js ===
---- stdout ---
-Uncaught SyntaxError: ES2015 class feature is not supported (Parse Error 22 line)
 === mjsunit/regress/regress-425551.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <1.499> found <undefined>, stack: undefined}
@@ -1801,9 +1786,6 @@ Uncaught SyntaxError: Unexpected <end> ''. Expect '}'. (Parse Error 1 line)
 Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-crbug-511880.js ===
---- stdout ---
-Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 10 line)
 === mjsunit/regress/regress-crbug-516592.js ===
 --- stderr ---
 --- TIMEOUT ---
@@ -1829,6 +1811,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 194 tests failed
+=== 189 tests failed
 === 7 tests CRASHED
 ===

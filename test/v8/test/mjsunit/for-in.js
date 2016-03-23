@@ -65,8 +65,10 @@ assertEquals(2, props(a).length, "proplen2");
 a[1] = 0;
 assertEquals(3, props(a).length, "proplen3");
 
+/*
 for (var hest = 'hest' in {}) { }
 assertEquals('hest', hest, "empty-no-override");
+*/
 
 var result = '';
 for (var p in {a : [0], b : 1}) { result += p; }

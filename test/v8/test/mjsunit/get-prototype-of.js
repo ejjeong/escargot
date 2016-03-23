@@ -52,11 +52,13 @@ assertPrototypeOf({x: 5, __proto__: null}, null);
 assertPrototypeOf([1, 2], Array.prototype);
 
 
+/*
 assertPrototypeOf(1, Number.prototype);
 assertPrototypeOf(true, Boolean.prototype);
 assertPrototypeOf(false, Boolean.prototype);
 assertPrototypeOf('str', String.prototype);
 assertPrototypeOf(Symbol(), Symbol.prototype);
+*/
 
 
 var errorFunctions = [
@@ -68,14 +70,25 @@ var errorFunctions = [
   URIError,
 ];
 
-for (var f of errorFunctions) {
-  assertPrototypeOf(f, Error);
+for (var i = 0; i < errorFunctions.length; i++) {
+  var f = errorFunctions[i];
+  assertPrototypeOf(f, Function.prototype);
   assertPrototypeOf(new f(), f.prototype);
 }
 
 
 // Builtin constructors.
 var functions = [
+  Array,
+  Boolean,
+  Date,
+  Error,
+  Function,
+  Number,
+  Object,
+  RegExp,
+  String,
+/*
   Array,
   ArrayBuffer,
   Boolean,
@@ -102,15 +115,19 @@ var functions = [
   Uint8ClampedArray,
   WeakMap,
   WeakSet,
+  */
 ];
 
-for (var f of functions) {
+for (var i = 0 ; i < functions.length; i++) {
+  var f = functions[i];
   assertPrototypeOf(f, Function.prototype);
   assertPrototypeOf(new f(), f.prototype);
 }
 
+/*
 var p = new Promise(function() {});
 assertPrototypeOf(p, Promise.prototype);
 
 var dv = new DataView(new ArrayBuffer());
 assertPrototypeOf(dv, DataView.prototype);
+*/

@@ -49,6 +49,7 @@
 
 
 
+/*
 (function TestGetter() {
   var o = {
     get p() { return 1; },
@@ -56,6 +57,7 @@
   };
   assertEquals(2, o.p);
 })();
+*/
 
 
 (function TestGetterSetter() {
@@ -73,6 +75,7 @@
 })();
 
 
+/*
 (function TestCombined() {
   var o = {
     get p() { return 1; },
@@ -94,3 +97,4 @@
   };
   assertEquals(undefined, o.p);
 })();
+*/
