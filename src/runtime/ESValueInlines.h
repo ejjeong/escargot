@@ -1283,12 +1283,20 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                 ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
             }
         }
-        m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
-        m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
-        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
-        m_hiddenClassData.push_back(initialValue);
-        if (UNLIKELY(m_flags.m_isGlobalObject)) {
+        if (LIKELY(!m_flags.m_isGlobalObject)) {
+            m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
+            m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
+            m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
+            m_hiddenClassData.push_back(initialValue);
+        } else {
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(oldIdx);
+            m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isDeletedValue = true;
+            m_hiddenClassData[oldIdx] = ESValue(ESValue::ESDeletedValue);
+            ESVMInstance::currentInstance()->globalObject()->propertyDeleted(oldIdx);
+
+            m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
+            m_hiddenClassData.push_back(initialValue);
             ESVMInstance::currentInstance()->globalObject()->propertyDefined(m_hiddenClassData.size() - 1, keyString);
         }
         return true;
@@ -1349,12 +1357,20 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
                 return false;
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
-        m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
-        m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
-        m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
-        m_hiddenClassData.push_back((ESPointer *)data);
-        if (UNLIKELY(m_flags.m_isGlobalObject)) {
+        if (LIKELY(!m_flags.m_isGlobalObject)) {
+            m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
+            m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
+            m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
+            m_hiddenClassData.push_back((ESPointer *)data);
+        } else {
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(oldIdx);
+            m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isDeletedValue = true;
+            m_hiddenClassData[oldIdx] = ESValue(ESValue::ESDeletedValue);
+            ESVMInstance::currentInstance()->globalObject()->propertyDeleted(oldIdx);
+
+            m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
+            m_hiddenClassData.push_back((ESPointer *)data);
             ESVMInstance::currentInstance()->globalObject()->propertyDefined(m_hiddenClassData.size() - 1, keyString);
         }
         return true;
@@ -1407,6 +1423,7 @@ inline bool ESObject::deleteProperty(const ESValue& key, bool force)
     if (UNLIKELY(m_flags.m_isGlobalObject)) {
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
         m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(idx);
+        m_hiddenClass->m_propertyInfo[idx].m_flags.m_isDeletedValue = true;
         m_hiddenClassData[idx] = ESValue(ESValue::ESDeletedValue);
         ESVMInstance::currentInstance()->globalObject()->propertyDeleted(idx);
     } else {
@@ -1486,7 +1503,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
             }
         }
     }
-    return m_hiddenClass->findPropertyCheckDeleted(key.toString()) != SIZE_MAX;
+    return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p

@@ -77,7 +77,7 @@ NEVER_INLINE ESValue getByGlobalIndexOperationSlowCase(GlobalObject* globalObjec
 
 NEVER_INLINE void setByGlobalIndexOperationSlowCase(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value)
 {
-    ASSERT(globalObject->hiddenClass()->findPropertyCheckDeleted(code->m_name) == SIZE_MAX);
+    ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == SIZE_MAX);
     if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode()) {
         ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create()));
         RELEASE_ASSERT_NOT_REACHED();

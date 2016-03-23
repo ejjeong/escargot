@@ -64,7 +64,7 @@ ALWAYS_INLINE ESValue getByGlobalIndexOperation(GlobalObject* globalObject, GetB
 NEVER_INLINE void setByGlobalIndexOperationSlowCase(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value);
 ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value)
 {
-    ASSERT(globalObject->hiddenClass()->findPropertyCheckDeleted(code->m_name) == code->m_index);
+    ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
     if (UNLIKELY(code->m_index == SIZE_MAX)) {
         setByGlobalIndexOperationSlowCase(globalObject, code, value);
     } else {
