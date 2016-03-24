@@ -58,7 +58,7 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
     } catch(const EsprimaError& error) {
         char temp[512];
         sprintf(temp, "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
-        ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(temp)));
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
     }
 
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode)

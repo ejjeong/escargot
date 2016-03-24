@@ -821,7 +821,10 @@ bool isPSMallocInited = false;
 #define PS_POOL_SIZE 64
 ParseStatus* psPool[PS_POOL_SIZE];
 size_t psPoolUsage = 0;
-void throwEsprimaException(const char16_t* token = u"");
+
+struct ParseContext;
+typedef escargot::ESErrorObject::Code ErrorCode;
+void throwEsprimaException(const char16_t* token = u"", ParseContext* ctx = nullptr, ErrorCode code = ErrorCode::SyntaxError);
 
 ALWAYS_INLINE ParseStatus* psMalloc()
 {
@@ -897,8 +900,8 @@ struct ParserStackChecker {
         : m_ctx(ctx)
     {
         m_ctx->m_stackCounter++;
-        if (UNLIKELY(m_ctx->m_stackCounter == 1024)) // maximum call stack size : 1KB
-            throwEsprimaException();
+        if (UNLIKELY(m_ctx->m_stackCounter == 2048))
+            throwEsprimaException(u"Maximum call stack size exceeded.", ctx, ErrorCode::RangeError);
     }
     ~ParserStackChecker()
     {
@@ -933,19 +936,21 @@ void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclaratorNode
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), new escargot::VariableDeclaratorNode(new escargot::IdentifierNode(((escargot::IdentifierNode *)node->id())->name()), NULL));
 }
 
-void throwEsprimaException(RefPtr<ParseStatus> token/*token, message*/)
+void throwEsprimaException(RefPtr<ParseStatus> message/*token, message*/)
 {
-    throw token->m_value.toESString();
+    throw message->m_value.toESString();
 }
 
-void throwEsprimaException(escargot::ESString* token)
+void throwEsprimaException(escargot::ESString* message)
 {
-    throw token;
+    throw message;
 }
 
-void throwEsprimaException(const char16_t* token)
+void throwEsprimaException(const char16_t* message, ParseContext* ctx, ErrorCode code)
 {
-    throw escargot::ESString::create(token);
+    if (code != ErrorCode::SyntaxError)
+        throw EsprimaError(ctx->m_lineNumber, escargot::ESString::create(message), code);
+    throw escargot::ESString::create(message);
 }
 
 escargot::UTF16String tokenToString(RefPtr<ParseStatus> token)
@@ -6372,6 +6377,8 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
         throw EsprimaError(ctx.m_lineNumber, escargot::ESString::create(msg));
     } catch(escargot::ESString* msg) {
         throw EsprimaError(ctx.m_lineNumber, msg);
+    } catch(EsprimaError& err) {
+        throw err;
     } catch(...) {
         RELEASE_ASSERT_NOT_REACHED();
     }

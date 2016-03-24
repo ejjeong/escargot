@@ -41,7 +41,7 @@ Done running mjsunit/array-splice: FAIL
 Done running mjsunit/array-tostring: FAIL
 Done running mjsunit/array-unshift: FAIL
 Done running mjsunit/ascii-regexp-subject: FAIL
-Done running mjsunit/big-object-literal: FAIL
+Done running mjsunit/big-object-literal: pass
 Done running mjsunit/binary-operation-overwrite: pass
 Done running mjsunit/bit-not: pass
 Done running mjsunit/bitops-info: pass
@@ -202,7 +202,7 @@ Done running mjsunit/obj-construct: pass
 Done running mjsunit/object-create: pass
 Done running mjsunit/object-define-properties: pass
 Done running mjsunit/object-freeze-global: pass
-Done running mjsunit/object-get-own-property-names: FAIL
+Done running mjsunit/object-get-own-property-names: pass
 Done running mjsunit/object-literal-conversions: pass
 Done running mjsunit/object-literal-multiple-fields: pass
 Done running mjsunit/object-literal-multiple-proto-fields: pass
@@ -552,7 +552,7 @@ Done running mjsunit/regress/regress-1213516: pass
 Done running mjsunit/regress/regress-1213575: FAIL
 Done running mjsunit/regress/regress-121407: pass
 Done running mjsunit/regress/regress-1215: pass
-Done running mjsunit/regress/regress-1215653: FAIL
+Done running mjsunit/regress/regress-1215653: pass
 Done running mjsunit/regress/regress-1217: FAIL
 Done running mjsunit/regress/regress-1218: pass
 Done running mjsunit/regress/regress-1233: pass
@@ -1025,16 +1025,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@0">, stack: undefined}
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
-=== mjsunit/big-object-literal.js ===
---- stdout ---
-1
-1
-2
-2
-100
-100
-200
-Uncaught SyntaxError:  (Parse Error 1 line)
 === mjsunit/call-stub.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <2> found <1>, stack: undefined}
@@ -1157,9 +1147,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1
 === mjsunit/numops-fuzz-part4.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
-=== mjsunit/object-get-own-property-names.js ===
---- stdout ---
-Uncaught TypeError: Object.getOwnPropertyNames: first argument is not object
 === mjsunit/object-literal.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
@@ -1582,9 +1569,6 @@ Unexpected Keyword 'import'. (Parse Error 1 line)
 === mjsunit/regress/regress-1213575.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/regress/regress-1215653.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-1217.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
@@ -1798,6 +1782,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 185 tests failed
+=== 182 tests failed
 === 7 tests CRASHED
 ===

@@ -2316,6 +2316,25 @@ ESErrorObject::ESErrorObject(escargot::ESString* message)
     set(strings->name, strings->Error.string());
 }
 
+ESErrorObject* ESErrorObject::create(escargot::ESString* message, Code code)
+{
+    switch (code) {
+        case ESErrorObject::Code::TypeError:
+            return TypeError::create(message);
+        case ESErrorObject::Code::ReferenceError:
+            return ReferenceError::create(message);
+        case ESErrorObject::Code::SyntaxError:
+            return SyntaxError::create(message);
+        case ESErrorObject::Code::RangeError:
+            return RangeError::create(message);
+        case ESErrorObject::Code::URIError:
+            return URIError::create(message);
+        case ESErrorObject::Code::EvalError:
+            return EvalError::create(message);
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
 ReferenceError::ReferenceError(escargot::ESString* message)
     : ESErrorObject(message)
 {

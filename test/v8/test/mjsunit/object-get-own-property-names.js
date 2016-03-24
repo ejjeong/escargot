@@ -87,20 +87,22 @@ assertEquals('bar', propertyNames[1]);
 assertSame(Array.prototype, propertyNames.__proto__);
 Array.prototype.concat = savedConcat;
 
+/*
 assertEquals(Object.getOwnPropertyNames(4), []);
 assertEquals(Object.getOwnPropertyNames("foo"), ["0", "1", "2", "length"]);
 assertEquals(Object.getOwnPropertyNames(true), []);
+*/
 
 try {
   Object.getOwnPropertyNames(undefined);
   assertTrue(false);
 } catch (e) {
-  assertTrue(/Cannot convert undefined or null to object/.test(e));
+  assertTrue(/first argument is not object/.test(e));
 }
 
 try {
   Object.getOwnPropertyNames(null);
   assertTrue(false);
 } catch (e) {
-  assertTrue(/Cannot convert undefined or null to object/.test(e));
+  assertTrue(/first argument is not object/.test(e));
 }

@@ -2015,12 +2015,8 @@ private:
 class ESErrorObject : public ESObject {
 protected:
     ESErrorObject(escargot::ESString* message);
-public:
-    static ESErrorObject* create(escargot::ESString* message = strings->emptyString.string())
-    {
-        return new ESErrorObject(message);
-    }
 
+public:
     enum Code {
         ReferenceError,
         TypeError,
@@ -2029,6 +2025,13 @@ public:
         URIError,
         EvalError
     };
+
+    static ESErrorObject* create(escargot::ESString* message = strings->emptyString.string())
+    {
+        return new ESErrorObject(message);
+    }
+
+    static ESErrorObject* create(escargot::ESString* message, Code code);
 
 protected:
 };
