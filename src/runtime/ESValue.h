@@ -1710,14 +1710,6 @@ enum Attribute {
 
 class PropertyDescriptor {
 public:
-    PropertyDescriptor()
-        : m_value(ESValue::ESEmptyValue)
-        , m_getter(ESValue::ESEmptyValue)
-        , m_setter(ESValue::ESEmptyValue)
-        , m_attributes(defaultAttributes)
-        , m_seenAttributes(0)
-    {
-    }
     PropertyDescriptor(ESValue value, unsigned attributes)
         : m_value(value)
         , m_getter(ESValue::ESEmptyValue)
@@ -1726,6 +1718,7 @@ public:
         , m_seenAttributes(EnumerablePresent | ConfigurablePresent | WritablePresent)
     {
         ASSERT(m_value);
+        checkValidity();
     }
     PropertyDescriptor(ESObject* obj);
     bool writable() const;
@@ -1736,10 +1729,8 @@ public:
     bool isAccessorDescriptor() const;
     unsigned attributes() const { return m_attributes; }
     ESValue value() const { return m_value.isEmpty()? ESValue(ESValue::ESUndefined) : m_value; }
-    ESValue getter() const;
-    ESValue setter() const;
-    ESFunctionObject* getterObject() const;
-    ESFunctionObject* setterObject() const;
+    ESFunctionObject* getterFunction() const;
+    ESFunctionObject* setterFunction() const;
     void setWritable(bool);
     void setEnumerable(bool);
     void setConfigurable(bool);
@@ -1749,13 +1740,14 @@ public:
     bool hasWritable() const { return m_seenAttributes & WritablePresent; }
     bool hasEnumerable() const { return m_seenAttributes & EnumerablePresent; }
     bool hasConfigurable() const { return m_seenAttributes & ConfigurablePresent; }
-    bool hasValue() const { return !!m_value;}
-    bool hasSetter() const { return !!m_setter; }
-    bool hasGetter() const { return !!m_getter; }
+    bool hasValue() const { return !m_value.isEmpty();}
+    bool hasSetter() const { return !m_setter.isEmpty(); }
+    bool hasGetter() const { return !m_getter.isEmpty(); }
     static ESValue fromPropertyDescriptor(ESObject* descSrc, ESString* propertyName, size_t idx);
     static ESValue fromPropertyDescriptorForIndexedProperties(ESObject* obj, uint32_t index);
 
 private:
+    void checkValidity() const;
     static unsigned defaultAttributes;
     enum PresentAttribute {
         WritablePresent         = 1 << 1, // property can be only read, not written

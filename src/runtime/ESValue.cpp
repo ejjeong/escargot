@@ -403,6 +403,30 @@ PropertyDescriptor::PropertyDescriptor(ESObject* obj)
     if (obj->hasProperty(strings->set.string())) {
         setSetter(obj->get(strings->set.string()));
     }
+    checkValidity();
+}
+
+void PropertyDescriptor::checkValidity() const
+{
+    bool descHasWritable = hasWritable();
+    bool descHasValue = hasValue();
+    bool descHasGetter = hasGetter();
+    bool descHasSetter = hasSetter();
+
+    if (descHasGetter || descHasSetter) {
+        if (descHasGetter) {
+            ESValue get = m_getter; // 8.10.5 ToPropertyDescriptor 7.a
+            if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Getter must be a function")))); // 8.10.5 ToPropertyDescriptor 7.b
+        }
+        if (descHasSetter) {
+            ESValue set = m_setter; // 8.10.5 ToPropertyDescriptor 8.a
+            if (!(set.isESPointer() && set.asESPointer()->isESFunctionObject()) && !set.isUndefined())
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Setter must be a function")))); // 8.10.5 ToPropertyDescriptor 8.b
+        }
+        if (descHasValue || descHasWritable)
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Invalid property: property cannot have [getter|setter] and [value|writable] together"))));
+    }
 }
 
 bool PropertyDescriptor::writable() const
@@ -436,28 +460,16 @@ bool PropertyDescriptor::isAccessorDescriptor() const
     return m_getter || m_setter;
 }
 
-ESValue PropertyDescriptor::getter() const
+ESFunctionObject* PropertyDescriptor::getterFunction() const
 {
     ASSERT(isAccessorDescriptor());
-    return m_getter;
+    return (hasGetter() && !m_getter.isUndefined()) ? m_getter.asESPointer()->asESFunctionObject() : nullptr;
 }
 
-ESValue PropertyDescriptor::setter() const
+ESFunctionObject* PropertyDescriptor::setterFunction() const
 {
     ASSERT(isAccessorDescriptor());
-    return m_setter;
-}
-
-ESFunctionObject* PropertyDescriptor::getterObject() const
-{
-    ASSERT(isAccessorDescriptor() && hasGetter());
-    return m_getter.isESPointer() && m_getter.asESPointer()->isESFunctionObject() ? m_getter.asESPointer()->asESFunctionObject() : nullptr;
-}
-
-ESFunctionObject* PropertyDescriptor::setterObject() const
-{
-    ASSERT(isAccessorDescriptor() && hasSetter());
-    return m_setter.isESPointer() && m_setter.asESPointer()->isESFunctionObject() ? m_setter.asESPointer()->asESFunctionObject() : nullptr;
+    return (hasSetter() && !m_setter.isUndefined()) ? m_setter.asESPointer()->asESFunctionObject() : nullptr;
 }
 
 void PropertyDescriptor::setWritable(bool writable)
@@ -622,27 +634,6 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     bool descHasValue = desc.hasValue();
     bool descHasGetter = desc.hasGetter();
     bool descHasSetter = desc.hasSetter();
-
-    escargot::ESFunctionObject* descGet = NULL;
-    escargot::ESFunctionObject* descSet = NULL;
-    if (descHasGetter || descHasSetter) {
-        if (descHasGetter) {
-            ESValue get = desc.getter(); // 8.10.5 ToPropertyDescriptor 7.a
-            if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Getter must be a function")))); // 8.10.5 ToPropertyDescriptor 7.b
-            else if (!get.isUndefined())
-                descGet = get.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 7.c
-        }
-        if (descHasSetter) {
-            ESValue set = desc.setter(); // 8.10.5 ToPropertyDescriptor 8.a
-            if (!(set.isESPointer() && set.asESPointer()->isESFunctionObject()) && !set.isUndefined())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Setter must be a function")))); // 8.10.5 ToPropertyDescriptor 8.b
-            else if (!set.isUndefined())
-                descSet = set.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 8.c
-        }
-        if (descHasValue || descHasWritable)
-            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Invalid property: property cannot have [getter|setter] and [value|writable] together"))));
-    }
     // ToPropertyDescriptor : (end)
 
     // 1
@@ -659,7 +650,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
             && O->hasOwnProperty(P)) {
             current = O->getOwnProperty(P);
             if (descHasGetter || descHasSetter) {
-                O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet),
+                O->defineAccessorProperty(P, new ESPropertyAccessorData(desc.getterFunction(), desc.setterFunction()),
                     descHasWritable ? desc.writable() : true,
                     descHasEnumerable ? desc.enumerable() : true,
                     descHasConfigurable ? desc.configurable() : true);
@@ -698,7 +689,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
                     descHasConfigurable ? desc.configurable() : false, desc.value());
             } else {
                 ASSERT(desc.isAccessorDescriptor());
-                O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet),
+                O->defineAccessorProperty(P, new ESPropertyAccessorData(desc.getterFunction(), desc.setterFunction()),
                     descHasWritable ? desc.writable() : false,
                     descHasEnumerable ? desc.enumerable() : false,
                     descHasConfigurable ? desc.configurable() : false);
@@ -719,9 +710,9 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         && (!descHasConfigurable || desc.configurable() == propertyInfo.m_flags.m_isConfigurable)
         && (!descHasValue || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && desc.value().equalsToByTheSameValueAlgorithm(current)))
         && (!descHasGetter || (O->get(strings->get.string()).isESPointer() && O->get(strings->get.string()).asESPointer()->isESFunctionObject()
-            && descGet == O->get(strings->get.string()).asESPointer()->asESFunctionObject()))
+            && desc.getterFunction() == O->get(strings->get.string()).asESPointer()->asESFunctionObject()))
         && (!descHasSetter || (O->get(strings->set.string()).isESPointer() && O->get(strings->set.string()).asESPointer()->isESFunctionObject()
-            && descSet == O->get(strings->set.string()).asESPointer()->asESFunctionObject())))
+            && desc.setterFunction() == O->get(strings->set.string()).asESPointer()->asESFunctionObject())))
         return true;
 
     // 7
@@ -754,7 +745,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         }
         if (isCurrentDataDescriptor) { // 9.b
             O->deleteProperty(P);
-            O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet), descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, true);
+            O->defineAccessorProperty(P, new ESPropertyAccessorData(desc.getterFunction(), desc.setterFunction()), descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, true);
         } else { // 9.c
             O->deleteProperty(P);
             O->defineDataProperty(P, descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, desc.value(), true);
@@ -785,13 +776,13 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     } else {
         ASSERT(!propertyInfo.m_flags.m_isDataProperty && desc.isAccessorDescriptor());
         if (!propertyInfo.m_flags.m_isConfigurable) {
-            if (descHasSetter && (descSet != O->accessorData(idx)->getJSSetter())) {
+            if (descHasSetter && (desc.setterFunction() != O->accessorData(idx)->getJSSetter())) {
                 if (throwFlag)
                     ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.i"))));
                 else
                     return false;
             }
-            if (descHasGetter && (descGet != O->accessorData(idx)->getJSGetter())) {
+            if (descHasGetter && (desc.getterFunction() != O->accessorData(idx)->getJSGetter())) {
                 if (throwFlag)
                     ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii"))));
                 else
@@ -804,8 +795,8 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
 
     // 12
     if (descHasGetter || descHasSetter || (!propertyInfo.m_flags.m_isDataProperty && !O->accessorData(idx)->getNativeGetter() && !O->accessorData(idx)->getNativeSetter())) {
-        escargot::ESFunctionObject* getter = descGet;
-        escargot::ESFunctionObject* setter = descSet;
+        escargot::ESFunctionObject* getter = desc.getterFunction();
+        escargot::ESFunctionObject* setter = desc.setterFunction();
         if (!propertyInfo.m_flags.m_isDataProperty) {
             ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
             if (!descHasGetter && currentAccessorData->getJSGetter()) {
@@ -885,27 +876,6 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
     bool descHasValue = desc.hasValue();
     bool descHasGetter = desc.hasGetter();
     bool descHasSetter = desc.hasSetter();
-
-    escargot::ESFunctionObject* descGet = NULL;
-    escargot::ESFunctionObject* descSet = NULL;
-    if (descHasGetter || descHasSetter) {
-        if (descHasGetter) {
-            ESValue get = desc.getter(); // 8.10.5 ToPropertyDescriptor 7.a
-            if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b")))); // 8.10.5 ToPropertyDescriptor 7.b
-            else if (!get.isUndefined())
-                descGet = get.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 7.c
-        }
-        if (descHasSetter) {
-            ESValue set = desc.setter(); // 8.10.5 ToPropertyDescriptor 8.a
-            if (!(set.isESPointer() && set.asESPointer()->isESFunctionObject()) && !set.isUndefined())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b")))); // 8.10.5 ToPropertyDescriptor 8.b
-            else if (!set.isUndefined())
-                descSet = set.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 8.c
-        }
-        if (descHasValue || descHasWritable)
-            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together"))));
-    }
     // ToPropertyDescriptor : (end)
 
     // 1
@@ -938,9 +908,9 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
         if (descHasValue)
             newLenDesc->set(strings->value.string(), descV);
         if (descHasGetter)
-            newLenDesc->set(strings->get.string(), descGet);
+            newLenDesc->set(strings->get.string(), desc.getterFunction());
         if (descHasSetter)
-            newLenDesc->set(strings->set.string(), descSet);
+            newLenDesc->set(strings->set.string(), desc.setterFunction());
 
         // 3.c
         uint32_t newLen = descV.toUint32();

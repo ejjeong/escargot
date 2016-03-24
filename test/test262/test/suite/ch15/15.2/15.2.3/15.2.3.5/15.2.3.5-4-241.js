@@ -15,6 +15,10 @@ function testcase() {
         Object.defineProperty(descObj, "get", {
             set: function () { }
         });
+        for (var it in descObj)
+            print(it + " : " + descObj[it]);
+        print(descObj.get);
+        print(descObj.hasOwnProperty("get"));
 
         var newObj = Object.create({}, {
             prop: descObj 
