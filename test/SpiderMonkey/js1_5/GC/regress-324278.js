@@ -1,4 +1,4 @@
-// escargot-timeout: 10
+// escargot-skip: regexp literal should not be shared between function invocations
 // |reftest| skip -- slow, obsoleted by 98409 fix
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public

@@ -5403,7 +5403,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
             f = f | ESRegExpObject::Sticky;
         }
         */
-        expr = new escargot::LiteralNode(escargot::ESRegExpObject::create(token->m_regexBody.toESString(), (escargot::ESRegExpObject::Option)f));
+        expr = new escargot::RegExpLiteralNode(token->m_regexBody.toESString(), (escargot::ESRegExpObject::Option)f);
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // parsedNode = new LiteralNode(ESRegExpObject::create(source, (escargot::ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
     } else if (type == Token::TemplateToken) {

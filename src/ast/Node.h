@@ -101,6 +101,7 @@ enum NodeType {
     Identifier,
     LabeledStatement,
     Literal,
+    RegExpLiteral,
     NativeFunction,
     TryStatement,
     CatchClause,

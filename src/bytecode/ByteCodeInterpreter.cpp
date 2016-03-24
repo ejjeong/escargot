@@ -906,6 +906,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             NEXT_INSTRUCTION();
         }
 
+        InitRegExpObjectOpcodeLbl:
+        {
+            InitRegExpObject* code = (InitRegExpObject*)currentCode;
+            PUSH(stack, topOfStack, ESRegExpObject::create(code->m_body, code->m_flag));
+            executeNextCode<InitRegExpObject>(programCounter);
+            NEXT_INSTRUCTION();
+        }
+
         UnaryTypeOfOpcodeLbl:
         {
             ESValue* v = POP(stack, bp);

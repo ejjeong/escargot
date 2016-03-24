@@ -323,7 +323,7 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
         } else if (type == NodeType::AssignmentExpressionSimple) {
             postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
-        } else if (type == NodeType::Literal) {
+        } else if (type == NodeType::Literal || type == NodeType::RegExpLiteral) {
             // DO NOTHING
         } else if (type == NodeType::ArrayExpression) {
             ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
@@ -587,7 +587,7 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
         } else if (type == NodeType::AssignmentExpressionSimple) {
             postAnalysisFunctionForCalcID(((AssignmentExpressionSimpleNode *)currentNode)->m_right, nearFunctionNode);
             postAnalysisFunctionForCalcID(((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunctionNode);
-        } else if (type == NodeType::Literal) {
+        } else if (type == NodeType::Literal || type == NodeType::RegExpLiteral) {
             // DO NOTHING
         } else if (type == NodeType::ArrayExpression) {
             ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;

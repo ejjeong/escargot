@@ -143,6 +143,7 @@ class CodeBlock;
     \
     /*etc*/\
     F(This, 1, 0, 0, 1, 1) \
+    F(InitRegExpObject, 1, 0, 0, 1, 1) \
     F(EnumerateObject, 1, 1, 0, 1, 0) \
     F(CheckIfKeyIsLast, 1, 0, 1, 1, 0) \
     F(EnumerateObjectKey, 1, 0, 1, 1, 1) \
@@ -2175,6 +2176,26 @@ public:
     }
 #endif
 
+};
+
+class InitRegExpObject : public ByteCode, public JITProfileTarget {
+public:
+    InitRegExpObject(ESString* body, ESRegExpObject::Option flag)
+        : ByteCode(InitRegExpObjectOpcode)
+    {
+        m_body = body;
+        m_flag = flag;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("InitRegExpObject <%s>\n", m_body->utf8Data());
+    }
+#endif
+
+    ESString* m_body;
+    escargot::ESRegExpObject::Option m_flag;
 };
 
 class EnumerateObject : public ByteCode {
