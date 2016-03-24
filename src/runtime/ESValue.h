@@ -1591,7 +1591,7 @@ public:
                     m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[i].m_name, i));
             }
 
-            //ASSERT(m_propertyIndexHashMapInfo->size() == m_propertyInfo.size());
+            // ASSERT(m_propertyIndexHashMapInfo->size() == m_propertyInfo.size());
         }
     }
 
@@ -2535,8 +2535,17 @@ public:
         std::vector<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >, gc_allocator<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >> > m_matchResults;
     };
     bool match(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0);
+    bool matchNonGlobally(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0)
+    {
+        Option prevOption = option();
+        setOption((Option)(prevOption & ~Option::Global));
+        bool ret = match(str, result, testOnly, startIndex);
+        setOption(prevOption);
+        return ret;
+    }
 
     escargot::ESArrayObject* createRegExpMatchedArray(const RegexMatchResult& result, const escargot::ESString* input);
+    escargot::ESArrayObject* pushBackToRegExpMatchedArray(escargot::ESArrayObject* array, size_t& index, const size_t limit, const RegexMatchResult& result, const escargot::ESString* str);
 
 private:
     void setBytecodePattern(JSC::Yarr::BytecodePattern* pattern)
@@ -2551,7 +2560,7 @@ private:
     Option m_option;
 
     ESValue m_lastIndex;
-    escargot::ESString* m_lastExecutedString;
+    const escargot::ESString* m_lastExecutedString;
 };
 
 enum TypedArrayType {

@@ -2781,7 +2781,6 @@ void GlobalObject::installString()
             regexp->set(strings->lastIndex.string(), ESValue(0), true);
         }
 
-        regexp->m_lastExecutedString = thisObject;
         bool testResult = regexp->match(thisObject, result, false, 0);
         if (!testResult) {
             return ESValue(ESValue::ESNull);
@@ -2814,7 +2813,6 @@ void GlobalObject::installString()
                     ++end;
                 }
                 result.m_matchResults.clear();
-                regexp->m_lastExecutedString = thisObject;
                 testResult = regexp->match(thisObject, result, false, end);
             }
 
@@ -2845,7 +2843,6 @@ void GlobalObject::installString()
             if (isGlobal) {
                 regexp->set(strings->lastIndex.string(), ESValue(0), true);
             }
-            regexp->m_lastExecutedString = string;
             bool testResult = regexp->match(string, temp, false, 0);
 
             if (isGlobal) {
@@ -2872,7 +2869,6 @@ void GlobalObject::installString()
                     }
                     result.m_matchResults.insert(result.m_matchResults.end(), temp.m_matchResults.begin(), temp.m_matchResults.end());
                     temp.m_matchResults.clear();
-                    regexp->m_lastExecutedString = string;
                     testResult = regexp->match(string, temp, false, end);
                 }
 
@@ -3056,7 +3052,7 @@ void GlobalObject::installString()
 
         // 4, 5
         size_t lengthA = 0;
-        double lim;
+        size_t lim;
         if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
             lim = std::pow(2, 32)-1;
         } else {
@@ -3081,13 +3077,12 @@ void GlobalObject::installString()
 
         // 10
         if (separator.isUndefined()) {
-            A->defineDataProperty(ESValue(0), true, true, true, S);
+            A->defineDataProperty(strings->numbers[0].string(), true, true, true, S);
             return A;
         }
 
-        std::function<ESValue(escargot::ESString*, int, escargot::ESPointer*)> splitMatch;
-        splitMatch = [] (escargot::ESString* S, int q, escargot::ESPointer* P) -> ESValue {
-            escargot::ESString* R = P->asESString();
+        std::function<ESValue(escargot::ESString*, int, escargot::ESString*)> splitMatchUsingStr;
+        splitMatchUsingStr = [] (escargot::ESString* S, int q, escargot::ESString* R) -> ESValue {
             int s = S->length();
             int r = R->length();
             if (q + r > s)
@@ -3097,25 +3092,21 @@ void GlobalObject::installString()
                     return ESValue(false);
             return ESValue(q+r);
         };
-
         // 11
         if (s == 0) {
-            bool ret;
+            bool ret = true;
             if (P->isESRegExpObject()) {
-                escargot::ESRegExpObject* R = P->asESRegExpObject();
                 escargot::ESRegExpObject::RegexMatchResult result;
-                auto prev = R->option();
-                R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
-                R->m_lastExecutedString = S;
-                ret = R->match(S, result, false, 0);
-                R->setOption(prev);
+                ret = P->asESRegExpObject()->matchNonGlobally(S, result, false, 0);
             } else {
-                ESValue z = splitMatch(S, 0, P);
-                ret = !z.isBoolean();
+                ESValue z = splitMatchUsingStr(S, 0, P->asESString());
+                if (z.isBoolean()) {
+                    ret = z.asBoolean();
+                }
             }
             if (ret)
                 return A;
-            A->defineDataProperty(ESValue(0), true, true, true, S);
+            A->defineDataProperty(strings->numbers[0].string(), true, true, true, S);
             return A;
         }
 
@@ -3125,68 +3116,34 @@ void GlobalObject::installString()
         // 13
         if (P->isESRegExpObject()) {
             escargot::ESRegExpObject* R = P->asESRegExpObject();
-            bool isGlobal = R->option() & ESRegExpObject::Option::Global;
             while (q != s) {
                 ESRegExpObject::RegexMatchResult result;
-                auto prev = R->option();
-                R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
-                R->m_lastExecutedString = S;
-                bool ret = R->match(S, result, false, (size_t)q);
-                R->setOption(prev);
-                if (ret) {
-                    if ((size_t)result.m_matchResults[0][0].m_end == p) {
-                        q++;
-                    } else {
-                        if (result.m_matchResults[0][0].m_start >= S->length())
-                            break;
+                bool ret = R->matchNonGlobally(S, result, false, (size_t)q);
+                if (!ret) {
+                    break;
+                }
 
-                        escargot::ESString* T = S->substring(p, result.m_matchResults[0][0].m_start);
-                        A->defineDataProperty(ESValue(lengthA), true, true, true, ESValue(T));
-                        lengthA++;
-                        if ((double)lengthA == lim)
-                            return A;
-                        p = result.m_matchResults[0][0].m_end;
-                        if (isGlobal) {
-                            for (unsigned i = 0; i < result.m_matchResults.size(); i++) {
-                                if (i == 0)
-                                    continue;
-
-                                if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
-                                    A->defineDataProperty(ESValue(lengthA++), true, true, true, ESValue(ESValue::ESUndefined));
-                                else {
-                                    A->defineDataProperty(ESValue(lengthA++),
-                                        true, true, true, S->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
-                                }
-                                if (lengthA == lim)
-                                    return A;
-                            }
-                        } else {
-                            for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
-                                for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
-                                    if (i == 0 && j == 0)
-                                        continue;
-
-                                    if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                                        A->defineDataProperty(ESValue(lengthA++), true, true, true, ESValue(ESValue::ESUndefined));
-                                    else {
-                                        A->defineDataProperty(ESValue(lengthA++),
-                                            true, true, true, S->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
-                                    }
-                                    if (lengthA == lim)
-                                        return A;
-                                }
-                            }
-                        }
-                        q = p;
-                    }
-                } else {
+                if ((size_t)result.m_matchResults[0][0].m_end == p) {
                     q++;
+                } else {
+                    if (result.m_matchResults[0][0].m_start >= S->length())
+                        break;
+
+                    escargot::ESString* T = S->substring(p, result.m_matchResults[0][0].m_start);
+                    A->defineDataProperty(ESValue(lengthA++), true, true, true, ESValue(T));
+                    if (lengthA == lim)
+                        return A;
+                    p = result.m_matchResults[0][0].m_end;
+                    R->pushBackToRegExpMatchedArray(A, lengthA, lim, result, S);
+                    if (lengthA == lim)
+                        return A;
+                    q = p;
                 }
             }
         } else {
             escargot::ESString* R = P->asESString();
             while (q != s) {
-                ESValue e = splitMatch(S, q, R);
+                ESValue e = splitMatchUsingStr(S, q, R);
                 if (e == ESValue(ESValue::ESFalseTag::ESFalse))
                     q++;
                 else {
@@ -3197,9 +3154,8 @@ void GlobalObject::installString()
                             break;
 
                         escargot::ESString* T = S->substring(p, q);
-                        A->defineDataProperty(ESValue(lengthA), true, true, true, ESValue(T));
-                        lengthA++;
-                        if ((double)lengthA == lim)
+                        A->defineDataProperty(ESValue(lengthA++), true, true, true, ESValue(T));
+                        if (lengthA == lim)
                             return A;
                         p = e.asInt32();
                         q = p;
@@ -5582,7 +5538,6 @@ void GlobalObject::installRegExp()
             return ESValue(false);
         }
         ESRegExpObject::RegexMatchResult result;
-        regexp->m_lastExecutedString = sourceStr;
         bool testResult = regexp->match(sourceStr, result, true);
         return (ESValue(testResult));
     }, strings->test, 1));
@@ -5607,11 +5562,8 @@ void GlobalObject::installRegExp()
             return ESValue(ESValue::ESNull);
         }
 
-        regexp->m_lastExecutedString = sourceStr;
-        regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
-        if (regexp->match(sourceStr, result, false, lastIndex)) {
+        if (regexp->matchNonGlobally(sourceStr, result, false, lastIndex)) {
             if (isGlobal) {
-                regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
                 regexp->set(strings->lastIndex, ESValue(result.m_matchResults[0][0].m_end), true);
             }
             return regexp->createRegExpMatchedArray(result, sourceStr);

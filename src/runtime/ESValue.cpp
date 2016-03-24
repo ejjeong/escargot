@@ -1176,6 +1176,7 @@ void ESRegExpObject::setOption(const Option& option)
 
 bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matchResult, bool testOnly, size_t startIndex)
 {
+    m_lastExecutedString = str;
     JSC::Yarr::BytecodePattern* byteCode = bytecodePattern();
 
     bool isGlobal = option() & ESRegExpObject::Option::Global;
@@ -1269,6 +1270,41 @@ ESArrayObject* ESRegExpObject::createRegExpMatchedArray(const RegexMatchResult& 
         }
     }
     return arr;
+}
+
+ESArrayObject* ESRegExpObject::pushBackToRegExpMatchedArray(escargot::ESArrayObject* array, size_t& index, const size_t limit, const RegexMatchResult& result, const escargot::ESString* str)
+{
+    bool global = option() && Option::Global;
+
+    if (global) {
+        for (unsigned i = 0; i < result.m_matchResults.size(); i++) {
+            if (i == 0)
+                continue;
+
+            if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
+                array->defineDataProperty(ESValue(index++), true, true, true, ESValue(ESValue::ESUndefined));
+            else
+                array->defineDataProperty(ESValue(index++), true, true, true, str->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
+            if (index == limit)
+                return array;
+        }
+    } else {
+        for (unsigned i = 0; i < result.m_matchResults.size(); i ++) {
+            for (unsigned j = 0; j < result.m_matchResults[i].size(); j ++) {
+                if (i == 0 && j == 0)
+                    continue;
+
+                if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
+                    array->defineDataProperty(ESValue(index++), true, true, true, ESValue(ESValue::ESUndefined));
+                else
+                    array->defineDataProperty(ESValue(index++), true, true, true, str->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                if (index == limit)
+                    return array;
+            }
+        }
+    }
+
+    return array;
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
