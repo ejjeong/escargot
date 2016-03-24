@@ -376,92 +376,6 @@ ESString* ESString::substring(int from, int to) const
     }
 }
 
-
-bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly, size_t startIndex) const
-{
-    ESRegExpObject::Option option = ESRegExpObject::Option::None;
-    const ESString* regexSource;
-    JSC::Yarr::BytecodePattern* byteCode = NULL;
-    ESString* tmpStr;
-    if (esptr->isESRegExpObject()) {
-        regexSource = esptr->asESRegExpObject()->source();
-        option = esptr->asESRegExpObject()->option();
-        byteCode = esptr->asESRegExpObject()->bytecodePattern();
-    } else {
-        tmpStr = ESValue(esptr).toString();
-        regexSource = tmpStr;
-    }
-
-    bool isGlobal = option & ESRegExpObject::Option::Global;
-    if (!byteCode) {
-        const char* yarrError = nullptr;
-        JSC::Yarr::YarrPattern* yarrPattern;
-        if (esptr->isESRegExpObject() && esptr->asESRegExpObject()->yarrPattern())
-            yarrPattern = esptr->asESRegExpObject()->yarrPattern();
-        else
-            yarrPattern = new JSC::Yarr::YarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
-        if (yarrError) {
-            matchResult.m_subPatternNum = 0;
-            return false;
-        }
-        WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
-        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompile(*yarrPattern, bumpAlloc);
-        byteCode = ownedBytecode.leakPtr();
-        if (esptr->isESRegExpObject()) {
-            esptr->asESRegExpObject()->setBytecodePattern(byteCode);
-        }
-    }
-
-    unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
-    matchResult.m_subPatternNum = (int) subPatternNum;
-    size_t length = ESString::length();
-    size_t start = startIndex;
-    unsigned result = 0;
-    const void* chars;
-    if (isASCIIString())
-        chars = asciiData();
-    else
-        chars = utf16Data();
-    unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
-    outputBuf[1] = start;
-    do {
-        start = outputBuf[1];
-        memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
-        if (start > length)
-            break;
-        if (isASCIIString())
-            result = JSC::Yarr::interpret(byteCode, (const char *)chars, length, start, outputBuf);
-        else
-            result = JSC::Yarr::interpret(byteCode, (const char16_t *)chars, length, start, outputBuf);
-        if (result != JSC::Yarr::offsetNoMatch) {
-            if (UNLIKELY(testOnly)) {
-                return true;
-            }
-            std::vector<ESString::RegexMatchResult::RegexMatchResultPiece, pointer_free_allocator<ESString::RegexMatchResult::RegexMatchResultPiece> > piece;
-            piece.reserve(subPatternNum + 1);
-
-            for (unsigned i = 0; i < subPatternNum + 1; i ++) {
-                ESString::RegexMatchResult::RegexMatchResultPiece p;
-                p.m_start = outputBuf[i*2];
-                p.m_end = outputBuf[i*2 + 1];
-                piece.push_back(p);
-            }
-            matchResult.m_matchResults.push_back(std::move(piece));
-            if (!isGlobal)
-                break;
-            if (start == outputBuf[1]) {
-                outputBuf[1]++;
-                if (outputBuf[1] > length) {
-                    break;
-                }
-            }
-        } else {
-            break;
-        }
-    } while (result != JSC::Yarr::offsetNoMatch);
-    return matchResult.m_matchResults.size();
-}
-
 unsigned PropertyDescriptor::defaultAttributes = Configurable | Enumerable | Writable;
 
 PropertyDescriptor::PropertyDescriptor(ESObject* obj)
@@ -1181,6 +1095,60 @@ void ESArrayObject::setLength(unsigned newLength)
     m_length = newLength;
 }
 
+ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue optionValue)
+{
+    if (patternValue.isESPointer() && patternValue.asESPointer()->isESRegExpObject()) {
+        if (optionValue.isUndefined()) {
+            return patternValue.asESPointer()->asESRegExpObject();
+        }
+        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another")));
+    }
+
+    ESRegExpObject* ret = ESRegExpObject::create(strings->defaultRegExpString.string(), ESRegExpObject::Option::None);
+    ESRegExpObject::Option option = ESRegExpObject::Option::None;
+    escargot::ESString* patternStr = patternValue.toString();
+    escargot::ESString* optionStr = optionValue.isUndefined()? strings->emptyString.string(): optionValue.toString();
+    for (size_t i = 0; i < optionStr->length(); i++) {
+        switch (optionStr->charAt(i)) {
+        case 'g':
+            if (option & ESRegExpObject::Option::Global)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
+            break;
+        case 'i':
+            if (option & ESRegExpObject::Option::IgnoreCase)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
+            break;
+        case 'm':
+            if (option & ESRegExpObject::Option::MultiLine)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
+            break;
+        case 'y':
+            if (option & ESRegExpObject::Option::Sticky)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
+            break;
+        default:
+            ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has invalid flag")));
+        }
+    }
+
+    if (option != ESRegExpObject::Option::None)
+        ret->setOption(option);
+
+    if (patternValue.isUndefined()) {
+        ret->setSource(ESString::create("(?:)"));
+    } else {
+        bool success = ret->setSource(patternStr);
+        if (!success)
+            ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
+    }
+
+    return ret;
+}
+
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     : ESObject((Type)(Type::ESObject | Type::ESRegExpObject), ESVMInstance::currentInstance()->globalObject()->regexpPrototype())
 {
@@ -1236,7 +1204,79 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
-ESArrayObject* ESRegExpObject::createRegExpMatchedArray(const ESString::RegexMatchResult& result, const escargot::ESString* input)
+bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matchResult, bool testOnly, size_t startIndex)
+{
+    JSC::Yarr::BytecodePattern* byteCode = bytecodePattern();
+
+    bool isGlobal = option() & ESRegExpObject::Option::Global;
+    if (!byteCode) {
+        const char* yarrError = nullptr;
+        JSC::Yarr::YarrPattern* cachedYarrPattern;
+        if (this->yarrPattern())
+            cachedYarrPattern = this->yarrPattern();
+        else
+            cachedYarrPattern = new JSC::Yarr::YarrPattern(*source(), option() & ESRegExpObject::Option::IgnoreCase, option() & ESRegExpObject::Option::MultiLine, &yarrError);
+        if (yarrError) {
+            matchResult.m_subPatternNum = 0;
+            return false;
+        }
+        WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
+        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompile(*cachedYarrPattern, bumpAlloc);
+        byteCode = ownedBytecode.leakPtr();
+        setBytecodePattern(byteCode);
+    }
+
+    unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
+    matchResult.m_subPatternNum = (int) subPatternNum;
+    size_t length = str->length();
+    size_t start = startIndex;
+    unsigned result = 0;
+    const void* chars;
+    if (str->isASCIIString())
+        chars = str->asciiData();
+    else
+        chars = str->utf16Data();
+    unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
+    outputBuf[1] = start;
+    do {
+        start = outputBuf[1];
+        memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
+        if (start > length)
+            break;
+        if (str->isASCIIString())
+            result = JSC::Yarr::interpret(byteCode, (const char *)chars, length, start, outputBuf);
+        else
+            result = JSC::Yarr::interpret(byteCode, (const char16_t *)chars, length, start, outputBuf);
+        if (result != JSC::Yarr::offsetNoMatch) {
+            if (UNLIKELY(testOnly)) {
+                return true;
+            }
+            std::vector<RegexMatchResult::RegexMatchResultPiece, pointer_free_allocator<RegexMatchResult::RegexMatchResultPiece> > piece;
+            piece.reserve(subPatternNum + 1);
+
+            for (unsigned i = 0; i < subPatternNum + 1; i ++) {
+                RegexMatchResult::RegexMatchResultPiece p;
+                p.m_start = outputBuf[i*2];
+                p.m_end = outputBuf[i*2 + 1];
+                piece.push_back(p);
+            }
+            matchResult.m_matchResults.push_back(std::move(piece));
+            if (!isGlobal)
+                break;
+            if (start == outputBuf[1]) {
+                outputBuf[1]++;
+                if (outputBuf[1] > length) {
+                    break;
+                }
+            }
+        } else {
+            break;
+        }
+    } while (result != JSC::Yarr::offsetNoMatch);
+    return matchResult.m_matchResults.size();
+}
+
+ESArrayObject* ESRegExpObject::createRegExpMatchedArray(const RegexMatchResult& result, const escargot::ESString* input)
 {
     escargot::ESArrayObject* arr = escargot::ESArrayObject::create();
 

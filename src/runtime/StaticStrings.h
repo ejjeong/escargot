@@ -173,6 +173,7 @@ public:
     InternalAtomicString stringProtected;
     InternalAtomicString stringPrivate;
     InternalAtomicString stringStatic;
+    InternalAtomicString defaultRegExpString;
 
 #define ESCARGOT_ASCII_TABLE_MAX 128
     InternalAtomicString asciiTable[ESCARGOT_ASCII_TABLE_MAX];

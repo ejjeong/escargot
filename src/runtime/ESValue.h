@@ -815,16 +815,6 @@ public:
     }
     ESString* substring(int from, int to) const;
 
-    struct RegexMatchResult {
-        struct RegexMatchResultPiece {
-            unsigned m_start, m_end;
-        };
-        COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
-        int m_subPatternNum;
-        std::vector<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >, gc_allocator<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >> > m_matchResults;
-    };
-    bool match(ESPointer* esptr, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0) const;
-
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
 
@@ -2517,6 +2507,7 @@ public:
         MultiLine = 1 << 2,
         Sticky = 1 << 3,
     };
+    static ESRegExpObject* create(const escargot::ESValue patternStr, const escargot::ESValue optionStr);
     static ESRegExpObject* create(escargot::ESString* source, const Option& option)
     {
         ESRegExpObject* ret = new ESRegExpObject(source, option);
@@ -2540,7 +2531,17 @@ public:
         return m_bytecodePattern;
     }
 
-    escargot::ESArrayObject* createRegExpMatchedArray(const escargot::ESString::RegexMatchResult& result, const escargot::ESString* input);
+    struct RegexMatchResult {
+        struct RegexMatchResultPiece {
+            unsigned m_start, m_end;
+        };
+        COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
+        int m_subPatternNum;
+        std::vector<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >, gc_allocator<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >> > m_matchResults;
+    };
+    bool match(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0);
+
+    escargot::ESArrayObject* createRegExpMatchedArray(const RegexMatchResult& result, const escargot::ESString* input);
 
 private:
     void setBytecodePattern(JSC::Yarr::BytecodePattern* pattern)
