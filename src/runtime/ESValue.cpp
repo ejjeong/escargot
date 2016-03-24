@@ -376,6 +376,53 @@ ESString* ESString::substring(int from, int to) const
     }
 }
 
+size_t ESString::createRegexMatchResult(escargot::ESRegExpObject* regexp, RegexMatchResult& result)
+{
+    size_t len = 0, previousLastIndex = 0;
+    bool testResult;
+    RegexMatchResult temp;
+    temp.m_matchResults.push_back(result.m_matchResults[0]);
+    result.m_matchResults.clear();
+    do {
+        const size_t maximumReasonableMatchSize = 1000000000;
+        if (len > maximumReasonableMatchSize) {
+            ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create("Maximum Reasonable match size exceeded.")));
+        }
+
+        if (regexp->lastIndex().toIndex() == previousLastIndex) {
+            regexp->set(strings->lastIndex.string(), ESValue(previousLastIndex++), true);
+        } else {
+            previousLastIndex = regexp->lastIndex().toIndex();
+        }
+
+        // FIXME: I am not sure when m_matchResults[i][0].m_start returned with max
+        size_t end = temp.m_matchResults[0][0].m_end;
+        size_t length = end - temp.m_matchResults[0][0].m_start;
+        if (!length) {
+            ++end;
+        }
+
+        result.m_matchResults.insert(result.m_matchResults.end(), temp.m_matchResults.begin(), temp.m_matchResults.end());
+        len++;
+        temp.m_matchResults.clear();
+        testResult = regexp->matchNonGlobally(this, temp, false, end);
+    } while (testResult);
+
+    return len;
+}
+
+ESArrayObject* ESString::createMatchedArray(escargot::ESRegExpObject* regexp, RegexMatchResult& result)
+{
+    escargot::ESArrayObject* ret = ESArrayObject::create();
+    size_t len = createRegexMatchResult(regexp, result);
+    ret->create(len);
+    for (size_t idx = 0; idx < len; idx++) {
+        ret->defineDataProperty(ESValue(idx), true, true, true, substring(result.m_matchResults[idx][0].m_start, result.m_matchResults[idx][0].m_end));
+    }
+
+    return ret;
+}
+
 unsigned PropertyDescriptor::defaultAttributes = Configurable | Enumerable | Writable;
 
 PropertyDescriptor::PropertyDescriptor(ESObject* obj)
@@ -2355,18 +2402,18 @@ ESErrorObject::ESErrorObject(escargot::ESString* message)
 ESErrorObject* ESErrorObject::create(escargot::ESString* message, Code code)
 {
     switch (code) {
-        case ESErrorObject::Code::TypeError:
-            return TypeError::create(message);
-        case ESErrorObject::Code::ReferenceError:
-            return ReferenceError::create(message);
-        case ESErrorObject::Code::SyntaxError:
-            return SyntaxError::create(message);
-        case ESErrorObject::Code::RangeError:
-            return RangeError::create(message);
-        case ESErrorObject::Code::URIError:
-            return URIError::create(message);
-        case ESErrorObject::Code::EvalError:
-            return EvalError::create(message);
+    case ESErrorObject::Code::TypeError:
+        return TypeError::create(message);
+    case ESErrorObject::Code::ReferenceError:
+        return ReferenceError::create(message);
+    case ESErrorObject::Code::SyntaxError:
+        return SyntaxError::create(message);
+    case ESErrorObject::Code::RangeError:
+        return RangeError::create(message);
+    case ESErrorObject::Code::URIError:
+        return URIError::create(message);
+    case ESErrorObject::Code::EvalError:
+        return EvalError::create(message);
     }
     RELEASE_ASSERT_NOT_REACHED();
 }

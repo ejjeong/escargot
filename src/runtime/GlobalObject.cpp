@@ -2774,14 +2774,12 @@ void GlobalObject::installString()
         }
 
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
-        ESRegExpObject::RegexMatchResult result;
-        regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
-
         if (isGlobal) {
             regexp->set(strings->lastIndex.string(), ESValue(0), true);
         }
 
-        bool testResult = regexp->match(thisObject, result, false, 0);
+        RegexMatchResult result;
+        bool testResult = regexp->matchNonGlobally(thisObject, result, false, 0);
         if (!testResult) {
             return ESValue(ESValue::ESNull);
         }
@@ -2789,37 +2787,7 @@ void GlobalObject::installString()
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
         // if global flag is on, match method returns an Array containing all matched substrings
         if (isGlobal) {
-            escargot::ESArrayObject* ret = ESArrayObject::create(0);
-            int idx = 0, previousLastIndex = 0;
-
-            while (testResult) {
-                const size_t maximumReasonableMatchSize = 1000000000;
-                if (ret->length() > maximumReasonableMatchSize) {
-                    instance->throwError(RangeError::create(ESString::create("Maximum Reasonable match size exceeded.")));
-                }
-
-                // checked already if lastIndex is writable above
-                if (regexp->lastIndex().asInt32() == previousLastIndex) {
-                    regexp->setLastIndex(ESValue(previousLastIndex++));
-                } else
-                    previousLastIndex = regexp->lastIndex().asInt32();
-
-
-                // FIXME: I am not sure when m_matchResults[i][0].m_start returned with max
-                size_t end = result.m_matchResults[0][0].m_end;
-                size_t length = end - result.m_matchResults[0][0].m_start;
-                ret->defineDataProperty(ESValue(idx++), true, true, true, thisObject->substring(result.m_matchResults[0][0].m_start, result.m_matchResults[0][0].m_end));
-                if (!length) {
-                    ++end;
-                }
-                result.m_matchResults.clear();
-                testResult = regexp->match(thisObject, result, false, end);
-            }
-
-            if (isGlobal) {
-                regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
-            }
-            return ret;
+            return thisObject->createMatchedArray(regexp, result);
         } else {
             return regexp->createRegExpMatchedArray(result, thisObject);
         }
@@ -2832,60 +2800,28 @@ void GlobalObject::installString()
             ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.replace(): Invalid bound this value")));
         escargot::ESString* string = thisValue.toString();
         ESValue searchValue = instance->currentExecutionContext()->readArgument(0);
-        ESRegExpObject::RegexMatchResult result;
+        RegexMatchResult result;
 
         if (searchValue.isESPointer() && searchValue.asESPointer()->isESRegExpObject()) {
             escargot::ESRegExpObject* regexp = searchValue.asESPointer()->asESRegExpObject();
             bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
-            ESRegExpObject::RegexMatchResult temp;
-            regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
 
             if (isGlobal) {
                 regexp->set(strings->lastIndex.string(), ESValue(0), true);
             }
-            bool testResult = regexp->match(string, temp, false, 0);
-
-            if (isGlobal) {
-                int previousLastIndex = 0;
-
-                while (testResult) {
-                    const size_t maximumReasonableMatchSize = 1000000000;
-                    if (result.m_matchResults.size()> maximumReasonableMatchSize) {
-                        instance->throwError(RangeError::create(ESString::create("Maximum Reasonable match size exceeded.")));
-                    }
-
-                    // checked already if lastIndex is writable above
-                    if (regexp->lastIndex().asInt32() == previousLastIndex) {
-                        regexp->setLastIndex(ESValue(previousLastIndex++));
-                    } else {
-                        previousLastIndex = regexp->lastIndex().asInt32();
-                    }
-
-                    // FIXME: I am not sure when m_matchResults[i][0].m_start returned with max
-                    size_t end = temp.m_matchResults[0][0].m_end;
-                    size_t length = end - temp.m_matchResults[0][0].m_start;
-                    if (!length) {
-                        ++end;
-                    }
-                    result.m_matchResults.insert(result.m_matchResults.end(), temp.m_matchResults.begin(), temp.m_matchResults.end());
-                    temp.m_matchResults.clear();
-                    testResult = regexp->match(string, temp, false, end);
-                }
-
+            bool testResult = regexp->matchNonGlobally(string, result, false, 0);
+            if (testResult) {
                 if (isGlobal) {
-                    regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
+                    string->createRegexMatchResult(regexp, result);
                 }
-            } else {
-                result.m_matchResults.insert(result.m_matchResults.end(), temp.m_matchResults.begin(), temp.m_matchResults.end());
-                temp.m_matchResults.clear();
             }
         } else {
             escargot::ESString* searchString = searchValue.toString();
             size_t idx = string->find(searchString);
             if (idx != (size_t)-1) {
-                std::vector<ESRegExpObject::RegexMatchResult::RegexMatchResultPiece,
-                    pointer_free_allocator<ESRegExpObject::RegexMatchResult::RegexMatchResultPiece> > piece;
-                ESRegExpObject::RegexMatchResult::RegexMatchResultPiece p;
+                std::vector<RegexMatchResult::RegexMatchResultPiece,
+                    pointer_free_allocator<RegexMatchResult::RegexMatchResultPiece> > piece;
+                RegexMatchResult::RegexMatchResultPiece p;
                 p.m_start = idx;
                 p.m_end = idx + searchString->length();
                 piece.push_back(std::move(p));
@@ -3010,7 +2946,7 @@ void GlobalObject::installString()
             regexp = ESRegExpObject::create(argument, ESValue(ESValue::ESUndefined));
         }
 
-        ESRegExpObject::RegexMatchResult result;
+        RegexMatchResult result;
         regexp->match(origStr, result);
         if (result.m_matchResults.size() != 0) {
             return ESValue(result.m_matchResults[0][0].m_start);
@@ -3025,12 +2961,11 @@ void GlobalObject::installString()
         if (thisValue.isUndefinedOrNull())
             ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.slice(): Invalid bound this value")));
         escargot::ESString* str = thisValue.toString();
-        int argCount = instance->currentExecutionContext()->argumentCount();
-        int len = str->length();
-        double doubleStart = instance->currentExecutionContext()->arguments()[0].toInteger();
-        ESValue& end = instance->currentExecutionContext()->arguments()[1];
-        double doubleEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
-        int from = (doubleStart < 0) ? std::max(len+doubleStart, 0.0) : std::min(doubleStart, (double)len);
+        size_t len = str->length();
+        double lenStart = instance->currentExecutionContext()->readArgument(0).toInteger();
+        ESValue end = instance->currentExecutionContext()->readArgument(1);
+        double doubleEnd = end.isUndefined()? len : end.toInteger();
+        int from = (lenStart < 0) ? std::max(len+lenStart, 0.0) : std::min(lenStart, (double)len);
         int to = (doubleEnd < 0) ? std::max(len+doubleEnd, 0.0) : std::min(doubleEnd, (double)len);
         int span = std::max(to-from, 0);
         escargot::ESString* ret;
@@ -3096,7 +3031,7 @@ void GlobalObject::installString()
         if (s == 0) {
             bool ret = true;
             if (P->isESRegExpObject()) {
-                escargot::ESRegExpObject::RegexMatchResult result;
+                escargot::RegexMatchResult result;
                 ret = P->asESRegExpObject()->matchNonGlobally(S, result, false, 0);
             } else {
                 ESValue z = splitMatchUsingStr(S, 0, P->asESString());
@@ -3117,7 +3052,7 @@ void GlobalObject::installString()
         if (P->isESRegExpObject()) {
             escargot::ESRegExpObject* R = P->asESRegExpObject();
             while (q != s) {
-                ESRegExpObject::RegexMatchResult result;
+                RegexMatchResult result;
                 bool ret = R->matchNonGlobally(S, result, false, (size_t)q);
                 if (!ret) {
                     break;
@@ -5537,7 +5472,7 @@ void GlobalObject::installRegExp()
             regexp->set(strings->lastIndex, ESValue(0), true);
             return ESValue(false);
         }
-        ESRegExpObject::RegexMatchResult result;
+        RegexMatchResult result;
         bool testResult = regexp->match(sourceStr, result, true);
         return (ESValue(testResult));
     }, strings->test, 1));
@@ -5555,7 +5490,7 @@ void GlobalObject::installRegExp()
         if (!isGlobal) {
             lastIndex = 0;
         }
-        ESRegExpObject::RegexMatchResult result;
+        RegexMatchResult result;
 
         if (lastIndex < 0 || lastIndex > sourceStr->length()) {
             regexp->set(strings->lastIndex, ESValue(0), true);

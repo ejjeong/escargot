@@ -650,8 +650,16 @@ inline ASCIIString utf16StringToASCIIString(const char16_t* buf, const size_t& l
     return ASCIIString(std::move(str));
 }
 
-ASCIIString dtoa(double number);
+struct RegexMatchResult {
+    struct RegexMatchResultPiece {
+        unsigned m_start, m_end;
+    };
+    COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
+    int m_subPatternNum;
+    std::vector<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >, gc_allocator<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >> > m_matchResults;
+};
 
+ASCIIString dtoa(double number);
 class ESString : public ESPointer {
     friend class ESScriptParser;
     friend class ESRopeString;
@@ -826,6 +834,9 @@ public:
     ALWAYS_INLINE friend bool operator > (const ESString& a, const ESString& b);
     ALWAYS_INLINE friend bool operator <= (const ESString& a, const ESString& b);
     ALWAYS_INLINE friend bool operator >= (const ESString& a, const ESString& b);
+
+    size_t createRegexMatchResult(escargot::ESRegExpObject* regexp, RegexMatchResult& result);
+    escargot::ESArrayObject* createMatchedArray(escargot::ESRegExpObject* regexp, RegexMatchResult& result);
 
 #ifndef NDEBUG
     void show() const
@@ -2526,14 +2537,6 @@ public:
         return m_bytecodePattern;
     }
 
-    struct RegexMatchResult {
-        struct RegexMatchResultPiece {
-            unsigned m_start, m_end;
-        };
-        COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
-        int m_subPatternNum;
-        std::vector<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >, gc_allocator<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >> > m_matchResults;
-    };
     bool match(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0);
     bool matchNonGlobally(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0)
     {
