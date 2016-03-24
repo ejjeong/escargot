@@ -36,14 +36,14 @@
 try {
   Object.defineProperties({}, null);
 } catch(e) {
-  assertTrue(/null to object/.test(e));
+  assertTrue(/null into object/.test(e));
 }
 
 // Try defining with null as object
 try {
   Object.defineProperties(null, {});
 } catch(e) {
-  assertTrue(/called on non-object/.test(e));
+  assertTrue(/first argument is not object/.test(e));
 }
 
 

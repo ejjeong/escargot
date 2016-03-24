@@ -200,7 +200,7 @@ Done running mjsunit/numops-fuzz-part3: FAIL
 Done running mjsunit/numops-fuzz-part4: FAIL
 Done running mjsunit/obj-construct: pass
 Done running mjsunit/object-create: pass
-Done running mjsunit/object-define-properties: FAIL
+Done running mjsunit/object-define-properties: pass
 Done running mjsunit/object-freeze-global: pass
 Done running mjsunit/object-get-own-property-names: FAIL
 Done running mjsunit/object-literal-conversions: pass
@@ -1157,9 +1157,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1
 === mjsunit/numops-fuzz-part4.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
-=== mjsunit/object-define-properties.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/object-get-own-property-names.js ===
 --- stdout ---
 Uncaught TypeError: Object.getOwnPropertyNames: first argument is not object
@@ -1801,6 +1798,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 186 tests failed
+=== 185 tests failed
 === 7 tests CRASHED
 ===

@@ -1047,18 +1047,22 @@ inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
     if (!object.isObject())
         ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Object.objectDefineProperties: first argument is not object"))));
     ESObject* props = properties.toObject();
+    std::vector<std::pair<ESValue, PropertyDescriptor> > descriptors;
     props->enumeration([&](ESValue key) {
         bool hasKey = props->hasOwnProperty(key);
         if (hasKey) {
             ESValue propertyDesc = props->get(key);
             if (!propertyDesc.isObject())
                 ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Object.objectDefineProperties: descriptor is not object"))));
-            if (object.toObject()->isESArrayObject())
-                object.asESPointer()->asESArrayObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
-            else
-                object.asESPointer()->asESObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
+            descriptors.push_back(std::make_pair(key, PropertyDescriptor(propertyDesc.asESPointer()->asESObject())));
         }
     });
+    for (auto it : descriptors) {
+        if (object.toObject()->isESArrayObject())
+            object.asESPointer()->asESArrayObject()->defineOwnProperty(it.first, it.second, true);
+        else
+            object.asESPointer()->asESObject()->defineOwnProperty(it.first, it.second, true);
+    }
     return object;
 }
 
