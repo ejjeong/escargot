@@ -391,17 +391,17 @@ PropertyDescriptor::PropertyDescriptor(ESObject* obj)
     if (obj->hasProperty(strings->configurable.string())) {
         setConfigurable(obj->get(strings->configurable.string()).toBoolean());
     }
-    if (obj->hasProperty(strings->writable.string())) {
-        setWritable(obj->get(strings->writable.string()).toBoolean());
-    }
     if (obj->hasProperty(strings->value.string())) {
         setValue(obj->get(strings->value.string()));
     }
-    if (obj->hasProperty(strings->set.string())) {
-        setSetter(obj->get(strings->set.string()));
+    if (obj->hasProperty(strings->writable.string())) {
+        setWritable(obj->get(strings->writable.string()).toBoolean());
     }
     if (obj->hasProperty(strings->get.string())) {
         setGetter(obj->get(strings->get.string()));
+    }
+    if (obj->hasProperty(strings->set.string())) {
+        setSetter(obj->get(strings->set.string()));
     }
 }
 
@@ -629,19 +629,19 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         if (descHasGetter) {
             ESValue get = desc.getter(); // 8.10.5 ToPropertyDescriptor 7.a
             if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b")))); // 8.10.5 ToPropertyDescriptor 7.b
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Getter must be a function")))); // 8.10.5 ToPropertyDescriptor 7.b
             else if (!get.isUndefined())
                 descGet = get.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 7.c
         }
         if (descHasSetter) {
             ESValue set = desc.setter(); // 8.10.5 ToPropertyDescriptor 8.a
             if (!(set.isESPointer() && set.asESPointer()->isESFunctionObject()) && !set.isUndefined())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b")))); // 8.10.5 ToPropertyDescriptor 8.b
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Setter must be a function")))); // 8.10.5 ToPropertyDescriptor 8.b
             else if (!set.isUndefined())
                 descSet = set.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 8.c
         }
         if (descHasValue || descHasWritable)
-            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together"))));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Invalid property: property cannot have [getter|setter] and [value|writable] together"))));
     }
     // ToPropertyDescriptor : (end)
 

@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   94 tests will be skipped
+ *   95 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2089 tests are expected to pass
+ * 2088 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2229 tests
+Running 2228 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -199,11 +199,10 @@ Done running mjsunit/numops-fuzz-part2: FAIL
 Done running mjsunit/numops-fuzz-part3: FAIL
 Done running mjsunit/numops-fuzz-part4: FAIL
 Done running mjsunit/obj-construct: pass
-Done running mjsunit/object-create: FAIL
+Done running mjsunit/object-create: pass
 Done running mjsunit/object-define-properties: FAIL
 Done running mjsunit/object-freeze-global: pass
 Done running mjsunit/object-get-own-property-names: FAIL
-Done running mjsunit/object-is: FAIL
 Done running mjsunit/object-literal-conversions: pass
 Done running mjsunit/object-literal-multiple-fields: pass
 Done running mjsunit/object-literal-multiple-proto-fields: pass
@@ -1158,18 +1157,12 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1
 === mjsunit/numops-fuzz-part4.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
-=== mjsunit/object-create.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/object-define-properties.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/object-get-own-property-names.js ===
 --- stdout ---
 Uncaught TypeError: Object.getOwnPropertyNames: first argument is not object
-=== mjsunit/object-is.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/object-literal.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
@@ -1808,6 +1801,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 188 tests failed
+=== 186 tests failed
 === 7 tests CRASHED
 ===

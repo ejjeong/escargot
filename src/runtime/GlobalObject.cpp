@@ -1176,7 +1176,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("create"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue proto = instance->currentExecutionContext()->readArgument(0);
         if (!proto.isObject() && !proto.isNull()) {
-            instance->throwError(ESValue(TypeError::create(ESString::create("Object.create: first parameter is should be object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Object.create: first parameter is should be Object or null"))));
         }
         ESObject* obj = ESObject::create();
         if (proto.isNull())
