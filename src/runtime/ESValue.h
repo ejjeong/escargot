@@ -2515,6 +2515,33 @@ public:
         MultiLine = 1 << 2,
         Sticky = 1 << 3,
     };
+
+    struct RegExpCacheKey {
+        RegExpCacheKey(const escargot::ESString* body, Option option)
+            : m_body(body)
+            , m_multiline(option & ESRegExpObject::Option::MultiLine)
+            , m_ignoreCase(option & ESRegExpObject::Option::IgnoreCase) { }
+
+        bool operator == (const RegExpCacheKey& otherKey) const
+        {
+            return (m_body == otherKey.m_body) && (m_multiline == otherKey.m_multiline) && (m_ignoreCase == otherKey.m_ignoreCase);
+        }
+        const escargot::ESString* m_body;
+        const bool m_multiline;
+        const bool m_ignoreCase;
+    };
+
+    struct RegExpCacheEntry {
+        RegExpCacheEntry(const char* yarrError = nullptr, JSC::Yarr::YarrPattern* yarrPattern = nullptr, JSC::Yarr::BytecodePattern* bytecodePattern = nullptr)
+            : m_yarrError(yarrError)
+            , m_yarrPattern(yarrPattern)
+            , m_bytecodePattern(bytecodePattern) { }
+
+        const char* m_yarrError;
+        JSC::Yarr::YarrPattern* m_yarrPattern;
+        JSC::Yarr::BytecodePattern* m_bytecodePattern;
+    };
+
     static ESRegExpObject* create(const escargot::ESValue patternStr, const escargot::ESValue optionStr);
     static ESRegExpObject* create(escargot::ESString* source, const Option& option)
     {
@@ -2567,6 +2594,28 @@ private:
     ESValue m_lastIndex;
     const escargot::ESString* m_lastExecutedString;
 };
+
+}
+
+namespace std {
+
+template<> struct hash<escargot::ESRegExpObject::RegExpCacheKey> {
+    size_t operator()(escargot::ESRegExpObject::RegExpCacheKey const &x) const
+    {
+        return x.m_body->hashValue();
+    }
+};
+
+template<> struct equal_to<escargot::ESRegExpObject::RegExpCacheKey> {
+    bool operator()(escargot::ESRegExpObject::RegExpCacheKey const &a, escargot::ESRegExpObject::RegExpCacheKey const &b) const
+    {
+        return a == b;
+    }
+};
+
+}
+
+namespace escargot {
 
 enum TypedArrayType {
     Int8Array,

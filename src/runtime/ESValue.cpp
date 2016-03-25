@@ -1187,20 +1187,30 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 
 bool ESRegExpObject::setSource(escargot::ESString* src)
 {
+    const char* yarrError = nullptr;
     m_bytecodePattern = NULL;
     m_source = src;
-    const char* yarrError = nullptr;
-    m_yarrPattern = new JSC::Yarr::YarrPattern(*src, m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
+
+    auto cache = ESVMInstance::currentInstance()->regexpCache();
+    auto it = cache->find(RegExpCacheKey(m_source, m_option));
+    if (it != cache->end()) {
+        yarrError = it->second.m_yarrError;
+        m_yarrPattern = it->second.m_yarrPattern;
+        m_bytecodePattern = it->second.m_bytecodePattern;
+    } else {
+        m_yarrPattern = new JSC::Yarr::YarrPattern(*src, m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
+        cache->insert(std::make_pair(RegExpCacheKey(m_source, m_option), RegExpCacheEntry(yarrError, m_yarrPattern)));
+    }
     if (yarrError)
         return false;
     return true;
 }
 void ESRegExpObject::setOption(const Option& option)
 {
-    ASSERT(!yarrPattern());
     if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine))
         || ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
         ) {
+        ASSERT(!m_yarrPattern);
         m_bytecodePattern = NULL;
     }
     m_option = option;
@@ -1209,27 +1219,38 @@ void ESRegExpObject::setOption(const Option& option)
 bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matchResult, bool testOnly, size_t startIndex)
 {
     m_lastExecutedString = str;
-    JSC::Yarr::BytecodePattern* byteCode = bytecodePattern();
 
-    bool isGlobal = option() & ESRegExpObject::Option::Global;
-    if (!byteCode) {
-        const char* yarrError = nullptr;
-        JSC::Yarr::YarrPattern* cachedYarrPattern;
-        if (this->yarrPattern())
-            cachedYarrPattern = this->yarrPattern();
-        else
-            cachedYarrPattern = new JSC::Yarr::YarrPattern(*source(), option() & ESRegExpObject::Option::IgnoreCase, option() & ESRegExpObject::Option::MultiLine, &yarrError);
-        if (yarrError) {
-            matchResult.m_subPatternNum = 0;
-            return false;
+    if (!m_bytecodePattern) {
+        auto cache = ESVMInstance::currentInstance()->regexpCache();
+        auto it = cache->find(RegExpCacheKey(m_source, m_option));
+        if (!m_yarrPattern) {
+            const char* yarrError = nullptr;
+            if (it != cache->end()) {
+                m_yarrPattern = it->second.m_yarrPattern;
+                yarrError = it->second.m_yarrError;
+            } else {
+                m_yarrPattern = new JSC::Yarr::YarrPattern(*source(), option() & ESRegExpObject::Option::IgnoreCase, option() & ESRegExpObject::Option::MultiLine, &yarrError);
+                cache->insert(std::make_pair(RegExpCacheKey(m_source, m_option), RegExpCacheEntry(yarrError, m_yarrPattern)));
+                it = cache->find(RegExpCacheKey(m_source, m_option));
+            }
+
+            if (yarrError) {
+                matchResult.m_subPatternNum = 0;
+                return false;
+            }
         }
-        WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
-        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompile(*cachedYarrPattern, bumpAlloc);
-        byteCode = ownedBytecode.leakPtr();
-        setBytecodePattern(byteCode);
+        ASSERT(it != cache->end());
+        if (it->second.m_bytecodePattern) {
+            m_bytecodePattern = it->second.m_bytecodePattern;
+        } else {
+            WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
+            JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompile(*m_yarrPattern, bumpAlloc);
+            m_bytecodePattern = ownedBytecode.leakPtr();
+            it->second.m_bytecodePattern = m_bytecodePattern;
+        }
     }
 
-    unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
+    unsigned subPatternNum = m_bytecodePattern->m_body->m_numSubpatterns;
     matchResult.m_subPatternNum = (int) subPatternNum;
     size_t length = str->length();
     size_t start = startIndex;
@@ -1239,6 +1260,7 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
         chars = str->asciiData();
     else
         chars = str->utf16Data();
+    bool isGlobal = option() & ESRegExpObject::Option::Global;
     unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
     outputBuf[1] = start;
     do {
@@ -1247,9 +1269,9 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
         if (start > length)
             break;
         if (str->isASCIIString())
-            result = JSC::Yarr::interpret(byteCode, (const char *)chars, length, start, outputBuf);
+            result = JSC::Yarr::interpret(m_bytecodePattern, (const char *)chars, length, start, outputBuf);
         else
-            result = JSC::Yarr::interpret(byteCode, (const char16_t *)chars, length, start, outputBuf);
+            result = JSC::Yarr::interpret(m_bytecodePattern, (const char16_t *)chars, length, start, outputBuf);
         if (result != JSC::Yarr::offsetNoMatch) {
             if (UNLIKELY(testOnly)) {
                 return true;

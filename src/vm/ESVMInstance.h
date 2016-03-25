@@ -138,6 +138,13 @@ public:
         return &m_dtoaCache;
     }
 
+    ALWAYS_INLINE std::unordered_map<ESRegExpObject::RegExpCacheKey, ESRegExpObject::RegExpCacheEntry,
+        std::hash<ESRegExpObject::RegExpCacheKey>, std::equal_to<ESRegExpObject::RegExpCacheKey>,
+        gc_allocator<std::pair<ESRegExpObject::RegExpCacheKey, ESRegExpObject::RegExpCacheEntry> > >* regexpCache()
+    {
+        return &m_regexpCache;
+    }
+
     // Function for debug
     static void printValue(ESValue val, bool newLine = true);
     ALWAYS_INLINE unsigned long tickCount()
@@ -258,6 +265,10 @@ protected:
 #endif
 
     std::unordered_map<double, ESString*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > > m_dtoaCache;
+
+    std::unordered_map<ESRegExpObject::RegExpCacheKey, ESRegExpObject::RegExpCacheEntry,
+        std::hash<ESRegExpObject::RegExpCacheKey>, std::equal_to<ESRegExpObject::RegExpCacheKey>,
+        gc_allocator<std::pair<ESRegExpObject::RegExpCacheKey, ESRegExpObject::RegExpCacheEntry> > > m_regexpCache;
 
 public:
     // FIXME This is to make the return type of getByIdOperation() as ESValue* (not ESValue) for performance.

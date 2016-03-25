@@ -1149,7 +1149,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1
 Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
 === mjsunit/object-literal.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <"1"> found <"">, stack: undefined}
 === mjsunit/object-toprimitive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
