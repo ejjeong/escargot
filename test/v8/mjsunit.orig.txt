@@ -735,7 +735,7 @@ Done running mjsunit/regress/regress-3756: pass
 Done running mjsunit/regress/regress-386: pass
 Done running mjsunit/regress/regress-392: pass
 Done running mjsunit/regress/regress-394: pass
-Done running mjsunit/regress/regress-396: FAIL
+Done running mjsunit/regress/regress-396: pass
 Done running mjsunit/regress/regress-399: pass
 Done running mjsunit/regress/regress-404981: pass
 Done running mjsunit/regress/regress-406: pass
@@ -835,7 +835,7 @@ Done running mjsunit/regress/regress-806: pass
 Done running mjsunit/regress/regress-815: pass
 Done running mjsunit/regress/regress-842: pass
 Done running mjsunit/regress/regress-851: pass
-Done running mjsunit/regress/regress-857: FAIL
+Done running mjsunit/regress/regress-857: pass
 Done running mjsunit/regress/regress-86: pass
 Done running mjsunit/regress/regress-87: pass
 Done running mjsunit/regress/regress-874: pass
@@ -1033,7 +1033,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <2> found <1>, stack:
 Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/date-parse.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (parse: Sat, 01-Jan-2000 08:00:00 UT): expected <946713600000> found <NaN>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure (parse-local-time: Jan 01 2000 08:00:00 is NaN.): expected <true> found <false>, stack: undefined}
 === mjsunit/element-accessor.js ===
 --- stdout ---
 Uncaught TypeError: cannot redefine property
@@ -1698,9 +1698,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-355485.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
-=== mjsunit/regress/regress-396.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"1995"> found <"1970">, stack: undefined}
 === mjsunit/regress/regress-425551.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <1.499> found <undefined>, stack: undefined}
@@ -1732,9 +1729,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"un
 Uncaught MjsUnitAssertionError {message: Failure: expected <56> found <NaN>, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-857.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <1283326536000> found <NaN>, stack: undefined}
 === mjsunit/regress/regress-91.js ===
 --- stderr ---
 === mjsunit/regress/regress-937896.js ===
@@ -1742,7 +1736,7 @@ exit code: -11
 --- CRASHED ---
 === mjsunit/regress/regress-944.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <1290722550521> found <1290722550000>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <1290722550100.5> found <1290722550100>, stack: undefined}
 === mjsunit/regress/regress-95920.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
@@ -1782,6 +1776,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 182 tests failed
+=== 180 tests failed
 === 7 tests CRASHED
 ===
