@@ -49,7 +49,7 @@ try
 catch(ex)
 {
   // handle changed 1.9 branch behavior. see bug 422348
-  expect = 'InternalError: allocation size overflow';
+  expect = 'RangeError: Out of memory';
   actual = ex + '';
 }
  

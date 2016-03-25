@@ -1,3 +1,0 @@
-----REGRESSIONS----
-js1_5/Regress/regress-303213.js
-----TIMEOUTS----

@@ -41,7 +41,7 @@ UTF16String codePointTo4digitString(int codepoint)
     return ret;
 }
 
-ASCIIString char2hex(char dec )
+ASCIIString char2hex(char dec)
 {
     char dig1 = (dec&0xF0)>>4;
     char dig2 = (dec&0x0F);
@@ -57,6 +57,21 @@ ASCIIString char2hex(char dec )
     ASCIIString r;
     r.append(&dig1, 1);
     r.append(&dig2, 1);
+    return r;
+}
+
+ASCIIString char2hex4digit(char16_t dec)
+{
+    char dig[4];
+    ASCIIString r;
+    for (int i = 0; i < 4; i++) {
+        dig[i] = (dec&(0xF000>>i*4))>>(12-i*4);
+        if (dig[i] <= 9)
+            dig[i] +=48; // 0, 48inascii
+        if (10 <= dig[i] && dig[i] <= 15)
+            dig[i] += 65 - 10; // a, 97inascii
+        r.append(&dig[i], 1);
+    }
     return r;
 }
 
@@ -839,7 +854,33 @@ void GlobalObject::initGlobalObject()
 
     // $B.2.1.1 escape(string)
     defineDataProperty(ESString::createAtomicString("escape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        int argLen = instance->currentExecutionContext()->argumentCount();
+        if (argLen == 0)
+            return ESValue();
+
+        escargot::ESString* str = instance->currentExecutionContext()->arguments()->toString();
+        NullableUTF8String componentString = str->toNullableUTF8String();
+        size_t length = str->length();
+
+        ASCIIString R = "";
+        for (size_t i = 0; i < length; i++) {
+            char16_t t = str->charAt(i);
+            if ((48 <= t && t <= 57) // DecimalDigit
+                || (65 <= t && t <= 90) // uriAlpha - upper case
+                || (97 <= t && t <= 122) // uriAlpha - lower case
+                || t == '@' || t == '*' || t == '_' || t == '+' || t == '-' || t == '.' || t == '/') {
+                R.push_back(t);
+            } else if (t < 256) {
+                // %uxy
+                R.append("%u");
+                R.append(char2hex(t));
+            } else {
+                // %uwxyz
+                R.append("%u");
+                R.append(char2hex4digit(t));
+            }
+        }
+        return escargot::ESString::create(std::move(R));
     }, ESString::createAtomicString("escape"), 1));
 
     // $B.2.1.2 unescape(string)
