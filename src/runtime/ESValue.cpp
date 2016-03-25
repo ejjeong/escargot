@@ -1176,28 +1176,13 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     m_lastIndex = ESValue(0);
     m_lastExecutedString = NULL;
 
-    defineAccessorProperty(strings->source, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return self->asESRegExpObject()->source();
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->ignoreCase, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->global, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->multiline, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->lastIndex, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return self->asESRegExpObject()->lastIndex();
-    }, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& index)
-    {
-        self->asESRegExpObject()->setLastIndex(index);
-    }, true, false, false);
+    ESVMInstance* instance = ESVMInstance::currentInstance();
+    m_hiddenClass = instance->initialHiddenClassForRegExpObject();
+    m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(0));
+    m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(1));
+    m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(2));
+    m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(3));
+    m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(4));
 }
 
 bool ESRegExpObject::setSource(escargot::ESString* src)

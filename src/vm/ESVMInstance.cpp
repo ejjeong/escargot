@@ -106,6 +106,12 @@ ESVMInstance::ESVMInstance()
 
     m_initialHiddenClassForArrayObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, false, true, false, false);
 
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForObject.defineProperty(m_strings.source, false, false, false, false);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.ignoreCase, false, false, false, false);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.global, false, false, false, false);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.multiline, false, false, false, false);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.lastIndex, false, true, false, false);
+
     m_functionPrototypeAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return self->asESFunctionObject()->protoType();
     });
@@ -127,6 +133,34 @@ ESVMInstance::ESVMInstance()
 
     m_stringObjectLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return ESValue(self->asESStringObject()->stringData()->length());
+    });
+
+    // regexp.source
+    m_regexpAccessorData[0].setGetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
+        return self->asESRegExpObject()->source();
+    });
+
+    // regexp.ignoreCase
+    m_regexpAccessorData[1].setGetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
+    });
+
+    // regexp.global
+    m_regexpAccessorData[2].setGetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
+    });
+
+    // regexp.multiline
+    m_regexpAccessorData[3].setGetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
+    });
+
+    // regexp.lastIndex
+    m_regexpAccessorData[4].setGetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
+        return self->asESRegExpObject()->lastIndex();
+    });
+    m_regexpAccessorData[4].setSetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& index) {
+        self->asESRegExpObject()->setLastIndex(index);
     });
 
     m_globalObject = new GlobalObject();

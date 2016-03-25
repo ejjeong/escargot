@@ -86,6 +86,7 @@ public:
     ALWAYS_INLINE ESPropertyAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
     ALWAYS_INLINE ESPropertyAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
     ALWAYS_INLINE ESPropertyAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
+    ALWAYS_INLINE ESPropertyAccessorData* regexpAccessorData(size_t index) { ASSERT(index < 5); return &m_regexpAccessorData[index]; }
 
     ALWAYS_INLINE ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
     ALWAYS_INLINE void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
@@ -120,6 +121,11 @@ public:
     ALWAYS_INLINE ESHiddenClass* initialHiddenClassForArrayObject()
     {
         return m_initialHiddenClassForArrayObject;
+    }
+
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForRegExpObject()
+    {
+        return m_initialHiddenClassForRegExpObject;
     }
 
     ALWAYS_INLINE ScriptParser* scriptParser()
@@ -223,11 +229,13 @@ protected:
     ESHiddenClass* m_initialHiddenClassForFunctionObjectWithoutPrototype;
     ESHiddenClass* m_initialHiddenClassForPrototypeObject;
     ESHiddenClass* m_initialHiddenClassForArrayObject;
+    ESHiddenClass* m_initialHiddenClassForRegExpObject;
 
     ESPropertyAccessorData m_object__proto__AccessorData;
     ESPropertyAccessorData m_functionPrototypeAccessorData;
     ESPropertyAccessorData m_arrayLengthAccessorData;
     ESPropertyAccessorData m_stringObjectLengthAccessorData;
+    ESPropertyAccessorData m_regexpAccessorData[5];
 
     ESFunctionObject* m_globalFunctionPrototype;
 
