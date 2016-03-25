@@ -1906,9 +1906,579 @@ void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, i
     strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
+
+static const struct KnownZone {
+#if !OS(WINDOWS)
+    const
+#endif
+        char tzName[4];
+    int tzOffset;
+} known_zones[] = {
+    { "UT", 0 },
+    { "GMT", 0 },
+    { "EST", -300 },
+    { "EDT", -240 },
+    { "CST", -360 },
+    { "CDT", -300 },
+    { "MST", -420 },
+    { "MDT", -360 },
+    { "PST", -480 },
+    { "PDT", -420 }
+};
+// returns 0-11 (Jan-Dec); -1 on failure
+static int findMonth(const char* monthStr)
+{
+    ASSERT(monthStr);
+    char needle[4];
+    for (int i = 0; i < 3; ++i) {
+        if (!*monthStr)
+            return -1;
+//        needle[i] = static_cast<char>(toASCIILower(*monthStr++));
+        needle[i] = (*monthStr++) | (uint8_t)0x20;
+    }
+    needle[3] = '\0';
+    const char* haystack = "janfebmaraprmayjunjulaugsepoctnovdec";
+    const char* str = strstr(haystack, needle);
+    if (str) {
+        int position = static_cast<int>(str - haystack);
+        if (position % 3 == 0)
+            return position / 3;
+    }
+    return -1;
+}
+inline bool isASCIISpace(char c)
+{
+    return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9));
+}
+inline bool isASCIIDigit(char c)
+{
+    return c >= '0' && c <= '9';
+}
+inline static void skipSpacesAndComments(const char*& s)
+{
+    int nesting = 0;
+    char ch;
+    while ((ch = *s)) {
+        if (!isASCIISpace(ch)) {
+            if (ch == '(')
+                nesting++;
+            else if (ch == ')' && nesting > 0)
+                nesting--;
+            else if (nesting == 0)
+                break;
+        }
+        s++;
+    }
+}
+static bool parseInt(const char* string, char** stopPosition, int base, int* result)
+{
+    long longResult = strtol(string, stopPosition, base);
+    // Avoid the use of errno as it is not available on Windows CE
+    if (string == *stopPosition || longResult <= std::numeric_limits<int>::min() || longResult >= std::numeric_limits<int>::max())
+        return false;
+    *result = static_cast<int>(longResult);
+    return true;
+}
+
+static bool parseLong(const char* string, char** stopPosition, int base, long* result)
+{
+    *result = strtol(string, stopPosition, base);
+    // Avoid the use of errno as it is not available on Windows CE
+    if (string == *stopPosition || *result == std::numeric_limits<long>::min() || *result == std::numeric_limits<long>::max())
+        return false;
+    return true;
+}
+
+double ESDateObject::parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset)
+{
+    haveTZ = false;
+    offset = 0;
+
+
+    long month = -1;
+    const char* dateString = istr->asciiData();
+    const char* wordStart = dateString;
+
+    skipSpacesAndComments(dateString);
+
+    while (*dateString && !isASCIIDigit(*dateString)) {
+        if (isASCIISpace(*dateString) || *dateString == '(') {
+            if (dateString - wordStart >= 3)
+                month = findMonth(wordStart);
+            skipSpacesAndComments(dateString);
+            wordStart = dateString;
+        } else
+            dateString++;
+    }
+
+    if (month == -1 && wordStart != dateString)
+        month = findMonth(wordStart);
+
+    skipSpacesAndComments(dateString);
+
+    if (!*dateString)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    char* newPosStr;
+    long int day;
+    if (!parseLong(dateString, &newPosStr, 10, &day))
+        return std::numeric_limits<double>::quiet_NaN();
+    dateString = newPosStr;
+
+    if (!*dateString)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    if (day < 0)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    int year = 0;
+    if (day > 31) {
+        // ### where is the boundary and what happens below?
+        if (*dateString != '/')
+            return std::numeric_limits<double>::quiet_NaN();
+        // looks like a YYYY/MM/DD date
+        if (!*++dateString)
+            return std::numeric_limits<double>::quiet_NaN();
+        if (day <= std::numeric_limits<int>::min() || day >= std::numeric_limits<int>::max())
+            return std::numeric_limits<double>::quiet_NaN();
+        year = static_cast<int>(day);
+        if (!parseLong(dateString, &newPosStr, 10, &month))
+            return std::numeric_limits<double>::quiet_NaN();
+        month -= 1;
+        dateString = newPosStr;
+        if (*dateString++ != '/' || !*dateString)
+            return std::numeric_limits<double>::quiet_NaN();
+        if (!parseLong(dateString, &newPosStr, 10, &day))
+            return std::numeric_limits<double>::quiet_NaN();
+        dateString = newPosStr;
+    } else if (*dateString == '/' && month == -1) {
+        dateString++;
+        // This looks like a MM/DD/YYYY date, not an RFC date.
+        month = day - 1; // 0-based
+        if (!parseLong(dateString, &newPosStr, 10, &day))
+            return std::numeric_limits<double>::quiet_NaN();
+        if (day < 1 || day > 31)
+            return std::numeric_limits<double>::quiet_NaN();
+        dateString = newPosStr;
+        if (*dateString == '/')
+            dateString++;
+        if (!*dateString)
+            return std::numeric_limits<double>::quiet_NaN();
+    } else {
+        if (*dateString == '-')
+            dateString++;
+
+        skipSpacesAndComments(dateString);
+
+        if (*dateString == ',')
+            dateString++;
+
+        if (month == -1) { // not found yet
+            month = findMonth(dateString);
+            if (month == -1)
+                return std::numeric_limits<double>::quiet_NaN();
+
+            while (*dateString && *dateString != '-' && *dateString != ',' && !isASCIISpace(*dateString))
+                dateString++;
+
+            if (!*dateString)
+                return std::numeric_limits<double>::quiet_NaN();
+
+            // '-99 23:12:40 GMT'
+            if (*dateString != '-' && *dateString != '/' && *dateString != ',' && !isASCIISpace(*dateString))
+                return std::numeric_limits<double>::quiet_NaN();
+            dateString++;
+        }
+    }
+
+    if (month < 0 || month > 11)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    // '99 23:12:40 GMT'
+    if (year <= 0 && *dateString) {
+        if (!parseInt(dateString, &newPosStr, 10, &year))
+            return std::numeric_limits<double>::quiet_NaN();
+    }
+
+    // Don't fail if the time is missing.
+    long hour = 0;
+    long minute = 0;
+    long second = 0;
+    if (!*newPosStr)
+        dateString = newPosStr;
+    else {
+        // ' 23:12:40 GMT'
+        if (!(isASCIISpace(*newPosStr) || *newPosStr == ',')) {
+            if (*newPosStr != ':')
+                return std::numeric_limits<double>::quiet_NaN();
+            // There was no year; the number was the hour.
+            year = -1;
+        } else {
+            // in the normal case (we parsed the year), advance to the next number
+            dateString = ++newPosStr;
+            skipSpacesAndComments(dateString);
+        }
+
+        parseLong(dateString, &newPosStr, 10, &hour);
+        // Do not check for errno here since we want to continue
+        // even if errno was set becasue we are still looking
+        // for the timezone!
+
+        // Read a number? If not, this might be a timezone name.
+        if (newPosStr != dateString) {
+            dateString = newPosStr;
+
+            if (hour < 0 || hour > 23)
+                return std::numeric_limits<double>::quiet_NaN();
+
+            if (!*dateString)
+                return std::numeric_limits<double>::quiet_NaN();
+
+            // ':12:40 GMT'
+            if (*dateString++ != ':')
+                return std::numeric_limits<double>::quiet_NaN();
+
+            if (!parseLong(dateString, &newPosStr, 10, &minute))
+                return std::numeric_limits<double>::quiet_NaN();
+            dateString = newPosStr;
+
+            if (minute < 0 || minute > 59)
+                return std::numeric_limits<double>::quiet_NaN();
+
+            // ':40 GMT'
+            if (*dateString && *dateString != ':' && !isASCIISpace(*dateString))
+                return std::numeric_limits<double>::quiet_NaN();
+
+            // seconds are optional in rfc822 + rfc2822
+            if (*dateString ==':') {
+                dateString++;
+
+                if (!parseLong(dateString, &newPosStr, 10, &second))
+                    return std::numeric_limits<double>::quiet_NaN();
+                dateString = newPosStr;
+
+                if (second < 0 || second > 59)
+                    return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            skipSpacesAndComments(dateString);
+
+            if (strncasecmp(dateString, "AM", 2) == 0) {
+                if (hour > 12)
+                    return std::numeric_limits<double>::quiet_NaN();
+                if (hour == 12)
+                    hour = 0;
+                dateString += 2;
+                skipSpacesAndComments(dateString);
+            } else if (strncasecmp(dateString, "PM", 2) == 0) {
+                if (hour > 12)
+                    return std::numeric_limits<double>::quiet_NaN();
+                if (hour != 12)
+                    hour += 12;
+                dateString += 2;
+                skipSpacesAndComments(dateString);
+            }
+        }
+    }
+
+    // The year may be after the time but before the time zone.
+    if (isASCIIDigit(*dateString) && year == -1) {
+        if (!parseInt(dateString, &newPosStr, 10, &year))
+            return std::numeric_limits<double>::quiet_NaN();
+        dateString = newPosStr;
+        skipSpacesAndComments(dateString);
+    }
+
+    // Don't fail if the time zone is missing.
+    // Some websites omit the time zone (4275206).
+    if (*dateString) {
+        if (strncasecmp(dateString, "GMT", 3) == 0 || strncasecmp(dateString, "UTC", 3) == 0) {
+            dateString += 3;
+            haveTZ = true;
+        }
+        if (*dateString == '+' || *dateString == '-') {
+            int o;
+            if (!parseInt(dateString, &newPosStr, 10, &o))
+                return std::numeric_limits<double>::quiet_NaN();
+            dateString = newPosStr;
+
+            if (o < -9959 || o > 9959)
+                return std::numeric_limits<double>::quiet_NaN();
+
+            int sgn = (o < 0) ? -1 : 1;
+            o = abs(o);
+            if (*dateString != ':') {
+                if (o >= 24)
+                    offset = ((o / 100) * 60 + (o % 100)) * sgn;
+                else
+                    offset = o * 60 * sgn;
+            } else { // GMT+05:00
+                ++dateString; // skip the ':'
+                int o2;
+                if (!parseInt(dateString, &newPosStr, 10, &o2))
+                    return std::numeric_limits<double>::quiet_NaN();
+                dateString = newPosStr;
+                offset = (o * 60 + o2) * sgn;
+            }
+            haveTZ = true;
+        } else {
+            size_t arrlenOfTZ = sizeof(known_zones) / sizeof(struct KnownZone);
+            for (size_t i = 0; i < arrlenOfTZ; ++i) {
+                if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
+                    offset = known_zones[i].tzOffset;
+                    dateString += strlen(known_zones[i].tzName);
+                    haveTZ = true;
+                    break;
+                }
+            }
+        }
+    }
+    skipSpacesAndComments(dateString);
+
+    if (*dateString && year == -1) {
+        if (!parseInt(dateString, &newPosStr, 10, &year))
+            return std::numeric_limits<double>::quiet_NaN();
+        dateString = newPosStr;
+        skipSpacesAndComments(dateString);
+    }
+
+    // Trailing garbage
+    if (*dateString)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    // Y2K: Handle 2 digit years.
+    if (year >= 0 && year < 100) {
+        if (year < 50)
+            year += 2000;
+        else
+            year += 1900;
+    }
+
+    return ymdhmsToSeconds(year, month, day, hour, minute, second) * msPerSecond;
+}
+static char* parseES5DatePortion(const char* currentPosition, int& year, long& month, long& day)
+{
+    char* postParsePosition;
+
+    // This is a bit more lenient on the year string than ES5 specifies:
+    // instead of restricting to 4 digits (or 6 digits with mandatory +/-),
+    // it accepts any integer value. Consider this an implementation fallback.
+    if (!parseInt(currentPosition, &postParsePosition, 10, &year))
+        return 0;
+
+    // Check for presence of -MM portion.
+    if (*postParsePosition != '-')
+        return postParsePosition;
+    currentPosition = postParsePosition + 1;
+
+    if (!isASCIIDigit(*currentPosition))
+        return 0;
+    if (!parseLong(currentPosition, &postParsePosition, 10, &month))
+        return 0;
+    if ((postParsePosition - currentPosition) != 2)
+        return 0;
+
+    // Check for presence of -DD portion.
+    if (*postParsePosition != '-')
+        return postParsePosition;
+    currentPosition = postParsePosition + 1;
+
+    if (!isASCIIDigit(*currentPosition))
+        return 0;
+    if (!parseLong(currentPosition, &postParsePosition, 10, &day))
+        return 0;
+    if ((postParsePosition - currentPosition) != 2)
+        return 0;
+    return postParsePosition;
+}
+static char* parseES5TimePortion(char* currentPosition, long& hours, long& minutes, double& seconds, long& timeZoneSeconds, bool& haveTZ)
+{
+    char* postParsePosition;
+    if (!isASCIIDigit(*currentPosition))
+        return 0;
+    if (!parseLong(currentPosition, &postParsePosition, 10, &hours))
+        return 0;
+    if (*postParsePosition != ':' || (postParsePosition - currentPosition) != 2)
+        return 0;
+    currentPosition = postParsePosition + 1;
+
+    if (!isASCIIDigit(*currentPosition))
+        return 0;
+    if (!parseLong(currentPosition, &postParsePosition, 10, &minutes))
+        return 0;
+    if ((postParsePosition - currentPosition) != 2)
+        return 0;
+    currentPosition = postParsePosition;
+
+    // Seconds are optional.
+    if (*currentPosition == ':') {
+        ++currentPosition;
+
+        long intSeconds;
+        if (!isASCIIDigit(*currentPosition))
+            return 0;
+        if (!parseLong(currentPosition, &postParsePosition, 10, &intSeconds))
+            return 0;
+        if ((postParsePosition - currentPosition) != 2)
+            return 0;
+        seconds = intSeconds;
+        if (*postParsePosition == '.') {
+            currentPosition = postParsePosition + 1;
+
+            // In ECMA-262-5 it's a bit unclear if '.' can be present without milliseconds, but
+            // a reasonable interpretation guided by the given examples and RFC 3339 says "no".
+            // We check the next character to avoid reading +/- timezone hours after an invalid decimal.
+            if (!isASCIIDigit(*currentPosition))
+                return 0;
+            // We are more lenient than ES5 by accepting more or less than 3 fraction digits.
+            long fracSeconds;
+            if (!parseLong(currentPosition, &postParsePosition, 10, &fracSeconds))
+                return 0;
+
+            long numFracDigits = postParsePosition - currentPosition;
+            seconds += fracSeconds * pow(10.0, static_cast<double>(-numFracDigits));
+        }
+        currentPosition = postParsePosition;
+    }
+
+    if (*currentPosition == 'Z') {
+        haveTZ = true;
+        return currentPosition + 1;
+    }
+
+    bool tzNegative;
+    if (*currentPosition == '-')
+        tzNegative = true;
+    else if (*currentPosition == '+')
+        tzNegative = false;
+    else
+        return currentPosition; // no timezone
+    ++currentPosition;
+    haveTZ = true;
+
+    long tzHours;
+    long tzHoursAbs;
+    long tzMinutes;
+
+    if (!isASCIIDigit(*currentPosition))
+        return 0;
+    if (!parseLong(currentPosition, &postParsePosition, 10, &tzHours))
+        return 0;
+    if (postParsePosition - currentPosition == 4) {
+        tzMinutes = tzHours % 100;
+        tzHours = tzHours / 100;
+        tzHoursAbs = labs(tzHours);
+    } else if (postParsePosition - currentPosition == 2) {
+        if (*postParsePosition != ':')
+            return 0;
+
+        tzHoursAbs = labs(tzHours);
+        currentPosition = postParsePosition + 1;
+
+        if (!isASCIIDigit(*currentPosition))
+            return 0;
+        if (!parseLong(currentPosition, &postParsePosition, 10, &tzMinutes))
+            return 0;
+        if ((postParsePosition - currentPosition) != 2)
+            return 0;
+    } else
+        return 0;
+
+    currentPosition = postParsePosition;
+
+    if (tzHoursAbs > 24)
+        return 0;
+    if (tzMinutes < 0 || tzMinutes > 59)
+        return 0;
+
+    timeZoneSeconds = 60 * (tzMinutes + (60 * tzHoursAbs));
+    if (tzNegative)
+        timeZoneSeconds = -timeZoneSeconds;
+
+    return currentPosition;
+}
+
+double ESDateObject::parseStringToDate_2(escargot::ESString* istr, bool& haveTZ)
+{
+    haveTZ = true;
+    const char* dateString = istr->asciiData();
+
+    static const long daysPerMonth[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+    // The year must be present, but the other fields may be omitted - see ES5.1 15.9.1.15.
+    int year = 0;
+    long month = 1;
+    long day = 1;
+    long hours = 0;
+    long minutes = 0;
+    double seconds = 0;
+    long timeZoneSeconds = 0;
+
+    // Parse the date YYYY[-MM[-DD]]
+    char* currentPosition = parseES5DatePortion(dateString, year, month, day);
+    if (!currentPosition)
+        return std::numeric_limits<double>::quiet_NaN();
+    // Look for a time portion.
+    if (*currentPosition == 'T') {
+        haveTZ = false;
+        // Parse the time HH:mm[:ss[.sss]][Z|(+|-)00:00]
+        currentPosition = parseES5TimePortion(currentPosition + 1, hours, minutes, seconds, timeZoneSeconds, haveTZ);
+        if (!currentPosition)
+            return std::numeric_limits<double>::quiet_NaN();
+    }
+    // Check that we have parsed all characters in the string.
+    if (*currentPosition)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    // A few of these checks could be done inline above, but since many of them are interrelated
+    // we would be sacrificing readability to "optimize" the (presumably less common) failure path.
+    if (month < 1 || month > 12)
+        return std::numeric_limits<double>::quiet_NaN();
+    if (day < 1 || day > daysPerMonth[month - 1])
+        return std::numeric_limits<double>::quiet_NaN();
+    if (month == 2 && day > 28 && daysInYear(year) != 366)
+        return std::numeric_limits<double>::quiet_NaN();
+    if (hours < 0 || hours > 24)
+        return std::numeric_limits<double>::quiet_NaN();
+    if (hours == 24 && (minutes || seconds))
+        return std::numeric_limits<double>::quiet_NaN();
+    if (minutes < 0 || minutes > 59)
+        return std::numeric_limits<double>::quiet_NaN();
+    if (seconds < 0 || seconds >= 61)
+        return std::numeric_limits<double>::quiet_NaN();
+    if (seconds > 60) {
+        // Discard leap seconds by clamping to the end of a minute.
+        seconds = 60;
+    }
+
+    double dateSeconds = ymdhmsToSeconds(year, month - 1, day, hours, minutes, seconds) - timeZoneSeconds;
+    return dateSeconds * msPerSecond;
+}
+
 double ESDateObject::parseStringToDate(escargot::ESString* istr)
 {
-    struct tm timeinfo;
+    bool haveTZ;
+    int offset;
+    double primitiveValue = parseStringToDate_2(istr, haveTZ);
+    if (!std::isnan(primitiveValue)) {
+        if (!haveTZ) { // add local timezone offset
+            primitiveValue = toUTC(primitiveValue);
+        }
+    } else {
+        primitiveValue = parseStringToDate_1(istr, haveTZ, offset);
+        if (!haveTZ) {
+            offset = -1 * getTimezoneOffset() / secondsPerMinute;
+        }
+        primitiveValue = primitiveValue - (offset * msPerMinute);
+    }
+
+    if (primitiveValue <= 8640000000000000 && primitiveValue >= -8640000000000000) {
+        return primitiveValue;
+    } else {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
+/*    struct tm timeinfo;
     double primitiveValue = 0.0;
     timeinfo.tm_mday = 1; // set special initial case for mday. if we don't initialize it, it would be set to 0
 
@@ -1979,6 +2549,7 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
         return primitiveValue;
     }
     return std::numeric_limits<double>::quiet_NaN();    
+    */
 }
 
 int ESDateObject::daysInYear(long year)
@@ -2144,38 +2715,9 @@ void ESDateObject::setTimeValue(const ESValue str)
         setTimeValueAsNaN();
     } else {
         m_primitiveValue = primitiveValue;
-        if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
-            m_isCacheDirty = true;
-            m_hasValidDate = true;
-        } else {
-            setTimeValueAsNaN();
-        }       
-    }
-/*    bool timezoneSet = false;
-    if (!parseStringToDate(&m_cachedTM, &timezoneSet, istr)) {
-        m_hasValidDate = false;
-        return;
-    }
-
-    double primitiveValue = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
-    double primitiveValueAsUTC;
-    if (!timezoneSet) {
-        primitiveValueAsUTC = toUTC(primitiveValue);
-    } else {
-#ifdef __USE_BSD         
-        primitiveValueAsUTC = primitiveValue - m_cachedTM.tm_gmtoff * 1000;
-#else
-        primitiveValueAsUTC = primitiveValue - m_cachedTM.__tm_gmtoff * 1000;
-#endif        
-    }
-    m_primitiveValue = primitiveValueAsUTC;
-    if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
-        m_isCacheDirty = false;
+        m_isCacheDirty = true;
         m_hasValidDate = true;
-    } else {
-        setTimeValueAsNaN();
     }
-    */
 }
 
 void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond, bool convertToUTC)
@@ -2338,15 +2880,15 @@ int ESDateObject::getUTCFullYear()
 
 int ESDateObject::getUTCHours()
 {
-    return (long long) floor(m_primitiveValue / msPerHour) % (int) hoursPerDay;
+    return (((long long) floor(m_primitiveValue / msPerHour) % (int) hoursPerDay) + (int) hoursPerDay) % (int) hoursPerDay;
 }
 int ESDateObject::getUTCMilliseconds()
 {
-    return m_primitiveValue % (int) msPerSecond;
+    return (((long long) m_primitiveValue % (int) msPerSecond) + (int) msPerSecond) % (int) msPerSecond;
 }
 int ESDateObject::getUTCMinutes()
 {
-    return (long long) floor(m_primitiveValue / msPerMinute) % (int) minutesPerHour;
+    return (((long long) floor(m_primitiveValue / msPerMinute) % (int) minutesPerHour) + (int) minutesPerHour) % (int) minutesPerHour;
 }
 
 int ESDateObject::getUTCMonth()
@@ -2356,7 +2898,7 @@ int ESDateObject::getUTCMonth()
 
 int ESDateObject::getUTCSeconds()
 {
-    return (long long) floor(m_primitiveValue / msPerSecond) % (int) secondsPerMinute;
+    return (((long long) floor(m_primitiveValue / msPerSecond) % (int) secondsPerMinute) + (int) secondsPerMinute) % (int) secondsPerMinute;
 }
 
 double ESDateObject::toUTC(double t)

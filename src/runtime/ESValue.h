@@ -2117,6 +2117,8 @@ public:
         return new ESDateObject();
     }
 
+    static double parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset);
+    static double parseStringToDate_2(escargot::ESString* istr, bool& haveTZ);
     static double parseStringToDate(escargot::ESString* istr);
     static void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
 
@@ -2171,7 +2173,7 @@ public:
     {
         if (std::isinf(V) || std::isnan(V)) {
             return nan("0");
-        } else if (std::abs(V) > 8.64 * std::pow(10, 15)) {
+        } else if (std::abs(V) >= 8640000000000000) {
             return nan("0");
         } else {
             return ESValue(V).toInteger();
