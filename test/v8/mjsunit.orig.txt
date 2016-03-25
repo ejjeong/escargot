@@ -542,7 +542,7 @@ Done running mjsunit/regress/regress-1184: pass
 Done running mjsunit/regress/regress-1187524: pass
 Done running mjsunit/regress/regress-119925: pass
 Done running mjsunit/regress/regress-1199401: pass
-Done running mjsunit/regress/regress-1200351: FAIL
+Done running mjsunit/regress/regress-1200351: CRASH
 Done running mjsunit/regress/regress-120099: pass
 Done running mjsunit/regress/regress-1203459: pass
 Done running mjsunit/regress/regress-1207: pass
@@ -1053,7 +1053,8 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/escape.js ===
---- stderr ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Failure: expected <"%20/%20"> found <"%u20/%u20">, stack: undefined}
 === mjsunit/eval-typeof-non-existing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <ReferenceError> but of < SyntaxError>> found <undefined>, stack: undefined}
@@ -1302,7 +1303,6 @@ Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-1200351.js ===
---- stderr ---
 --- stdout ---
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
@@ -1566,6 +1566,92 @@ Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'throw'. Expected ';' (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
+Callee is not a function object
+Unexpected Identifier 'x'. Expect ','. (Parse Error 1 line)
+GetFunctionFor is not defined
+Unexpected Keyword 'return'. (Parse Error 1 line)
+Unexpected Keyword 'const'. (Parse Error 1 line)
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+Unexpected Boolean 'true'. Expected ';' (Parse Error 1 line)
+Unexpected Keyword 'typeof'. (Parse Error 1 line)
+cannot convert undefined into object
+Unexpected Keyword 'export'. (Parse Error 1 line)
+GetFunctionFor is not defined
+Unexpected Punctuator '{'. Expected ';' (Parse Error 1 line)
+constructor is not an function object
+Unexpected Keyword 'throw'. Expected ';' (Parse Error 1 line)
+cannot convert undefined into object
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
+Unexpected Punctuator '.'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
+native is not defined
+Unexpected Keyword 'break'. (Parse Error 1 line)
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+ (Parse Error 1 line)
+Unexpected Keyword 'new'. Expect ','. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
+ (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+cannot convert undefined into object
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+constructor is not an function object
+Iterator is not defined
+Unexpected Keyword 'export'. (Parse Error 1 line)
+ (Parse Error 1 line)
+Unexpected Numeric '0'. Expected ';' (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+Unexpected Punctuator ')'. Expect ';'. (Parse Error 1 line)
+ (Parse Error 1 line)
+Instantiate is not defined
+ (Parse Error 1 line)
+Unexpected Keyword 'break'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
+Unexpected Punctuator '&'. (Parse Error 1 line)
+Unexpected Keyword 'break'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
+Unexpected Keyword 'export'. (Parse Error 1 line)
+label is not defined
+ (Parse Error 1 line)
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+Unexpected Boolean 'false'. Expected ';' (Parse Error 1 line)
+Callee is not a function object
+constructor is not an function object
+Unexpected Keyword 'void'. Expect ';'. (Parse Error 1 line)
+Messages.IllegalReturn (Parse Error 1 line)
+constructor is not an function object
+Unexpected Keyword 'const'. (Parse Error 1 line)
+Unexpected Keyword 'const'. (Parse Error 1 line)
+Unexpected Keyword 'import'. (Parse Error 1 line)
+ (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+Unexpected Punctuator '}'. (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+Unexpected Keyword 'throw'. (Parse Error 1 line)
+Unexpected Keyword 'break'. (Parse Error 1 line)
+Unexpected Keyword 'const'. (Parse Error 1 line)
+Unexpected Keyword 'return'. (Parse Error 1 line)
+Instantiate is not defined
+ (Parse Error 1 line)
+Cannot use the keyword '' as a variable name. (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+native is not defined
+Unexpected Punctuator ')'. (Parse Error 1 line)
+Instantiate is not defined
+Unexpected Identifier 'Array'. Expected ';' (Parse Error 1 line)
+cannot convert undefined into object
+ (Parse Error 1 line)
+ (Parse Error 1 line)
+SetValueOf is not defined
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+Unexpected Keyword 'debugger'. (Parse Error 1 line)
+Unexpected Keyword 'continue'. (Parse Error 1 line)
+Instantiate is not defined
+Unexpected Punctuator ')'. (Parse Error 1 line)
+Unexpected Keyword 'break'. (Parse Error 1 line)
+exit code: -11
+--- CRASHED ---
 === mjsunit/regress/regress-1213575.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1777,5 +1863,5 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 
 ===
 === 180 tests failed
-=== 7 tests CRASHED
+=== 8 tests CRASHED
 ===
