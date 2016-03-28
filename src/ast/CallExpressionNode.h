@@ -23,6 +23,7 @@ public:
     {
         if (m_callee->isIdentifier()) {
             if (((IdentifierNode *)m_callee)->name() == strings->eval) {
+                codeBlock->pushCode(GetById(strings->eval, false), context, this);
                 for (unsigned i = 0; i < m_arguments.size(); i ++) {
                     m_arguments[i]->generateExpressionByteCode(codeBlock, context);
                 }

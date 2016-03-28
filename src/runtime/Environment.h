@@ -353,6 +353,34 @@ protected:
 #endif
 };
 
+class DeclarativeEnvironmentRecordForCatchClause : public DeclarativeEnvironmentRecord {
+public:
+    ALWAYS_INLINE DeclarativeEnvironmentRecordForCatchClause(ESValue* stackAllocatedData, size_t stackAllocatedSize, const InternalAtomicStringVector& innerIdentifiers, bool needsActivation, size_t mutableIndex, const InternalAtomicString& errorName, EnvironmentRecord* parentRecord)
+        : DeclarativeEnvironmentRecord(stackAllocatedData, stackAllocatedSize, innerIdentifiers, needsActivation, mutableIndex)
+        , m_parentRecord(parentRecord)
+        , m_errorName(errorName)
+    {
+        DeclarativeEnvironmentRecord::createMutableBinding(m_errorName);
+    }
+
+    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
+    {
+        m_parentRecord->createMutableBindingForAST(name, canDelete);
+    }
+
+    void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
+    {
+        if (name == m_errorName)
+            DeclarativeEnvironmentRecord::setMutableBinding(m_errorName, V, mustNotThrowTypeErrorExecption);
+        else
+            m_parentRecord->setMutableBinding(name, V, mustNotThrowTypeErrorExecption);
+    }
+
+private:
+    EnvironmentRecord* m_parentRecord;
+    InternalAtomicString m_errorName;
+};
+
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
 class GlobalEnvironmentRecord : public EnvironmentRecord {
 public:

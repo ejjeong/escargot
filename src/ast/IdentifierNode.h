@@ -183,6 +183,11 @@ public:
         return m_fastAccessIndex;
     }
 
+    void unsetGlobalFastIndex()
+    {
+        m_flags.m_canUseGlobalFastAccess = false;
+    }
+
     virtual bool isIdentifier()
     {
         return true;

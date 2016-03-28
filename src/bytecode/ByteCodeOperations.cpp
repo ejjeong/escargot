@@ -44,6 +44,8 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
                 ASSERT(!env || env->record()->isGlobalEnvironmentRecord());
                 slot.setValueWithSetter(globalObject, code->m_name.string(), *value);
             }
+        } else {
+            throwObjectWriteError();
         }
     } else {
         if (!ec->isStrictMode()) {
@@ -529,9 +531,9 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
 {
     instance->invalidateIdentifierCacheCheckCount();
     instance->m_currentExecutionContext = backupedEC;
-    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(0, 0, InternalAtomicStringVector(), true, SIZE_MAX), oldEnv);
+    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecordForCatchClause(0, 0, InternalAtomicStringVector(), true, SIZE_MAX, code->m_name, oldEnv->record()), oldEnv);
     instance->currentExecutionContext()->setEnvironment(catchEnv);
-    instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
+    //instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
     std::jmp_buf tryPosition;
     if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {

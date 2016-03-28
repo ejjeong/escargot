@@ -49,6 +49,8 @@ public:
     ALWAYS_INLINE bool needsToPrepareGenerateArgumentsObject() { return m_needsToPrepareGenerateArgumentsObject; }
     ALWAYS_INLINE void setNeedsToPrepareGenerateArgumentsObject() { m_needsToPrepareGenerateArgumentsObject = true; }
     ALWAYS_INLINE bool needsComplexParameterCopy() { return m_needsComplexParameterCopy; }
+    ALWAYS_INLINE void setUsesEval() { m_usesEval = true; }
+    ALWAYS_INLINE bool usesEval() { return m_usesEval; }
     ALWAYS_INLINE bool isGenerator() { return m_isGenerator; }
     ALWAYS_INLINE bool isExpression() { return m_isExpression; }
     ALWAYS_INLINE bool isStrict() { return m_isStrict; }
@@ -114,6 +116,7 @@ protected:
     bool m_needsHeapAllocatedExecutionContext;
     bool m_needsComplexParameterCopy; // parameters are captured
     bool m_needsToPrepareGenerateArgumentsObject;
+    bool m_usesEval;
     FunctionNode* m_outerFunctionNode;
 
     bool m_isStrict;

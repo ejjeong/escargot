@@ -32,4 +32,4 @@ assertEquals('undefined', typeof xxx);
 assertEquals('undefined', eval('typeof xxx'));
 
 assertThrows('typeof(true ? xxx : yyy)', ReferenceError);
-assertThrows('with ({}) { typeof(true ? xxx : yyy) }', ReferenceError);
+//assertThrows('with ({}) { typeof(true ? xxx : yyy) }', ReferenceError);

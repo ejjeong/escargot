@@ -338,14 +338,14 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
         } else if (type == NodeType::CallExpression) {
 
             Node* callee = ((CallExpressionNode *)currentNode)->m_callee;
-            bool isEval = false;
             if (callee) {
                 if (callee->type() == NodeType::Identifier) {
                     if (((IdentifierNode *)callee)->name() == strings->eval.string()) {
                         markNeedsActivation(nearFunctionNode);
-                        if (nearFunctionNode)
+                        if (nearFunctionNode) {
+                            nearFunctionNode->setUsesEval();
                             nearFunctionNode->setNeedsToPrepareGenerateArgumentsObject();
-                        isEval = true;
+                        }
                     }
                 }
             }
@@ -355,8 +355,6 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
             for (unsigned i = 0; i < v.size() ; i ++) {
                 postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
-            if (isEval)
-                shouldWorkAroundIdentifier = false;
         } else if (type == NodeType::SequenceExpression) {
             ExpressionNodeVector& v = ((SequenceExpressionNode *)currentNode)->m_expressions;
             for (unsigned i = 0; i < v.size() ; i ++) {
@@ -470,6 +468,17 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
 
     auto calcIDIndex = [](IdentifierNode* idNode, FunctionNode* nearFunctionNode)
     {
+        if (idNode->canUseGlobalFastAccess() && nearFunctionNode) {
+            FunctionNode* fn = nearFunctionNode;
+            while (fn) {
+                if (fn->usesEval()) {
+                    // Can shadow static declaration
+                    idNode->unsetGlobalFastIndex();
+                    return;
+                }
+                fn = fn->outerFunctionNode();
+            }
+        }
         if (idNode->canUseFastAccess() && nearFunctionNode) {
             if (idNode->fastAccessUpIndex() == 0) {
                 size_t heapIndexes = 0;
@@ -489,13 +498,14 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
                 else
                     idNode->setFastAccessIndex(0, idNode->fastAccessIndex() - heapIndexes);
             } else {
-                bool canInterceptDefinition = false;
                 FunctionNode* fn = nearFunctionNode;
                 for (unsigned j = 0; j < idNode->fastAccessUpIndex() ; j ++) {
-                    fn = fn->outerFunctionNode();
-                    if (j != idNode->fastAccessUpIndex() - 1 && fn->needsActivation()) {
-                        canInterceptDefinition = true;
+                    if (fn->usesEval()) {
+                        // Can shadow static declaration
+                        idNode->unsetFastIndex();
+                        return;
                     }
+                    fn = fn->outerFunctionNode();
                 }
                 size_t stackIndexes = 0;
                 auto ids = fn->innerIdentifiers();
@@ -505,12 +515,8 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
                     }
                 }
 
-                if (!canInterceptDefinition) {
-                    idNode->m_flags.m_isFastAccessIndexIndicatesHeapIndex = ids[idNode->fastAccessIndex()].m_flags.m_isHeapAllocated;
-                    idNode->setFastAccessIndex(idNode->fastAccessUpIndex(), idNode->fastAccessIndex() - stackIndexes);
-                } else {
-                    idNode->unsetFastIndex();
-                }
+                idNode->m_flags.m_isFastAccessIndexIndicatesHeapIndex = ids[idNode->fastAccessIndex()].m_flags.m_isHeapAllocated;
+                idNode->setFastAccessIndex(idNode->fastAccessUpIndex(), idNode->fastAccessIndex() - stackIndexes);
             }
         }
     };

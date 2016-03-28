@@ -622,7 +622,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetById <%s>\n", m_name.string()->utf8Data());
+        printf("GetById <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
     }
 #endif
 };
@@ -647,7 +647,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetByIdWithoutException <%s>\n", m_name.string()->utf8Data());
+        printf("GetByIdWithoutException <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
     }
 #endif
 };
@@ -764,7 +764,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetById <%s>\n", m_name.string()->utf8Data());
+        printf("SetById <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
     }
 #endif
 };

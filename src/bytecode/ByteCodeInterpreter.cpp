@@ -1174,8 +1174,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             stack = (void *)((size_t)stack - argc * sizeof(ESValue));
             ESValue* arguments = (ESValue *)stack;
 
-            // TODO check if eval is accessor binding
-            ESValue callee = *ec->resolveBinding(strings->eval).getSlot();
+            ESValue callee = *POP(stack, bp);
             if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
                 ESValue ret;
                 if (argc > 0) {
