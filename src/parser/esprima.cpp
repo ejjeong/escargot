@@ -2910,7 +2910,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
             // throwUnexpectedToken(token);
             escargot::UTF16String err_msg;
             err_msg.append(u"Cannot use the keyword '");
-            err_msg.append(token->m_value.toESString()->toUTF16String());
+            err_msg.append(tokenToString(token));
             if (ctx->m_isFunctionIdentifier) {
                 err_msg.append(u"' as a function name.");
             } else {
@@ -4778,7 +4778,7 @@ bool lookaheadPropertyName(ParseContext* ctx)
     }
 }
 
-escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*paramInfo, isGenerator*/)
+escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, escargot::Node* key/*paramInfo, isGenerator*/)
 {
     // var previousStrict, body;
 
@@ -4798,7 +4798,9 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
     */
 
     // return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
-    escargot::FunctionExpressionNode* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString, std::move(vec), body, false, true, ctx->m_strict);
+    const escargot::InternalAtomicString& id = (key && key->isIdentifier()) ? ((escargot::IdentifierNode*)key)->name() :
+        key->isLiteral() ? escargot::InternalAtomicString(((escargot::LiteralNode*)key)->value().toString()->utf8Data()) : escargot::strings->emptyString;
+    escargot::FunctionExpressionNode* nd = new escargot::FunctionExpressionNode(id, std::move(vec), body, false, true, ctx->m_strict);
     validateFunctionParamsLazily(ctx, nd, firstRestricted, previousStrict);
     ctx->m_strict = previousStrict;
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
@@ -4814,7 +4816,7 @@ escargot::Node* parsePropertyMethodFunction(ParseContext* ctx, escargot::Node* k
 
     ctx->m_allowYield = false;
     escargot::InternalAtomicStringVector vec;
-    escargot::Node* method = parsePropertyFunction(ctx, params);
+    escargot::Node* method = parsePropertyFunction(ctx, params, key);
     ctx->m_allowYield = previousAllowYield;
 
     escargot::Node* nd = new escargot::PropertyNode(key, method, escargot::PropertyNode::Init);
@@ -4846,7 +4848,7 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
 
             ctx->m_allowYield = false;
             escargot::InternalAtomicStringVector vec;
-            escargot::Node* value = parsePropertyFunction(ctx, vec
+            escargot::Node* value = parsePropertyFunction(ctx, vec, key
                 /*
                 {
                     params: [],
@@ -4895,7 +4897,7 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
             expect(ctx, RightParenthesis);
 
             ctx->m_allowYield = false;
-            escargot::Node* value = parsePropertyFunction(ctx, vec/*methodNode, options, false*/);
+            escargot::Node* value = parsePropertyFunction(ctx, vec, key/*methodNode, options, false*/);
             ctx->m_allowYield = previousAllowYield;
 
             // return node.finishProperty('set', key, computed, value, false, false);
@@ -4913,7 +4915,7 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
         ctx->m_allowYield = previousAllowYield;
 
         ctx->m_allowYield = false;
-        escargot::Node* value = parsePropertyFunction(ctx, params);
+        escargot::Node* value = parsePropertyFunction(ctx, params, key);
         ctx->m_allowYield = previousAllowYield;
 
         escargot::Node* nd = new escargot::PropertyNode(key, value, escargot::PropertyNode::Init);

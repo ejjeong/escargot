@@ -206,7 +206,7 @@ Done running mjsunit/object-get-own-property-names: pass
 Done running mjsunit/object-literal-conversions: pass
 Done running mjsunit/object-literal-multiple-fields: pass
 Done running mjsunit/object-literal-multiple-proto-fields: pass
-Done running mjsunit/object-literal: FAIL
+Done running mjsunit/object-literal: pass
 Done running mjsunit/object-seal-global: pass
 Done running mjsunit/object-toprimitive: FAIL
 Done running mjsunit/override-read-only-property: pass
@@ -1145,9 +1145,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1
 === mjsunit/numops-fuzz-part4.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
-=== mjsunit/object-literal.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"1"> found <"">, stack: undefined}
 === mjsunit/object-toprimitive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
@@ -1335,7 +1332,7 @@ Callee is not a function object
 Unexpected Keyword 'function'. Expected ';' (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
-Cannot use the keyword 'debugger' as a variable name. (Parse Error 1 line)
+Cannot use 'debugger' as a variable name. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
@@ -1351,7 +1348,7 @@ Unexpected Keyword 'debugger'. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
  (Parse Error 1 line)
-Cannot use the keyword 'break' as a variable name. (Parse Error 1 line)
+Cannot use 'break' as a variable name. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
  (Parse Error 1 line)
 with statement is not supported (Parse Error 1 line)
@@ -1452,7 +1449,7 @@ throwError(Messages.IllegalContinue); (Parse Error 1 line)
 Unnamed function declaration is forbidden (Parse Error 1 line)
 undef is not defined
 Unexpected Keyword 'continue'. (Parse Error 1 line)
-Cannot use the keyword 'null' as a variable name. (Parse Error 1 line)
+Cannot use 'null' as a variable name. (Parse Error 1 line)
 SetValueOf is not defined
 Callee is not a function object
 Unexpected Keyword 'break'. (Parse Error 1 line)
@@ -1485,7 +1482,7 @@ with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 GetFunctionFor is not defined
-Cannot use the keyword 'null' as a variable name. (Parse Error 1 line)
+Cannot use 'null' as a variable name. (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
 Unexpected Boolean 'false'. Expected ';' (Parse Error 1 line)
@@ -1631,7 +1628,7 @@ Unexpected Keyword 'const'. (Parse Error 1 line)
 Unexpected Keyword 'return'. (Parse Error 1 line)
 Instantiate is not defined
  (Parse Error 1 line)
-Cannot use the keyword '' as a variable name. (Parse Error 1 line)
+Cannot use '0' as a variable name. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
 native is not defined
 Unexpected Punctuator ')'. (Parse Error 1 line)
@@ -1859,6 +1856,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 179 tests failed
+=== 178 tests failed
 === 8 tests CRASHED
 ===

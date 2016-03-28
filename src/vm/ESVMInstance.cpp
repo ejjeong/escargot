@@ -29,6 +29,14 @@ ESVMInstance::ESVMInstance()
         RELEASE_ASSERT_NOT_REACHED();
     });
 
+    /*
+    GC_set_on_collection_event([](GC_EventType evtType) {
+        if (evtType == GC_EVENT_END) {
+            ESVMInstance::currentInstance()->regexpCache()->clear();
+        }
+    });
+    */
+
 #ifndef NDEBUG
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
