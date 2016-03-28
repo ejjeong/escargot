@@ -193,10 +193,10 @@ Done running mjsunit/number-tostring-add: pass
 Done running mjsunit/number-tostring-func: FAIL
 Done running mjsunit/number-tostring-small: CRASH
 Done running mjsunit/number-tostring: FAIL
-Done running mjsunit/numops-fuzz-part1: FAIL
-Done running mjsunit/numops-fuzz-part2: FAIL
-Done running mjsunit/numops-fuzz-part3: FAIL
-Done running mjsunit/numops-fuzz-part4: FAIL
+Done running mjsunit/numops-fuzz-part1: pass
+Done running mjsunit/numops-fuzz-part2: pass
+Done running mjsunit/numops-fuzz-part3: pass
+Done running mjsunit/numops-fuzz-part4: pass
 Done running mjsunit/obj-construct: pass
 Done running mjsunit/object-create: pass
 Done running mjsunit/object-define-properties: pass
@@ -1114,18 +1114,6 @@ exit code: -11
 === mjsunit/number-tostring.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"5a.1eb851eb852"> found <"5a">, stack: undefined}
-=== mjsunit/numops-fuzz-part1.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <-4.347990105831158> found <-4.347988594151075>, stack: undefined}
-=== mjsunit/numops-fuzz-part2.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <254842325.2585001> found <254842368>, stack: undefined}
-=== mjsunit/numops-fuzz-part3.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1921196288>, stack: undefined}
-=== mjsunit/numops-fuzz-part4.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
 === mjsunit/parse-int-float.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1478,6 +1466,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 168 tests failed
+=== 164 tests failed
 === 7 tests CRASHED
 ===
