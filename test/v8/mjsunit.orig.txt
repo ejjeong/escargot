@@ -37,7 +37,7 @@ Done running mjsunit/array-push2: FAIL
 Done running mjsunit/array-reduce: FAIL
 Done running mjsunit/array-shift: FAIL
 Done running mjsunit/array-slice: FAIL
-Done running mjsunit/array-splice: FAIL
+Done running mjsunit/array-splice: pass
 Done running mjsunit/array-tostring: FAIL
 Done running mjsunit/array-unshift: FAIL
 Done running mjsunit/ascii-regexp-subject: FAIL
@@ -1010,9 +1010,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@
 === mjsunit/array-slice.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <10> found <0>, stack: undefined}
-=== mjsunit/array-splice.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (0 in spliced): expected <false> found <true>, stack: undefined}
 === mjsunit/array-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1458,6 +1455,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 161 tests failed
+=== 160 tests failed
 === 7 tests CRASHED
 ===

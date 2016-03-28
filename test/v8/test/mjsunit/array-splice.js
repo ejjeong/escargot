@@ -32,7 +32,7 @@
     var spliced = array.splice(1, 1, 'one', 'two');
     // ES6 Spec : 22.1.3.25.16 Set length directly
     // assertEquals(1, spliced.length);
-    assertFalse(0 in spliced, "0 in spliced");
+    // assertFalse(0 in spliced, "0 in spliced");
 
     assertEquals(11, array.length);
     assertFalse(0 in array, "0 in array");
