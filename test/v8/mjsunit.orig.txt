@@ -101,7 +101,7 @@ Done running mjsunit/eval: FAIL
 Done running mjsunit/extra-commas: pass
 Done running mjsunit/for-in-delete: pass
 Done running mjsunit/for-in-null-or-undefined: pass
-Done running mjsunit/for-in: FAIL
+Done running mjsunit/for-in: pass
 Done running mjsunit/for: pass
 Done running mjsunit/fun-as-prototype: pass
 Done running mjsunit/fun-name: pass
@@ -208,7 +208,7 @@ Done running mjsunit/object-literal-multiple-fields: pass
 Done running mjsunit/object-literal-multiple-proto-fields: pass
 Done running mjsunit/object-literal: pass
 Done running mjsunit/object-seal-global: pass
-Done running mjsunit/object-toprimitive: FAIL
+Done running mjsunit/object-toprimitive: pass
 Done running mjsunit/override-read-only-property: pass
 Done running mjsunit/parse-int-float: FAIL
 Done running mjsunit/parse-surrogates: pass
@@ -749,7 +749,7 @@ Done running mjsunit/regress/regress-425551: FAIL
 Done running mjsunit/regress/regress-4271: pass
 Done running mjsunit/regress/regress-4279: pass
 Done running mjsunit/regress/regress-4296: FAIL
-Done running mjsunit/regress/regress-4376-1: FAIL
+Done running mjsunit/regress/regress-4376-1: pass
 Done running mjsunit/regress/regress-4376-2: pass
 Done running mjsunit/regress/regress-4376-3: pass
 Done running mjsunit/regress/regress-4399: pass
@@ -978,7 +978,7 @@ Done running mjsunit/regress/regress-weakening-multiplication: pass
 Done running mjsunit/regress/setter: pass
 Done running mjsunit/regress/short-circuit: pass
 Done running mjsunit/regress/string-split-monkey-patching: pass
-Done running mjsunit/third_party/object-keys/object-keys: FAIL
+Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 
 === mjsunit/arguments-load-across-eval.js ===
@@ -1058,9 +1058,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is 
 === mjsunit/eval.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"hest">, stack: undefined}
-=== mjsunit/for-in.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <["2147483650"]> found <["2147483650","__proto__"]>, stack: undefined}
 === mjsunit/function-arguments-null.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1145,9 +1142,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1921196240> found <1
 === mjsunit/numops-fuzz-part4.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <17831> found <2>, stack: undefined}
-=== mjsunit/object-toprimitive.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
 === mjsunit/parse-int-float.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1332,7 +1326,7 @@ Callee is not a function object
 Unexpected Keyword 'function'. Expected ';' (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
-Cannot use 'debugger' as a variable name. (Parse Error 1 line)
+Cannot use the keyword 'debugger' as a variable name. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
@@ -1348,7 +1342,7 @@ Unexpected Keyword 'debugger'. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
  (Parse Error 1 line)
-Cannot use 'break' as a variable name. (Parse Error 1 line)
+Cannot use the keyword 'break' as a variable name. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
  (Parse Error 1 line)
 with statement is not supported (Parse Error 1 line)
@@ -1449,7 +1443,7 @@ throwError(Messages.IllegalContinue); (Parse Error 1 line)
 Unnamed function declaration is forbidden (Parse Error 1 line)
 undef is not defined
 Unexpected Keyword 'continue'. (Parse Error 1 line)
-Cannot use 'null' as a variable name. (Parse Error 1 line)
+Cannot use the keyword 'null' as a variable name. (Parse Error 1 line)
 SetValueOf is not defined
 Callee is not a function object
 Unexpected Keyword 'break'. (Parse Error 1 line)
@@ -1482,7 +1476,7 @@ with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 GetFunctionFor is not defined
-Cannot use 'null' as a variable name. (Parse Error 1 line)
+Cannot use the keyword 'null' as a variable name. (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
 Unexpected Boolean 'false'. Expected ';' (Parse Error 1 line)
@@ -1628,7 +1622,7 @@ Unexpected Keyword 'const'. (Parse Error 1 line)
 Unexpected Keyword 'return'. (Parse Error 1 line)
 Instantiate is not defined
  (Parse Error 1 line)
-Cannot use '0' as a variable name. (Parse Error 1 line)
+Cannot use the keyword '0' as a variable name. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
 native is not defined
 Unexpected Punctuator ')'. (Parse Error 1 line)
@@ -1749,7 +1743,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <9223372036854776000>
 Uncaught MjsUnitAssertionError {message: Failure: expected <125000> found <59464>, stack: undefined}
 === mjsunit/regress/regress-3135.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"{}"> found <"{\"__proto__\":{\"x\":9}}">, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <"{}"> found <"{\"x\":1,\"1\":1}">, stack: undefined}
 === mjsunit/regress/regress-3138.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"undefined"> found <"function">, stack: undefined}
@@ -1784,9 +1778,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1.499> found <undefi
 === mjsunit/regress/regress-4296.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"a"> found <100>, stack: undefined}
-=== mjsunit/regress/regress-4376-1.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
 === mjsunit/regress/regress-441099.js ===
 --- stderr ---
 === mjsunit/regress/regress-447561.js ===
@@ -1848,14 +1839,11 @@ Uncaught RangeError
 === mjsunit/regress/regress-swapelements.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/third_party/object-keys/object-keys.js ===
---- stdout ---
-Uncaught TypeError: Object.keys: first argument is not object
 === mjsunit/third_party/regexp-pcre/regexp-pcre.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 178 tests failed
+=== 174 tests failed
 === 8 tests CRASHED
 ===

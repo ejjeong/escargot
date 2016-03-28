@@ -1282,8 +1282,10 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                 ESHiddenClassPropertyInfo& info = m_hiddenClass->m_propertyInfo[oldIdx];
                 if (!info.m_flags.m_isWritable || info.m_flags.m_isEnumerable)
                     return false;
-                else
+                else {
                     set__proto__(initialValue);
+                    return true;
+                }
             } else {
                 ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
             }

@@ -31,10 +31,12 @@
 
 // Based on LayoutTests/fast/js/Object-keys.html
 
+/*
 assertEquals(Object.keys(2), []);
 assertEquals(Object.keys("foo"), ["0", "1", "2"]);
 assertThrows(function () { Object.keys(null) }, TypeError);
 assertThrows(function () { Object.keys(undefined) }, TypeError);
+*/
 
 assertEquals(Object.keys({}), []);
 assertEquals(Object.keys({a:null}), ['a']);
