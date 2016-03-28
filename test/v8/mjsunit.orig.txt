@@ -95,8 +95,8 @@ Done running mjsunit/error-constructors: pass
 Done running mjsunit/error-tostring: FAIL
 Done running mjsunit/escape: FAIL
 Done running mjsunit/eval-enclosing-function-name: pass
-Done running mjsunit/eval-typeof-non-existing: FAIL
-Done running mjsunit/eval: FAIL
+Done running mjsunit/eval-typeof-non-existing: pass
+Done running mjsunit/eval: pass
 Done running mjsunit/extra-commas: pass
 Done running mjsunit/for-in-delete: pass
 Done running mjsunit/for-in-null-or-undefined: pass
@@ -212,7 +212,7 @@ Done running mjsunit/override-read-only-property: pass
 Done running mjsunit/parse-int-float: FAIL
 Done running mjsunit/parse-surrogates: pass
 Done running mjsunit/primitive-keyed-access: FAIL
-Done running mjsunit/property-load-across-eval: FAIL
+Done running mjsunit/property-load-across-eval: pass
 Done running mjsunit/property-name-eval-arguments: pass
 Done running mjsunit/property-object-key: pass
 Done running mjsunit/proto-accessor: FAIL
@@ -244,7 +244,7 @@ Done running mjsunit/regress-keyed-store-non-strict-arguments: pass
 Done running mjsunit/result-table-max: pass
 Done running mjsunit/result-table-min: pass
 Done running mjsunit/scanner: pass
-Done running mjsunit/scope-calls-eval: FAIL
+Done running mjsunit/scope-calls-eval: pass
 Done running mjsunit/search-string-multiple: pass
 Done running mjsunit/serialize-embedded-error: CRASH
 Done running mjsunit/short-circuit-boolean: pass
@@ -597,8 +597,8 @@ Done running mjsunit/regress/regress-1548: FAIL
 Done running mjsunit/regress/regress-155924: pass
 Done running mjsunit/regress/regress-1591: pass
 Done running mjsunit/regress/regress-1620: pass
-Done running mjsunit/regress/regress-1624-strict: CRASH
-Done running mjsunit/regress/regress-1624: CRASH
+Done running mjsunit/regress/regress-1624-strict: pass
+Done running mjsunit/regress/regress-1624: pass
 Done running mjsunit/regress/regress-1625: pass
 Done running mjsunit/regress/regress-1692: pass
 Done running mjsunit/regress/regress-171: pass
@@ -663,7 +663,7 @@ Done running mjsunit/regress/regress-2566: pass
 Done running mjsunit/regress/regress-2568: pass
 Done running mjsunit/regress/regress-2570: pass
 Done running mjsunit/regress/regress-259: FAIL
-Done running mjsunit/regress/regress-2594: FAIL
+Done running mjsunit/regress/regress-2594: CRASH
 Done running mjsunit/regress/regress-260: pass
 Done running mjsunit/regress/regress-2606: FAIL
 Done running mjsunit/regress/regress-2615: pass
@@ -752,7 +752,7 @@ Done running mjsunit/regress/regress-4376-1: pass
 Done running mjsunit/regress/regress-4376-2: pass
 Done running mjsunit/regress/regress-4376-3: pass
 Done running mjsunit/regress/regress-4399: pass
-Done running mjsunit/regress/regress-441099: FAIL
+Done running mjsunit/regress/regress-441099: pass
 Done running mjsunit/regress/regress-444805: pass
 Done running mjsunit/regress/regress-447561: FAIL
 Done running mjsunit/regress/regress-45469: FAIL
@@ -1030,12 +1030,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/escape.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"%20/%20"> found <"%u20/%u20">, stack: undefined}
-=== mjsunit/eval-typeof-non-existing.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <ReferenceError> but of < SyntaxError>> found <undefined>, stack: undefined}
-=== mjsunit/eval.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"hest">, stack: undefined}
 === mjsunit/function-arguments-null.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1111,9 +1105,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/primitive-keyed-access.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/property-load-across-eval.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <1>, stack: undefined}
 === mjsunit/proto-accessor.js ===
 --- stderr ---
 --- TIMEOUT ---
@@ -1143,9 +1134,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> found <undefined>, stack: undefined}
 === mjsunit/regexp.js ===
 --- stderr ---
-=== mjsunit/scope-calls-eval.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <5>, stack: undefined}
 === mjsunit/serialize-embedded-error.js ===
 exit code: -11
 --- CRASHED ---
@@ -1285,12 +1273,6 @@ Uncaught TypeError: Type error, DefineOwnProperty 10.a.ii
 === mjsunit/regress/regress-1548.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-1624-strict.js ===
-exit code: -11
---- CRASHED ---
-=== mjsunit/regress/regress-1624.js ===
-exit code: -11
---- CRASHED ---
 === mjsunit/regress/regress-176.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (zero length match in (?:) with capture in lookahead - array element at index 1): expected <undefined> found <"f">, stack: undefined}
@@ -1337,8 +1319,8 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"success"> found <un
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
---- stdout ---
-Uncaught ReferenceError: h is not defined
+exit code: -11
+--- CRASHED ---
 === mjsunit/regress/regress-2606.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1391,8 +1373,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <1.499> found <undefi
 === mjsunit/regress/regress-4296.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"a"> found <100>, stack: undefined}
-=== mjsunit/regress/regress-441099.js ===
---- stderr ---
 === mjsunit/regress/regress-447561.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"foo"> found <function Object() {}>, stack: undefined}
@@ -1455,6 +1435,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 160 tests failed
-=== 7 tests CRASHED
+=== 153 tests failed
+=== 6 tests CRASHED
 ===
