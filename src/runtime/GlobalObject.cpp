@@ -854,14 +854,8 @@ void GlobalObject::initGlobalObject()
 
     // $B.2.1.1 escape(string)
     defineDataProperty(ESString::createAtomicString("escape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int argLen = instance->currentExecutionContext()->argumentCount();
-        if (argLen == 0)
-            return ESValue();
-
-        escargot::ESString* str = instance->currentExecutionContext()->arguments()->toString();
-        NullableUTF8String componentString = str->toNullableUTF8String();
+        escargot::ESString* str = instance->currentExecutionContext()->readArgument(0).toString();
         size_t length = str->length();
-
         ASCIIString R = "";
         for (size_t i = 0; i < length; i++) {
             char16_t t = str->charAt(i);
@@ -885,10 +879,7 @@ void GlobalObject::initGlobalObject()
 
     // $B.2.1.2 unescape(string)
     defineDataProperty(ESString::createAtomicString("unescape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int argLen = instance->currentExecutionContext()->argumentCount();
-        if (argLen == 0)
-            return ESValue();
-        NullableUTF8String str = instance->currentExecutionContext()->arguments()->asESString()->toNullableUTF8String();
+        NullableUTF8String str = instance->currentExecutionContext()->readArgument(0).toString()->toNullableUTF8String();
         size_t length = str.m_bufferSize;
         ASCIIString R = "";
         for (size_t i = 0; i < length; i++) {
@@ -901,7 +892,6 @@ void GlobalObject::initGlobalObject()
         }
         return escargot::ESString::create(std::move(R));
     }, ESString::createAtomicString("unescape"), 1));
-
 }
 
 
