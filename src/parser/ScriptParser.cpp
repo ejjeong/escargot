@@ -489,9 +489,13 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
                 else
                     idNode->setFastAccessIndex(0, idNode->fastAccessIndex() - heapIndexes);
             } else {
+                bool canInterceptDefinition = false;
                 FunctionNode* fn = nearFunctionNode;
                 for (unsigned j = 0; j < idNode->fastAccessUpIndex() ; j ++) {
                     fn = fn->outerFunctionNode();
+                    if (j != idNode->fastAccessUpIndex() - 1 && fn->needsActivation()) {
+                        canInterceptDefinition = true;
+                    }
                 }
                 size_t stackIndexes = 0;
                 auto ids = fn->innerIdentifiers();
@@ -501,8 +505,12 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
                     }
                 }
 
-                idNode->m_flags.m_isFastAccessIndexIndicatesHeapIndex = ids[idNode->fastAccessIndex()].m_flags.m_isHeapAllocated;
-                idNode->setFastAccessIndex(idNode->fastAccessUpIndex(), idNode->fastAccessIndex() - stackIndexes);
+                if (!canInterceptDefinition) {
+                    idNode->m_flags.m_isFastAccessIndexIndicatesHeapIndex = ids[idNode->fastAccessIndex()].m_flags.m_isHeapAllocated;
+                    idNode->setFastAccessIndex(idNode->fastAccessUpIndex(), idNode->fastAccessIndex() - stackIndexes);
+                } else {
+                    idNode->unsetFastIndex();
+                }
             }
         }
     };

@@ -126,6 +126,11 @@ public:
         m_fastAccessUpIndex = upIndex;
     }
 
+    void unsetFastIndex()
+    {
+        m_flags.m_canUseFastAccess = false;
+    }
+
     bool canUseFastAccess()
     {
         return m_flags.m_canUseFastAccess;
