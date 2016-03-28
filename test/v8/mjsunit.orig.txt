@@ -967,7 +967,7 @@ Done running mjsunit/regress/regress-reset-dictionary-elements: pass
 Done running mjsunit/regress/regress-shift-enumerable: pass
 Done running mjsunit/regress/regress-smi-scanning: pass
 Done running mjsunit/regress/regress-sort-arguments: pass
-Done running mjsunit/regress/regress-splice-large-index: FAIL
+Done running mjsunit/regress/regress-splice-large-index: pass
 Done running mjsunit/regress/regress-store-global-proxy: pass
 Done running mjsunit/regress/regress-swapelements: CRASH
 Done running mjsunit/regress/regress-undefined-nan2: pass
@@ -1012,7 +1012,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@
 Uncaught MjsUnitAssertionError {message: Failure: expected <10> found <0>, stack: undefined}
 === mjsunit/array-splice.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <1> found <0>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure (0 in spliced): expected <false> found <true>, stack: undefined}
 === mjsunit/array-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1456,8 +1456,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","
 === mjsunit/regress/regress-mask-array-length.js ===
 --- stdout ---
 Uncaught RangeError
-=== mjsunit/regress/regress-splice-large-index.js ===
---- TIMEOUT ---
 === mjsunit/regress/regress-swapelements.js ===
 exit code: -11
 --- CRASHED ---
@@ -1466,6 +1464,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 164 tests failed
+=== 163 tests failed
 === 7 tests CRASHED
 ===

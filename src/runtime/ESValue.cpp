@@ -1066,6 +1066,63 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, ESObject* obj, bool thro
     return defineOwnProperty(P, PropertyDescriptor { obj }, throwFlag);
 }
 
+ESArrayObject* ESArrayObject::fastSplice(size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments)
+{
+    escargot::ESArrayObject* ret = ESArrayObject::create(0);
+    size_t arrlen = length();
+
+    for (unsigned k = 0; k < deleteCnt; k++) {
+        if (k + start < arrlen)
+            ret->defineDataProperty(ESValue(k), true, true, true, get(k + start));
+    }
+
+    if (insertCnt < deleteCnt) {
+        unsigned k = start;
+        while (k < arrlen - deleteCnt) {
+            ESValue from = ESValue(k + deleteCnt);
+            ESValue to = ESValue(k + insertCnt);
+
+            if (hasProperty(from)) {
+                set(to.asUInt32(), get(from.asUInt32()));
+            }
+            k++;
+        }
+
+        k = arrlen;
+        while (k > arrlen - deleteCnt + insertCnt) {
+            deleteProperty(ESValue(k - 1));
+            k--;
+        }
+    } else {
+        unsigned k = arrlen - deleteCnt;
+        while (k > start) {
+            ESValue from = ESValue(k + deleteCnt - 1);
+            ESValue to = ESValue(k + insertCnt - 1);
+
+            if (hasProperty(from)) {
+                set(to.asUInt32(), get(from.asUInt32()));
+            }
+            k--;
+        }
+    }
+
+    if (insertCnt > 0) {
+        size_t k = start;
+        size_t leftInsert = insertCnt;
+        size_t argIdx = 2;
+        while (leftInsert > 0) {
+            set(k, arguments[argIdx]);
+            leftInsert--;
+            argIdx++;
+            k++;
+        }
+    }
+
+    ((ESObject*)this)->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
+
+    return ret;
+}
+
 void ESArrayObject::setLength(unsigned newLength)
 {
     if (m_flags.m_isFastMode) {

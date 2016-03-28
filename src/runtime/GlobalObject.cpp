@@ -2411,7 +2411,6 @@ void GlobalObject::installArray()
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         size_t arrlen = thisBinded->length();
-        escargot::ESArrayObject* ret = ESArrayObject::create(0);
         double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger();
         size_t start;
         size_t deleteCnt = 0, insertCnt = 0;
@@ -2428,6 +2427,11 @@ void GlobalObject::installArray()
             dc = 0;
         deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
 
+        if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
+            return thisBinded->asESArrayObject()->fastSplice(start, deleteCnt, insertCnt, instance->currentExecutionContext()->arguments());
+        }
+
+        escargot::ESArrayObject* ret = ESArrayObject::create(0);
         std::vector<uint32_t> indexes;
 
         ESValue ptr = thisBinded;
@@ -2566,21 +2570,11 @@ void GlobalObject::installArray()
         k = start;
         size_t argIdx = 2;
         if (arglen > 2) {
-            if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
-                auto thisArr = thisBinded->asESArrayObject();
-                while (leftInsert > 0) {
-                    thisArr->set(k, instance->currentExecutionContext()->readArgument(argIdx));
-                    leftInsert--;
-                    argIdx++;
-                    k++;
-                }
-            } else {
-                while (leftInsert > 0) {
-                    thisBinded->set(ESValue(k), instance->currentExecutionContext()->readArgument(argIdx), true);
-                    leftInsert--;
-                    argIdx++;
-                    k++;
-                }
+            while (leftInsert > 0) {
+                thisBinded->set(ESValue(k), instance->currentExecutionContext()->readArgument(argIdx), true);
+                leftInsert--;
+                argIdx++;
+                k++;
             }
         }
         thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);

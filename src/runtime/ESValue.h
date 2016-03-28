@@ -2269,6 +2269,8 @@ public:
         return ret;
     }
 
+    ESArrayObject* fastSplice(size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments);
+
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)
     {
