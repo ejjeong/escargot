@@ -259,7 +259,11 @@ GetObjectPreComputedCaseInlineCacheOperation:
             }
 
             if (*cachedHiddenClassIndex != SIZE_MAX) {
-                return obj->hiddenClass()->read(obj, *willBeObject, keyString, *cachedHiddenClassIndex);
+                ESValue ret = obj->hiddenClass()->read(obj, *willBeObject, keyString, *cachedHiddenClassIndex);
+                // only cache vector mode object.
+                if (!targetObj->hiddenClass()->isVectorMode())
+                    inlineCache->m_cache.pop_back();
+                return ret;
             } else {
                 return ESValue();
             }

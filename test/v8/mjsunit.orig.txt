@@ -53,7 +53,7 @@ Done running mjsunit/boolean: pass
 Done running mjsunit/break: pass
 Done running mjsunit/call-non-function-call: pass
 Done running mjsunit/call-non-function: pass
-Done running mjsunit/call-stub: FAIL
+Done running mjsunit/call-stub: pass
 Done running mjsunit/call: pass
 Done running mjsunit/char-escape: pass
 Done running mjsunit/class-of-builtins: pass
@@ -121,7 +121,7 @@ Done running mjsunit/get-prototype-of: pass
 Done running mjsunit/getter-in-prototype: FAIL
 Done running mjsunit/getter-in-value-prototype: pass
 Done running mjsunit/global-accessors: pass
-Done running mjsunit/global-deleted-property-ic: FAIL
+Done running mjsunit/global-deleted-property-ic: pass
 Done running mjsunit/global-ic: pass
 Done running mjsunit/global-load-from-eval: pass
 Done running mjsunit/global-load-from-nested-eval: pass
@@ -1021,9 +1021,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@0">, stack: undefined}
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
-=== mjsunit/call-stub.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <2> found <1>, stack: undefined}
 === mjsunit/cyclic-array-to-string.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1078,9 +1075,6 @@ Uncaught ReferenceError: x is not defined
 === mjsunit/getter-in-prototype.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/global-deleted-property-ic.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <99> found <42>, stack: undefined}
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
@@ -1484,6 +1478,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 170 tests failed
+=== 168 tests failed
 === 7 tests CRASHED
 ===
