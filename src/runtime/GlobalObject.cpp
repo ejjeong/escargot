@@ -2412,77 +2412,178 @@ void GlobalObject::installArray()
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         size_t arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
-        if (arglen == 0) {
-        } else if (arglen >= 1) {
-            double relativeStart = instance->currentExecutionContext()->arguments()[0].toInteger();
-            size_t start;
-            size_t deleteCnt = 0, insertCnt = 0;
-            size_t k;
-            if (relativeStart < 0)
-                start = arrlen+relativeStart > 0 ? arrlen+relativeStart : 0;
-            else
-                start = relativeStart > arrlen ? arrlen : relativeStart;
-            if (arglen == 1) {
-                deleteCnt = arrlen - start;
-            } else {
-                insertCnt = arglen - 2;
-                double dc = instance->currentExecutionContext()->arguments()[1].toInteger();
-                if (dc < 0)
-                    dc = 0;
-                deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
-            }
-            for (k = 0; k < deleteCnt; k++) {
-                size_t from = start + k;
-                if (thisBinded->hasProperty(ESValue(from)))
-                    ret->defineDataProperty(ESValue(k), true, true, true, thisBinded->get(ESValue(from)));
-            }
-            size_t leftInsert = insertCnt;
-            if (insertCnt < deleteCnt) {
-                k = start;
-                while (k < arrlen - deleteCnt) {
-                    if (thisBinded->hasProperty(ESValue(k + deleteCnt))) {
-                        thisBinded->set(ESValue(k + insertCnt), thisBinded->get(ESValue(k + deleteCnt)), true);
+        double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger();
+        size_t start;
+        size_t deleteCnt = 0, insertCnt = 0;
+        size_t k;
+
+        if (relativeStart < 0)
+            start = arrlen+relativeStart > 0 ? arrlen+relativeStart : 0;
+        else
+            start = relativeStart > arrlen ? arrlen : relativeStart;
+
+        insertCnt = (arglen > 2)? arglen - 2 : 0;
+        double dc = instance->currentExecutionContext()->readArgument(1).toInteger();
+        if (dc < 0)
+            dc = 0;
+        deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
+
+        std::vector<uint32_t> indexes;
+
+        ESValue ptr = thisBinded;
+        while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+            ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+                uint32_t index = ESValue::ESInvalidIndexValue;
+                if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
+                    indexes.push_back(index);
+            });
+            ptr = ptr.asESPointer()->asESObject()->__proto__();
+        }
+        std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
+
+        for (auto k : indexes) {
+            if (k < start)
+                continue;
+
+            if (k >= start + deleteCnt)
+                break;
+
+            ret->defineDataProperty(ESValue(k - start), true, true, true, thisBinded->get(ESValue(k)));
+        }
+
+        size_t leftInsert = insertCnt;
+        if (insertCnt < deleteCnt) {
+            std::vector<uint32_t> deletableIndexes(indexes.size());
+            std::transform(indexes.begin(), indexes.end(), deletableIndexes.begin(), [=](unsigned int k) {
+                return k - insertCnt + deleteCnt;
+            });
+
+            unsigned i = 0;
+            unsigned j = 0;
+            unsigned len = indexes.size(), len2 = deletableIndexes.size();
+            unsigned curIndex = start;
+            unsigned max = std::numeric_limits<unsigned>::max();
+            unsigned prevIndex = max;
+
+            while (i < len || j < len2) {
+                int64_t to = (int64_t)(curIndex + insertCnt - deleteCnt);
+                if ((prevIndex != max && curIndex <= prevIndex)
+                    || curIndex < start + deleteCnt
+                    || to < 0) {
+                    if (i < len &&  j < len2) {
+                        if (indexes[i] < deletableIndexes[j]) {
+                            curIndex = indexes[i++];
+                        } else {
+                            curIndex = deletableIndexes[j++];
+                        }
+                    } else if (i < len) {
+                        curIndex = indexes[i++];
                     } else {
-                        thisBinded->deletePropertyWithException(ESValue(k + insertCnt));
+                        curIndex = deletableIndexes[j++];
                     }
-                    k++;
+                    continue;
                 }
-                k = arrlen;
-                while (k > arrlen - deleteCnt + insertCnt) {
-                    thisBinded->deletePropertyWithException(ESValue(k - 1));
-                    k--;
+
+                if (curIndex >= arrlen)
+                    break;
+
+                if (std::binary_search(indexes.begin(), indexes.end(), curIndex)) {
+                    thisBinded->set(ESValue(to), thisBinded->get(ESValue(curIndex)), true);
+                } else {
+                    thisBinded->deletePropertyWithException(ESValue(to));
                 }
-            } else if (insertCnt > deleteCnt) {
-                k = arrlen - deleteCnt;
-                while (k > start) {
-                    if (thisBinded->hasProperty(ESValue(k + deleteCnt - 1))) {
-                        thisBinded->set(ESValue(k + insertCnt - 1), thisBinded->get(ESValue(k + deleteCnt - 1)), true);
-                    } else {
-                        thisBinded->deletePropertyWithException(ESValue(k + insertCnt - 1));
+                prevIndex = curIndex;
+            }
+
+            ESValue ptr = thisBinded;
+            indexes.clear();
+            while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+                ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+                    uint32_t index = ESValue::ESInvalidIndexValue;
+                    if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
+                        indexes.push_back(index);
+                });
+                ptr = ptr.asESPointer()->asESObject()->__proto__();
+            }
+            std::sort(indexes.begin(), indexes.end(), std::greater<unsigned>());
+            prevIndex = max;
+            for (auto k : indexes) {
+                if (k > arrlen - deleteCnt + insertCnt -1) {
+                    if (prevIndex != max && k >= prevIndex) {
+                        continue;
                     }
-                    k--;
+                    thisBinded->deletePropertyWithException(ESValue(k));
+                    prevIndex = k;
+                } else {
+                    break;
                 }
             }
-            k = start;
-            size_t argIdx = 2;
+        } else if (insertCnt > deleteCnt) {
+            std::vector<unsigned> deletableIndexes(indexes.size());
+            std::transform(indexes.begin(), indexes.end(), deletableIndexes.begin(), [=](unsigned int k) {
+                return k - insertCnt + deleteCnt;
+            });
+
+            unsigned len = indexes.size(), len2 = deletableIndexes.size();
+            unsigned i = len - 1;
+            unsigned j = len2 - 1;
+            unsigned curIndex = arrlen - 1;
+            unsigned max = std::numeric_limits<unsigned>::max();
+            unsigned prevIndex = max;
+
+            while (true) {
+                int64_t to = (int64_t)(curIndex + insertCnt - deleteCnt);
+                if ((prevIndex != std::numeric_limits<unsigned>::max() && curIndex >= prevIndex)
+                    || curIndex > arrlen - 1
+                    || to < 0) {
+                    if (i != max && j != max) {
+                        if (indexes[i] < deletableIndexes[j]) {
+                            curIndex = deletableIndexes[j--];
+                        } else {
+                            curIndex = indexes[i--];
+                        }
+                    } else if (i != max) {
+                        curIndex = indexes[i--];
+                    } else if (j != max) {
+                        curIndex = deletableIndexes[j--];
+                    } else {
+                        break;
+                    }
+                    continue;
+                }
+
+                if ((int64_t)curIndex <= (int64_t)(start + deleteCnt - 1))
+                    break;
+
+                if (std::binary_search(indexes.begin(), indexes.end(), curIndex)) {
+                    thisBinded->set(ESValue(to), thisBinded->get(ESValue(curIndex)), true);
+                } else {
+                    thisBinded->deletePropertyWithException(ESValue(to));
+                }
+                prevIndex = curIndex;
+            }
+        }
+        k = start;
+        size_t argIdx = 2;
+        if (arglen > 2) {
             if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
                 auto thisArr = thisBinded->asESArrayObject();
                 while (leftInsert > 0) {
-                    thisArr->set(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                    thisArr->set(k, instance->currentExecutionContext()->readArgument(argIdx));
                     leftInsert--;
                     argIdx++;
                     k++;
                 }
             } else {
                 while (leftInsert > 0) {
-                    thisBinded->set(ESValue(k), instance->currentExecutionContext()->arguments()[argIdx], true);
+                    thisBinded->set(ESValue(k), instance->currentExecutionContext()->readArgument(argIdx), true);
                     leftInsert--;
                     argIdx++;
                     k++;
                 }
             }
-            thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
         }
+        thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
         return ret;
     }, strings->splice, 2));
 
