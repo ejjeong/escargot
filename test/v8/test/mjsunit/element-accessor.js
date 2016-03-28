@@ -26,8 +26,10 @@
   assertEquals(100, o[3]);
 })();
 
+/* es6 typedarray
 (function () {
   var o = new Int32Array();
   Object.defineProperty(o, "0", {get: function(){}});
   assertEquals(undefined, Object.getOwnPropertyDescriptor(o, "0"));
 })();
+*/

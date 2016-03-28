@@ -215,6 +215,7 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 }
 */
 
+NEVER_INLINE void throwObjectWriteError(const char* msg = "Attempted to assign to readonly property.");
 ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArgumentsObject()
 {
     ESArgumentsObject* argumentsObject = ESArgumentsObject::create(this);
@@ -247,7 +248,8 @@ ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArguments
                 ASSERT(i != ESValue::ESInvalidIndexValue);
                 ESArgumentsObject* argumentsObject = self->asESArgumentsObject();
                 if (self != originalObj) {
-                    argumentsObject->deleteProperty(propertyName, true);
+                    if (!argumentsObject->deleteProperty(propertyName))
+                        throwObjectWriteError();
                     argumentsObject->defineDataProperty(propertyName, true, true, true, val);
                     return;
                 }

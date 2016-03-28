@@ -1606,7 +1606,7 @@ public:
         }
     }
 
-    inline ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable);
+    inline ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable, bool forceNewHiddenClass = false);
     inline ESHiddenClass* removeProperty(ESString* name)
     {
         return removeProperty(findProperty(name));
@@ -1790,7 +1790,7 @@ public:
         return defineDataProperty(name.string(), isWritable, isEnumerable, isConfigurable, initalValue, force);
     }
     inline bool defineDataProperty(const escargot::ESValue& key,
-        bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue(), bool force = false);
+        bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue(), bool force = false, bool forceNewHiddenClass = false);
     inline bool defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data,
         bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, bool force = false);
     inline bool defineAccessorProperty(const escargot::ESValue& key, ESNativeGetter getter, ESNativeSetter setter,

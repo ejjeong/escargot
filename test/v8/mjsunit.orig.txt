@@ -86,8 +86,8 @@ Done running mjsunit/dont-enum-array-holes: pass
 Done running mjsunit/dont-reinit-global-var: pass
 Done running mjsunit/double-equals: pass
 Done running mjsunit/dtoa: pass
-Done running mjsunit/element-accessor: FAIL
-Done running mjsunit/element-read-only: FAIL
+Done running mjsunit/element-accessor: pass
+Done running mjsunit/element-read-only: pass
 Done running mjsunit/elements-transition-and-store: pass
 Done running mjsunit/enumeration-order: FAIL
 Done running mjsunit/error-accessors: pass
@@ -1024,12 +1024,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@
 === mjsunit/cyclic-array-to-string.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/element-accessor.js ===
---- stdout ---
-Uncaught TypeError: cannot redefine property
-=== mjsunit/element-read-only.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/enumeration-order.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (array element at index 2): expected <"-23"> found <"5">, stack: undefined}
@@ -1464,6 +1458,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 163 tests failed
+=== 161 tests failed
 === 7 tests CRASHED
 ===

@@ -259,11 +259,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             }
 
             if (*cachedHiddenClassIndex != SIZE_MAX) {
-                ESValue ret = obj->hiddenClass()->read(obj, *willBeObject, keyString, *cachedHiddenClassIndex);
-                // only cache vector mode object.
-                if (!targetObj->hiddenClass()->isVectorMode())
-                    inlineCache->m_cache.pop_back();
-                return ret;
+                return obj->hiddenClass()->read(obj, *willBeObject, keyString, *cachedHiddenClassIndex);
             } else {
                 return ESValue();
             }
@@ -387,12 +383,14 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
             } else {
                 cachedHiddenClassChain->push_back(obj->hiddenClass());
                 ESValue proto = obj->__proto__();
+                bool foundInPrototype = false; // for GetObjectPreComputedCase vector mode cache
                 while (proto.isObject()) {
                     obj = proto.asESPointer()->asESObject();
                     cachedHiddenClassChain->push_back(obj->hiddenClass());
 
                     size_t idx = obj->hiddenClass()->findProperty(keyString);
                     if (idx != SIZE_MAX) {
+                        foundInPrototype = true;
                         // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
                         // If IsAccessorDescriptor(desc) is true, then
                         // Let setter be desc.[[Set]] which cannot be undefined.
@@ -418,6 +416,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                 data->setValue(obj, willBeObject->asESPointer()->asESObject(), keyString, value);
                                 return;
                             }
+                            ASSERT_NOT_REACHED();
                         }
 
                         if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
@@ -432,7 +431,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 }
 
                 ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
-                bool res = willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
+                bool res = willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value, false, foundInPrototype);
                 if (!res)
                     throwObjectWriteError();
 

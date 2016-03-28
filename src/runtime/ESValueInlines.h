@@ -1104,7 +1104,7 @@ inline ESHiddenClass* ESHiddenClass::forceNonVectorMode()
     return cls;
 }
 
-inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
+inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable, bool forceNewHiddenClass)
 {
     ASSERT(findProperty(name) == SIZE_MAX);
     if (m_flags.m_isVectorMode) {
@@ -1160,7 +1160,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
         ASSERT(cls->m_propertyInfo.size() - 1 == pid);
         return cls;
     } else {
-        ESHiddenClass* cls = m_flags.m_hasEverSetAsPrototypeObjectHiddenClass ? new ESHiddenClass(*this) : this;
+        ESHiddenClass* cls = (forceNewHiddenClass || m_flags.m_hasEverSetAsPrototypeObjectHiddenClass) ? new ESHiddenClass(*this) : this;
         cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
         cls->m_flags.m_hasReadOnlyProperty = cls->m_flags.m_hasReadOnlyProperty | (!isWritable);
         cls->m_flags.m_hasIndexedProperty = cls->m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
@@ -1219,7 +1219,7 @@ inline void ESObject::set__proto__(const ESValue& obj)
     setValueAsProtoType(obj);
 }
 
-inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initialValue, bool force)
+inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initialValue, bool force, bool forceNewHiddenClass)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1258,11 +1258,14 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
 
     escargot::ESString* keyString = key.toString();
+    if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
+    }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if (oldIdx == SIZE_MAX) {
         if (UNLIKELY(!isExtensible() && !force))
             return false;
-        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable, forceNewHiddenClass);
         m_hiddenClassData.push_back(initialValue);
         if (UNLIKELY(m_flags.m_isGlobalObject)) {
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
@@ -1277,6 +1280,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         }
         return true;
     } else {
+        ASSERT(!forceNewHiddenClass);
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force && !m_hiddenClassData[oldIdx].isDeleted()) {
             if (oldIdx == 0) { // for __proto__
                 ESHiddenClassPropertyInfo& info = m_hiddenClass->m_propertyInfo[oldIdx];
@@ -1687,12 +1691,14 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
         if (UNLIKELY(!isExtensible()))
             return false;
         ESValue target = __proto__();
+        bool foundInPrototype = false; // for GetObjectPreComputedCase vector mode cache
         while (true) {
             if (!target.isObject()) {
                 break;
             }
             size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(keyString);
             if (t != SIZE_MAX) {
+                foundInPrototype = true;
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
                 // If IsAccessorDescriptor(desc) is true, then
                 // Let setter be desc.[[Set]] which cannot be undefined.
@@ -1720,7 +1726,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             }
             target = target.asESPointer()->asESObject()->__proto__();
         }
-        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, true, true, true);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, true, true, true, foundInPrototype);
         m_hiddenClassData.push_back(val);
 
         if (UNLIKELY(m_flags.m_isGlobalObject))
