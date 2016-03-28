@@ -73,7 +73,7 @@ Done running mjsunit/context-variable-assignments: pass
 Done running mjsunit/cyclic-array-to-string: FAIL
 Done running mjsunit/cyrillic: pass
 Done running mjsunit/d8-os: pass
-Done running mjsunit/date-parse: FAIL
+Done running mjsunit/date-parse: pass
 Done running mjsunit/deep-recursion: pass
 Done running mjsunit/delay-syntax-error: pass
 Done running mjsunit/delete-global-properties: pass
@@ -1031,9 +1031,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <2> found <1>, stack:
 === mjsunit/cyclic-array-to-string.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/date-parse.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (parse-local-time: Jan 01 2000 08:00:00 is NaN.): expected <true> found <false>, stack: undefined}
 === mjsunit/element-accessor.js ===
 --- stdout ---
 Uncaught TypeError: cannot redefine property
@@ -1862,6 +1859,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 180 tests failed
+=== 179 tests failed
 === 8 tests CRASHED
 ===

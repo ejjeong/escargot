@@ -40,7 +40,7 @@ function testDateParse(string) {
 // For local time we just test that parsing returns non-NaN positive
 // number of milliseconds to make it timezone independent.
 function testDateParseLocalTime(string) {
-  var d = Date.parse("parse-local-time:" + string);
+  var d = Date.parse("parse-local-time: " + string);
   assertTrue(!isNaN(d), "parse-local-time: " + string + " is NaN.");
   assertTrue(d > 0, "parse-local-time: " + string + " <= 0.");
 };

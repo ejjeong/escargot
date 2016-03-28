@@ -2003,7 +2003,7 @@ double ESDateObject::parseStringToDate_1(escargot::ESString* istr, bool& haveTZ,
 
 
     long month = -1;
-    const char* dateString = istr->asciiData();
+    const char* dateString = istr->utf8Data();
     const char* wordStart = dateString;
 
     skipSpacesAndComments(dateString);
@@ -2408,7 +2408,7 @@ static char* parseES5TimePortion(char* currentPosition, long& hours, long& minut
 double ESDateObject::parseStringToDate_2(escargot::ESString* istr, bool& haveTZ)
 {
     haveTZ = true;
-    const char* dateString = istr->asciiData();
+    const char* dateString = istr->utf8Data();
 
     static const long daysPerMonth[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -2575,7 +2575,7 @@ int ESDateObject::daysInYear(long year)
 
 int ESDateObject::dayFromYear(long year) // day number of the first day of year 'y'
 {
-    return 365 * (year - 1970) + floor((year - 1969) / 4) - floor((year - 1901) / 100) + floor((year - 1601) / 400);
+    return 365 * (year - 1970) + floor((year - 1969) / 4.0) - floor((year - 1901) / 100.0) + floor((year - 1601) / 400.0);
 }
 
 long ESDateObject::yearFromTime(long long t)
