@@ -1501,8 +1501,8 @@ void GlobalObject::installError()
         ESValue v(instance->currentExecutionContext()->resolveThisBindingToObject());
         ESPointer* o = v.asESPointer();
         ESStringBuilder builder;
-        ESValue name = o->asESObject()->get(ESValue(ESString::create(u"name")));
-        ESValue message = o->asESObject()->get(ESValue(ESString::create(u"message")));
+        ESValue name = o->asESObject()->get(ESValue(strings->name));
+        ESValue message = o->asESObject()->get(ESValue(strings->message));
         if (name.isUndefined() || name.toString()->length() == 0) { // name is empty
             if (!(message.isUndefined() || message.toString()->length() == 0)) { // message is not empty
                 builder.appendString(message.toString());

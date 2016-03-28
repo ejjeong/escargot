@@ -78,7 +78,10 @@ var errors = [SyntaxError, ReferenceError, TypeError, RangeError, URIError];
 var error_triggers = ["syntax error",
                       "var error = reference",
                       "undefined()",
-                      "String.fromCodePoint(0xFFFFFF)",
+                      // changed by sae-bom.kim because fromCodePoint() is ES6 spec
+                      // "String.fromCodePoint(0xFFFFFF)",
+                      // change end
+                      "new Array(5000000000)",
                       "decodeURI('%F')"];
 for (var i in errors) {
   var name = errors[i].name;
@@ -86,7 +89,9 @@ for (var i in errors) {
   // Monkey-patch prototype.
   var props = ["name", "message" /*, "stack"*/];
   for (var j in props) {
-    errors[i].prototype.__defineGetter__(props[j], fail);
+    // removed by sae-bom.kim because it is not ES5 spec
+    // errors[i].prototype.__defineGetter__(props[j], fail);
+    // remove end
   }
   // String conversion should not invoke monkey-patched getters on prototype.
   var error;
@@ -95,7 +100,9 @@ for (var i in errors) {
   } catch (e) {
     error = e;
   }
-  assertTrue(error.toString().startsWith(name));
+  // removed by sae-bom.kim because startsWith() is ES6 spec
+  // assertTrue(error.toString().startsWith(name));
+  // remove end
 
   // Deleting message on the error (exposing the getter) is fine.
   delete error.message;

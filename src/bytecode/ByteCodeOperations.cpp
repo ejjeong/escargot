@@ -305,15 +305,15 @@ NEVER_INLINE void throwObjectWriteError(const char* msg)
 
 NEVER_INLINE void throwUndefinedReferenceError(const ESString* name)
 {
-    ReferenceError* receiver = ReferenceError::create();
-    std::vector<ESValue, gc_allocator<ESValue> > arguments;
     UTF16String err_msg;
     err_msg.append(name->toUTF16String());
     err_msg.append(u" is not defined");
+    ReferenceError* receiver = ReferenceError::create(ESString::create(std::move(err_msg)));
+    // std::vector<ESValue, gc_allocator<ESValue> > arguments;
 
     // TODO call constructor
     // ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-    receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
+    // receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
     ESVMInstance::currentInstance()->throwError(receiver);
 }
 

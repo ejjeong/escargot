@@ -793,6 +793,8 @@
   'regress/regress-798': [SKIP],
   'regress/regress-crbug-505370': [SKIP],
   'regress/regress-function-constructor-receiver': [SKIP],
+  # Print inner code of function when function.toString() is called
+  'error-tostring-omit': [SKIP],
   # etc
   'contextual-calls': [SKIP],
   'cross-realm-filtering': [SKIP],

@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   95 tests will be skipped
+ *   96 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2088 tests are expected to pass
+ * 2087 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2228 tests
+Running 2227 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -91,8 +91,7 @@ Done running mjsunit/element-read-only: FAIL
 Done running mjsunit/elements-transition-and-store: pass
 Done running mjsunit/enumeration-order: FAIL
 Done running mjsunit/error-accessors: pass
-Done running mjsunit/error-constructors: FAIL
-Done running mjsunit/error-tostring-omit: FAIL
+Done running mjsunit/error-constructors: pass
 Done running mjsunit/error-tostring: FAIL
 Done running mjsunit/escape: FAIL
 Done running mjsunit/eval-enclosing-function-name: pass
@@ -1037,12 +1036,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/enumeration-order.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (array element at index 2): expected <"-23"> found <"5">, stack: undefined}
-=== mjsunit/error-constructors.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
-=== mjsunit/error-tostring-omit.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/error-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1491,6 +1484,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 172 tests failed
+=== 170 tests failed
 === 7 tests CRASHED
 ===

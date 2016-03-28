@@ -2945,7 +2945,6 @@ ESErrorObject::ESErrorObject(escargot::ESString* message)
 {
     if (message != strings->emptyString.string())
         set(strings->message, message);
-    set(strings->name, strings->Error.string());
 }
 
 ESErrorObject* ESErrorObject::create(escargot::ESString* message, Code code)
