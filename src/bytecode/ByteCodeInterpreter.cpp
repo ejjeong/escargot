@@ -1097,8 +1097,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             if (data->m_object->isESArrayObject() && data->m_object->asESArrayObject()->isFastmode()) {
                 while (LIKELY(data->m_idx < data->m_keys.size())) {
                     uint32_t idx = data->m_keys[data->m_idx].toIndex();
-                    if (idx == ESValue::ESInvalidIndexValue || idx >= data->m_object->asESArrayObject()->length())
+                    if (idx == ESValue::ESInvalidIndexValue) {
                         break;
+                    }
+
+                    if (idx >= data->m_object->asESArrayObject()->length()) {
+                        PUSH(stack, topOfStack, ESValue(true));
+                        executeNextCode<CheckIfKeyIsLast>(programCounter);
+                        NEXT_INSTRUCTION();
+                    }
 
                     ESValue e = data->m_object->asESArrayObject()->data()[idx];
                     if (UNLIKELY(e.isEmpty())) {

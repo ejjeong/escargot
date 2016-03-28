@@ -2428,7 +2428,7 @@ void GlobalObject::installArray()
         deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
 
         if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
-            return thisBinded->asESArrayObject()->fastSplice(start, deleteCnt, insertCnt, instance->currentExecutionContext()->arguments());
+            return thisBinded->asESArrayObject()->fastSplice(arrlen, start, deleteCnt, insertCnt, instance->currentExecutionContext()->arguments());
         }
 
         escargot::ESArrayObject* ret = ESArrayObject::create(0);

@@ -1066,10 +1066,9 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, ESObject* obj, bool thro
     return defineOwnProperty(P, PropertyDescriptor { obj }, throwFlag);
 }
 
-ESArrayObject* ESArrayObject::fastSplice(size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments)
+ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments)
 {
     escargot::ESArrayObject* ret = ESArrayObject::create(0);
-    size_t arrlen = length();
 
     for (unsigned k = 0; k < deleteCnt; k++) {
         if (k + start < arrlen)
@@ -1084,6 +1083,8 @@ ESArrayObject* ESArrayObject::fastSplice(size_t start, size_t deleteCnt, size_t 
 
             if (hasProperty(from)) {
                 set(to.asUInt32(), get(from.asUInt32()));
+            } else {
+                deleteProperty(to);
             }
             k++;
         }
@@ -1101,6 +1102,8 @@ ESArrayObject* ESArrayObject::fastSplice(size_t start, size_t deleteCnt, size_t 
 
             if (hasProperty(from)) {
                 set(to.asUInt32(), get(from.asUInt32()));
+            } else {
+                deleteProperty(to);
             }
             k--;
         }
