@@ -1825,6 +1825,11 @@ public:
         m_flags.m_isExtensible = extensible;
     }
 
+    bool isGlobalObject()
+    {
+        return m_flags.m_isGlobalObject;
+    }
+
     ESHiddenClass* hiddenClass()
     {
         return m_hiddenClass;

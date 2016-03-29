@@ -134,15 +134,15 @@ Done running mjsunit/instanceof-2: pass
 Done running mjsunit/instanceof: pass
 Done running mjsunit/int32-ops: pass
 Done running mjsunit/integer-to-string: pass
-Done running mjsunit/invalid-lhs: FAIL
+Done running mjsunit/invalid-lhs: pass
 Done running mjsunit/invalid-source-element: pass
 Done running mjsunit/json-parser-recursive: FAIL
 Done running mjsunit/json-replacer-number-wrapper-tostring: pass
 Done running mjsunit/json-replacer-order: FAIL
 Done running mjsunit/json: FAIL
 Done running mjsunit/keyed-array-call: pass
-Done running mjsunit/keyed-call-generic: FAIL
-Done running mjsunit/keyed-call-ic: FAIL
+Done running mjsunit/keyed-call-generic: pass
+Done running mjsunit/keyed-call-ic: pass
 Done running mjsunit/keyed-ic: pass
 Done running mjsunit/keyed-storage-extend: pass
 Done running mjsunit/keywords-and-reserved_words: pass
@@ -242,7 +242,7 @@ Done running mjsunit/result-table-min: pass
 Done running mjsunit/scanner: pass
 Done running mjsunit/scope-calls-eval: pass
 Done running mjsunit/search-string-multiple: pass
-Done running mjsunit/serialize-embedded-error: CRASH
+Done running mjsunit/serialize-embedded-error: pass
 Done running mjsunit/short-circuit-boolean: pass
 Done running mjsunit/simple-constructor: pass
 Done running mjsunit/smi-negative-zero: pass
@@ -280,7 +280,7 @@ Done running mjsunit/substr: pass
 Done running mjsunit/this-dynamic-lookup: pass
 Done running mjsunit/this-in-callbacks: pass
 Done running mjsunit/this-property-assignment: pass
-Done running mjsunit/this: FAIL
+Done running mjsunit/this: pass
 Done running mjsunit/throw-and-catch-function: pass
 Done running mjsunit/throw-exception-for-null-access: pass
 Done running mjsunit/to-precision: FAIL
@@ -552,7 +552,7 @@ Done running mjsunit/regress/regress-1217: FAIL
 Done running mjsunit/regress/regress-1218: pass
 Done running mjsunit/regress/regress-1233: pass
 Done running mjsunit/regress/regress-1236: pass
-Done running mjsunit/regress/regress-124: FAIL
+Done running mjsunit/regress/regress-124: pass
 Done running mjsunit/regress/regress-1240: FAIL
 Done running mjsunit/regress/regress-1254366: pass
 Done running mjsunit/regress/regress-1257: pass
@@ -1032,9 +1032,6 @@ Uncaught ReferenceError: x is not defined
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
-=== mjsunit/invalid-lhs.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1044,12 +1041,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <2> found <1>, stack:
 === mjsunit/json.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"1979-01-11T08:00:00.000Z"> found <null>, stack: undefined}
-=== mjsunit/keyed-call-generic.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <49> found <51>, stack: undefined}
-=== mjsunit/keyed-call-ic.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"[object global]"> found <"[object Object]">, stack: undefined}
 === mjsunit/math-sqrt.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <-0>, stack: undefined}
@@ -1100,9 +1091,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> found <undefined>, stack: undefined}
 === mjsunit/regexp.js ===
 --- stderr ---
-=== mjsunit/serialize-embedded-error.js ===
-exit code: -11
---- CRASHED ---
 === mjsunit/sparse-array-reverse.js ===
 --- stderr ---
 --- TIMEOUT ---
@@ -1133,9 +1121,6 @@ Uncaught MjsUnitAssertionError {message: Failure ("xaxbxcx".replace(b, $e)): exp
 === mjsunit/string-slices-regexp.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"> found <undefined>, stack: undefined}
-=== mjsunit/this.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"[object global]"> found <"[object Object]">, stack: undefined}
 === mjsunit/to-precision.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"-1e+27"> found <"">, stack: undefined}
@@ -1202,9 +1187,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/regress/regress-1217.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
-=== mjsunit/regress/regress-124.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"[object global]"> found <"[object Object]">, stack: undefined}
 === mjsunit/regress/regress-1240.js ===
 --- stdout ---
 Uncaught TypeError: Type error, DefineOwnProperty 7.a
@@ -1379,6 +1361,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 138 tests failed
-=== 6 tests CRASHED
+=== 132 tests failed
+=== 5 tests CRASHED
 ===

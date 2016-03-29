@@ -326,7 +326,7 @@ void GlobalObject::initGlobalObject()
     // $18.2.4 parseFloat(string)
     defineDataProperty(ESString::createAtomicString("parseFloat"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // 1. Let inputString be ToString(string).
-        ESValue input = instance->currentExecutionContext()->arguments()[0];
+        ESValue input = instance->currentExecutionContext()->readArgument(0);
         escargot::ESString* s = input.toString();
         size_t strLen = s->length();
 
@@ -395,7 +395,7 @@ void GlobalObject::initGlobalObject()
         int len = instance->currentExecutionContext()->argumentCount();
 
         // 1. Let inputString be ToString(string).
-        ESValue input = instance->currentExecutionContext()->arguments()[0];
+        ESValue input = instance->currentExecutionContext()->readArgument(0);
         escargot::ESString* s = input.toString();
 
         // 2. Let S be a newly created substring of inputString consisting of the first character that is not a StrWhiteSpaceChar
@@ -1158,6 +1158,8 @@ void GlobalObject::installObject()
             return ESString::createAtomicString(ret.data());
         } else if (thisVal->isESArgumentsObject()) {
             return ESString::createAtomicString("[object Arguments]");
+        } else if (thisVal->isGlobalObject()) {
+            return ESString::createAtomicString("[object global]");
         }
         return ESString::createAtomicString("[object Object]");
     }, strings->toString, 0));
@@ -2785,7 +2787,7 @@ void GlobalObject::installString()
         if (thisValue.isUndefinedOrNull())
             ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.charCodeAt(): Invalid bound this value")));
         escargot::ESString* str = thisValue.toString();
-        int position = instance->currentExecutionContext()->arguments()[0].toInteger();
+        int position = instance->currentExecutionContext()->readArgument(0).toInteger();
         ESValue ret;
         if (position < 0 || position >= (int)str->length())
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
@@ -2959,7 +2961,7 @@ void GlobalObject::installString()
             return string;
         }
 
-        ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
+        ESValue replaceValue = instance->currentExecutionContext()->readArgument(1);
         if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
             uint32_t matchCount = result.m_matchResults.size();
             ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
@@ -3248,7 +3250,7 @@ void GlobalObject::installString()
         } else {
             int len = str->length();
             double doubleStart = instance->currentExecutionContext()->arguments()[0].toNumber();
-            ESValue& end = instance->currentExecutionContext()->arguments()[1];
+            ESValue end = instance->currentExecutionContext()->readArgument(1);
             double doubleEnd = (argCount < 2 || end.isUndefined()) ? len : end.toNumber();
             doubleStart = (isnan(doubleStart)) ? 0 : doubleStart;
             doubleEnd = (isnan(doubleEnd)) ? 0 : doubleEnd;
@@ -3535,7 +3537,7 @@ void GlobalObject::installDate()
 
     // $20.3.3.2 Date.parse()
     m_date->defineDataProperty(ESString::createAtomicString("parse"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
+        ESValue v = instance->currentExecutionContext()->readArgument(0).toPrimitive();
         if (v.isESString()) {
             return ESValue(ESDateObject::parseStringToDate(v.asESString()));
         } else {
@@ -5890,7 +5892,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             offset = instance->currentExecutionContext()->arguments()[1].toInt32();
         if (offset < 0)
             instance->throwError(TypeError::create());
-        auto arg0 = instance->currentExecutionContext()->arguments()[0].asESPointer();
+        auto arg0 = instance->currentExecutionContext()->readArgument(0).asESPointer();
         escargot::ESArrayBufferObject* targetBuffer = thisVal->buffer();
         unsigned targetLength = thisVal->arraylength();
         int targetByteOffset = thisVal->byteoffset();
