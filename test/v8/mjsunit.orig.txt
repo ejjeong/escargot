@@ -211,7 +211,7 @@ Done running mjsunit/primitive-keyed-access: FAIL
 Done running mjsunit/property-load-across-eval: pass
 Done running mjsunit/property-name-eval-arguments: pass
 Done running mjsunit/property-object-key: pass
-Done running mjsunit/proto-accessor: FAIL
+Done running mjsunit/proto-accessor: pass
 Done running mjsunit/proto: pass
 Done running mjsunit/prototype: pass
 Done running mjsunit/readonly-accessor: pass
@@ -1057,9 +1057,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/primitive-keyed-access.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/proto-accessor.js ===
---- stderr ---
---- TIMEOUT ---
 === mjsunit/regexp-cache-replace.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"o"> found <undefined>, stack: undefined}
@@ -1336,6 +1333,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 124 tests failed
+=== 123 tests failed
 === 5 tests CRASHED
 ===

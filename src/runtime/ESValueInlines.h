@@ -1215,6 +1215,13 @@ inline void ESObject::set__proto__(const ESValue& obj)
     if (UNLIKELY(!isExtensible()))
         return;
     ASSERT(obj.isObject() || obj.isUndefinedOrNull());
+    ESValue it = obj;
+    while (it.isObject()) {
+        ESValue proto = it.toObject()->__proto__();
+        if (proto.isObject() && proto.toObject() == this)
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("cyclic __proto__")));
+        it = proto;
+    }
     m___proto__ = obj;
     setValueAsProtoType(obj);
 }
