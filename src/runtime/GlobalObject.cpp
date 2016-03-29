@@ -43,16 +43,16 @@ UTF16String codePointTo4digitString(int codepoint)
 
 ASCIIString char2hex(char dec)
 {
-    char dig1 = (dec&0xF0)>>4;
-    char dig2 = (dec&0x0F);
+    char dig1 = (dec & 0xF0) >> 4;
+    char dig2 = (dec & 0x0F);
     if (dig1 <= 9)
         dig1 += 48; // 0, 48inascii
-    if (10 <= dig1 && dig1 <=15)
-        dig1 += 65-10; // a, 97inascii
+    if (10 <= dig1 && dig1 <= 15)
+        dig1 += 65 - 10; // a, 97inascii
     if (dig2 <= 9)
         dig2 += 48;
-    if (10 <= dig2 && dig2 <=15)
-        dig2 += 65-10;
+    if (10 <= dig2 && dig2 <= 15)
+        dig2 += 65 - 10;
 
     ASCIIString r;
     r.append(&dig1, 1);
@@ -65,9 +65,9 @@ ASCIIString char2hex4digit(char16_t dec)
     char dig[4];
     ASCIIString r;
     for (int i = 0; i < 4; i++) {
-        dig[i] = (dec&(0xF000>>i*4))>>(12-i*4);
+        dig[i] = (dec & (0xF000 >> i * 4)) >> (12 - i * 4);
         if (dig[i] <= 9)
-            dig[i] +=48; // 0, 48inascii
+            dig[i] += 48; // 0, 48inascii
         if (10 <= dig[i] && dig[i] <= 15)
             dig[i] += 65 - 10; // a, 97inascii
         r.append(&dig[i], 1);
@@ -75,20 +75,24 @@ ASCIIString char2hex4digit(char16_t dec)
     return r;
 }
 
-char hex2char(char first, char second)
+char16_t hex2char(char16_t first, char16_t second)
 {
-    char dig1 = first;
-    char dig2 = second;
+    char16_t dig1 = first;
+    char16_t dig2 = second;
     if (48 <= dig1 && dig1 <= 57)
         dig1 -= 48;
     if (65 <= dig1 && dig1 <= 70)
         dig1 -= 65 - 10;
+    if (97 <= dig1 && dig1 <= 102)
+        dig1 -= 97 - 10;
     if (48 <= dig2 && dig2 <= 57)
         dig2 -= 48;
     if (65 <= dig2 && dig2 <= 70)
         dig2 -= 65 - 10;
+    if (97 <= dig2 && dig2 <= 102)
+        dig2 -= 97 - 10;
 
-    char dec = dig1 << 4;
+    char16_t dec = dig1 << 4;
     dec |= dig2;
 
     return dec;
@@ -865,8 +869,8 @@ void GlobalObject::initGlobalObject()
                 || t == '@' || t == '*' || t == '_' || t == '+' || t == '-' || t == '.' || t == '/') {
                 R.push_back(t);
             } else if (t < 256) {
-                // %uxy
-                R.append("%u");
+                // %xy
+                R.append("%");
                 R.append(char2hex(t));
             } else {
                 // %uwxyz
@@ -879,16 +883,57 @@ void GlobalObject::initGlobalObject()
 
     // $B.2.1.2 unescape(string)
     defineDataProperty(ESString::createAtomicString("unescape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        NullableUTF8String str = instance->currentExecutionContext()->readArgument(0).toString()->toNullableUTF8String();
-        size_t length = str.m_bufferSize;
-        ASCIIString R = "";
+        escargot::ESString* str = instance->currentExecutionContext()->readArgument(0).toString();
+        size_t length = str->length();
+        UTF16String R;
+        bool unescapeValue = false;
         for (size_t i = 0; i < length; i++) {
-            if (str.m_buffer[i] == '%') {
-                R.push_back(hex2char(str.m_buffer[i+1], str.m_buffer[i+2]));
-                i = i + 2;
-            } else {
-                R.append(&str.m_buffer[i], 1);
+            char16_t first = str->charAt(i);
+            if (first == '%') {
+                if (length - i >= 6) {
+                    char16_t second = str->charAt(i+1);
+                    char16_t third = str->charAt(i+2);
+                    if (second == 'u') {
+                        char16_t fourth = str->charAt(i+3);
+                        char16_t fifth = str->charAt(i+4);
+                        char16_t sixth = str->charAt(i+5);
+
+                        // hex dig check
+                        if (((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102)) &&
+                            ((48 <= fourth && fourth <= 57) || (65 <= fourth && fourth <= 70) || (97 <= fourth && fourth <= 102)) &&
+                            ((48 <= fifth && fifth <= 57) || (65 <= fifth && fifth <= 70) || (97 <= fifth && fifth <= 102)) &&
+                            ((48 <= sixth && sixth <= 57) || (65 <= sixth && sixth <= 70) || (97 <= sixth && sixth <= 102))) {
+                            char16_t l = hex2char(third, fourth) << 8;
+                            l |= hex2char(fifth, sixth);
+                            R.append(&l, 1);
+                            i += 5;
+                            unescapeValue = true;
+                        }
+                    } else if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102)) &&
+                        ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
+                        char16_t l = hex2char(second, third);
+                        R.append(&l, 1);
+                        i += 2;
+                        unescapeValue = true;
+                    }
+                } else if (length - i >= 3) {
+                    char16_t second = str->charAt(i+1);
+                    char16_t third = str->charAt(i+2);
+                    if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102)) &&
+                        ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
+                        char16_t l = hex2char(second, third);
+                        R.append(&l, 1);
+                        i += 2;
+                        unescapeValue = true;
+                    }
+                }
             }
+
+            if (!unescapeValue) {
+                char16_t l = str->charAt(i);
+                R.append(&l, 1);
+            }
+            unescapeValue = false;
         }
         return escargot::ESString::create(std::move(R));
     }, ESString::createAtomicString("unescape"), 1));

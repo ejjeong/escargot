@@ -92,7 +92,7 @@ Done running mjsunit/elements-transition-and-store: pass
 Done running mjsunit/error-accessors: pass
 Done running mjsunit/error-constructors: pass
 Done running mjsunit/error-tostring: FAIL
-Done running mjsunit/escape: FAIL
+Done running mjsunit/escape: pass
 Done running mjsunit/eval-enclosing-function-name: pass
 Done running mjsunit/eval-typeof-non-existing: pass
 Done running mjsunit/eval: pass
@@ -1018,9 +1018,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/error-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/escape.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"%20/%20"> found <"%u20/%u20">, stack: undefined}
 === mjsunit/fuzz-accessors.js ===
 --- stdout ---
 Uncaught RangeError
@@ -1213,6 +1210,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" 
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2373.js ===
 --- stderr ---
+--- TIMEOUT ---
 === mjsunit/regress/regress-2374.js ===
 --- stderr ---
 === mjsunit/regress/regress-2437.js ===
@@ -1339,6 +1337,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 125 tests failed
+=== 124 tests failed
 === 5 tests CRASHED
 ===
