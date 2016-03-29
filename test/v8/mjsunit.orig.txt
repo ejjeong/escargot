@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  186 tests will be skipped
+ *  187 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1998 tests are expected to pass
+ * 1997 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2137 tests
+Running 2136 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -29,7 +29,7 @@ Done running mjsunit/array-indexing: pass
 Done running mjsunit/array-iteration: pass
 Done running mjsunit/array-join: FAIL
 Done running mjsunit/array-length-number-conversion: pass
-Done running mjsunit/array-length: FAIL
+Done running mjsunit/array-length: pass
 Done running mjsunit/array-push-non-smi-value: pass
 Done running mjsunit/array-push10: pass
 Done running mjsunit/array-push11: pass
@@ -111,7 +111,7 @@ Done running mjsunit/function-property: pass
 Done running mjsunit/function-prototype: pass
 Done running mjsunit/function-without-prototype: pass
 Done running mjsunit/function: pass
-Done running mjsunit/fuzz-accessors: FAIL
+Done running mjsunit/fuzz-accessors: pass
 Done running mjsunit/get-own-property-descriptor: FAIL
 Done running mjsunit/get-prototype-of: pass
 Done running mjsunit/getter-in-prototype: pass
@@ -442,7 +442,6 @@ Done running mjsunit/compiler/simple-global-access: pass
 Done running mjsunit/compiler/this-property-refs: pass
 Done running mjsunit/compiler/thisfunction: pass
 Done running mjsunit/compiler/to-fast-properties: pass
-Done running mjsunit/compiler/truncating-store: FAIL
 Done running mjsunit/compiler/unary-add: pass
 Done running mjsunit/compiler/variables: pass
 Done running mjsunit/message/fail/arrow-formal-parameters: pass
@@ -581,7 +580,7 @@ Done running mjsunit/regress/regress-145201: pass
 Done running mjsunit/regress/regress-1472: FAIL
 Done running mjsunit/regress/regress-148378: pass
 Done running mjsunit/regress/regress-149: FAIL
-Done running mjsunit/regress/regress-1491: FAIL
+Done running mjsunit/regress/regress-1491: pass
 Done running mjsunit/regress/regress-1513: pass
 Done running mjsunit/regress/regress-1529: pass
 Done running mjsunit/regress/regress-1530: FAIL
@@ -706,7 +705,7 @@ Done running mjsunit/regress/regress-3334: pass
 Done running mjsunit/regress/regress-340125: pass
 Done running mjsunit/regress/regress-341: pass
 Done running mjsunit/regress/regress-345: pass
-Done running mjsunit/regress/regress-3462: FAIL
+Done running mjsunit/regress/regress-3462: pass
 Done running mjsunit/regress/regress-3483: pass
 Done running mjsunit/regress/regress-349: pass
 Done running mjsunit/regress/regress-349870: FAIL
@@ -950,7 +949,7 @@ Done running mjsunit/regress/regress-json-parse-index: pass
 Done running mjsunit/regress/regress-json-stringify-gc: pass
 Done running mjsunit/regress/regress-latin-1: FAIL
 Done running mjsunit/regress/regress-lea-matching: pass
-Done running mjsunit/regress/regress-mask-array-length: FAIL
+Done running mjsunit/regress/regress-mask-array-length: pass
 Done running mjsunit/regress/regress-merge-descriptors: pass
 Done running mjsunit/regress/regress-migrate-callbacks: pass
 Done running mjsunit/regress/regress-push-args-twice: pass
@@ -989,9 +988,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"@3"> found <undefin
 === mjsunit/array-join.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/array-length.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/array-push2.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <1>, stack: undefined}
@@ -1018,9 +1014,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/error-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/fuzz-accessors.js ===
---- stdout ---
-Uncaught RangeError
 === mjsunit/get-own-property-descriptor.js ===
 --- stdout ---
 Uncaught ReferenceError: x is not defined
@@ -1122,9 +1115,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\
 === mjsunit/compiler/regress-445907.js ===
 --- stderr ---
 --- TIMEOUT ---
-=== mjsunit/compiler/truncating-store.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <-1> found <0>, stack: undefined}
 === mjsunit/regress/regress-1015.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable - aset, stack: undefined}
@@ -1172,9 +1162,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/regress/regress-149.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"k"> found <"b">, stack: undefined}
-=== mjsunit/regress/regress-1491.js ===
---- stdout ---
-Uncaught RangeError
 === mjsunit/regress/regress-1530.js ===
 --- stdout ---
 Uncaught TypeError: Type error, DefineOwnProperty 10.a.ii
@@ -1261,9 +1248,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 === mjsunit/regress/regress-324028.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-3462.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-349870.js ===
 --- stderr ---
 === mjsunit/regress/regress-353551.js ===
@@ -1313,9 +1297,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-latin-1.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
-=== mjsunit/regress/regress-mask-array-length.js ===
---- stdout ---
-Uncaught RangeError
 === mjsunit/regress/regress-swapelements.js ===
 exit code: -11
 --- CRASHED ---
@@ -1324,6 +1305,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 120 tests failed
+=== 114 tests failed
 === 5 tests CRASHED
 ===

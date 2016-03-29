@@ -409,14 +409,8 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                     throwObjectWriteError();
                                     return;
                                 }
-                            } else if (data->getNativeSetter()) {
-                                *cachedHiddenClassIndex = SIZE_MAX;
-                                *hiddenClassWillBe = NULL;
-                                cachedHiddenClassChain->clear();
-                                data->setValue(obj, willBeObject->asESPointer()->asESObject(), keyString, value);
-                                return;
                             }
-                            ASSERT_NOT_REACHED();
+                            ASSERT(data->getNativeSetter());
                         }
 
                         if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {

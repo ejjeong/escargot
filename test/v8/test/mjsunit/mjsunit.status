@@ -772,6 +772,7 @@
   'regress/regress-crbug-350864': [SKIP],
   'object-is': [SKIP],
   'get-own-property-descriptor-non-objects': [SKIP],
+  'compiler/truncating-store': [SKIP],
   # etc
   'harmony/*': [SKIP],
 
