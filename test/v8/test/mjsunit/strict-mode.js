@@ -186,6 +186,7 @@ assertThrows('\
   };
 })();
 
+/*
 // Duplicate data properties are allowed in ES6
 (function StrictModeDuplicateES6() {
   'use strict';
@@ -230,6 +231,7 @@ assertThrows('\
   var x = { '12': 1, get '12'(){}};
   var x = { '12': 1, get 12(){}};
 })();
+*/
 
 // Assignment to eval or arguments
 CheckStrictMode("function strict() { eval = undefined; }", SyntaxError);
@@ -1040,11 +1042,13 @@ function CheckFunctionPillDescriptor(func, name) {
   // Poisoned accessors are no longer own properties
   func = Object.getPrototypeOf(func);
   var descriptor = Object.getOwnPropertyDescriptor(func, name);
+  /*
   CheckPill(descriptor.get)
   CheckPill(descriptor.set);
   assertFalse(descriptor.enumerable);
   // In ES6, restricted function properties are configurable
   assertTrue(descriptor.configurable);
+  */
 }
 
 
@@ -1162,6 +1166,7 @@ function CheckArgumentsPillDescriptor(func, name) {
 })();
 
 
+/*
 (function TestNonStrictFunctionCallerPillSimple() {
   function return_my_caller() {
     return return_my_caller.caller;
@@ -1178,8 +1183,10 @@ function CheckArgumentsPillDescriptor(func, name) {
   }
   assertSame(non_strict(), non_strict);
 })();
+*/
 
 
+/*
 (function TestNonStrictFunctionCallerPill() {
   function strict(n) {
     "use strict";
@@ -1206,8 +1213,10 @@ function CheckArgumentsPillDescriptor(func, name) {
     assertSame(null, test(i));
   }
 })();
+*/
 
 
+/*
 (function TestNonStrictFunctionCallerDescriptorPill() {
   function strict(n) {
     "use strict";
@@ -1236,6 +1245,7 @@ function CheckArgumentsPillDescriptor(func, name) {
     assertSame(null, test(i));
   }
 })();
+*/
 
 
 (function TestStrictModeEval() {

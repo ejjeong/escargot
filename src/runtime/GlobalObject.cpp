@@ -6095,7 +6095,7 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                         memcpy(code, &n, sizeof(GetObjectSlowMode));
                         break;
                     }
-                case GetObjectAndPushObjectSlowModeOpcode:
+                case GetObjectAndPushObjectOpcode:
                     {
                         GetObjectAndPushObjectSlowMode n;
                         n.assignOpcodeInAddress();

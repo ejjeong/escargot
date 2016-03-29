@@ -178,6 +178,8 @@ ESVMInstance::ESVMInstance()
         instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
         RELEASE_ASSERT_NOT_REACHED();
     }, strings().emptyString, 1);
+    thrower->defineDataProperty(m_strings.prototype.string(), false, false, false, ESObject::create());
+    thrower->setExtensible(false);
     m_throwerAccessorData.setJSSetter(thrower);
     m_throwerAccessorData.setJSGetter(thrower);
 

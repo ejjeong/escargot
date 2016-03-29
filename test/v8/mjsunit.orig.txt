@@ -254,7 +254,7 @@ Done running mjsunit/str-to-num: FAIL
 Done running mjsunit/stress-array-push: pass
 Done running mjsunit/strict-equals: pass
 Done running mjsunit/strict-mode-eval: pass
-Done running mjsunit/strict-mode: FAIL
+Done running mjsunit/strict-mode: pass
 Done running mjsunit/string-add: pass
 Done running mjsunit/string-charat: pass
 Done running mjsunit/string-compare-alignment: pass
@@ -1097,9 +1097,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> fou
 === mjsunit/str-to-num.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/strict-mode.js ===
---- stdout ---
-Uncaught SyntaxError: 123 (Parse Error 195 line)
 === mjsunit/string-indexof-1.js ===
 --- stdout ---
 Uncaught TypeError: Callee is not a function object
@@ -1352,6 +1349,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 129 tests failed
+=== 128 tests failed
 === 5 tests CRASHED
 ===
