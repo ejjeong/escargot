@@ -901,7 +901,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             ESValue* value = POP(stack, bp);
             ESValue* key = POP(stack, bp);
-            PEEK(stack, bp)->asESPointer()->asESObject()->defineDataProperty(*key, true, true, true, *value);
+            if (!value->isEmpty()) {
+                PEEK(stack, bp)->asESPointer()->asESObject()->defineDataProperty(*key, true, true, true, *value);
+            }
             executeNextCode<InitObject>(programCounter);
             NEXT_INSTRUCTION();
         }
