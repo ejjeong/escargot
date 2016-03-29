@@ -3843,7 +3843,7 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
         if (isnan(thisDateObject->timeValueAsDouble())) {
-            thisDateObject->setTime(0);
+            thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
         }
         
         for (size_t i = 0; i < arg_size; i++) {
@@ -4098,7 +4098,7 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
         if (isnan(thisDateObject->timeValueAsDouble())) {
-            thisDateObject->setTime(0);
+            thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
         }
         
         for (size_t i = 0; i < arg_size; i++) {
@@ -4405,6 +4405,37 @@ void GlobalObject::installDate()
 
     // $B.2.4.2 Date.prototype.setYear()
     m_datePrototype->defineDataProperty(strings->setYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.setYear : This object is not Date object"))));
+        }
+        escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        double args[1];
+
+        if (arg_size < 1) {
+            thisDateObject->setTimeValueAsNaN();
+            return ESValue(thisDateObject->timeValueAsDouble());
+        }
+        if (isnan(thisDateObject->timeValueAsDouble())) {
+            thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
+        }
+
+        args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
+
+        if (isnan(args[0])) {
+            thisDateObject->setTimeValueAsNaN();
+            return ESValue(thisDateObject->timeValueAsDouble());
+        }
+        if (0 <= args[0] && args[0] <= 99) {
+            args[0] += 1900;
+        }
+
+        thisDateObject->setTimeValue((int) args[0], thisDateObject->getMonth(), thisDateObject->getDate(), thisDateObject->getHours(), thisDateObject->getMinutes()
+            , thisDateObject->getSeconds(), thisDateObject->getMilliseconds());
+
+        return ESValue(thisDateObject->timeValueAsDouble());
+
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->setYear, 1));
 

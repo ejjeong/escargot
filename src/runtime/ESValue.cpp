@@ -2047,13 +2047,28 @@ static bool parseInt(const char* string, char** stopPosition, int base, int* res
     return true;
 }
 
-static bool parseLong(const char* string, char** stopPosition, int base, long* result)
+static bool parseLong(const char* string, char** stopPosition, int base, long* result, int digits = 0)
 {
-    *result = strtol(string, stopPosition, base);
-    // Avoid the use of errno as it is not available on Windows CE
-    if (string == *stopPosition || *result == std::numeric_limits<long>::min() || *result == std::numeric_limits<long>::max())
-        return false;
-    return true;
+    if (digits == 0) {
+        *result = strtol(string, stopPosition, base);
+        // Avoid the use of errno as it is not available on Windows CE
+        if (string == *stopPosition || *result == std::numeric_limits<long>::min() || *result == std::numeric_limits<long>::max())
+            return false;
+        return true;
+    } else {
+        strtol(string, stopPosition, base); // for compute stopPosition
+
+        char s[4]; // 4 is temporary number for case (digit == 3)..
+        s[0] = string[0];
+        s[1] = string[1];
+        s[2] = string[2];
+        s[3] = '\0';
+
+        *result = strtol(s, NULL, base);
+        if (string == *stopPosition || *result == std::numeric_limits<long>::min() || *result == std::numeric_limits<long>::max())
+            return false;
+        return true;
+    }
 }
 
 double ESDateObject::parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset)
@@ -2397,12 +2412,12 @@ static char* parseES5TimePortion(char* currentPosition, long& hours, long& minut
             // We check the next character to avoid reading +/- timezone hours after an invalid decimal.
             if (!isASCIIDigit(*currentPosition))
                 return 0;
-            // We are more lenient than ES5 by accepting more or less than 3 fraction digits.
+
             long fracSeconds;
-            if (!parseLong(currentPosition, &postParsePosition, 10, &fracSeconds))
+            if (!parseLong(currentPosition, &postParsePosition, 10, &fracSeconds, 3))
                 return 0;
 
-            long numFracDigits = postParsePosition - currentPosition;
+            long numFracDigits = std::min(postParsePosition - currentPosition, 3L);
             seconds += fracSeconds * pow(10.0, static_cast<double>(-numFracDigits));
         }
         currentPosition = postParsePosition;

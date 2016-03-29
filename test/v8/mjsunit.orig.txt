@@ -845,7 +845,7 @@ Done running mjsunit/regress/regress-892742: pass
 Done running mjsunit/regress/regress-900: pass
 Done running mjsunit/regress/regress-900055: pass
 Done running mjsunit/regress/regress-900966: pass
-Done running mjsunit/regress/regress-91: FAIL
+Done running mjsunit/regress/regress-91: pass
 Done running mjsunit/regress/regress-91008: pass
 Done running mjsunit/regress/regress-91010: pass
 Done running mjsunit/regress/regress-91120: pass
@@ -855,7 +855,7 @@ Done running mjsunit/regress/regress-925537: pass
 Done running mjsunit/regress/regress-927: pass
 Done running mjsunit/regress/regress-931: pass
 Done running mjsunit/regress/regress-937896: CRASH
-Done running mjsunit/regress/regress-944: FAIL
+Done running mjsunit/regress/regress-944: pass
 Done running mjsunit/regress/regress-955: pass
 Done running mjsunit/regress/regress-95920: FAIL
 Done running mjsunit/regress/regress-969: pass
@@ -1393,14 +1393,9 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"un
 Uncaught MjsUnitAssertionError {message: Failure: expected <56> found <NaN>, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-91.js ===
---- stderr ---
 === mjsunit/regress/regress-937896.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/regress/regress-944.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <1290722550100.5> found <1290722550100>, stack: undefined}
 === mjsunit/regress/regress-95920.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
@@ -1435,6 +1430,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 153 tests failed
+=== 151 tests failed
 === 6 tests CRASHED
 ===
