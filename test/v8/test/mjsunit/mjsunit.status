@@ -771,6 +771,7 @@
   'regress/regress-3859': [SKIP],
   'regress/regress-crbug-350864': [SKIP],
   'object-is': [SKIP],
+  'get-own-property-descriptor-non-objects': [SKIP],
 
   ## 3. Deprecated
   # function.[arguments|caller|callee]
@@ -802,6 +803,9 @@
   'cross-realm-filtering': [SKIP],
   'regress/regress-280531': [SKIP],
   'regress/regress-crbug-501808': [SKIP],
+
+  ## 5. ETC
+  'enumeration-order': [SKIP],
 
 }],  # 'escargot == True'
 ]

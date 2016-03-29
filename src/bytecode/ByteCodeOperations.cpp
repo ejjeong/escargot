@@ -42,7 +42,8 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
                 *slot.getSlot() = *value;
             } else {
                 ASSERT(!env || env->record()->isGlobalEnvironmentRecord());
-                slot.setValueWithSetter(globalObject, code->m_name.string(), *value);
+                if (!slot.setValueWithSetter(globalObject, code->m_name.string(), *value))
+                    throwObjectWriteError();
             }
         } else {
             throwObjectWriteError();
@@ -370,7 +371,7 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
                 O = O.asESPointer()->asESObject()->__proto__();
             }
         } else {
-            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(strings->emptyString)));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("instanceof called on an object with an invalid prototype property"))));
         }
     }
     return false;

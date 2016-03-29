@@ -2005,7 +2005,7 @@ public:
     }
 
     NEVER_INLINE ESValue getValueWithGetter(escargot::ESObject* obj, escargot::ESString* propertyName);
-    NEVER_INLINE void setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value);
+    NEVER_INLINE bool setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value);
 
     ALWAYS_INLINE bool isGlobalBinding() { return m_isGlobalBinding; }
     ALWAYS_INLINE bool isDataBinding() { return m_isDataBinding; }

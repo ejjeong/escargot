@@ -3185,12 +3185,12 @@ ESValue ESBindingSlot::getValueWithGetter(escargot::ESObject* obj, escargot::ESS
     return accessor->value(obj, ESValue(obj), propertyName);
 }
 
-void ESBindingSlot::setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value)
+bool ESBindingSlot::setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value)
 {
     ASSERT(m_slot);
     ASSERT(!m_isDataBinding);
     ESPropertyAccessorData* accessor = (ESPropertyAccessorData*)m_slot->asESPointer();
-    accessor->setValue(obj, ESValue(obj), propertyName, value);
+    return accessor->setValue(obj, ESValue(obj), propertyName, value);
 }
 
 

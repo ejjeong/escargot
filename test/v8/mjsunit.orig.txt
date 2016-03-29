@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   98 tests will be skipped
+ *  100 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2085 tests are expected to pass
+ * 2083 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2225 tests
+Running 2223 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -89,7 +89,6 @@ Done running mjsunit/dtoa: pass
 Done running mjsunit/element-accessor: pass
 Done running mjsunit/element-read-only: pass
 Done running mjsunit/elements-transition-and-store: pass
-Done running mjsunit/enumeration-order: FAIL
 Done running mjsunit/error-accessors: pass
 Done running mjsunit/error-constructors: pass
 Done running mjsunit/error-tostring: FAIL
@@ -113,10 +112,9 @@ Done running mjsunit/function-prototype: pass
 Done running mjsunit/function-without-prototype: pass
 Done running mjsunit/function: pass
 Done running mjsunit/fuzz-accessors: FAIL
-Done running mjsunit/get-own-property-descriptor-non-objects: FAIL
 Done running mjsunit/get-own-property-descriptor: FAIL
 Done running mjsunit/get-prototype-of: pass
-Done running mjsunit/getter-in-prototype: FAIL
+Done running mjsunit/getter-in-prototype: pass
 Done running mjsunit/getter-in-value-prototype: pass
 Done running mjsunit/global-accessors: pass
 Done running mjsunit/global-deleted-property-ic: pass
@@ -132,7 +130,7 @@ Done running mjsunit/if-in-undefined: pass
 Done running mjsunit/in: pass
 Done running mjsunit/indexed-accessors: pass
 Done running mjsunit/indexed-value-properties: pass
-Done running mjsunit/instanceof-2: FAIL
+Done running mjsunit/instanceof-2: pass
 Done running mjsunit/instanceof: pass
 Done running mjsunit/int32-ops: pass
 Done running mjsunit/integer-to-string: pass
@@ -1019,9 +1017,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@
 === mjsunit/cyclic-array-to-string.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/enumeration-order.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (array element at index 2): expected <"-23"> found <"5">, stack: undefined}
 === mjsunit/error-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1031,21 +1026,12 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"%20/%20"> found <"%
 === mjsunit/fuzz-accessors.js ===
 --- stdout ---
 Uncaught RangeError
-=== mjsunit/get-own-property-descriptor-non-objects.js ===
---- stdout ---
-Uncaught TypeError: Object.getOwnPropertyDescriptor: first argument is not object
 === mjsunit/get-own-property-descriptor.js ===
 --- stdout ---
 Uncaught ReferenceError: x is not defined
-=== mjsunit/getter-in-prototype.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
-=== mjsunit/instanceof-2.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/invalid-lhs.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1393,6 +1379,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 142 tests failed
+=== 138 tests failed
 === 6 tests CRASHED
 ===
