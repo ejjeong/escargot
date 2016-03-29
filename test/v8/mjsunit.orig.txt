@@ -284,7 +284,7 @@ Done running mjsunit/this: pass
 Done running mjsunit/throw-and-catch-function: pass
 Done running mjsunit/throw-exception-for-null-access: pass
 Done running mjsunit/to-precision: FAIL
-Done running mjsunit/to_number_order: FAIL
+Done running mjsunit/to_number_order: pass
 Done running mjsunit/tobool: pass
 Done running mjsunit/toint32: pass
 Done running mjsunit/top-level-assignments: pass
@@ -306,7 +306,7 @@ Done running mjsunit/value-callic-prototype-change: pass
 Done running mjsunit/value-of: pass
 Done running mjsunit/value-wrapper: pass
 Done running mjsunit/var: pass
-Done running mjsunit/whitespaces: FAIL
+Done running mjsunit/whitespaces: pass
 Done running mjsunit/asm/do-while-false: pass
 Done running mjsunit/asm/do-while: pass
 Done running mjsunit/asm/float32array-negative-offset: pass
@@ -350,7 +350,7 @@ Done running mjsunit/asm/uint32div: pass
 Done running mjsunit/asm/uint32mod-constant: pass
 Done running mjsunit/asm/uint32mod: pass
 Done running mjsunit/asm/uint8array-outofbounds: pass
-Done running mjsunit/asm/word32and: FAIL
+Done running mjsunit/asm/word32and: pass
 Done running mjsunit/asm/word32ror: pass
 Done running mjsunit/asm/zero-extend: pass
 Done running mjsunit/bugs/bug-1344252: pass
@@ -1113,18 +1113,9 @@ Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"
 === mjsunit/to-precision.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"-1e+27"> found <"">, stack: undefined}
-=== mjsunit/to_number_order.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (atan2): expected <"hestfisk"> found <"fiskhest">, stack: undefined}
 === mjsunit/try-finally-nested.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <42> found <87>, stack: undefined}
-=== mjsunit/whitespaces.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <124> found <NaN>, stack: undefined}
-=== mjsunit/asm/word32and.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <-2143483875> found <-2147483648>, stack: undefined}
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
@@ -1333,6 +1324,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 123 tests failed
+=== 120 tests failed
 === 5 tests CRASHED
 ===

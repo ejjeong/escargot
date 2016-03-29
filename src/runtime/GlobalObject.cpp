@@ -5027,9 +5027,9 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.8 Math.atan2()
     m_math->defineDataProperty(ESString::createAtomicString("atan2"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue x = instance->currentExecutionContext()->readArgument(0);
-        ESValue y = instance->currentExecutionContext()->readArgument(1);
-        return ESValue(atan2(x.toNumber(), y.toNumber()));
+        double x = instance->currentExecutionContext()->readArgument(0).toNumber();
+        double y = instance->currentExecutionContext()->readArgument(1).toNumber();
+        return ESValue(atan2(x, y));
     }, ESString::createAtomicString("atan2"), 2));
 
     // initialize math object: $20.2.2.9 Math.cbrt()
@@ -5246,18 +5246,18 @@ void GlobalObject::installMath()
     defineDataProperty(strings->Math, true, false, true, m_math);
 }
 
-static int itoa(int value, char *sp, int radix)
+static int itoa(int64_t value, char *sp, int radix)
 {
     char tmp[16]; // be careful with the length of the buffer
     char* tp = tmp;
     int i;
-    unsigned v;
+    uint64_t v;
 
     int sign = (radix == 10 && value < 0);
     if (sign)
         v = -value;
     else
-        v = (unsigned)value;
+        v = (uint64_t)value;
 
     while (v || tp == tmp) {
         i = v % radix;
@@ -5268,7 +5268,7 @@ static int itoa(int value, char *sp, int radix)
             *tp++ = i + 'a' - 10;
     }
 
-    int len = tp - tmp;
+    int64_t len = tp - tmp;
 
     if (sign) {
         *sp++ = '-';
@@ -5528,9 +5528,9 @@ void GlobalObject::installNumber()
             char buffer[256];
             if (minusFlag) {
                 buffer[0] = '-';
-                itoa((int)number, &buffer[1], radix);
+                itoa((int64_t)number, &buffer[1], radix);
             } else {
-                itoa((int)number, buffer, radix);
+                itoa((int64_t)number, buffer, radix);
             }
             return (ESString::create(buffer));
         }
