@@ -1904,6 +1904,11 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                             str += octToDec.code;
                     } else if (isDecimalDigit(ch)) {
                         octal = true;
+                        if (smallBufferUsage < smallBufferMax) {
+                            ASSERT(!strInited);
+                            smallBuffer[smallBufferUsage++] = ch;
+                        } else
+                            str += ch;
                     } else {
                         // this code below doesn't work correctly with 2(or more) bytes chars
                         // if (smallBufferUsage < smallBufferMax) {

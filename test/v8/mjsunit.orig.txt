@@ -804,7 +804,7 @@ Done running mjsunit/regress/regress-670147: pass
 Done running mjsunit/regress/regress-674753: pass
 Done running mjsunit/regress/regress-675: pass
 Done running mjsunit/regress/regress-676025: FAIL
-Done running mjsunit/regress/regress-678525: FAIL
+Done running mjsunit/regress/regress-678525: pass
 Done running mjsunit/regress/regress-681: pass
 Done running mjsunit/regress/regress-682649: pass
 Done running mjsunit/regress/regress-685: FAIL
@@ -1357,9 +1357,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <5> found <0>, stack:
 === mjsunit/regress/regress-676025.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"undefined">, stack: undefined}
-=== mjsunit/regress/regress-678525.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <56> found <NaN>, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-937896.js ===
@@ -1396,6 +1393,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 143 tests failed
+=== 142 tests failed
 === 6 tests CRASHED
 ===
