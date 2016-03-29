@@ -60,8 +60,8 @@ delete slow.y;
 
 s(o1);
 s(o2);
-s_strict(o1_strict);
-s_strict(o2_strict);
+assertThrows("s_strict(o1_strict)", TypeError);
+assertThrows("s_strict(o2_strict)", TypeError);
 
 delete slow.x;
 // Directly setting x should fail.

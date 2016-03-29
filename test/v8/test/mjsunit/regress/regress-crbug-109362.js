@@ -8,8 +8,9 @@ function test(expectation, f) {
   try {
     f();
   } catch (e) {
-    stack = e.stack;
+    stack = e.toString();
   }
+  print(stack);
   assertTrue(stack.indexOf("at eval (evaltest:" + expectation + ")") > 0);
 }
 

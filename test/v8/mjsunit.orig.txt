@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  100 tests will be skipped
+ *  186 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2083 tests are expected to pass
+ * 1998 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2223 tests
+Running 2137 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -445,8 +445,6 @@ Done running mjsunit/compiler/to-fast-properties: pass
 Done running mjsunit/compiler/truncating-store: FAIL
 Done running mjsunit/compiler/unary-add: pass
 Done running mjsunit/compiler/variables: pass
-Done running mjsunit/harmony/set-prototype-of: FAIL
-Done running mjsunit/harmony/regress/regress-typedarray-out-of-bounds: pass
 Done running mjsunit/message/fail/arrow-formal-parameters: pass
 Done running mjsunit/message/fail/arrow-strict-eval-bare-parameter: pass
 Done running mjsunit/message/fail/class-constructor-accessor: pass
@@ -483,8 +481,8 @@ Done running mjsunit/regress/json-stringifier-emptyhandle: pass
 Done running mjsunit/regress/negative_lookup: pass
 Done running mjsunit/regress/readonly1: pass
 Done running mjsunit/regress/readonly2: pass
-Done running mjsunit/regress/readonly3: FAIL
-Done running mjsunit/regress/readonly4: FAIL
+Done running mjsunit/regress/readonly3: pass
+Done running mjsunit/regress/readonly4: pass
 Done running mjsunit/regress/readonly5: pass
 Done running mjsunit/regress/regress-100702: pass
 Done running mjsunit/regress/regress-1015: FAIL
@@ -1142,15 +1140,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\
 === mjsunit/compiler/truncating-store.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-1> found <0>, stack: undefined}
-=== mjsunit/harmony/set-prototype-of.js ===
---- stdout ---
-Uncaught TypeError: Object.getPrototypeOf: first argument is not object
-=== mjsunit/regress/readonly3.js ===
---- stdout ---
-Uncaught TypeError: Attempted to assign to readonly property.
-=== mjsunit/regress/readonly4.js ===
---- stdout ---
-Uncaught TypeError: Attempted to assign to readonly property.
 === mjsunit/regress/regress-1015.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable - aset, stack: undefined}
@@ -1326,7 +1315,8 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is 
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-crbug-109362.js ===
 --- stdout ---
-Uncaught TypeError: cannot convert undefined into object
+ReferenceError: reference_error is not defined
+Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-crbug-352586.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1349,6 +1339,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 128 tests failed
+=== 125 tests failed
 === 5 tests CRASHED
 ===

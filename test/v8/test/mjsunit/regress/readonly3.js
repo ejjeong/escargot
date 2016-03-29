@@ -50,8 +50,8 @@ var o2 = c(this);
 // Initialize the store IC.
 s(c(this));
 s(c(this));
-s_strict(c(this));
-s_strict(c(this));
+assertThrows("s_strict(c(this))", TypeError);
+assertThrows("s_strict(c(this))", TypeError);
 
 delete this.x;
 

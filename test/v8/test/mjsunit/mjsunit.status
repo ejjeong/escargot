@@ -772,6 +772,8 @@
   'regress/regress-crbug-350864': [SKIP],
   'object-is': [SKIP],
   'get-own-property-descriptor-non-objects': [SKIP],
+  # etc
+  'harmony/*': [SKIP],
 
   ## 3. Deprecated
   # function.[arguments|caller|callee]
