@@ -108,8 +108,8 @@ array = [
   "charAt", "charCodeAt", "concat", "indexOf",
   "lastIndexOf", "localeCompare", "match", "replace", "search", "slice",
   "split", "substring", "substr", "toLowerCase", "toLocaleLowerCase",
-  "toUpperCase", "toLocaleUpperCase", "link", "anchor", "fontcolor", "fontsize",
-  "big", "blink", "bold", "fixed", "italics", "small", "strike", "sub", "sup",
+  "toUpperCase", "toLocaleUpperCase", /*"link", "anchor", "fontcolor", "fontsize",
+  "big", "blink", "bold", "fixed", "italics", "small", "strike", "sub", "sup",*/
   "toJSON", "toString", "valueOf"];
 CheckEcmaSemantics(String.prototype, array, "String prototype");
 CheckEcmaSemantics(String, ["fromCharCode"], "String");

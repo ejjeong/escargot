@@ -1424,7 +1424,6 @@ ESArrayObject* ESRegExpObject::pushBackToRegExpMatchedArray(escargot::ESArrayObj
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {
-    m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
     m_flags.m_nonConstructor = false;
@@ -1468,7 +1467,6 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
 #ifdef ENABLE_ESJIT
     m_codeBlock->m_dontJIT = true;
 #endif
-    m_name = name;
     if (!isConstructor)
         m_flags.m_nonConstructor = true;
     m_flags.m_isBoundFunction = false;

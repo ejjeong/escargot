@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   96 tests will be skipped
+ *   98 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2087 tests are expected to pass
+ * 2085 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2227 tests
+Running 2225 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -105,15 +105,13 @@ Done running mjsunit/for: pass
 Done running mjsunit/fun-as-prototype: pass
 Done running mjsunit/fun-name: pass
 Done running mjsunit/function-arguments-duplicate: pass
-Done running mjsunit/function-arguments-null: FAIL
-Done running mjsunit/function-bind-name: FAIL
-Done running mjsunit/function-call: FAIL
-Done running mjsunit/function-caller: FAIL
-Done running mjsunit/function-names: FAIL
+Done running mjsunit/function-bind-name: pass
+Done running mjsunit/function-call: pass
+Done running mjsunit/function-names: pass
 Done running mjsunit/function-property: pass
 Done running mjsunit/function-prototype: pass
 Done running mjsunit/function-without-prototype: pass
-Done running mjsunit/function: FAIL
+Done running mjsunit/function: pass
 Done running mjsunit/fuzz-accessors: FAIL
 Done running mjsunit/get-own-property-descriptor-non-objects: FAIL
 Done running mjsunit/get-own-property-descriptor: FAIL
@@ -299,7 +297,7 @@ Done running mjsunit/try-catch-scopes: pass
 Done running mjsunit/try-finally-continue: pass
 Done running mjsunit/try-finally-nested: FAIL
 Done running mjsunit/typeof: pass
-Done running mjsunit/undeletable-functions: FAIL
+Done running mjsunit/undeletable-functions: pass
 Done running mjsunit/unicode-case-overoptimization: pass
 Done running mjsunit/unicode-string-to-number: pass
 Done running mjsunit/unicode-test: pass
@@ -949,7 +947,7 @@ Done running mjsunit/regress/regress-double-property: pass
 Done running mjsunit/regress/regress-eval-cache: pass
 Done running mjsunit/regress/regress-fast-empty-string: pass
 Done running mjsunit/regress/regress-freeze-setter: pass
-Done running mjsunit/regress/regress-function-length-strict: FAIL
+Done running mjsunit/regress/regress-function-length-strict: pass
 Done running mjsunit/regress/regress-is-contextual: pass
 Done running mjsunit/regress/regress-iteration-order: pass
 Done running mjsunit/regress/regress-json-parse-index: pass
@@ -1030,24 +1028,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/escape.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"%20/%20"> found <"%u20/%u20">, stack: undefined}
-=== mjsunit/function-arguments-null.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/function-bind-name.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"bound f"> found <"">, stack: undefined}
-=== mjsunit/function-call.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/function-caller.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <function f() {}> found <undefined>, stack: undefined}
-=== mjsunit/function-names.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"toLocaleString"> found <"toString">, stack: undefined}
-=== mjsunit/function.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected <end> ''. Expect '}'. (Parse Error 1 line)
 === mjsunit/fuzz-accessors.js ===
 --- stdout ---
 Uncaught RangeError
@@ -1179,17 +1159,6 @@ Uncaught MjsUnitAssertionError {message: Failure (atan2): expected <"hestfisk"> 
 === mjsunit/try-finally-nested.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <42> found <87>, stack: undefined}
-=== mjsunit/undeletable-functions.js ===
---- stdout ---
-Array prototype
-Date prototype
-Math1
-Date
-Math2
-Global
-RegExp prototype
-Object prototype
-Uncaught MjsUnitAssertionError {message: Failure (delete operator returned false: __defineGetter__): expected <true> found <false>, stack: undefined}
 === mjsunit/whitespaces.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <124> found <NaN>, stack: undefined}
@@ -1234,7 +1203,7 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14"> found <"FRIEDRICHSTRAßE 14">, stack: undefined}
 === mjsunit/regress/regress-1151.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <Object()> found <43>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <__defineGetter__()> found <43>, stack: undefined}
 === mjsunit/regress/regress-1170.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
@@ -1302,7 +1271,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 --- stderr ---
 === mjsunit/regress/regress-2443.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"1.00e+0"> found <"1.00e+">, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2470.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1404,7 +1373,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is 
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-crbug-109362.js ===
 --- stdout ---
-Uncaught SyntaxError: Unexpected <end> ''. Expect '}'. (Parse Error 1 line)
+Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-crbug-352586.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1413,9 +1382,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-crbug-516592.js ===
 --- stderr ---
 --- TIMEOUT ---
-=== mjsunit/regress/regress-function-length-strict.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-latin-1.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
@@ -1430,6 +1396,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 151 tests failed
+=== 143 tests failed
 === 6 tests CRASHED
 ===

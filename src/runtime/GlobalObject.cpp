@@ -917,10 +917,10 @@ void GlobalObject::installFunction()
                     builder.appendString(strings->asciiTable[(size_t)','].string());
                 }
             }
-            builder.appendString("){");
+            builder.appendString("){\n");
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
             builder.appendString(body);
-            builder.appendString("}");
+            builder.appendString("\n}");
             ProgramNode* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
             if (programNode->body().size() != 2)
                 instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) body source code")));
@@ -1039,7 +1039,7 @@ void GlobalObject::installFunction()
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, context, NULL);
         cb->m_hasCode = true;
-        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
+        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, code.m_boundTargetFunction->name(), std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
         function->setBoundFunc();
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
@@ -2812,7 +2812,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            instance->throwError(ESValue(TypeError::create(ESString::create("String.prototype.indexOf: this is undefined or null"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("String.prototype.indexOf: Invalid bound this value"))));
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
 
@@ -2843,7 +2843,7 @@ void GlobalObject::installString()
         // Let O be RequireObjectCoercible(this value).
         ESValue O = instance->currentExecutionContext()->resolveThisBinding();
         if (O.isUndefinedOrNull())
-            instance->throwError(ESValue(TypeError::create(ESString::create("String.prototype.lastIndexOf: this is undefined or null"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("String.prototype.indexOf: Invalid bound this value"))));
         // Let S be ToString(O).
         escargot::ESString* S = O.toString();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
@@ -3240,7 +3240,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("substring"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            instance->throwError(TypeError::create(ESString::create("String.prototype.substring: this is undefined or null")));
+            instance->throwError(TypeError::create(ESString::create("String.prototype.substring: Invalid bound this value")));
         int argCount = instance->currentExecutionContext()->argumentCount();
         escargot::ESString* str = thisObject.toString();
         if (argCount == 0) {
@@ -3344,7 +3344,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("trim"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESValue val = instance->currentExecutionContext()->resolveThisBinding();
         if (val.isUndefinedOrNull()) {
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"String.prototype.trim called null or undefined"))));
+            instance->throwError(TypeError::create(ESString::create("String.prototype.substring: Invalid bound this value")));
         }
         escargot::ESString* str = val.toString();
         if (str->isASCIIString()) {
@@ -5495,7 +5495,13 @@ void GlobalObject::installNumber()
     m_numberPrototype->defineDataProperty(strings->toString, true, false, true, toStringFunction);
 
     // $20.1.3.4 Number.prototype.toLocaleString
-    m_numberPrototype->defineDataProperty(ESString::createAtomicString("toLocaleString"), true, false, true, toStringFunction);
+    m_numberPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue func = thisVal->get(strings->toString.string());
+        if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
+            instance->throwError(TypeError::create(ESString::create("toLocaleString is not callable")));
+        return ESFunctionObject::call(instance, func, thisVal, NULL, 0, false);
+    }, strings->toLocaleString, 0));
 
     // $20.1.3.26 Number.prototype.valueOf ( )
     m_numberPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

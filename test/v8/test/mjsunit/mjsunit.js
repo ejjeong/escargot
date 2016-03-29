@@ -401,22 +401,30 @@ var assertUnoptimized;
 /////////////////////////////////////////////////////////////////////////////
 
 Object.defineProperty(Object.prototype, "__defineGetter__", {
-    value : function(prop, func) { Object.defineProperty(this, prop, {get: func, enumerable : true, configurable : true}); },
-    enumerable : false
+    value : function __defineGetter__(prop, func) { Object.defineProperty(this, prop, {get: func, enumerable : true, configurable : true}); },
+    writable: true,
+    enumerable : false,
+    configurable: true
 });
 
 Object.defineProperty(Object.prototype, "__defineSetter__", {
-    value : function(prop, func) { Object.defineProperty(this, prop, {set: func, enumerable : true, configurable : true}); },
-    enumerable : false
+    value : function __defineSetter__(prop, func) { Object.defineProperty(this, prop, {set: func, enumerable : true, configurable : true}); },
+    writable: true,
+    enumerable : false,
+    configurable: true
 });
 
 Object.defineProperty(Object.prototype, "__lookupGetter__", {
-    value : function(prop, func) { return Object.getOwnPropertyDescriptor(this, prop).get; },
-    enumerable : false
+    value : function __lookupGetter__(prop, func) { return Object.getOwnPropertyDescriptor(this, prop).get; },
+    writable: true,
+    enumerable : false,
+    configurable: true
 });
 
 Object.defineProperty(Object.prototype, "__lookupSetter__", {
-    value : function(prop, func) { return Object.getOwnPropertyDescriptor(this, prop).set; },
-    enumerable : false
+    value : function __lookupSetter__(prop, func) { return Object.getOwnPropertyDescriptor(this, prop).set; },
+    writable: true,
+    enumerable : false,
+    configurable: true
 });
 

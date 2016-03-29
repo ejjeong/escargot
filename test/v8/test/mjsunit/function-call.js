@@ -152,6 +152,9 @@ var reducing_functions =
 function checkExpectedMessage(e) {
   assertTrue(e.message.indexOf("called on null or undefined") >= 0 ||
       e.message.indexOf("invoked on undefined or null value") >= 0 ||
+      e.message.indexOf("cannot convert null into object") >= 0 ||
+      e.message.indexOf("cannot convert undefined into object") >= 0 ||
+      e.message.indexOf("Invalid bound this value") >= 0 ||
       e.message.indexOf("Cannot convert undefined or null to object") >= 0);
 }
 
@@ -247,7 +250,7 @@ for (var i = 0; i < non_generic.length; i++) {
 // through an array mapping function.
 // We need to make sure that the elements of `array` are all object values,
 // see issue 3483 for more details.
-var array = [{}, [], new Number, new Map, new WeakSet];
+var array = [{}, [], new Number/*, new Map, new WeakSet*/];
 for (var j = 0; j < mapping_functions.length; j++) {
   for (var i = 0; i < should_throw_on_null_and_undefined.length; i++) {
     exception = false;

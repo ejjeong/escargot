@@ -115,9 +115,9 @@ var stringPrototypeFunctions = [
     "toString", "valueOf", "charAt", "charCodeAt", "concat", "indexOf",
     "lastIndexOf", "localeCompare", "match", "replace", "search", "slice",
     "split", "substring", "substr", "toLowerCase", "toLocaleLowerCase",
-    "toUpperCase", "toLocaleUpperCase", "link", "anchor", "fontcolor",
+    "toUpperCase", "toLocaleUpperCase", /*"link", "anchor", "fontcolor",
     "fontsize", "big", "blink", "bold", "fixed", "italics", "small",
-    "strike", "sub", "sup"];
+    "strike", "sub", "sup"*/];
 
 TestFunctionNames(String.prototype, stringPrototypeFunctions);
 

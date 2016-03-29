@@ -2399,7 +2399,7 @@ public:
 
     ALWAYS_INLINE escargot::ESString* name()
     {
-        return m_name;
+        return get(strings->name.string()).toString();
     }
 
     bool nonConstructor() { return m_flags.m_nonConstructor; }
@@ -2418,7 +2418,6 @@ protected:
     ESValue m_protoType;
 
     CodeBlock* m_codeBlock;
-    escargot::ESString* m_name;
     // ESObject functionObject;
     // HomeObject
     // //ESObject newTarget
