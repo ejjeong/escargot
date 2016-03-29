@@ -1765,26 +1765,44 @@ void GlobalObject::installArray()
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
         size_t idx = 0;
-        if (LIKELY(thisBinded->isESArrayObject())) {
-            auto thisVal = thisBinded->asESArrayObject();
-            for (idx = 0; idx < thisVal->length(); idx++)
-                ret->defineDataProperty(ESValue(idx), true, true, true, thisVal->get(idx));
-        } else {
-            ASSERT(thisBinded->isESObject());
-            ESObject* O = thisBinded->asESObject();
-            ret->defineDataProperty(ESValue(idx), true, true, true, ESValue(O));
-            idx++;
-        }
-        for (size_t i = 0; i < arglen; i++) {
-            ESValue& argi = instance->currentExecutionContext()->arguments()[i];
-            if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
-                escargot::ESArrayObject* arr = argi.asESPointer()->asESArrayObject();
-                size_t len = arr->length();
-                size_t st = idx;
-                for (; idx < st + len; idx++)
-                    ret->set(idx, arr->get(idx - st));
+        for (size_t i = 0; i < arglen + 1; i++) {
+            ESValue argi;
+            if (i == 0) {
+                argi = thisBinded;
             } else {
-                ret->set(idx++, argi);
+                argi = instance->currentExecutionContext()->readArgument(i - 1);
+            }
+            if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
+                std::vector<unsigned> indexes;
+                ESValue ptr = argi;
+                while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+                    ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+                        uint32_t index = ESValue::ESInvalidIndexValue;
+                        if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
+                            indexes.push_back(index);
+                    });
+                    ptr = ptr.asESPointer()->asESObject()->__proto__();
+                }
+                std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
+                unsigned n = idx;
+                size_t len = argi.asESPointer()->asESArrayObject()->length();
+
+                if (indexes.size() == 0) {
+                    ret->setLength(idx + len);
+                    idx = idx + len;
+                    continue;
+                }
+                for (auto k : indexes) {
+                    if (k >= len)
+                        break;
+
+                    n = k + idx;
+                    ret->defineDataProperty(ESValue(n), true, true, true, argi.asESPointer()->asESArrayObject()->get(k));
+                    n++;
+                }
+                idx = n;
+            } else {
+                ret->defineDataProperty(ESValue(idx++), true, true, true, argi);
             }
         }
         return ret;
@@ -2303,55 +2321,87 @@ void GlobalObject::installArray()
     // $22.1.3.21 Array.prototype.shift ( )
     m_arrayPrototype->ESObject::defineDataProperty(strings->shift, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
-        uint32_t len = O->get(strings->length.string()).toUint32(); // 3
-        if (len == 0) { // 5
+        uint32_t arrlen = O->get(strings->length.string()).toUint32(); // 3
+        if (arrlen == 0) { // 5
             O->set(strings->length.string(), ESValue(0), true);
             return ESValue();
         }
         ESValue first = O->get(ESValue(0)); // 6
-        size_t k = 1; // 8
 
-        while (k < len) { // 9
-            ESValue from(k);
-            ESValue to(k - 1);
-            if (O->hasProperty(from)) { // e
-                ESValue fromVal = O->get(from);
-                O->set(to, fromVal, true);
-            } else {
-                O->deletePropertyWithException(to);
-            }
-            k++;
+        std::vector<unsigned> indexes;
+        ESValue ptr = O;
+        while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+            ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+                uint32_t index = ESValue::ESInvalidIndexValue;
+                if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
+                    indexes.push_back(index);
+            });
+            ptr = ptr.asESPointer()->asESObject()->__proto__();
         }
-        O->deletePropertyWithException(ESValue(len - 1)); // 10
-        O->set(strings->length, ESValue(len - 1)); // 12
+        std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
+
+        std::vector<uint32_t> deletableIndexes(indexes.size());
+        std::transform(indexes.begin(), indexes.end(), deletableIndexes.begin(), [=](unsigned int k) {
+            return k + 1;
+        });
+
+        unsigned i = 0;
+        unsigned j = 0;
+        unsigned len = indexes.size(), len2 = deletableIndexes.size();
+        unsigned curIndex = 1;
+        unsigned max = std::numeric_limits<unsigned>::max();
+        unsigned prevIndex = max;
+
+        while (i < len || j < len2) {
+            int64_t to = (int64_t)(curIndex - 1);
+            if ((prevIndex != max && curIndex <= prevIndex)
+                || curIndex < 1
+                || to < 0) {
+                if (i < len &&  j < len2) {
+                    if (indexes[i] < deletableIndexes[j]) {
+                        curIndex = indexes[i++];
+                    } else {
+                        curIndex = deletableIndexes[j++];
+                    }
+                } else if (i < len) {
+                    curIndex = indexes[i++];
+                } else {
+                    curIndex = deletableIndexes[j++];
+                }
+                continue;
+            }
+
+            if (curIndex >= arrlen)
+                break;
+
+            if (std::binary_search(indexes.begin(), indexes.end(), curIndex)) {
+                O->set(ESValue(to), O->get(ESValue(curIndex)), true);
+            } else {
+                O->deletePropertyWithException(ESValue(to));
+            }
+            prevIndex = curIndex;
+        }
+        O->deletePropertyWithException(ESValue(arrlen - 1)); // 10
+        O->set(strings->length, ESValue(arrlen - 1), true); // 12
         return first;
     }, strings->shift, 0));
 
     // $22.1.3.22 Array.prototype.slice(start, end)
     m_arrayPrototype->ESObject::defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         uint32_t arrlen = thisBinded->length();
-        double relativeStart, relativeEnd;
-        uint32_t k = 0, finalEnd = 0;
-        if (arglen < 1) {
-            relativeStart = 0;
-        } else {
-            relativeStart = instance->currentExecutionContext()->arguments()[0].toInteger();
-        }
+        double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger(), relativeEnd;
+        uint32_t k, finalEnd;
         if (relativeStart < 0) {
             k = (arrlen + relativeStart > 0) ? arrlen + relativeStart : 0;
         } else {
             k = (relativeStart < arrlen) ? relativeStart : arrlen;
         }
-        if (arglen >= 2) {
-            ESValue end = instance->currentExecutionContext()->arguments()[1];
-            if (end.isUndefined())
-                relativeEnd = arrlen;
-            else
-                relativeEnd = instance->currentExecutionContext()->arguments()[1].toInteger();
-        } else {
+        ESValue end = instance->currentExecutionContext()->readArgument(1);
+        if (end.isUndefined()) {
             relativeEnd = arrlen;
+        } else {
+            relativeEnd = end.toInteger();
         }
         if (relativeEnd < 0) {
             finalEnd = (arrlen + relativeEnd > 0) ? arrlen + relativeEnd : 0;
