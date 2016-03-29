@@ -1210,7 +1210,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" 
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2373.js ===
 --- stderr ---
---- TIMEOUT ---
 === mjsunit/regress/regress-2374.js ===
 --- stderr ---
 === mjsunit/regress/regress-2437.js ===
