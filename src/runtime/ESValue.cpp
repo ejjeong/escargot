@@ -1334,6 +1334,9 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
             result = JSC::Yarr::interpret(m_bytecodePattern, (const char16_t *)chars, length, start, outputBuf);
         if (result != JSC::Yarr::offsetNoMatch) {
             if (UNLIKELY(testOnly)) {
+                // outputBuf[1] should be set to lastIndex
+                if (isGlobal)
+                    set(strings->lastIndex, ESValue(outputBuf[1]), true);
                 return true;
             }
             std::vector<RegexMatchResult::RegexMatchResultPiece, pointer_free_allocator<RegexMatchResult::RegexMatchResultPiece> > piece;
@@ -1358,6 +1361,9 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
             break;
         }
     } while (result != JSC::Yarr::offsetNoMatch);
+    if (UNLIKELY(testOnly) && isGlobal) {
+        set(strings->lastIndex, ESValue(0), true);
+    }
     return matchResult.m_matchResults.size();
 }
 
@@ -2415,7 +2421,7 @@ static char* parseES5TimePortion(char* currentPosition, long& hours, long& minut
             if (!parseLong(currentPosition, &postParsePosition, 10, &fracSeconds, 3))
                 return 0;
 
-            long numFracDigits = std::min(postParsePosition - currentPosition, 3L);
+            long numFracDigits = std::min((long)(postParsePosition - currentPosition), 3L);
             seconds += fracSeconds * pow(10.0, static_cast<double>(-numFracDigits));
         }
         currentPosition = postParsePosition;

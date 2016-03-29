@@ -652,7 +652,7 @@ Done running mjsunit/regress/regress-246: pass
 Done running mjsunit/regress/regress-2470: FAIL
 Done running mjsunit/regress/regress-2529: FAIL
 Done running mjsunit/regress/regress-253: pass
-Done running mjsunit/regress/regress-254: FAIL
+Done running mjsunit/regress/regress-254: pass
 Done running mjsunit/regress/regress-2564: FAIL
 Done running mjsunit/regress/regress-2565: pass
 Done running mjsunit/regress/regress-2566: pass
@@ -751,7 +751,7 @@ Done running mjsunit/regress/regress-4399: pass
 Done running mjsunit/regress/regress-441099: pass
 Done running mjsunit/regress/regress-444805: pass
 Done running mjsunit/regress/regress-447561: FAIL
-Done running mjsunit/regress/regress-45469: FAIL
+Done running mjsunit/regress/regress-45469: pass
 Done running mjsunit/regress/regress-455207: pass
 Done running mjsunit/regress/regress-455212: pass
 Done running mjsunit/regress/regress-458876: pass
@@ -779,7 +779,7 @@ Done running mjsunit/regress/regress-507980: pass
 Done running mjsunit/regress/regress-509961: pass
 Done running mjsunit/regress/regress-515: pass
 Done running mjsunit/regress/regress-526: pass
-Done running mjsunit/regress/regress-52801: FAIL
+Done running mjsunit/regress/regress-52801: pass
 Done running mjsunit/regress/regress-540: pass
 Done running mjsunit/regress/regress-545: pass
 Done running mjsunit/regress/regress-57: pass
@@ -1246,9 +1246,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/regress/regress-2529.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"try"> found <"finally">, stack: undefined}
-=== mjsunit/regress/regress-254.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (Global, lastIndex after test 1): expected <1> found <0>, stack: undefined}
 === mjsunit/regress/regress-2564.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"success"> found <undefined>, stack: undefined}
@@ -1313,12 +1310,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"a"> found <100>, st
 === mjsunit/regress/regress-447561.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"foo"> found <function Object() {}>, stack: undefined}
-=== mjsunit/regress/regress-45469.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (testpreindex1): expected <1> found <0>, stack: undefined}
-=== mjsunit/regress/regress-52801.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <5> found <0>, stack: undefined}
 === mjsunit/regress/regress-581.js ===
 --- stderr ---
 --- TIMEOUT ---
@@ -1361,6 +1352,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 132 tests failed
+=== 129 tests failed
 === 5 tests CRASHED
 ===

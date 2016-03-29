@@ -5633,12 +5633,15 @@ void GlobalObject::installRegExp()
         escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         double lastIndex = regexp->m_lastIndex.toInteger();
+        if (!regexp->option() & ESRegExpObject::Option::Global) {
+            lastIndex = 0;
+        }
         if (lastIndex < 0 || lastIndex > sourceStr->length()) {
             regexp->set(strings->lastIndex, ESValue(0), true);
             return ESValue(false);
         }
         RegexMatchResult result;
-        bool testResult = regexp->match(sourceStr, result, true);
+        bool testResult = regexp->match(sourceStr, result, true, lastIndex);
         return (ESValue(testResult));
     }, strings->test, 1));
 
