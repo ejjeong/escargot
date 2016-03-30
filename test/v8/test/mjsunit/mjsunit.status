@@ -773,7 +773,6 @@
   'object-is': [SKIP],
   'get-own-property-descriptor-non-objects': [SKIP],
   'compiler/truncating-store': [SKIP],
-  'regress/regress-319120': [SKIP],
   # etc
   'harmony/*': [SKIP],
 

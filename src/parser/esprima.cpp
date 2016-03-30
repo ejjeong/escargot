@@ -3393,7 +3393,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
 
         if (!ctx->m_inIteration) {
             // throwError(Messages.IllegalContinue);
-            throw u"Illegal continue statement";
+            throw u"Messages.IllegalContinue";
         }
 
         // return node.finishContinueStatement(null);
@@ -3405,7 +3405,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
     if (ctx->m_hasLineTerminator) {
         if (!ctx->m_inIteration) {
             // throwError(Messages.IllegalContinue);
-            throw u"Illegal continue statement";
+            throw u"Messages.IllegalContinue";
         }
 
         // return node.finishContinueStatement(null);
@@ -3438,8 +3438,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
     consumeSemicolon(ctx);
 
     if (label == NULL && !(ctx->m_inIteration || ctx->m_inSwitch)) {
-        // throwError(Messages.IllegalContinue);
-        throw u"Illegal continue statement";
+        throw u"throwError(Messages.IllegalContinue);";
     }
 
     if (label) {

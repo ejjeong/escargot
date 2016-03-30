@@ -61,7 +61,6 @@ assertEquals('prefix 16000 suffix',
              function_with_n_params_and_m_args(32000, 32000));
 assertEquals('prefix undefined suffix',
              function_with_n_params_and_m_args(32000, 10000));
-assertEquals('prefix undefined suffix',
-             function_with_n_params_and_m_args(66000, 30000));
 
+assertThrows("function_with_n_params_and_m_args(66000, 30000)");
 assertThrows("function_with_n_params_and_m_args(30000, 66000)");

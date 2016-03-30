@@ -42,7 +42,7 @@ f.prototype = 43;
 __defineGetter__.__proto__ = f;
 
 // Regression test for not returning undefined.
-// assertEquals(__defineGetter__.prototype, 43);
+assertEquals(__defineGetter__.prototype, 43);
 
 // Regression test for not crashing.
 __defineGetter__.prototype = "foo";
