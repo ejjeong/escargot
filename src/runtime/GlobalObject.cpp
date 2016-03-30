@@ -919,7 +919,7 @@ void GlobalObject::initGlobalObject()
                 } else if (length - i >= 3) {
                     char16_t second = str->charAt(i+1);
                     char16_t third = str->charAt(i+2);
-                    if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102)
+                    if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102))
                         && ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
                         char16_t l = hex2char(second, third);
                         R.append(&l, 1);
