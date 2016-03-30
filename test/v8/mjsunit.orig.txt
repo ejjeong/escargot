@@ -175,7 +175,7 @@ Done running mjsunit/negate-zero: pass
 Done running mjsunit/negate: pass
 Done running mjsunit/new-function: pass
 Done running mjsunit/new: pass
-Done running mjsunit/newline-in-string: FAIL
+Done running mjsunit/newline-in-string: pass
 Done running mjsunit/no-branch-elimination: pass
 Done running mjsunit/no-octal-constants-above-256: pass
 Done running mjsunit/no-semicolon: pass
@@ -997,9 +997,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"1979-01-11T08:00:00
 === mjsunit/math-sqrt.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <-0>, stack: undefined}
-=== mjsunit/newline-in-string.js ===
---- stdout ---
-Uncaught SyntaxError: unterminated string literal (Parse Error 2 line)
 === mjsunit/number-tostring-func.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"5a.1eb851eb852"> found <"5a">, stack: undefined}
@@ -1224,6 +1221,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 88 tests failed
+=== 87 tests failed
 === 4 tests CRASHED
 ===
