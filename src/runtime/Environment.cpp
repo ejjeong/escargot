@@ -11,7 +11,7 @@ namespace escargot {
 void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName, bool canDelete)
 {
     if (UNLIKELY(isGlobalEnvironmentRecord())) {
-        toGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, canDelete);
+        asGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, canDelete);
     } else {
         createMutableBinding(atomicName, canDelete);
     }
