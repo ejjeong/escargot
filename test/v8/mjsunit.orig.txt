@@ -19,11 +19,11 @@ Done running mjsunit/arguments-escape: pass
 Done running mjsunit/arguments-lazy: pass
 Done running mjsunit/arguments-load-across-eval: pass
 Done running mjsunit/arguments-read-and-assignment: pass
-Done running mjsunit/array-concat: FAIL
+Done running mjsunit/array-concat: pass
 Done running mjsunit/array-constructor: pass
-Done running mjsunit/array-elements-from-array-prototype-chain: FAIL
-Done running mjsunit/array-elements-from-array-prototype: FAIL
-Done running mjsunit/array-elements-from-object-prototype: FAIL
+Done running mjsunit/array-elements-from-array-prototype-chain: pass
+Done running mjsunit/array-elements-from-array-prototype: pass
+Done running mjsunit/array-elements-from-object-prototype: pass
 Done running mjsunit/array-functions-prototype: pass
 Done running mjsunit/array-indexing: pass
 Done running mjsunit/array-iteration: pass
@@ -35,11 +35,11 @@ Done running mjsunit/array-push10: pass
 Done running mjsunit/array-push11: pass
 Done running mjsunit/array-push2: FAIL
 Done running mjsunit/array-reduce: FAIL
-Done running mjsunit/array-shift: FAIL
-Done running mjsunit/array-slice: FAIL
+Done running mjsunit/array-shift: pass
+Done running mjsunit/array-slice: pass
 Done running mjsunit/array-splice: pass
 Done running mjsunit/array-tostring: FAIL
-Done running mjsunit/array-unshift: FAIL
+Done running mjsunit/array-unshift: pass
 Done running mjsunit/ascii-regexp-subject: FAIL
 Done running mjsunit/big-object-literal: pass
 Done running mjsunit/binary-operation-overwrite: pass
@@ -112,7 +112,7 @@ Done running mjsunit/function-prototype: pass
 Done running mjsunit/function-without-prototype: pass
 Done running mjsunit/function: pass
 Done running mjsunit/fuzz-accessors: pass
-Done running mjsunit/get-own-property-descriptor: FAIL
+Done running mjsunit/get-own-property-descriptor: pass
 Done running mjsunit/get-prototype-of: pass
 Done running mjsunit/getter-in-prototype: pass
 Done running mjsunit/getter-in-value-prototype: pass
@@ -973,18 +973,6 @@ Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 
-=== mjsunit/array-concat.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"baz">, stack: undefined}
-=== mjsunit/array-elements-from-array-prototype-chain.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
-=== mjsunit/array-elements-from-array-prototype.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
-=== mjsunit/array-elements-from-object-prototype.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"@3"> found <undefined>, stack: undefined}
 === mjsunit/array-join.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -994,18 +982,9 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <1>, stack:
 === mjsunit/array-reduce.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (ArrayWithNonElementPropertiesReduce (number of calls)): expected <3> found <4>, stack: undefined}
-=== mjsunit/array-shift.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@3">, stack: undefined}
-=== mjsunit/array-slice.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <10> found <0>, stack: undefined}
 === mjsunit/array-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/array-unshift.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"@0">, stack: undefined}
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
 === mjsunit/cyclic-array-to-string.js ===
@@ -1014,9 +993,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/error-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/get-own-property-descriptor.js ===
---- stdout ---
-Uncaught ReferenceError: x is not defined
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
@@ -1266,8 +1242,8 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"a"> found <100>, st
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"foo"> found <function Object() {}>, stack: undefined}
 === mjsunit/regress/regress-581.js ===
---- stderr ---
---- TIMEOUT ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-676025.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"undefined">, stack: undefined}
@@ -1292,8 +1268,8 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-crbug-516592.js ===
---- stderr ---
---- TIMEOUT ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-latin-1.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
@@ -1305,6 +1281,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 114 tests failed
+=== 106 tests failed
 === 5 tests CRASHED
 ===

@@ -1787,20 +1787,15 @@ void GlobalObject::installArray()
                 unsigned n = idx;
                 size_t len = argi.asESPointer()->asESArrayObject()->length();
 
-                if (indexes.size() == 0) {
-                    ret->setLength(idx + len);
-                    idx = idx + len;
-                    continue;
-                }
                 for (auto k : indexes) {
                     if (k >= len)
                         break;
 
                     n = k + idx;
                     ret->defineDataProperty(ESValue(n), true, true, true, argi.asESPointer()->asESArrayObject()->get(k));
-                    n++;
                 }
-                idx = n;
+                ret->setLength(len + idx);
+                idx = idx + len;
             } else {
                 ret->defineDataProperty(ESValue(idx++), true, true, true, argi);
             }
