@@ -4693,7 +4693,7 @@ void GlobalObject::installJSON()
                 escargot::ESArrayObject* arrObject = replacer.asESPointer()->asESArrayObject();
 
                 std::vector<unsigned> indexes;
-                arrObject->enumeration([&indexes](ESValue key) {
+                arrObject->enumerationWithNonEnumerable([&indexes](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
                     indexes.push_back(key.toIndex());
                 });
                 std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
