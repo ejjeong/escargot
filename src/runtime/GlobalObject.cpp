@@ -899,18 +899,18 @@ void GlobalObject::initGlobalObject()
                         char16_t sixth = str->charAt(i+5);
 
                         // hex dig check
-                        if (((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102)) &&
-                            ((48 <= fourth && fourth <= 57) || (65 <= fourth && fourth <= 70) || (97 <= fourth && fourth <= 102)) &&
-                            ((48 <= fifth && fifth <= 57) || (65 <= fifth && fifth <= 70) || (97 <= fifth && fifth <= 102)) &&
-                            ((48 <= sixth && sixth <= 57) || (65 <= sixth && sixth <= 70) || (97 <= sixth && sixth <= 102))) {
+                        if (((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))
+                            && ((48 <= fourth && fourth <= 57) || (65 <= fourth && fourth <= 70) || (97 <= fourth && fourth <= 102))
+                            && ((48 <= fifth && fifth <= 57) || (65 <= fifth && fifth <= 70) || (97 <= fifth && fifth <= 102))
+                            && ((48 <= sixth && sixth <= 57) || (65 <= sixth && sixth <= 70) || (97 <= sixth && sixth <= 102))) {
                             char16_t l = hex2char(third, fourth) << 8;
                             l |= hex2char(fifth, sixth);
                             R.append(&l, 1);
                             i += 5;
                             unescapeValue = true;
                         }
-                    } else if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102)) &&
-                        ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
+                    } else if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102))
+                        && ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
                         char16_t l = hex2char(second, third);
                         R.append(&l, 1);
                         i += 2;
@@ -919,8 +919,8 @@ void GlobalObject::initGlobalObject()
                 } else if (length - i >= 3) {
                     char16_t second = str->charAt(i+1);
                     char16_t third = str->charAt(i+2);
-                    if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102)) &&
-                        ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
+                    if (((48 <= second && second <= 57) || (65 <= second && second <= 70) || (97 <= second && second <= 102)
+                        && ((48 <= third && third <= 57) || (65 <= third && third <= 70) || (97 <= third && third <= 102))) {
                         char16_t l = hex2char(second, third);
                         R.append(&l, 1);
                         i += 2;
