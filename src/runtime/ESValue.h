@@ -1835,6 +1835,11 @@ public:
         return m_hiddenClass;
     }
 
+    ESValueVectorStd hiddenClassData()
+    {
+        return m_hiddenClassData;
+    }
+
     uint32_t extraData()
     {
         return m_flags.m_extraData;

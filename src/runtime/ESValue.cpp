@@ -689,9 +689,19 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     bool OHasCurrent = true;
     size_t idx = O->hiddenClass()->findProperty(P.toString());
     ESValue current = ESValue();
-    if (idx != SIZE_MAX)
-        current = O->hiddenClass()->read(O, O, P.toString(), idx);
-    else {
+    if (idx != SIZE_MAX) {
+        ESHiddenClassPropertyInfo info = O->hiddenClass()->propertyInfo(idx);
+        if (info.m_flags.m_isDataProperty) {
+            current = O->hiddenClassData()[idx];
+        } else {
+            ESPropertyAccessorData* data = (ESPropertyAccessorData *)O->hiddenClassData()[idx].asESPointer();
+            if (data->getNativeGetter() || data->getNativeSetter()) {
+                current = data->value(O, O, P.toString());
+            } else {
+                current = ESValue();
+            }
+        }
+    } else {
         if (O->isESArrayObject()
             && (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue || descHasGetter || descHasSetter)
             && O->hasOwnProperty(P)) {
