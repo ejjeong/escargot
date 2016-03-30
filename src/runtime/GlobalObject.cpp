@@ -2135,15 +2135,14 @@ void GlobalObject::installArray()
     // $22.1.3.17 Array.prototype.push(item)
     m_arrayPrototype->ESObject::defineDataProperty(strings->push, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int argc = instance->currentExecutionContext()->argumentCount();
+        uint32_t argc = instance->currentExecutionContext()->argumentCount();
         if (LIKELY(thisBinded->isESArrayObject())) {
             auto thisVal = thisBinded->asESArrayObject();
             uint32_t len = thisVal->length();
             bool shouldThrow = false;
-            for (int i = 0; i < argc; i++) {
+            for (uint32_t i = 0; i < argc; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                if (!thisVal->asESObject()->set(ESValue(double(len)+i), val))
-                    ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("Attempted to assign to readonly property.")));
+                ((ESObject*)thisVal)->set(ESValue(double(len) + i), val, true);
                 if (len >= UINT_MAX - i) {
                     shouldThrow = true;
                 }
@@ -2157,14 +2156,12 @@ void GlobalObject::installArray()
             ASSERT(thisBinded->isESObject());
             ESObject* O = thisBinded->asESObject();
             uint32_t len = O->get(strings->length.string()).toUint32();
-            for (int i = 0; i < argc; i++) {
+            for (uint32_t i = 0; i < argc; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                if (!O->set(ESString::create(double(len) + i), val))
-                    ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("Attempted to assign to readonly property.")));
+                O->set(ESValue((double(len) + i)), val, true);
             }
             ESValue ret = ESValue(double(len) + argc);
-            if (!O->set(strings->length, ret))
-                ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("Attempted to assign to readonly property.")));
+            O->set(strings->length.string(), ret, true);
             return ret;
         }
     }, strings->push, 1));

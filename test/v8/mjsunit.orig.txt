@@ -33,7 +33,7 @@ Done running mjsunit/array-length: pass
 Done running mjsunit/array-push-non-smi-value: pass
 Done running mjsunit/array-push10: pass
 Done running mjsunit/array-push11: pass
-Done running mjsunit/array-push2: FAIL
+Done running mjsunit/array-push2: pass
 Done running mjsunit/array-reduce: FAIL
 Done running mjsunit/array-shift: pass
 Done running mjsunit/array-slice: pass
@@ -976,9 +976,6 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 === mjsunit/array-join.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/array-push2.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <1>, stack: undefined}
 === mjsunit/array-reduce.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (ArrayWithNonElementPropertiesReduce (number of calls)): expected <3> found <4>, stack: undefined}
@@ -1025,7 +1022,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"5a.1eb851eb852"> fo
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/primitive-keyed-access.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <100> found <200>, stack: undefined}
 === mjsunit/regexp-cache-replace.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"o"> found <undefined>, stack: undefined}
@@ -1053,8 +1050,8 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> fou
 === mjsunit/regexp.js ===
 --- stderr ---
 === mjsunit/sparse-array-reverse.js ===
---- stderr ---
---- TIMEOUT ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
 === mjsunit/str-to-num.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1281,6 +1278,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 106 tests failed
+=== 105 tests failed
 === 5 tests CRASHED
 ===

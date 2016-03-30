@@ -322,7 +322,7 @@ NEVER_INLINE void throwUndefinedReferenceError(const ESString* name)
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    if (!willBeObject->toObject()->set(*property, value, willBeObject)) {
+    if (!willBeObject->toObject()->setSlowly(*property, value, willBeObject)) {
         throwObjectWriteError();
     }
 }

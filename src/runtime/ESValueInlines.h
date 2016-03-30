@@ -1638,60 +1638,8 @@ ALWAYS_INLINE ESValue ESObject::pop()
     return ret;
 }
 
-// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
+ALWAYS_INLINE bool ESObject::setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
-    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
-        uint32_t idx = key.toIndex();
-        if (idx != ESValue::ESInvalidIndexValue) {
-            if (idx >= asESArrayObject()->length()) {
-                if (UNLIKELY(!isExtensible()))
-                    return false;
-                if (asESArrayObject()->shouldConvertToSlowMode(idx + 1)) {
-                    asESArrayObject()->convertToSlowMode();
-                    asESArrayObject()->setLength(idx + 1);
-                    goto array_fastmode_fail;
-                } else {
-                    asESArrayObject()->setLength(idx + 1);
-                }
-            }
-
-            if (LIKELY(!asESArrayObject()->m_vector[idx].isEmpty())) {
-                asESArrayObject()->m_vector[idx] = val;
-                return true;
-            } else {
-                // if hole, check prototypes.
-                ESValue target = __proto__();
-                while (true) {
-                    if (!target.isObject()) {
-                        break;
-                    }
-                    if (target.asESPointer()->asESObject()->hiddenClass()->hasIndexedReadOnlyProperty()) {
-                        size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(key.toString());
-                        if (t != SIZE_MAX) {
-                            if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
-                            return false;
-                        }
-                    }
-                    target = target.asESPointer()->asESObject()->__proto__();
-                }
-                asESArrayObject()->m_vector[idx] = val;
-                return true;
-            }
-        }
-    }
-    if (isESTypedArrayObject()) {
-        uint32_t idx = key.toIndex();
-        asESTypedArrayObjectWrapper()->set(idx, val);
-        return true;
-    }
-    if (isESStringObject()) {
-        uint32_t idx = key.toIndex();
-        if (idx != ESValue::ESInvalidIndexValue)
-            if (idx < asESStringObject()->length())
-                return false;
-    }
-    array_fastmode_fail:
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
 
@@ -1749,6 +1697,60 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     } else {
         return m_hiddenClass->write(this, this, keyString, idx, val);
     }
+}
+
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
+ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
+{
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue) {
+            if (idx >= asESArrayObject()->length()) {
+                if (UNLIKELY(!isExtensible()))
+                    return false;
+                if (asESArrayObject()->shouldConvertToSlowMode(idx + 1)) {
+                    asESArrayObject()->convertToSlowMode();
+                    asESArrayObject()->setLength(idx + 1);
+                    return setSlowly(key, val, receiver);
+                } else {
+                    asESArrayObject()->setLength(idx + 1);
+                }
+            }
+
+            if (LIKELY(!asESArrayObject()->m_vector[idx].isEmpty())) {
+                asESArrayObject()->m_vector[idx] = val;
+                return true;
+            } else {
+                // if hole, check prototypes.
+                ESValue target = __proto__();
+                while (target.isObject()) {
+                    ESObject* obj = target.asESPointer()->asESObject();
+                    if (obj->hiddenClass()->hasIndexedReadOnlyProperty()) {
+                        size_t t = obj->hiddenClass()->findProperty(key.toString());
+                        if (t != SIZE_MAX) {
+                            return obj->hiddenClass()->write(obj, obj, key.toString(), t, val);
+                        }
+                    }
+                    target = obj->__proto__();
+                }
+                asESArrayObject()->m_vector[idx] = val;
+                return true;
+            }
+        }
+    }
+    if (isESTypedArrayObject()) {
+        uint32_t idx = key.toIndex();
+        asESTypedArrayObjectWrapper()->set(idx, val);
+        return true;
+    }
+    if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue)
+            if (idx < asESStringObject()->length())
+                return false;
+    }
+
+    return setSlowly(key, val, receiver);
 }
 
 ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion, escargot::ESValue* receiver)
