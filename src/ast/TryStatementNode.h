@@ -40,7 +40,11 @@ public:
         context.m_tryStatementScopeCount--;
 
         size_t endPos = codeBlock->currentCodeSize();
-        codeBlock->peekCode<Try>(pos)->m_catchPosition = catchPos;
+        if (m_handler) {
+            codeBlock->peekCode<Try>(pos)->m_catchPosition = catchPos;
+        } else {
+            codeBlock->peekCode<Try>(pos)->m_catchPosition = 0;
+        }
         codeBlock->peekCode<Try>(pos)->m_statementEndPosition = endPos;
         if (m_handler) {
             codeBlock->peekCode<Try>(pos)->m_name = m_handler->param()->name();
@@ -49,7 +53,10 @@ public:
         }
         if (m_finalizer)
             m_finalizer->generateStatementByteCode(codeBlock, context);
+
         codeBlock->pushCode(FinallyEnd(), context, this);
+        codeBlock->peekCode<FinallyEnd>(codeBlock->lastCodePosition<FinallyEnd>())->m_tryDupCount = context.m_tryStatementScopeCount;
+        codeBlock->peekCode<FinallyEnd>(codeBlock->lastCodePosition<FinallyEnd>())->m_finalizerExists = (m_finalizer) ? true : false;
     }
 
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)

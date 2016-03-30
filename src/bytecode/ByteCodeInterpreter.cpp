@@ -1041,7 +1041,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             } else {
                 ASSERT(ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord());
                 ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
-                int32_t dupCnt = record->value2().asInt32();
+                uint32_t dupCnt = record->value2().asUInt32();
                 if (dupCnt <= 1) {
                     if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
                         ESValue ret = record->value();
@@ -1059,6 +1059,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                         NEXT_INSTRUCTION();
                     }
                 } else {
+                    if (((FinallyEnd *) currentCode)->m_tryDupCount <= 0) {
+                        ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                        executeNextCode<FinallyEnd>(programCounter);
+                        NEXT_INSTRUCTION();
+                    } else if (((FinallyEnd *) currentCode)->m_finalizerExists && dupCnt == ((FinallyEnd *) currentCode)->m_tryDupCount + 1) {
+                        if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                            ESValue val = record->value();
+                            ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                            instance->throwError(val);
+                        }
+                    }
                     dupCnt--;
                     record->setValue2(ESValue((int32_t)dupCnt));
                     return ESValue(ESValue::ESEmptyValue);

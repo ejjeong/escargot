@@ -532,6 +532,11 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
 {
     instance->invalidateIdentifierCacheCheckCount();
     instance->m_currentExecutionContext = backupedEC;
+    if (code->m_catchPosition == 0) {
+        instance->currentExecutionContext()->setEnvironment(oldEnv);
+        ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, err, ESValue((int32_t)code->m_tryDupCount));
+        return;
+    }
     LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecordForCatchClause(0, 0, InternalAtomicStringVector(), true, SIZE_MAX, code->m_name, oldEnv->record()), oldEnv);
     instance->currentExecutionContext()->setEnvironment(catchEnv);
     // instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);

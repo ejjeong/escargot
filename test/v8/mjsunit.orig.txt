@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  187 tests will be skipped
+ *  188 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1997 tests are expected to pass
+ * 1996 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2136 tests
+Running 2135 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -655,7 +655,7 @@ Done running mjsunit/regress/regress-2565: pass
 Done running mjsunit/regress/regress-2566: pass
 Done running mjsunit/regress/regress-2568: pass
 Done running mjsunit/regress/regress-2570: pass
-Done running mjsunit/regress/regress-259: FAIL
+Done running mjsunit/regress/regress-259: pass
 Done running mjsunit/regress/regress-2594: CRASH
 Done running mjsunit/regress/regress-260: pass
 Done running mjsunit/regress/regress-2606: FAIL
@@ -708,7 +708,6 @@ Done running mjsunit/regress/regress-345: pass
 Done running mjsunit/regress/regress-3462: pass
 Done running mjsunit/regress/regress-3483: pass
 Done running mjsunit/regress/regress-349: pass
-Done running mjsunit/regress/regress-349870: FAIL
 Done running mjsunit/regress/regress-35: pass
 Done running mjsunit/regress/regress-350884: pass
 Done running mjsunit/regress/regress-350887: pass
@@ -847,7 +846,7 @@ Done running mjsunit/regress/regress-918: pass
 Done running mjsunit/regress/regress-925537: pass
 Done running mjsunit/regress/regress-927: pass
 Done running mjsunit/regress/regress-931: pass
-Done running mjsunit/regress/regress-937896: CRASH
+Done running mjsunit/regress/regress-937896: pass
 Done running mjsunit/regress/regress-944: pass
 Done running mjsunit/regress/regress-955: pass
 Done running mjsunit/regress/regress-95920: FAIL
@@ -1180,9 +1179,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"try"> found <"final
 === mjsunit/regress/regress-2564.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"success"> found <undefined>, stack: undefined}
-=== mjsunit/regress/regress-259.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
 exit code: -11
 --- CRASHED ---
@@ -1221,8 +1217,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 === mjsunit/regress/regress-324028.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-349870.js ===
---- stderr ---
 === mjsunit/regress/regress-353551.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1246,9 +1240,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"undefined">, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-937896.js ===
-exit code: -11
---- CRASHED ---
 === mjsunit/regress/regress-95920.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
@@ -1278,6 +1269,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 105 tests failed
-=== 5 tests CRASHED
+=== 102 tests failed
+=== 4 tests CRASHED
 ===

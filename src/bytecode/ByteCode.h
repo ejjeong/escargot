@@ -2296,6 +2296,8 @@ public:
         printf("FinallyEnd <>\n");
     }
 #endif
+    size_t m_tryDupCount;
+    bool m_finalizerExists;
 };
 
 class PrintSpAndBp : public ByteCode {

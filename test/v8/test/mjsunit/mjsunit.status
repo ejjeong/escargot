@@ -769,6 +769,7 @@
   'global-hash': [SKIP],
   'harmony/dataview-accessors': [SKIP],
   'regress/regress-3859': [SKIP],
+  'regress/regress-349870': [SKIP],
   'regress/regress-crbug-350864': [SKIP],
   'object-is': [SKIP],
   'get-own-property-descriptor-non-objects': [SKIP],
