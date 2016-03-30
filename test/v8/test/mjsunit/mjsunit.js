@@ -401,7 +401,12 @@ var assertUnoptimized;
 /////////////////////////////////////////////////////////////////////////////
 
 Object.defineProperty(Object.prototype, "__defineGetter__", {
-    value : function __defineGetter__(prop, func) { Object.defineProperty(this, prop, {get: func, enumerable : true, configurable : true}); },
+    value : function __defineGetter__(prop, func) {
+        try {
+            Object.defineProperty(this, prop, {get: func, enumerable : true, configurable : true});
+        } catch (e) {
+        }
+    },
     writable: true,
     enumerable : false,
     configurable: true

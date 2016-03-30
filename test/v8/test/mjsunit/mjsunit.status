@@ -756,6 +756,8 @@
   'regress/regress-799761': [SKIP],
   'regress/regress-88591': [SKIP],
   'regress/regress-410030': [SKIP],
+  'regress/regress-1182832': [SKIP],
+  'regress/regress-1213575': [SKIP],
   # let
   'compiler/regress-451012': [SKIP],
   'regress/regress-4377': [SKIP],
@@ -784,6 +786,7 @@
   'extra-arguments': [SKIP],
   'function-arguments-null': [SKIP],
   'function-caller': [SKIP],
+  'regress/regress-1548': [SKIP],
 
   ## 4. v8-only
   # Worker

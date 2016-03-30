@@ -956,17 +956,20 @@ void GlobalObject::installFunction()
             ESStringBuilder builder;
             builder.appendString("function anonymous(");
             for (int i = 0; i < len-1; i++) {
+                builder.appendString("\n");
                 escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
                 builder.appendString(arg);
                 if (i != len-2) {
                     builder.appendString(strings->asciiTable[(size_t)','].string());
                 }
             }
-            builder.appendString("){\n");
+            builder.appendString("\n/**/){/**/\n");
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
             builder.appendString(body);
             builder.appendString("\n}");
-            ProgramNode* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
+            escargot::ESString* src = builder.finalize();
+            // printf("new Function('%s\n')\n", src->utf8Data());
+            ProgramNode* programNode = instance->scriptParser()->generateAST(instance, src, true);
             if (programNode->body().size() != 2)
                 instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) body source code")));
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
@@ -1545,7 +1548,9 @@ void GlobalObject::installError()
     m_errorPrototype->forceNonVectorHiddenClass(true);
 
     escargot::ESFunctionObject* toString = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue v(instance->currentExecutionContext()->resolveThisBindingToObject());
+        ESValue v = instance->currentExecutionContext()->resolveThisBinding();
+        if (!v.isObject())
+            instance->throwError(TypeError::create(ESString::create("Error.prototype.toString(): this value is not object")));
         ESPointer* o = v.asESPointer();
         ESStringBuilder builder;
         ESValue name = o->asESObject()->get(ESValue(strings->name));
