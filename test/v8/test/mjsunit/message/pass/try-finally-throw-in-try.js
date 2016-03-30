@@ -30,6 +30,7 @@ try {
   } finally {
     "bar";
   }
+  throw "error";
 } catch (e) {
   if (e != "foo")
     throw e;
