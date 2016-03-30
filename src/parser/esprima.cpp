@@ -1922,7 +1922,8 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                 }
             } else {
                 ++ctx->m_lineNumber;
-                if (ch == '\r' && ctx->m_sourceString->charAt(ctx->m_index) == '\n') {
+                if ((ch == '\r' && ctx->m_sourceString->charAt(ctx->m_index) == '\n')
+                    || (ch == '\n' && ctx->m_sourceString->charAt(ctx->m_index) == '\r')) {
                     ++ctx->m_index;
                 }
                 ctx->m_lineStart = ctx->m_index;
