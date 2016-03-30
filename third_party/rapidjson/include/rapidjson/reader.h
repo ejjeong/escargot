@@ -972,9 +972,12 @@ private:
                     cont = handler.Uint64(i64);
             }
             else {
-                if (minus)
-                    cont = handler.Int(-(int)i);
-                else
+                if (minus) {
+                    if (i != 0)
+                        cont = handler.Int(-(int)i);
+                    else 
+                        cont = handler.Double(-0.0);
+                } else
                     cont = handler.Uint(i);
             }
         }
