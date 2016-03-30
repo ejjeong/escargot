@@ -173,7 +173,7 @@ public:
         return false;
     }
 
-    GlobalEnvironmentRecord* toGlobalEnvironmentRecord()
+    GlobalEnvironmentRecord* asGlobalEnvironmentRecord()
     {
         ASSERT(isGlobalEnvironmentRecord());
         return reinterpret_cast<GlobalEnvironmentRecord*>(this);
@@ -406,6 +406,8 @@ public:
     void createGlobalVarBinding(const InternalAtomicString& name, bool canDelete);
     void createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete);
     // ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
+
+    ESObject* bindingObject() { return m_objectRecord->bindingObject(); }
 
     virtual bool isGlobalEnvironmentRecord()
     {
