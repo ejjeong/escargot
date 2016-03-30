@@ -1694,6 +1694,10 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     array_fastmode_fail:
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
+
+    if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
+    }
     if (idx == SIZE_MAX) {
         if (UNLIKELY(!isExtensible()))
             return false;
