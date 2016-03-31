@@ -29,6 +29,6 @@ try {
   eval("/foo/\\u0069")
 } catch (e) {
   assertEquals(
-      "SyntaxError: Invalid regular expression flags",
+      "SyntaxError: Invalid regular expression flags (Parse Error 1 line)",
       e.toString());
 }

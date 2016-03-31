@@ -560,7 +560,7 @@ Done running mjsunit/regress/regress-133211: pass
 Done running mjsunit/regress/regress-1346700: pass
 Done running mjsunit/regress/regress-1355: pass
 Done running mjsunit/regress/regress-1360: pass
-Done running mjsunit/regress/regress-136048: FAIL
+Done running mjsunit/regress/regress-136048: pass
 Done running mjsunit/regress/regress-137: pass
 Done running mjsunit/regress/regress-1383: pass
 Done running mjsunit/regress/regress-1387: pass
@@ -1056,9 +1056,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14
 === mjsunit/regress/regress-1217.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
-=== mjsunit/regress/regress-136048.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"SyntaxError: Invalid regular expression flags"> found <"SyntaxError: unexpectedTokenError (Parse Error 1 line)">, stack: undefined}
 === mjsunit/regress/regress-1472.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-149.js ===
@@ -1075,6 +1072,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> fou
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
 === mjsunit/regress/regress-2373.js ===
 --- stderr ---
+--- TIMEOUT ---
 === mjsunit/regress/regress-2374.js ===
 --- stderr ---
 === mjsunit/regress/regress-2437.js ===
@@ -1142,6 +1140,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 63 tests failed
+=== 62 tests failed
 === 4 tests CRASHED
 ===

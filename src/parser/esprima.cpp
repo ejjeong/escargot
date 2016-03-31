@@ -4691,10 +4691,10 @@ ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx)
                     str += '\\';
                     str += 'u';
                 }
-                tolerateUnexpectedToken();
+                throw u"Invalid regular expression flags";
             } else {
                 str += '\\';
-                tolerateUnexpectedToken();
+                throw u"Invalid regular expression flags";
             }
         } else {
             flags += ch;
