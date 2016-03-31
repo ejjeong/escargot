@@ -342,6 +342,12 @@ uint32_t ESString::tryToUseAsIndex()
         uint32_t number = 0;
         size_t len = length();
         const char* data = asciiData();
+        if (len > 1) {
+            if (data[0] == '0') {
+                return ESValue::ESInvalidIndexValue;
+            }
+        }
+
         for (unsigned i = 0; i < len; i ++) {
             char c = data[i];
             if (c < '0' || c > '9') {
