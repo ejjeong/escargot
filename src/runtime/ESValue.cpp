@@ -1280,9 +1280,8 @@ ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue
         ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another")));
     }
 
-    ESRegExpObject* ret = ESRegExpObject::create(strings->defaultRegExpString.string(), ESRegExpObject::Option::None);
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
-    escargot::ESString* patternStr = patternValue.toString();
+    escargot::ESString* patternStr = patternValue.isUndefined() ? strings->defaultRegExpString.string() : patternValue.toString();
     escargot::ESString* optionStr = optionValue.isUndefined()? strings->emptyString.string(): optionValue.toString();
     for (size_t i = 0; i < optionStr->length(); i++) {
         switch (optionStr->charAt(i)) {
@@ -1311,18 +1310,7 @@ ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue
         }
     }
 
-    if (option != ESRegExpObject::Option::None)
-        ret->setOption(option);
-
-    if (patternValue.isUndefined()) {
-        ret->setSource(ESString::create("(?:)"));
-    } else {
-        bool success = ret->setSource(patternStr);
-        if (!success)
-            ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
-    }
-
-    return ret;
+    return new ESRegExpObject(patternStr, option);
 }
 
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
@@ -1342,9 +1330,11 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(2));
     m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(3));
     m_hiddenClassData.push_back((ESPointer*)instance->regexpAccessorData(4));
+
+    setSource(m_source);
 }
 
-bool ESRegExpObject::setSource(escargot::ESString* src)
+void ESRegExpObject::setSource(escargot::ESString* src)
 {
     const char* yarrError = nullptr;
     m_bytecodePattern = NULL;
@@ -1361,8 +1351,8 @@ bool ESRegExpObject::setSource(escargot::ESString* src)
         cache->insert(std::make_pair(RegExpCacheKey(m_source, m_option), RegExpCacheEntry(yarrError, m_yarrPattern)));
     }
     if (yarrError)
-        return false;
-    return true;
+        ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
+    return;
 }
 void ESRegExpObject::setOption(const Option& option)
 {

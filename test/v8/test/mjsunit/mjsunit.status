@@ -811,6 +811,7 @@
   'regress/regress-crbug-505370': [SKIP],
   'regress/regress-function-constructor-receiver': [SKIP],
   'regress/regress-2564': [SKIP],
+  'regress/regress-crbug-435825': [SKIP],
   # Print inner code of function when function.toString() is called
   'error-tostring-omit': [SKIP],
   # etc
