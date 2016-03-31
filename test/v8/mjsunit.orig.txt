@@ -34,7 +34,7 @@ Done running mjsunit/array-push-non-smi-value: pass
 Done running mjsunit/array-push10: pass
 Done running mjsunit/array-push11: pass
 Done running mjsunit/array-push2: pass
-Done running mjsunit/array-reduce: FAIL
+Done running mjsunit/array-reduce: pass
 Done running mjsunit/array-shift: pass
 Done running mjsunit/array-slice: pass
 Done running mjsunit/array-splice: pass
@@ -967,9 +967,6 @@ Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 
-=== mjsunit/array-reduce.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (ArrayWithNonElementPropertiesReduce (number of calls)): expected <3> found <4>, stack: undefined}
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
 === mjsunit/cyclic-array-to-string.js ===
@@ -1194,6 +1191,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 78 tests failed
+=== 77 tests failed
 === 4 tests CRASHED
 ===

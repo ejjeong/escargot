@@ -2202,21 +2202,19 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("reduce"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
         uint32_t len = O->get(strings->length.string()).toUint32(); // 2-3
-        ESValue* argv = instance->currentExecutionContext()->arguments();
-        int argc = instance->currentExecutionContext()->argumentCount();
-        ESValue callbackfn;
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
+        size_t argc = instance->currentExecutionContext()->argumentCount();
         ESValue initialValue = ESValue(ESValue::ESEmptyValue);
-        if (argc == 1) {
-            callbackfn   = argv[0];
-        } else if (argc >= 2) {
-            callbackfn   = argv[0];
-            initialValue = argv[1];
+        if (argc > 1) {
+            initialValue = instance->currentExecutionContext()->readArgument(1);
         }
+
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Array.prototype.reduce: callback is not a function object"))));
 
         if (len == 0 && (initialValue.isUndefined() || initialValue.isEmpty())) // 5
             instance->throwError(ESValue(TypeError::create(ESString::create(u"reduce of empty array with no initial value"))));
+
         size_t k = 0; // 6
         ESValue accumulator;
         if (!initialValue.isEmpty()) { // 7
@@ -2231,7 +2229,7 @@ void GlobalObject::installArray()
                 k++; // 8.b.iv
             }
             if (kPresent == false)
-                instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+                instance->throwError(ESValue(TypeError::create(ESString::create(u"reduce of empty array with no initial value"))));
         }
         while (k < len) { // 9
             ESValue Pk = ESValue(k); // 9.a
@@ -2255,15 +2253,11 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("reduceRight"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
         uint32_t len = O->get(strings->length.string()).toUint32(); // 2-3
-        ESValue* argv = instance->currentExecutionContext()->arguments();
         int argc = instance->currentExecutionContext()->argumentCount();
-        ESValue callbackfn;
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         ESValue initialValue = ESValue(ESValue::ESEmptyValue);
-        if (argc == 1) {
-            callbackfn   = argv[0];
-        } else if (argc >= 2) {
-            callbackfn   = argv[0];
-            initialValue = argv[1];
+        if (argc > 1) {
+            initialValue = instance->currentExecutionContext()->readArgument(1);
         }
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Array.prototype.reduce: callback is not a function object"))));
@@ -2284,7 +2278,7 @@ void GlobalObject::installArray()
                 k--; // 8.b.iv
             }
             if (kPresent == false)
-                instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+                instance->throwError(ESValue(TypeError::create(ESString::create(u"reduce of empty array with no initial value"))));
         }
         while (k >= 0) { // 9
             ESValue Pk = ESValue(k); // 9.a
