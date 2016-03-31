@@ -140,7 +140,18 @@ ALWAYS_INLINE ESString* ESValue::toString() const
     if (isESString()) {
         return asESString();
     } else {
-        return toStringSlowCase();
+        bool emptyStringOnError = false;
+        return toStringSlowCase(emptyStringOnError);
+    }
+}
+
+ALWAYS_INLINE ESString* ESValue::toStringOrEmptyString() const
+{
+    if (isESString()) {
+        return asESString();
+    } else {
+        bool emptyStringOnError = true;
+        return toStringSlowCase(emptyStringOnError);
     }
 }
 

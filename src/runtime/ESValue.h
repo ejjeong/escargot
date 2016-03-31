@@ -164,7 +164,8 @@ public:
     inline int32_t toInt32SlowCase() const; // $7.1.5 ToInt32
     ALWAYS_INLINE uint32_t toUint32() const; // http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
     ALWAYS_INLINE ESString* toString() const; // $7.1.12 ToString
-    ESString* toStringSlowCase() const; // $7.1.12 ToString
+    ALWAYS_INLINE ESString* toStringOrEmptyString() const;
+    ESString* toStringSlowCase(bool emptyStringOnError) const; // $7.1.12 ToString
     inline ESObject* toObject() const; // $7.1.13 ToObject
     inline double toLength() const; // $7.1.15 ToLength
 
@@ -225,6 +226,9 @@ public:
 
 private:
     ValueDescriptor u;
+
+protected:
+    ESValue toPrimitiveSlowCaseHelper(PrimitiveTypeHint preferredType) const;
 
 public:
     ALWAYS_INLINE bool abstractEqualsTo(const ESValue& val);
@@ -2035,11 +2039,9 @@ private:
 };
 
 class ESErrorObject : public ESObject {
-protected:
-    ESErrorObject(escargot::ESString* message);
-
 public:
     enum Code {
+        None,
         ReferenceError,
         TypeError,
         SyntaxError,
@@ -2048,19 +2050,18 @@ public:
         EvalError
     };
 
-    static ESErrorObject* create(escargot::ESString* message = strings->emptyString.string())
-    {
-        return new ESErrorObject(message);
-    }
+    Code errorCode() const { return m_code; }
 
-    static ESErrorObject* create(escargot::ESString* message, Code code);
-
+    static ESErrorObject* create(escargot::ESString* message = strings->emptyString.string(), Code code = None);
 protected:
+    Code m_code;
+
+    ESErrorObject(escargot::ESString* message, Code code);
 };
 
 class ReferenceError : public ESErrorObject {
 protected:
-    ReferenceError(escargot::ESString* message = strings->emptyString.string());
+    ReferenceError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::ReferenceError);
 public:
     static ReferenceError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2070,7 +2071,7 @@ public:
 
 class TypeError : public ESErrorObject {
 protected:
-    TypeError(escargot::ESString* message = strings->emptyString.string());
+    TypeError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::TypeError);
 public:
     static TypeError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2080,7 +2081,7 @@ public:
 
 class SyntaxError : public ESErrorObject {
 protected:
-    SyntaxError(escargot::ESString* message = strings->emptyString.string());
+    SyntaxError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::SyntaxError);
 public:
 
     static SyntaxError* create(escargot::ESString* message = strings->emptyString.string())
@@ -2091,7 +2092,7 @@ public:
 
 class RangeError : public ESErrorObject {
 protected:
-    RangeError(escargot::ESString* message = strings->emptyString.string());
+    RangeError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::RangeError);
 public:
     static RangeError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2101,7 +2102,7 @@ public:
 
 class URIError : public ESErrorObject {
 protected:
-    URIError(escargot::ESString* message = strings->emptyString.string());
+    URIError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::URIError);
 public:
     static URIError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2111,7 +2112,7 @@ public:
 
 class EvalError : public ESErrorObject {
 protected:
-    EvalError(escargot::ESString* message = strings->emptyString.string());
+    EvalError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::EvalError);
 public:
     static EvalError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2281,6 +2282,7 @@ public:
     }
 
     ESArrayObject* fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments);
+    escargot::ESString* fastJoin(escargot::ESString* sep, unsigned len);
 
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)
@@ -2354,6 +2356,9 @@ public:
 
     bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
     bool defineOwnProperty(const ESValue& key, ESObject* desc, bool throwFlag);
+
+    static int64_t nextIndexForward(ESObject* obj, const int64_t cur, const int64_t len);
+    static int64_t nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end);
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }

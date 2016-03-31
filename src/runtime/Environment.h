@@ -248,7 +248,7 @@ public:
         if (UNLIKELY(needsActivation)) {
             m_innerIdentifiers = new (GC) InternalAtomicStringVector(innerIdentifiers);
             if (innerIdentifiers.size() >= std::pow(2, 15))
-                ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create("Number of variables in single function should be less than 2^15")));
+                ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create("Number of variables in single function should be less than 2^15")));
             m_numVariableDeclarations = innerIdentifiers.size();
         } else {
             m_stackAllocatedData = stackAllocatedData;

@@ -54,7 +54,7 @@ ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-ESString* ESValue::toStringSlowCase() const
+ESString* ESValue::toStringSlowCase(bool emptyStringOnError) const
 {
     ASSERT(!isESString());
     if (isInt32()) {
@@ -88,7 +88,32 @@ ESString* ESValue::toStringSlowCase() const
         else
             return strings->stringFalse.string();
     } else {
-        return toPrimitive(PreferString).toString();
+        if (emptyStringOnError) {
+            static bool tryPositionRegistered = false;
+            std::jmp_buf tryPosition;
+            if (tryPositionRegistered) {
+                return toPrimitive(PreferString).toString();
+            }
+            if (setjmp(ESVMInstance::currentInstance()->registerTryPos(&tryPosition)) == 0) {
+                tryPositionRegistered = true;
+                ESString* ret = toPrimitive(PreferString).toString();
+                ESVMInstance::currentInstance()->unregisterTryPos(&tryPosition);
+                tryPositionRegistered = false;
+                return ret;
+            } else {
+                escargot::ESValue err = ESVMInstance::currentInstance()->getCatchedError();
+                if (err.isESPointer() && err.asESPointer()->isESErrorObject()
+                    && err.asESPointer()->asESErrorObject()->errorCode() == ESErrorObject::Code::RangeError) {
+                    tryPositionRegistered = false;
+                    return strings->emptyString.string();
+                } else {
+                    ESVMInstance::currentInstance()->throwError(err);
+                }
+            }
+            RELEASE_ASSERT_NOT_REACHED();
+        } else {
+            return toPrimitive(PreferString).toString();
+        }
     }
 }
 
@@ -1076,6 +1101,48 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, ESObject* obj, bool thro
     return defineOwnProperty(P, PropertyDescriptor { obj }, throwFlag);
 }
 
+int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const int64_t end)
+{
+    ESValue ptr = obj;
+    int64_t ret = std::numeric_limits<int64_t>::max();
+    while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+        ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            uint32_t index = ESValue::ESInvalidIndexValue;
+            if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue) {
+                if (index > cur) {
+                    ret = std::min(static_cast<int64_t>(index), ret);
+                }
+            }
+        });
+        ptr = ptr.asESPointer()->asESObject()->__proto__();
+    }
+    if (ret == std::numeric_limits<int64_t>::max()) {
+        return end;
+    }
+    return ret;
+}
+
+int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end)
+{
+    ESValue ptr = obj;
+    int64_t ret = std::numeric_limits<int64_t>::min();
+    while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+        ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            uint32_t index = ESValue::ESInvalidIndexValue;
+            if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue) {
+                if (index < cur) {
+                    ret = std::max(static_cast<int64_t>(index), ret);
+                }
+            }
+        });
+        ptr = ptr.asESPointer()->asESObject()->__proto__();
+    }
+    if (ret == std::numeric_limits<int64_t>::min()) {
+        return end;
+    }
+    return ret;
+}
+
 ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments)
 {
     escargot::ESArrayObject* ret = ESArrayObject::create(0);
@@ -1134,6 +1201,22 @@ ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t del
     ((ESObject*)this)->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
 
     return ret;
+}
+
+ESString* ESArrayObject::fastJoin(escargot::ESString* sep, unsigned len)
+{
+    ESStringBuilder builder;
+    for (size_t i = 0; i < len; i++) {
+        ESValue elem = get(i);
+        if (sep->length() > 0) {
+            if (i != 0) {
+                builder.appendString(sep);
+            }
+        }
+        if (!elem.isUndefinedOrNull())
+            builder.appendString(elem.toStringOrEmptyString());
+    }
+    return builder.finalize();
 }
 
 void ESArrayObject::setLength(unsigned newLength)
@@ -3029,8 +3112,9 @@ ESBooleanObject::ESBooleanObject(bool value)
     m_primitiveValue = value;
 }
 
-ESErrorObject::ESErrorObject(escargot::ESString* message)
+ESErrorObject::ESErrorObject(escargot::ESString* message, Code code)
     : ESObject((Type)(Type::ESObject | Type::ESErrorObject), ESVMInstance::currentInstance()->globalObject()->errorPrototype())
+    , m_code(code)
 {
     if (message != strings->emptyString.string())
         set(strings->message, message);
@@ -3051,47 +3135,48 @@ ESErrorObject* ESErrorObject::create(escargot::ESString* message, Code code)
         return URIError::create(message);
     case ESErrorObject::Code::EvalError:
         return EvalError::create(message);
+    default:
+        return new ESErrorObject(message, code);
     }
-    RELEASE_ASSERT_NOT_REACHED();
 }
 
-ReferenceError::ReferenceError(escargot::ESString* message)
-    : ESErrorObject(message)
+ReferenceError::ReferenceError(escargot::ESString* message, Code code)
+    : ESErrorObject(message, code)
 {
     set(strings->name, strings->ReferenceError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->referenceErrorPrototype());
 }
 
-TypeError::TypeError(escargot::ESString* message)
-    : ESErrorObject(message)
+TypeError::TypeError(escargot::ESString* message, Code code)
+    : ESErrorObject(message, code)
 {
     set(strings->name, strings->TypeError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->typeErrorPrototype());
 }
 
-RangeError::RangeError(escargot::ESString* message)
-    : ESErrorObject(message)
+RangeError::RangeError(escargot::ESString* message, Code code)
+    : ESErrorObject(message, code)
 {
     set(strings->name, strings->RangeError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->rangeErrorPrototype());
 }
 
-SyntaxError::SyntaxError(escargot::ESString* message)
-    : ESErrorObject(message)
+SyntaxError::SyntaxError(escargot::ESString* message, Code code)
+    : ESErrorObject(message, code)
 {
     set(strings->name, strings->SyntaxError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
-URIError::URIError(escargot::ESString* message)
-    : ESErrorObject(message)
+URIError::URIError(escargot::ESString* message, Code code)
+    : ESErrorObject(message, code)
 {
     set(strings->name, strings->URIError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->uriErrorPrototype());
 }
 
-EvalError::EvalError(escargot::ESString* message)
-    : ESErrorObject(message)
+EvalError::EvalError(escargot::ESString* message, Code code)
+    : ESErrorObject(message, code)
 {
     set(strings->name, strings->EvalError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->evalErrorPrototype());

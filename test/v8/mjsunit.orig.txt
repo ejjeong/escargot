@@ -27,7 +27,7 @@ Done running mjsunit/array-elements-from-object-prototype: pass
 Done running mjsunit/array-functions-prototype: pass
 Done running mjsunit/array-indexing: pass
 Done running mjsunit/array-iteration: pass
-Done running mjsunit/array-join: FAIL
+Done running mjsunit/array-join: pass
 Done running mjsunit/array-length-number-conversion: pass
 Done running mjsunit/array-length: pass
 Done running mjsunit/array-push-non-smi-value: pass
@@ -967,9 +967,6 @@ Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 
-=== mjsunit/array-join.js ===
---- stdout ---
-Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/array-reduce.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (ArrayWithNonElementPropertiesReduce (number of calls)): expected <3> found <4>, stack: undefined}
@@ -1212,6 +1209,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 84 tests failed
+=== 83 tests failed
 === 4 tests CRASHED
 ===

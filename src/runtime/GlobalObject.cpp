@@ -2010,23 +2010,50 @@ void GlobalObject::installArray()
 
     // $22.1.3.12 Array.prototype.join(separator)
     m_arrayPrototype->ESObject::defineDataProperty(strings->join, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int arglen = instance->currentExecutionContext()->argumentCount();
-        auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        size_t arrlen = thisBinded->length();
-        ESStringBuilder builder;
-        escargot::ESString* separator;
-        if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
-            separator = strings->asciiTable[(size_t)','].string();
+        ESObject* thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
+        int64_t len = thisBinded->length();
+        ESValue separator = instance->currentExecutionContext()->readArgument(0);
+        escargot::ESString* sep;
+        if (separator.isUndefined()) {
+            sep = strings->asciiTable[(size_t)','].string();
         } else {
-            separator = instance->currentExecutionContext()->arguments()[0].toString();
+            sep = separator.toString();
         }
 
-        for (size_t i = 0; i < arrlen; i++) {
-            ESValue elemi = thisBinded->get(ESValue(i));
-            if (i != 0)
-                builder.appendString(separator);
-            if (!elemi.isUndefinedOrNull())
-                builder.appendString(elemi.toString());
+        if (thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode()) {
+            return thisBinded->asESArrayObject()->fastJoin(sep, len);
+        }
+
+        ESStringBuilder builder;
+        int64_t prevIndex = 0;
+        int64_t curIndex = 0;
+        while (curIndex < len) {
+            if (curIndex != 0) {
+                if (sep->length() > 0) {
+                    while (curIndex - prevIndex > 1) {
+                        builder.appendString(sep);
+                        prevIndex++;
+                    }
+                    builder.appendString(sep);
+                }
+            }
+            ESValue elem = thisBinded->get(ESValue(curIndex));
+
+            if (!elem.isUndefinedOrNull()) {
+                builder.appendString(elem.toStringOrEmptyString());
+            }
+            prevIndex = curIndex;
+            if (elem.isUndefined()) {
+                curIndex = ESArrayObject::nextIndexForward(thisBinded, prevIndex, len);
+            } else {
+                curIndex++;
+            }
+        }
+        if (sep->length() > 0) {
+            while (curIndex - prevIndex > 1) {
+                builder.appendString(sep);
+                prevIndex++;
+            }
         }
         return builder.finalize();
     }, strings->join, 1));
