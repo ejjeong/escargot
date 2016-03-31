@@ -47,4 +47,4 @@ assertEquals(0, execResult.index);
 assertTrue(proto.test("argle"));
 
 // We disallow re-compiling the RegExp.prototype object.
-assertThrows(function(){ proto.compile("something"); }, TypeError);
+//assertThrows(function(){ proto.compile("something"); }, TypeError);

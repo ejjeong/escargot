@@ -4586,6 +4586,12 @@ ESValue parseJSON(const CharType* data)
             return ESValue(value.GetBool());
         } else if (value.IsInt()) {
             return ESValue(value.GetInt());
+        } else if (value.IsUint()) {
+            return ESValue(value.GetUint());
+        } else if (value.IsInt64()) {
+            return ESValue(value.GetInt64());
+        } else if (value.IsUint64()) {
+            return ESValue(value.GetUint64());
         } else if (value.IsDouble()) {
             return ESValue(value.GetDouble());
         } else if (value.IsNull()) {
@@ -5734,7 +5740,7 @@ void GlobalObject::installRegExp()
     m_regexp->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     // create regexpPrototype object
-    m_regexpPrototype = ESRegExpObject::create(strings->emptyString, ESRegExpObject::Option::None);
+    m_regexpPrototype = ESRegExpObject::create(strings->defaultRegExpString, ESRegExpObject::Option::None);
     m_regexpPrototype->forceNonVectorHiddenClass(true);
     m_regexpPrototype->set__proto__(m_objectPrototype);
 

@@ -541,7 +541,7 @@ Done running mjsunit/regress/regress-1213516: pass
 Done running mjsunit/regress/regress-121407: pass
 Done running mjsunit/regress/regress-1215: pass
 Done running mjsunit/regress/regress-1215653: pass
-Done running mjsunit/regress/regress-1217: FAIL
+Done running mjsunit/regress/regress-1217: pass
 Done running mjsunit/regress/regress-1218: pass
 Done running mjsunit/regress/regress-1233: pass
 Done running mjsunit/regress/regress-1236: pass
@@ -626,8 +626,8 @@ Done running mjsunit/regress/regress-231: pass
 Done running mjsunit/regress/regress-2326: pass
 Done running mjsunit/regress/regress-233: pass
 Done running mjsunit/regress/regress-235311: pass
-Done running mjsunit/regress/regress-2373: FAIL
-Done running mjsunit/regress/regress-2374: FAIL
+Done running mjsunit/regress/regress-2373: pass
+Done running mjsunit/regress/regress-2374: pass
 Done running mjsunit/regress/regress-2398: pass
 Done running mjsunit/regress/regress-2410: pass
 Done running mjsunit/regress/regress-241344: pass
@@ -1046,9 +1046,6 @@ exit code: -11
 === mjsunit/regress/regress-114.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14"> found <"FRIEDRICHSTRAßE 14">, stack: undefined}
-=== mjsunit/regress/regress-1217.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
 === mjsunit/regress/regress-1472.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-149.js ===
@@ -1063,10 +1060,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> fou
 === mjsunit/regress/regress-2058.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
-=== mjsunit/regress/regress-2373.js ===
---- stderr ---
-=== mjsunit/regress/regress-2374.js ===
---- stderr ---
 === mjsunit/regress/regress-2437.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <1>, stack: undefined}
@@ -1132,6 +1125,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 60 tests failed
+=== 57 tests failed
 === 4 tests CRASHED
 ===

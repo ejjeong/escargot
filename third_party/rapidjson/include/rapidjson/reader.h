@@ -804,7 +804,7 @@ private:
                     i = i * 10 + static_cast<unsigned>(s.TakePush() - '0');
                     significandDigit++;
                 }
-            else
+            else {
                 while (s.Peek() >= '0' && s.Peek() <= '9') {
                     if (i >= 429496729) { // 2^32 - 1 = 4294967295
                         if (i != 429496729 || s.Peek() > '5') {
@@ -816,6 +816,14 @@ private:
                     i = i * 10 + static_cast<unsigned>(s.TakePush() - '0');
                     significandDigit++;
                 }
+                if (i >= 429496729) { // 2^32 - 1 = 4294967295
+                    if (i != 429496729) {
+                        i64 = i;
+                        use64bit = true;
+                    }
+                }
+            }
+
         }
         else
             RAPIDJSON_PARSE_ERROR(kParseErrorValueInvalid, s.Tell());
