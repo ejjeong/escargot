@@ -2019,9 +2019,6 @@ public:
         *m_slot = value;
     }
 
-    NEVER_INLINE ESValue getValueWithGetter(escargot::ESObject* obj, escargot::ESString* propertyName);
-    NEVER_INLINE bool setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value);
-
     ALWAYS_INLINE bool isGlobalBinding() { return m_isGlobalBinding; }
     ALWAYS_INLINE bool isDataBinding() { return m_isDataBinding; }
     ALWAYS_INLINE bool isMutable() { return m_isBindingMutable; }
