@@ -5228,6 +5228,15 @@ void GlobalObject::installMath()
                 }
             }
         }
+        // x == -0
+        if (1 / x == -std::numeric_limits<double>::infinity()) {
+            // y cannot be an odd integer because the case is filtered by "if (y_int == y)" above
+            if (y > 0) {
+                return ESValue(0);
+            } else if (y < 0) {
+                return ESValue(std::numeric_limits<double>::infinity());
+            }
+        }
 
         if (y == 0.5) {
             return ESValue(sqrt(x));

@@ -155,7 +155,7 @@ Done running mjsunit/load-callback-from-value-classic: pass
 Done running mjsunit/local-load-from-eval: pass
 Done running mjsunit/logical: pass
 Done running mjsunit/math-exp-precision: pass
-Done running mjsunit/math-sqrt: FAIL
+Done running mjsunit/math-sqrt: pass
 Done running mjsunit/md5: pass
 Done running mjsunit/megamorphic-callbacks: pass
 Done running mjsunit/mod: pass
@@ -994,9 +994,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/json.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"1979-01-11T08:00:00.000Z"> found <null>, stack: undefined}
-=== mjsunit/math-sqrt.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <-0>, stack: undefined}
 === mjsunit/number-tostring-func.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"5a.1eb851eb852"> found <"5a">, stack: undefined}
@@ -1221,6 +1218,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 87 tests failed
+=== 86 tests failed
 === 4 tests CRASHED
 ===
