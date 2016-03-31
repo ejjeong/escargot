@@ -1962,6 +1962,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
     char dummy;
     if (UNLIKELY(instance->m_stackStart - &dummy) > 4 * 1024 * 1024) // maximum call stack size : 4MB
         instance->throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
+    if (UNLIKELY(argumentCount) > 65535) // maximum number of arguments : 65535
+        instance->throwError(RangeError::create(ESString::create("Maximum number of arguments exceeded.")));
     ESValue result(ESValue::ESForceUninitialized);
     if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = instance->currentExecutionContext();

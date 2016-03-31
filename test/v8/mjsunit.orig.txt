@@ -678,7 +678,7 @@ Done running mjsunit/regress/regress-3006390: pass
 Done running mjsunit/regress/regress-3010: pass
 Done running mjsunit/regress/regress-3025: FAIL
 Done running mjsunit/regress/regress-3026: pass
-Done running mjsunit/regress/regress-3027: FAIL
+Done running mjsunit/regress/regress-3027: pass
 Done running mjsunit/regress/regress-3116: pass
 Done running mjsunit/regress/regress-312: pass
 Done running mjsunit/regress/regress-3135: FAIL
@@ -1130,9 +1130,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"x"> found <"ÿ">, st
 === mjsunit/regress/regress-3025.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <9223372036854776000> found <9223372036854778000>, stack: undefined}
-=== mjsunit/regress/regress-3027.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <125000> found <59464>, stack: undefined}
 === mjsunit/regress/regress-3135.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"{}"> found <"{\"x\":1,\"1\":1}">, stack: undefined}
