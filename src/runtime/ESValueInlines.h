@@ -1666,15 +1666,16 @@ ALWAYS_INLINE bool ESObject::setSlowly(const escargot::ESValue& key, const ESVal
             if (!target.isObject()) {
                 break;
             }
-            size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(keyString);
+            ESObject* targetObj = target.asESPointer()->asESObject();
+            size_t t = targetObj->hiddenClass()->findProperty(keyString);
             if (t != SIZE_MAX) {
                 foundInPrototype = true;
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
                 // If IsAccessorDescriptor(desc) is true, then
                 // Let setter be desc.[[Set]] which cannot be undefined.
                 // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
-                if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
-                    ESPropertyAccessorData* data = target.asESPointer()->asESObject()->accessorData(t);
+                if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
+                    ESPropertyAccessorData* data = targetObj->accessorData(t);
                     ESValue receiverVal(this);
                     if (receiver)
                         receiverVal = *receiver;
@@ -1688,10 +1689,18 @@ ALWAYS_INLINE bool ESObject::setSlowly(const escargot::ESValue& key, const ESVal
                     }
                 }
 
-                if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
+                if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
                     return false;
+
+            } else if (UNLIKELY(targetObj->isESStringObject())) {
+                if (targetObj->asESStringObject()->length() != 0) {
+                    uint32_t idx = key.toIndex();
+                    if (idx != ESValue::ESInvalidIndexValue)
+                        if (idx < targetObj->asESStringObject()->length())
+                            return false;
+                }
             }
-            target = target.asESPointer()->asESObject()->__proto__();
+            target = targetObj->__proto__();
         }
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, true, true, true, foundInPrototype);
         m_hiddenClassData.push_back(val);

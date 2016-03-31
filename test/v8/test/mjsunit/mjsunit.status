@@ -781,6 +781,8 @@
   'regress/regress-3159': [SKIP],
   'regress/regress-324028': [SKIP],
   'regress/regress-425551': [SKIP],
+  'regress/regress-95920': [SKIP],
+  'regress/regress-crbug-109362': [SKIP],
   # etc
   'harmony/*': [SKIP],
 
