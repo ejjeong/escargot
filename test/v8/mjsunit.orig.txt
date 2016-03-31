@@ -282,7 +282,7 @@ Done running mjsunit/this-property-assignment: pass
 Done running mjsunit/this: pass
 Done running mjsunit/throw-and-catch-function: pass
 Done running mjsunit/throw-exception-for-null-access: pass
-Done running mjsunit/to-precision: FAIL
+Done running mjsunit/to-precision: pass
 Done running mjsunit/to_number_order: pass
 Done running mjsunit/tobool: pass
 Done running mjsunit/toint32: pass
@@ -1050,9 +1050,6 @@ Uncaught MjsUnitAssertionError {message: Failure ("xaxbxcx".replace(b, $e)): exp
 === mjsunit/string-slices-regexp.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"> found <undefined>, stack: undefined}
-=== mjsunit/to-precision.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"-1e+27"> found <"">, stack: undefined}
 === mjsunit/try-finally-nested.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <42> found <87>, stack: undefined}
@@ -1200,6 +1197,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 81 tests failed
+=== 79 tests failed
 === 4 tests CRASHED
 ===

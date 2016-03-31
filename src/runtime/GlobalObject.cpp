@@ -5549,28 +5549,26 @@ void GlobalObject::installNumber()
             if (isnan(x)) {
                 return strings->NaN.string();
             }
-            ASCIIString s;
+            std::basic_ostringstream<char> stream;
             if (x < 0) {
-                s = "-";
+                stream << "-";
                 x = -x;
             }
             if (std::isinf(x)) {
-                s += "Infinity";
-                return escargot::ESString::create(std::move(s));
-            }
-            int p = (int) trunc(p_d);
-            if (p < 1 || p > 21) {
-                instance->throwError(ESValue(RangeError::create()));
-            }
-
-            int log10_num = trunc(log10(number));
-            x = number;
-            std::basic_ostringstream<char> stream;
-            if (log10_num + 1 <= p) {
-                stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+                stream << "Infinity";
             } else {
-                x = x / pow(10, log10_num);
-                stream << "%1." << (p - 1) << "lf" << "e+" << log10_num;
+                int p = (int) trunc(p_d);
+                if (p < 1 || p > 21) {
+                    instance->throwError(ESValue(RangeError::create()));
+                }
+
+                int log10_num = trunc(log10(x));
+                if (log10_num + 1 <= p) {
+                    stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+                } else {
+                    x = x / pow(10, log10_num);
+                    stream << "%1." << (p - 1) << "lf" << "e+" << log10_num;
+                }
             }
             std::string fstr = stream.str();
             char buf[512];
