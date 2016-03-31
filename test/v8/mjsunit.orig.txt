@@ -1072,7 +1072,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> fou
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
 === mjsunit/regress/regress-2373.js ===
 --- stderr ---
---- TIMEOUT ---
 === mjsunit/regress/regress-2374.js ===
 --- stderr ---
 === mjsunit/regress/regress-2437.js ===
