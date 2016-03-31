@@ -1280,35 +1280,8 @@ ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue
         ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another")));
     }
 
-    ESRegExpObject::Option option = ESRegExpObject::Option::None;
     escargot::ESString* patternStr = patternValue.isUndefined() ? strings->defaultRegExpString.string() : patternValue.toString();
-    escargot::ESString* optionStr = optionValue.isUndefined()? strings->emptyString.string(): optionValue.toString();
-    for (size_t i = 0; i < optionStr->length(); i++) {
-        switch (optionStr->charAt(i)) {
-        case 'g':
-            if (option & ESRegExpObject::Option::Global)
-                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags")));
-            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
-            break;
-        case 'i':
-            if (option & ESRegExpObject::Option::IgnoreCase)
-                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags")));
-            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
-            break;
-        case 'm':
-            if (option & ESRegExpObject::Option::MultiLine)
-                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags")));
-            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
-            break;
-        case 'y':
-            if (option & ESRegExpObject::Option::Sticky)
-                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags")));
-            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
-            break;
-        default:
-            ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has invalid flag")));
-        }
-    }
+    ESRegExpObject::Option option = parseOption(optionValue.isUndefined()? strings->emptyString.string(): optionValue.toString());
 
     return new ESRegExpObject(patternStr, option);
 }
@@ -1336,24 +1309,15 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 
 void ESRegExpObject::setSource(escargot::ESString* src)
 {
-    const char* yarrError = nullptr;
-    m_bytecodePattern = NULL;
-    m_source = src;
-
-    auto cache = ESVMInstance::currentInstance()->regexpCache();
-    auto it = cache->find(RegExpCacheKey(m_source, m_option));
-    if (it != cache->end()) {
-        yarrError = it->second.m_yarrError;
-        m_yarrPattern = it->second.m_yarrPattern;
-        m_bytecodePattern = it->second.m_bytecodePattern;
-    } else {
-        m_yarrPattern = new JSC::Yarr::YarrPattern(*src, m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
-        cache->insert(std::make_pair(RegExpCacheKey(m_source, m_option), RegExpCacheEntry(yarrError, m_yarrPattern)));
-    }
-    if (yarrError)
+    auto entry = getCacheEntryAndCompileIfNeeded(src, m_option);
+    if (entry.m_yarrError)
         ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
-    return;
+
+    m_source = src;
+    m_yarrPattern = entry.m_yarrPattern;
+    m_bytecodePattern = entry.m_bytecodePattern;
 }
+
 void ESRegExpObject::setOption(const Option& option)
 {
     if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine))
@@ -1365,37 +1329,74 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
+ESRegExpObject::RegExpCacheEntry& ESRegExpObject::getCacheEntryAndCompileIfNeeded(escargot::ESString* source, const Option& option)
+{
+    auto cache = ESVMInstance::currentInstance()->regexpCache();
+    auto it = cache->find(RegExpCacheKey(source, option));
+    if (it != cache->end()) {
+        return it->second;
+    } else {
+        const char* yarrError = nullptr;
+        auto yarrPattern = new JSC::Yarr::YarrPattern(*source, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
+        return cache->insert(std::make_pair(RegExpCacheKey(source, option), RegExpCacheEntry(yarrError, yarrPattern))).first->second;
+    }
+}
+
+ESRegExpObject::Option ESRegExpObject::parseOption(escargot::ESString* optionString)
+{
+    ESRegExpObject::Option option = ESRegExpObject::Option::None;
+
+    for (size_t i = 0; i < optionString->length(); i++) {
+        switch (optionString->charAt(i)) {
+        case 'g':
+            if (option & ESRegExpObject::Option::Global)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
+            break;
+        case 'i':
+            if (option & ESRegExpObject::Option::IgnoreCase)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
+            break;
+        case 'm':
+            if (option & ESRegExpObject::Option::MultiLine)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
+            break;
+        /*
+        case 'y':
+            if (option & ESRegExpObject::Option::Sticky)
+                ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags")));
+            option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
+            break;
+        */
+        default:
+            ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(u"RegExp has invalid flag")));
+        }
+    }
+
+    return option;
+}
+
 bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matchResult, bool testOnly, size_t startIndex)
 {
     m_lastExecutedString = str;
 
     if (!m_bytecodePattern) {
-        auto cache = ESVMInstance::currentInstance()->regexpCache();
-        auto it = cache->find(RegExpCacheKey(m_source, m_option));
-        if (!m_yarrPattern) {
-            const char* yarrError = nullptr;
-            if (it != cache->end()) {
-                m_yarrPattern = it->second.m_yarrPattern;
-                yarrError = it->second.m_yarrError;
-            } else {
-                m_yarrPattern = new JSC::Yarr::YarrPattern(*source(), option() & ESRegExpObject::Option::IgnoreCase, option() & ESRegExpObject::Option::MultiLine, &yarrError);
-                cache->insert(std::make_pair(RegExpCacheKey(m_source, m_option), RegExpCacheEntry(yarrError, m_yarrPattern)));
-                it = cache->find(RegExpCacheKey(m_source, m_option));
-            }
-
-            if (yarrError) {
-                matchResult.m_subPatternNum = 0;
-                return false;
-            }
+        RegExpCacheEntry& entry = getCacheEntryAndCompileIfNeeded(m_source, m_option);
+        if (entry.m_yarrError) {
+            matchResult.m_subPatternNum = 0;
+            return false;
         }
-        ASSERT(it != cache->end());
-        if (it->second.m_bytecodePattern) {
-            m_bytecodePattern = it->second.m_bytecodePattern;
+        m_yarrPattern = entry.m_yarrPattern;
+
+        if (entry.m_bytecodePattern) {
+            m_bytecodePattern = entry.m_bytecodePattern;
         } else {
             WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
             JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompile(*m_yarrPattern, bumpAlloc);
             m_bytecodePattern = ownedBytecode.leakPtr();
-            it->second.m_bytecodePattern = m_bytecodePattern;
+            entry.m_bytecodePattern = m_bytecodePattern;
         }
     }
 

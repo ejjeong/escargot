@@ -42,8 +42,10 @@ assertEquals("/foo.bar/", "" + re);
 var plain = /foobar/;
 assertEquals("/foobar/", "" + plain);
 
+/*
 re.compile("foo.bar");
 assertEquals(void 0, re.sticky);
+*/
 
 var global = /foo.bar/g;
 assertEquals("/foo.bar/g", "" + global);

@@ -5397,22 +5397,9 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         token = scanRegExp(ctx);
         lex(ctx);
         // expr = node.finishLiteral(token);
-        int f = 0;
-        if (token->m_regexFlag.find('i') != ParserString::npos) {
-            f = f | escargot::ESRegExpObject::IgnoreCase;
-        }
-        if (token->m_regexFlag.find('g') != ParserString::npos) {
-            f = f | escargot::ESRegExpObject::Global;
-        }
-        if (token->m_regexFlag.find('m') != ParserString::npos) {
-            f = f | escargot::ESRegExpObject::MultiLine;
-        }
-        /*
-        if (flag & JSREG_STICKY) {
-            f = f | ESRegExpObject::Sticky;
-        }
-        */
-        expr = new escargot::RegExpLiteralNode(token->m_regexBody.toESString(), (escargot::ESRegExpObject::Option)f);
+
+        escargot::ESRegExpObject::Option option = escargot::ESRegExpObject::parseOption(token->m_regexFlag.toESString());
+        expr = new escargot::RegExpLiteralNode(token->m_regexBody.toESString(), option);
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // parsedNode = new LiteralNode(ESRegExpObject::create(source, (escargot::ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
     } else if (type == Token::TemplateToken) {

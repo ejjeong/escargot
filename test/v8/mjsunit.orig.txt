@@ -227,7 +227,7 @@ Done running mjsunit/regexp-indexof: FAIL
 Done running mjsunit/regexp-lookahead: FAIL
 Done running mjsunit/regexp-loop-capture: pass
 Done running mjsunit/regexp-multiline: pass
-Done running mjsunit/regexp-not-sticky-yet: FAIL
+Done running mjsunit/regexp-not-sticky-yet: pass
 Done running mjsunit/regexp-results-cache: pass
 Done running mjsunit/regexp-sort: pass
 Done running mjsunit/regexp-standalones: pass
@@ -614,7 +614,7 @@ Done running mjsunit/regress/regress-2058: FAIL
 Done running mjsunit/regress/regress-2153: pass
 Done running mjsunit/regress/regress-2172: pass
 Done running mjsunit/regress/regress-2185-2: pass
-Done running mjsunit/regress/regress-219: FAIL
+Done running mjsunit/regress/regress-219: pass
 Done running mjsunit/regress/regress-2226: pass
 Done running mjsunit/regress/regress-2249423: pass
 Done running mjsunit/regress/regress-225: pass
@@ -1008,14 +1008,12 @@ Uncaught MjsUnitAssertionError {message: Failure (lastMatch): expected <"abc"> f
 === mjsunit/regexp-lookahead.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (/^(?:(?=(.))a|b)\1$/.test("b")): expected <true> found <false>, stack: undefined}
-=== mjsunit/regexp-not-sticky-yet.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regexp-static.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> found <undefined>, stack: undefined}
 === mjsunit/regexp.js ===
---- stderr ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Failure ($10): expected <"t"> found <"10">, stack: undefined}
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
@@ -1075,9 +1073,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> fou
 === mjsunit/regress/regress-2058.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
-=== mjsunit/regress/regress-219.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2373.js ===
 --- stderr ---
 === mjsunit/regress/regress-2374.js ===
@@ -1147,6 +1142,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 65 tests failed
+=== 63 tests failed
 === 4 tests CRASHED
 ===

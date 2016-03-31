@@ -2582,6 +2582,9 @@ public:
         return m_bytecodePattern;
     }
 
+    static RegExpCacheEntry& getCacheEntryAndCompileIfNeeded(escargot::ESString* source, const Option& option);
+    static Option parseOption(escargot::ESString* optionString);
+
     bool match(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0);
     bool matchNonGlobally(const escargot::ESString* str, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0)
     {

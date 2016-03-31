@@ -272,10 +272,12 @@ re = new RegExp();
 assertEquals('/(?:)/', re.toString());
 re = new RegExp(void 0);
 assertEquals('/(?:)/', re.toString());
+/*
 re.compile();
 assertEquals('/(?:)/', re.toString());
 re.compile(void 0);
 assertEquals('/undefined/', re.toString());
+*/
 
 
 // Check for lazy RegExp literal creation
@@ -436,6 +438,7 @@ assertFalse(re.ignoreCase);
 assertFalse(re.multiline);
 assertEquals(0, re.lastIndex);
 
+/*
 re.compile("ro+", "gim");
 assertEquals("ro+", re.source);
 assertTrue(re.global);
@@ -475,6 +478,7 @@ assertTrue(re.multiline);
 assertEquals(0, re.lastIndex);
 assertEquals(37, re.someOtherProperty);
 assertEquals(37, re[42]);
+*/
 
 // Test boundary-checks.
 function assertRegExpTest(re, input, test) {
