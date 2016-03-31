@@ -778,6 +778,9 @@
   'get-own-property-descriptor-non-objects': [SKIP],
   'compiler/truncating-store': [SKIP],
   'regress/regress-319120': [SKIP],
+  'regress/regress-3159': [SKIP],
+  'regress/regress-324028': [SKIP],
+  'regress/regress-425551': [SKIP],
   # etc
   'harmony/*': [SKIP],
 
@@ -805,6 +808,7 @@
   'regress/regress-798': [SKIP],
   'regress/regress-crbug-505370': [SKIP],
   'regress/regress-function-constructor-receiver': [SKIP],
+  'regress/regress-2564': [SKIP],
   # Print inner code of function when function.toString() is called
   'error-tostring-omit': [SKIP],
   # etc

@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  193 tests will be skipped
+ *  197 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1991 tests are expected to pass
+ * 1987 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2130 tests
+Running 2126 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -646,7 +646,6 @@ Done running mjsunit/regress/regress-2470: pass
 Done running mjsunit/regress/regress-2529: FAIL
 Done running mjsunit/regress/regress-253: pass
 Done running mjsunit/regress/regress-254: pass
-Done running mjsunit/regress/regress-2564: FAIL
 Done running mjsunit/regress/regress-2565: pass
 Done running mjsunit/regress/regress-2566: pass
 Done running mjsunit/regress/regress-2568: pass
@@ -654,7 +653,7 @@ Done running mjsunit/regress/regress-2570: pass
 Done running mjsunit/regress/regress-259: pass
 Done running mjsunit/regress/regress-2594: CRASH
 Done running mjsunit/regress/regress-260: pass
-Done running mjsunit/regress/regress-2606: FAIL
+Done running mjsunit/regress/regress-2606: pass
 Done running mjsunit/regress/regress-2615: pass
 Done running mjsunit/regress/regress-265: pass
 Done running mjsunit/regress/regress-267: pass
@@ -682,8 +681,7 @@ Done running mjsunit/regress/regress-3027: pass
 Done running mjsunit/regress/regress-3116: pass
 Done running mjsunit/regress/regress-312: pass
 Done running mjsunit/regress/regress-3135: FAIL
-Done running mjsunit/regress/regress-3138: FAIL
-Done running mjsunit/regress/regress-3159: FAIL
+Done running mjsunit/regress/regress-3138: pass
 Done running mjsunit/regress/regress-317: FAIL
 Done running mjsunit/regress/regress-318: pass
 Done running mjsunit/regress/regress-3185905: pass
@@ -691,7 +689,6 @@ Done running mjsunit/regress/regress-3199913: pass
 Done running mjsunit/regress/regress-3218530: pass
 Done running mjsunit/regress/regress-3229: FAIL
 Done running mjsunit/regress/regress-3230771: pass
-Done running mjsunit/regress/regress-324028: FAIL
 Done running mjsunit/regress/regress-3247124: pass
 Done running mjsunit/regress/regress-3252443: pass
 Done running mjsunit/regress/regress-326: pass
@@ -708,7 +705,7 @@ Done running mjsunit/regress/regress-350884: pass
 Done running mjsunit/regress/regress-350887: pass
 Done running mjsunit/regress/regress-351: pass
 Done running mjsunit/regress/regress-352059: pass
-Done running mjsunit/regress/regress-353551: FAIL
+Done running mjsunit/regress/regress-353551: pass
 Done running mjsunit/regress/regress-355485: FAIL
 Done running mjsunit/regress/regress-357054: pass
 Done running mjsunit/regress/regress-358088: pass
@@ -731,7 +728,6 @@ Done running mjsunit/regress/regress-423633: pass
 Done running mjsunit/regress/regress-4255-1: pass
 Done running mjsunit/regress/regress-4255-2: pass
 Done running mjsunit/regress/regress-4255-3: pass
-Done running mjsunit/regress/regress-425551: FAIL
 Done running mjsunit/regress/regress-4271: pass
 Done running mjsunit/regress/regress-4279: pass
 Done running mjsunit/regress/regress-4296: FAIL
@@ -1103,15 +1099,9 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/regress/regress-2529.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"try"> found <"finally">, stack: undefined}
-=== mjsunit/regress/regress-2564.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"success"> found <undefined>, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/regress/regress-2606.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1124,30 +1114,15 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <9223372036854776000>
 === mjsunit/regress/regress-3135.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"{}"> found <"{\"x\":1,\"1\":1}">, stack: undefined}
-=== mjsunit/regress/regress-3138.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"undefined"> found <"function">, stack: undefined}
-=== mjsunit/regress/regress-3159.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"start offset of Uint32Array should be a multiple of 4"> found <"ArrayBuffer length minus the byteOffset is not a multiple of the element size">, stack: undefined}
 === mjsunit/regress/regress-317.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected <"a$ec"> found <"ac">, stack: undefined}
 === mjsunit/regress/regress-3229.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
-=== mjsunit/regress/regress-324028.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-353551.js ===
---- stdout ---
-Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-355485.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
-=== mjsunit/regress/regress-425551.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <1.499> found <undefined>, stack: undefined}
 === mjsunit/regress/regress-4296.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"a"> found <100>, stack: undefined}
@@ -1191,6 +1166,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 77 tests failed
+=== 70 tests failed
 === 4 tests CRASHED
 ===

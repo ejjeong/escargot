@@ -126,9 +126,17 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
         } else if (type == NodeType::VariableDeclarator) {
             // printf("add Identifier %s(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->nonAtomicName()->utf8Data());
             if (nearFunctionNode) {
+                auto name = ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name();
+                if (nearFunctionNode->id() == name) {
+                    // Variable shadows function name.
+                    size_t functionIdIndex = ((FunctionExpressionNode*)nearFunctionNode)->m_functionIdIndex;
+                    if (functionIdIndex != SIZE_MAX) {
+                        identifierInCurrentContext[functionIdIndex] = InnerIdentifierInfo(strings->emptyString, InnerIdentifierInfo::Origin::VariableDeclarator);
+                        nearFunctionNode->setId(strings->emptyString);
+                    }
+                }
                 // local
                 auto iter = identifierInCurrentContext.begin();
-                auto name = ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name();
                 while (iter != identifierInCurrentContext.end()) {
                     if (iter->m_name == name)
                         break;

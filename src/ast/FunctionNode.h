@@ -28,7 +28,7 @@ public:
         m_outerFunctionNode = NULL;
         m_isStrict = isStrict;
         m_isExpression = false;
-        m_functionIdIndex = -1;
+        m_functionIdIndex = SIZE_MAX;
         m_functionIdIndexNeedsHeapAllocation = true;
     }
 
@@ -97,6 +97,13 @@ public:
             }
         }
     }
+
+    void setId(const InternalAtomicString& id)
+    {
+        m_id = id;
+        m_nonAtomicId = id.string();
+    }
+
 protected:
     InternalAtomicString m_id; // id: Identifier;
     ESString* m_nonAtomicId; // id: Identifier;
