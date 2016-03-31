@@ -519,7 +519,7 @@ Done running mjsunit/regress/regress-1150: pass
 Done running mjsunit/regress/regress-1151: pass
 Done running mjsunit/regress/regress-116: pass
 Done running mjsunit/regress/regress-1160: pass
-Done running mjsunit/regress/regress-1170: FAIL
+Done running mjsunit/regress/regress-1170: pass
 Done running mjsunit/regress/regress-1172-bis: pass
 Done running mjsunit/regress/regress-1172: pass
 Done running mjsunit/regress/regress-1173979: pass
@@ -1071,9 +1071,6 @@ exit code: -11
 === mjsunit/regress/regress-114.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14"> found <"FRIEDRICHSTRAßE 14">, stack: undefined}
-=== mjsunit/regress/regress-1170.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
 === mjsunit/regress/regress-1217.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
@@ -1206,6 +1203,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 82 tests failed
+=== 81 tests failed
 === 4 tests CRASHED
 ===

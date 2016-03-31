@@ -678,6 +678,22 @@ NEVER_INLINE void initializeFunctionDeclaration(CreateFunction* code, ExecutionC
     if (UNLIKELY(code->m_name == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord())) {
         *ec->resolveArgumentsObjectBinding() = function;
     } if (code->m_idIndex == std::numeric_limits<size_t>::max()) {
+        ESBindingSlot binding = ec->resolveBinding(code->m_name);
+        if (!binding) {
+            ec->environment()->record()->createMutableBinding(code->m_name);
+        } else if (ec->environment()->record()->isGlobalEnvironmentRecord()) {
+            if (binding.isConfigurable()) {
+                if (binding.isDataBinding()) {
+                    ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+                } else {
+                    GlobalEnvironmentRecord* record = ec->environment()->record()->asGlobalEnvironmentRecord();
+                    record->bindingObject()->defineOwnProperty(code->m_name.string(), PropertyDescriptor {function, Writable | Enumerable}, true);
+                    return;
+                }
+            } else if (!binding.isDataBinding() || !binding.isMutable()) {
+                throwObjectWriteError();
+            }
+        }
         ec->environment()->record()->setMutableBinding(code->m_name, function, false);
     } else {
         if (code->m_isIdIndexOnHeapStorage) {
