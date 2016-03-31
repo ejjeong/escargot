@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  200 tests will be skipped
+ *  201 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1984 tests are expected to pass
+ * 1983 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2123 tests
+Running 2122 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -217,7 +217,6 @@ Done running mjsunit/prototype: pass
 Done running mjsunit/readonly-accessor: pass
 Done running mjsunit/receiver-in-with-calls: pass
 Done running mjsunit/regexp-UC16: pass
-Done running mjsunit/regexp-cache-replace: FAIL
 Done running mjsunit/regexp-call-as-function: pass
 Done running mjsunit/regexp-capture-3: FAIL
 Done running mjsunit/regexp-capture: FAIL
@@ -483,7 +482,7 @@ Done running mjsunit/regress/readonly3: pass
 Done running mjsunit/regress/readonly4: pass
 Done running mjsunit/regress/readonly5: pass
 Done running mjsunit/regress/regress-100702: pass
-Done running mjsunit/regress/regress-1015: FAIL
+Done running mjsunit/regress/regress-1015: pass
 Done running mjsunit/regress/regress-1017: pass
 Done running mjsunit/regress/regress-1020: pass
 Done running mjsunit/regress/regress-1036894: pass
@@ -992,9 +991,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/primitive-keyed-access.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <100> found <200>, stack: undefined}
-=== mjsunit/regexp-cache-replace.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"o"> found <undefined>, stack: undefined}
 === mjsunit/regexp-capture-3.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcd"> found <undefined>, stack: undefined}
@@ -1044,9 +1040,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <42> found <87>, stac
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
-=== mjsunit/regress/regress-1015.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: unreachable - aset, stack: undefined}
 === mjsunit/regress/regress-1114040.js ===
 exit code: -11
 --- CRASHED ---
@@ -1139,6 +1132,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 62 tests failed
+=== 60 tests failed
 === 4 tests CRASHED
 ===

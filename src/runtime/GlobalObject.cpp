@@ -4603,9 +4603,10 @@ ESValue parseJSON(const CharType* data)
             }
         } else if (value.IsArray()) {
             escargot::ESArrayObject* arr = ESArrayObject::create();
+            size_t i = 0;
             auto iter = value.Begin();
             while (iter != value.End()) {
-                arr->push(fn(*iter));
+                arr->defineDataProperty(ESValue(i++), true, true, true, fn(*iter));
                 iter++;
             }
             return arr;

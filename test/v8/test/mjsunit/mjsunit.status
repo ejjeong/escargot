@@ -786,7 +786,13 @@
   # etc
   'harmony/*': [SKIP],
 
-  ## 3. Deprecated
+  ## 3. Non-standard
+  # enumeration order
+  'enumeration-order': [SKIP],
+  # RegExp.$1-$9
+  'regexp-cache-replace': [SKIP],
+
+  ## 4. Deprecated
   # function.[arguments|caller|callee]
   'arguments-indirect': [SKIP],
   'extra-arguments': [SKIP],
@@ -794,7 +800,7 @@
   'function-caller': [SKIP],
   'regress/regress-1548': [SKIP],
 
-  ## 4. v8-only
+  ## 5. v8-only
   # Worker
   'd8-worker*': [SKIP],
   'regress/regress-crbug-511880': [SKIP],
@@ -819,9 +825,6 @@
   'cross-realm-filtering': [SKIP],
   'regress/regress-280531': [SKIP],
   'regress/regress-crbug-501808': [SKIP],
-
-  ## 5. ETC
-  'enumeration-order': [SKIP],
 
 }],  # 'escargot == True'
 ]
