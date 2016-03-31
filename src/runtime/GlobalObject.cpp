@@ -1769,7 +1769,7 @@ void GlobalObject::installArray()
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
-        size_t idx = 0;
+        unsigned n = 0;
         for (size_t i = 0; i < arglen + 1; i++) {
             ESValue argi;
             if (i == 0) {
@@ -1778,31 +1778,22 @@ void GlobalObject::installArray()
                 argi = instance->currentExecutionContext()->readArgument(i - 1);
             }
             if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
-                std::vector<unsigned> indexes;
-                ESValue ptr = argi;
-                while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
-                    ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-                        uint32_t index = ESValue::ESInvalidIndexValue;
-                        if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
-                            indexes.push_back(index);
-                    });
-                    ptr = ptr.asESPointer()->asESObject()->__proto__();
-                }
-                std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
-                unsigned n = idx;
-                size_t len = argi.asESPointer()->asESArrayObject()->length();
+                int64_t curIndex = 0;
+                escargot::ESArrayObject* arr = argi.asESPointer()->asESArrayObject();
+                int64_t len = arr->length();
 
-                for (auto k : indexes) {
-                    if (k >= len)
-                        break;
-
-                    n = k + idx;
-                    ret->defineDataProperty(ESValue(n), true, true, true, argi.asESPointer()->asESArrayObject()->get(k));
+                while (curIndex < len) {
+                    if (arr->hasProperty(ESValue(curIndex))) {
+                        ret->defineDataProperty(ESValue(n + curIndex), true, true, true, arr->get(curIndex));
+                        curIndex++;
+                    } else {
+                        curIndex = ESArrayObject::nextIndexForward(arr, curIndex, len);
+                    }
                 }
-                ret->setLength(len + idx);
-                idx = idx + len;
+                n += len;
+                ret->setLength(n);
             } else {
-                ret->defineDataProperty(ESValue(idx++), true, true, true, argi);
+                ret->defineDataProperty(ESValue(n++), true, true, true, argi);
             }
         }
         return ret;
