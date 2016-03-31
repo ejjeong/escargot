@@ -82,14 +82,17 @@ var alignmentString = "\u1122\u2211\u2222\uFF00\u00FF\u00FF";
 assertEquals(2, alignmentString.indexOf("\u2222"));
 assertEquals(4, alignmentString.indexOf("\u00FF\u00FF"));
 
-var longAlignmentString = "\uFF00" + "\u00FF".repeat(10);
+//var longAlignmentString = "\uFF00" + "\u00FF".repeat(10);
+var longAlignmentString = "\uFF00" + "\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF";
 assertEquals(1,
-    longAlignmentString.indexOf("\u00FF".repeat(10)));
+//    longAlignmentString.indexOf("\u00FF".repeat(10)));
+    longAlignmentString.indexOf("\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF\u00FF"));
 
 // test string with first character match at the end
 var boundsString = "112233";
 assertEquals(-1, boundsString.indexOf("334455"));
-assertEquals(-1, boundsString.indexOf("334455".repeat(10)));
+//assertEquals(-1, boundsString.indexOf("334455".repeat(10)));
+assertEquals(-1, boundsString.indexOf("334455334455334455334455334455334455334455334455334455334455"));
 
 // Test complex string indexOf algorithms. Only trigger for long strings.
 
@@ -120,7 +123,9 @@ assertEquals(-1, asciiString.indexOf("\x2061"));
 
 // Search in string containing many non-ASCII chars.
 var allCodePoints = [];
-for (var i = 0; i < 65536; i++) allCodePoints[i] = i;
+// in escargot, the number of function call arguments is limited to 65535. so sae-bom.kim changed the code to 65535.
+// for (var i = 0; i < 65536; i++) allCodePoints[i] = i;
+for (var i = 0; i < 65535; i++) allCodePoints[i] = i;
 var allCharsString = String.fromCharCode.apply(String, allCodePoints);
 // Search for string long enough to trigger complex search with ASCII pattern
 // and UC16 subject.

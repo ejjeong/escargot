@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  192 tests will be skipped
+ *  193 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1992 tests are expected to pass
+ * 1991 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2131 tests
+Running 2130 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -222,7 +222,6 @@ Done running mjsunit/regexp-call-as-function: pass
 Done running mjsunit/regexp-capture-3: FAIL
 Done running mjsunit/regexp-capture: FAIL
 Done running mjsunit/regexp-captures: pass
-Done running mjsunit/regexp-compile: FAIL
 Done running mjsunit/regexp-global: FAIL
 Done running mjsunit/regexp-indexof: FAIL
 Done running mjsunit/regexp-lookahead: FAIL
@@ -260,7 +259,7 @@ Done running mjsunit/string-charat: pass
 Done running mjsunit/string-compare-alignment: pass
 Done running mjsunit/string-concat: pass
 Done running mjsunit/string-flatten: pass
-Done running mjsunit/string-indexof-1: FAIL
+Done running mjsunit/string-indexof-1: pass
 Done running mjsunit/string-indexof-2: pass
 Done running mjsunit/string-lastindexof: pass
 Done running mjsunit/string-localecompare: pass
@@ -1017,8 +1016,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"o"> found <undefine
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcd"> found <undefined>, stack: undefined}
 === mjsunit/regexp-capture.js ===
 --- stderr ---
-=== mjsunit/regexp-compile.js ===
---- stderr ---
 === mjsunit/regexp-global.js ===
 --- stderr ---
 === mjsunit/regexp-indexof.js ===
@@ -1041,9 +1038,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abc
 === mjsunit/str-to-num.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/string-indexof-1.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/string-match.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (Nonglobal-$&): expected <"A"> found <undefined>, stack: undefined}
@@ -1218,6 +1212,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 86 tests failed
+=== 84 tests failed
 === 4 tests CRASHED
 ===

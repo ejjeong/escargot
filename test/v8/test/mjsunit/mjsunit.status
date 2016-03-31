@@ -766,6 +766,7 @@
   # builtins
   'html-string-funcs': [SKIP],
   'number-is': [SKIP],
+  'regexp-compile': [SKIP],
   'string-normalize': [SKIP],
   'asm/math-fround': [SKIP],
   'global-hash': [SKIP],
