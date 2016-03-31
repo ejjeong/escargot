@@ -414,7 +414,7 @@ Done running mjsunit/compiler/regress-444695: pass
 Done running mjsunit/compiler/regress-445267: pass
 Done running mjsunit/compiler/regress-445858: pass
 Done running mjsunit/compiler/regress-445859: pass
-Done running mjsunit/compiler/regress-445907: FAIL
+Done running mjsunit/compiler/regress-445907: pass
 Done running mjsunit/compiler/regress-446156: pass
 Done running mjsunit/compiler/regress-446778: pass
 Done running mjsunit/compiler/regress-452427: pass
@@ -1056,9 +1056,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <42> found <87>, stac
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
-=== mjsunit/compiler/regress-445907.js ===
---- stderr ---
---- TIMEOUT ---
 === mjsunit/regress/regress-1015.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable - aset, stack: undefined}
@@ -1197,6 +1194,6 @@ exit code: -11
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 79 tests failed
+=== 78 tests failed
 === 4 tests CRASHED
 ===
