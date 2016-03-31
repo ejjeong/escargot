@@ -1755,10 +1755,7 @@ void GlobalObject::installArray()
 
     // $22.1.2.2 Array.isArray(arg)
     m_array->ESObject::defineDataProperty(strings->isArray, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int arglen = instance->currentExecutionContext()->argumentCount();
-        if (arglen < 1)
-            return ESValue(ESValue::ESFalseTag::ESFalse);
-        ESValue arg = instance->currentExecutionContext()->arguments()[0];
+        ESValue arg = instance->currentExecutionContext()->readArgument(0);
         if (arg.isESPointer() && arg.asESPointer()->isESArrayObject())
             return ESValue(ESValue::ESTrueTag::ESTrue);
         return ESValue(ESValue::ESFalseTag::ESFalse);
