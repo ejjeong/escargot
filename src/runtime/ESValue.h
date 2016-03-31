@@ -2061,7 +2061,7 @@ protected:
 
 class ReferenceError : public ESErrorObject {
 protected:
-    ReferenceError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::ReferenceError);
+    ReferenceError(escargot::ESString* message = strings->emptyString.string());
 public:
     static ReferenceError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2071,7 +2071,7 @@ public:
 
 class TypeError : public ESErrorObject {
 protected:
-    TypeError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::TypeError);
+    TypeError(escargot::ESString* message = strings->emptyString.string());
 public:
     static TypeError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2081,7 +2081,7 @@ public:
 
 class SyntaxError : public ESErrorObject {
 protected:
-    SyntaxError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::SyntaxError);
+    SyntaxError(escargot::ESString* message = strings->emptyString.string());
 public:
 
     static SyntaxError* create(escargot::ESString* message = strings->emptyString.string())
@@ -2092,7 +2092,7 @@ public:
 
 class RangeError : public ESErrorObject {
 protected:
-    RangeError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::RangeError);
+    RangeError(escargot::ESString* message = strings->emptyString.string());
 public:
     static RangeError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2102,7 +2102,7 @@ public:
 
 class URIError : public ESErrorObject {
 protected:
-    URIError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::URIError);
+    URIError(escargot::ESString* message = strings->emptyString.string());
 public:
     static URIError* create(escargot::ESString* message = strings->emptyString.string())
     {
@@ -2112,7 +2112,7 @@ public:
 
 class EvalError : public ESErrorObject {
 protected:
-    EvalError(escargot::ESString* message = strings->emptyString.string(), Code code = Code::EvalError);
+    EvalError(escargot::ESString* message = strings->emptyString.string());
 public:
     static EvalError* create(escargot::ESString* message = strings->emptyString.string())
     {

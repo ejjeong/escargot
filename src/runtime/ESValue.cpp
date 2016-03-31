@@ -3140,43 +3140,43 @@ ESErrorObject* ESErrorObject::create(escargot::ESString* message, Code code)
     }
 }
 
-ReferenceError::ReferenceError(escargot::ESString* message, Code code)
-    : ESErrorObject(message, code)
+ReferenceError::ReferenceError(escargot::ESString* message)
+    : ESErrorObject(message, Code::ReferenceError)
 {
     set(strings->name, strings->ReferenceError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->referenceErrorPrototype());
 }
 
-TypeError::TypeError(escargot::ESString* message, Code code)
-    : ESErrorObject(message, code)
+TypeError::TypeError(escargot::ESString* message)
+    : ESErrorObject(message, Code::TypeError)
 {
     set(strings->name, strings->TypeError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->typeErrorPrototype());
 }
 
-RangeError::RangeError(escargot::ESString* message, Code code)
-    : ESErrorObject(message, code)
+RangeError::RangeError(escargot::ESString* message)
+    : ESErrorObject(message, Code::RangeError)
 {
     set(strings->name, strings->RangeError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->rangeErrorPrototype());
 }
 
-SyntaxError::SyntaxError(escargot::ESString* message, Code code)
-    : ESErrorObject(message, code)
+SyntaxError::SyntaxError(escargot::ESString* message)
+    : ESErrorObject(message, Code::SyntaxError)
 {
     set(strings->name, strings->SyntaxError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
-URIError::URIError(escargot::ESString* message, Code code)
-    : ESErrorObject(message, code)
+URIError::URIError(escargot::ESString* message)
+    : ESErrorObject(message, Code::URIError)
 {
     set(strings->name, strings->URIError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->uriErrorPrototype());
 }
 
-EvalError::EvalError(escargot::ESString* message, Code code)
-    : ESErrorObject(message, code)
+EvalError::EvalError(escargot::ESString* message)
+    : ESErrorObject(message, Code::EvalError)
 {
     set(strings->name, strings->EvalError.string());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->evalErrorPrototype());
