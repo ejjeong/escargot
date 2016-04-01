@@ -56,6 +56,18 @@ union ValueDescriptor {
     } asBits;
 };
 
+template<typename ToType, typename FromType>
+inline ToType bitwise_cast(FromType from)
+{
+    ASSERT(sizeof(FromType) == sizeof(ToType));
+    union {
+        FromType from;
+        ToType to;
+    } u;
+    u.from = from;
+    return u.to;
+}
+
 #define OBJECT_OFFSETOF(class, field) (reinterpret_cast<ptrdiff_t>(&(reinterpret_cast<class*>(0x4000)->field)) - 0x4000)
 
 #define TagOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.tag))
@@ -2499,6 +2511,19 @@ public:
     {
         m_primitiveValue = d;
     }
+
+    // The largest finite floating point number is 1.mantissa * 2^(0x7fe-0x3ff).
+    // Since 2^N in binary is a one bit followed by N zero bits. 1 * 2^3ff requires
+    // at most 1024 characters to the left of a decimal point, in base 2 (1025 if
+    // we include a minus sign). For the fraction, a value with an exponent of 0
+    // has up to 52 bits to the right of the decimal point. Each decrement of the
+    // exponent down to a minimum of -0x3fe adds an additional digit to the length
+    // of the fraction. As such the maximum fraction size is 1075 (1076 including
+    // a point). We pick a buffer size such that can simply place the point in the
+    // center of the buffer, and are guaranteed to have enough space in each direction
+    // fo any number of digits an IEEE number may require to represent.
+    typedef char RadixBuffer[2180];
+    static char* toStringWithRadix(RadixBuffer& buffer, double number, unsigned radix);
 
 private:
     double m_primitiveValue;

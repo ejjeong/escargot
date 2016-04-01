@@ -26,18 +26,6 @@ ALWAYS_INLINE double FastI2D(int x)
 // ===common architecture========================================================
 // ==============================================================================
 
-template<typename ToType, typename FromType>
-inline ToType bitwise_cast(FromType from)
-{
-    ASSERT(sizeof(FromType) == sizeof(ToType));
-    union {
-        FromType from;
-        ToType to;
-    } u;
-    u.from = from;
-    return u.to;
-}
-
 inline ESValue::ESValue(double d)
 {
     const int32_t asInt32 = static_cast<int32_t>(d);

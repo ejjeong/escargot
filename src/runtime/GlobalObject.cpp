@@ -5143,7 +5143,7 @@ void GlobalObject::installMath()
 
 static int itoa(int64_t value, char *sp, int radix)
 {
-    char tmp[16]; // be careful with the length of the buffer
+    char tmp[256]; // be careful with the length of the buffer
     char* tp = tmp;
     int i;
     uint64_t v;
@@ -5258,7 +5258,9 @@ void GlobalObject::installNumber()
         }
 
         int exp = 0;
-        if (std::abs(number) >= 10) {
+        if (number == 0) {
+            exp = 0;
+        } else if (std::abs(number) >= 10) {
             double tmp = number;
             while (tmp >= 10) {
                 exp++;
@@ -5323,8 +5325,8 @@ void GlobalObject::installNumber()
             if (digit < 0 || digit > 20) {
                 instance->throwError(ESValue(RangeError::create()));
             }
-            if (isnan(number)) {
-                return strings->NaN.string();
+            if (isnan(number) || isinf(number)) {
+                return ESValue(number).toString();
             } else if (number >= pow(10, 21)) {
                 return ESValue(round(number)).toString();
             }
@@ -5416,16 +5418,24 @@ void GlobalObject::installNumber()
         if (radix == 10)
             return (ESValue(number).toString());
         else {
-            bool minusFlag = (number < 0) ? 1 : 0;
-            number = (number < 0) ? (-1 * number) : number;
-            char buffer[256];
-            if (minusFlag) {
-                buffer[0] = '-';
-                itoa((int64_t)number, &buffer[1], radix);
+            bool isInteger = (static_cast<int64_t>(number) == number);
+            if (isInteger) {
+                bool minusFlag = (number < 0) ? 1 : 0;
+                number = (number < 0) ? (-1 * number) : number;
+                char buffer[256];
+                if (minusFlag) {
+                    buffer[0] = '-';
+                    itoa((int64_t)number, &buffer[1], radix);
+                } else {
+                    itoa((int64_t)number, buffer, radix);
+                }
+                return (ESString::create(buffer));
             } else {
-                itoa((int64_t)number, buffer, radix);
+                ASSERT(ESValue(number).isDouble());
+                ESNumberObject::RadixBuffer s;
+                const char* str = ESNumberObject::toStringWithRadix(s, number, radix);
+                return ESString::create(str);
             }
-            return (ESString::create(buffer));
         }
         // TODO: in case that 'this' is floating point number
         // TODO: parameter 'null' should throw exception
