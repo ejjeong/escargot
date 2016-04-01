@@ -517,10 +517,11 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
     ExecutionContext* backupedEC = ec;
     std::jmp_buf tryPosition;
     if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
-        ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+//        ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+        ec->tryOrCatchBodyResult().push_back(ESValue(ESValue::ESEmptyValue));
         ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)), stackStorage, heapStorage);
         if (!ret.isEmpty()) {
-            ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
+            ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount)));
         }
         instance->unregisterTryPos(&tryPosition);
     } else {
@@ -535,7 +536,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
     instance->m_currentExecutionContext = backupedEC;
     if (code->m_catchPosition == 0) {
         instance->currentExecutionContext()->setEnvironment(oldEnv);
-        ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, err, ESValue((int32_t)code->m_tryDupCount));
+        ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, err, ESValue((int32_t)code->m_tryDupCount)));
         return;
     }
     LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecordForCatchClause(0, 0, InternalAtomicStringVector(), true, SIZE_MAX, code->m_name, oldEnv->record()), oldEnv);
@@ -547,20 +548,20 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
         ESValue ret = interpret(instance, codeBlock, code->m_catchPosition, stackStorage, heapStorage);
         instance->currentExecutionContext()->setEnvironment(oldEnv);
         if (ret.isEmpty()) {
-            if (!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
-                ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
+            if (!ec->tryOrCatchBodyResult().empty() && !ec->tryOrCatchBodyResult().back().isEmpty() && ec->tryOrCatchBodyResult().back().isESPointer() && ec->tryOrCatchBodyResult().back().asESPointer()->isESControlFlowRecord()) {
+                ESControlFlowRecord* record = ec->tryOrCatchBodyResult().back().asESPointer()->asESControlFlowRecord();
                 if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
-                    ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                    ec->tryOrCatchBodyResult().pop_back();
                 }
             }
         } else {
-            ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
+            ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount)));
         }
         instance->unregisterTryPos(&tryPosition);
     } else {
         ESValue e = instance->getCatchedError();
         instance->currentExecutionContext()->setEnvironment(oldEnv);
-        ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1));
+        ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1)));
     }
 }
 

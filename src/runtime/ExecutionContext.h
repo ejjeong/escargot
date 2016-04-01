@@ -98,7 +98,8 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
-    ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
+    // ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
+    std::vector<ESValue, gc_allocator<ESValue>>& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
 private:
     struct {
         bool m_isNewExpression;
@@ -113,6 +114,7 @@ private:
 
     ESValue m_thisValue;
     ESValue m_tryOrCatchBodyResultOrArgumentsInfo;
+    std::vector<ESValue, gc_allocator<ESValue>> m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
     bool m_executeNextByteCode;

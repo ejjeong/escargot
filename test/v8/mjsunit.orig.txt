@@ -291,7 +291,7 @@ Done running mjsunit/transcendentals: pass
 Done running mjsunit/try-catch-extension-object: pass
 Done running mjsunit/try-catch-scopes: pass
 Done running mjsunit/try-finally-continue: pass
-Done running mjsunit/try-finally-nested: FAIL
+Done running mjsunit/try-finally-nested: pass
 Done running mjsunit/typeof: pass
 Done running mjsunit/undeletable-functions: pass
 Done running mjsunit/unicode-case-overoptimization: pass
@@ -1031,9 +1031,6 @@ Uncaught MjsUnitAssertionError {message: Failure ("xaxbxcx".replace(b, $e)): exp
 === mjsunit/string-slices-regexp.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"> found <undefined>, stack: undefined}
-=== mjsunit/try-finally-nested.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <42> found <87>, stack: undefined}
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
