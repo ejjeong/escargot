@@ -1924,6 +1924,8 @@ public:
 
     inline void set__proto__(const ESValue& obj);
     ALWAYS_INLINE size_t keyCount();
+    inline void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
+    inline void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }

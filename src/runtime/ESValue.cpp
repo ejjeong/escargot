@@ -1152,10 +1152,14 @@ int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const
 ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments)
 {
     escargot::ESArrayObject* ret = ESArrayObject::create(0);
+    unsigned k = 0;
+    while (k < deleteCnt) {
+        ESValue from = ESValue(start + k);
 
-    for (unsigned k = 0; k < deleteCnt; k++) {
-        if (k + start < arrlen)
-            ret->defineDataProperty(ESValue(k), true, true, true, get(k + start));
+        if (hasProperty(from)) {
+            ret->defineDataProperty(ESValue(k), true, true, true, get(from.asUInt32()));
+        }
+        k++;
     }
 
     if (insertCnt < deleteCnt) {
@@ -1165,9 +1169,9 @@ ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t del
             ESValue to = ESValue(k + insertCnt);
 
             if (hasProperty(from)) {
-                set(to.asUInt32(), get(from.asUInt32()));
+                ((ESObject*)this)->set(to, get(from.asUInt32()), true);
             } else {
-                deleteProperty(to);
+                deletePropertyWithException(to);
             }
             k++;
         }
@@ -1184,9 +1188,9 @@ ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t del
             ESValue to = ESValue(k + insertCnt - 1);
 
             if (hasProperty(from)) {
-                set(to.asUInt32(), get(from.asUInt32()));
+                ((ESObject*)(this))->set(to, get(from.asUInt32()), true);
             } else {
-                deleteProperty(to);
+                deletePropertyWithException(to);
             }
             k--;
         }

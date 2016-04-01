@@ -1796,6 +1796,89 @@ ALWAYS_INLINE size_t ESObject::keyCount()
     return siz;
 }
 
+inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t offset)
+{
+    unsigned cur = start;
+    std::vector<unsigned> deletableIndexes;
+    while (cur < end) {
+        bool isKFromDeletableIndexes = false;
+        while (deletableIndexes.size() > 0) {
+            if (deletableIndexes[0] < cur) {
+                cur = deletableIndexes[0];
+                deletableIndexes.erase(deletableIndexes.begin());
+                isKFromDeletableIndexes = true;
+                break;
+            } else if (deletableIndexes[0] == cur) {
+                deletableIndexes.erase(deletableIndexes.begin());
+            } else {
+                break;
+            }
+        }
+
+        ESValue from = ESValue(cur);
+        ESValue to = ESValue(cur + offset);
+        bool fromPresent = hasProperty(from);
+
+        if (fromPresent) {
+            set(to, get(from), true);
+            if (!isKFromDeletableIndexes) {
+                if (cur + 1 < end) {
+                    deletableIndexes.push_back(cur - offset);
+                }
+                cur++;
+            }
+        } else {
+            deletePropertyWithException(to);
+            if (!isKFromDeletableIndexes) {
+                cur = ESArrayObject::nextIndexForward(this, cur, end);
+            } else {
+                cur++;
+            }
+        }
+    }
+}
+
+inline void ESObject::relocateIndexesBackward(int64_t start, int64_t end, int64_t offset)
+{
+    int64_t cur = start;
+    std::vector<unsigned> deletableIndexes;
+    while (cur > end) {
+        bool isKFromDeletableIndexes = false;
+        while (deletableIndexes.size() > 0) {
+            if (deletableIndexes[0] > cur) {
+                cur = deletableIndexes[0];
+                deletableIndexes.erase(deletableIndexes.begin());
+                isKFromDeletableIndexes = true;
+                break;
+            } else if (deletableIndexes[0] == cur) {
+                deletableIndexes.erase(deletableIndexes.begin());
+            } else {
+                break;
+            }
+        }
+        ESValue from = ESValue(cur);
+        ESValue to = ESValue(cur + offset);
+        bool fromPresent = hasProperty(from);
+
+        if (fromPresent) {
+            set(to, get(from), true);
+            if (!isKFromDeletableIndexes) {
+                if (cur >= static_cast<int64_t>(offset)) {
+                    deletableIndexes.push_back(cur - offset);
+                }
+                cur--;
+            }
+        } else {
+            deletePropertyWithException(to);
+            if (!isKFromDeletableIndexes) {
+                cur = ESArrayObject::nextIndexBackward(this, cur, -1);
+            } else {
+                cur--;
+            }
+        }
+    }
+}
+
 template <typename Functor>
 ALWAYS_INLINE void ESObject::enumeration(Functor t)
 {
