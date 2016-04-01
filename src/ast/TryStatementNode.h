@@ -36,7 +36,7 @@ public:
         }
         codeBlock->pushCode(TryCatchBodyEnd(), context, this);
 
-        context.registerJumpPositionsToComplexCase();
+        context.registerJumpPositionsToComplexCase(pos);
 
         size_t endPos = codeBlock->currentCodeSize();
         if (m_handler) {
