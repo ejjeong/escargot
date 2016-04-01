@@ -1225,6 +1225,40 @@ ESString* ESArrayObject::fastJoin(escargot::ESString* sep, unsigned len)
     return builder.finalize();
 }
 
+void ESArrayObject::fastShift(unsigned arrlen)
+{
+    unsigned k = 1;
+    while (k < arrlen) {
+        ESValue from = ESValue(k);
+        ESValue to = ESValue(k - 1);
+        bool fromPresent = hasProperty(from);
+
+        if (fromPresent) {
+            ((ESObject*)this)->set(to, get(k), true);
+        } else {
+            ((ESObject*)this)->deletePropertyWithException(to);
+        }
+        k++;
+    }
+}
+
+void ESArrayObject::fastUnshift(unsigned arrlen, unsigned argCount)
+{
+    unsigned k = arrlen;
+    while (k > 0) {
+        ESValue from = ESValue(k - 1);
+        ESValue to = ESValue(k + argCount - 1);
+        bool fromPresent = hasProperty(from);
+
+        if (fromPresent) {
+            ((ESObject*)this)->set(to, get(k - 1), true);
+        } else {
+            ((ESObject*)this)->deletePropertyWithException(to);
+        }
+        k--;
+    }
+}
+
 void ESArrayObject::setLength(unsigned newLength)
 {
     if (m_flags.m_isFastMode) {

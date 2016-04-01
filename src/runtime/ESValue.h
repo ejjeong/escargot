@@ -2280,6 +2280,8 @@ public:
 
     ESArrayObject* fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments);
     escargot::ESString* fastJoin(escargot::ESString* sep, unsigned len);
+    void fastShift(unsigned len);
+    void fastUnshift(unsigned len, unsigned argCount);
 
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)

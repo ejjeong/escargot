@@ -2333,59 +2333,47 @@ void GlobalObject::installArray()
             return ESValue();
         }
         ESValue first = O->get(ESValue(0)); // 6
-
-        std::vector<unsigned> indexes;
-        ESValue ptr = O;
-        while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
-            ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-                uint32_t index = ESValue::ESInvalidIndexValue;
-                if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
-                    indexes.push_back(index);
-            });
-            ptr = ptr.asESPointer()->asESObject()->__proto__();
-        }
-        std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
-
-        std::vector<uint32_t> deletableIndexes(indexes.size());
-        std::transform(indexes.begin(), indexes.end(), deletableIndexes.begin(), [=](unsigned int k) {
-            return k + 1;
-        });
-
-        unsigned i = 0;
-        unsigned j = 0;
-        unsigned len = indexes.size(), len2 = deletableIndexes.size();
-        unsigned curIndex = 1;
-        unsigned max = std::numeric_limits<unsigned>::max();
-        unsigned prevIndex = max;
-
-        while (i < len || j < len2) {
-            int64_t to = (int64_t)(curIndex - 1);
-            if ((prevIndex != max && curIndex <= prevIndex)
-                || curIndex < 1
-                || to < 0) {
-                if (i < len &&  j < len2) {
-                    if (indexes[i] < deletableIndexes[j]) {
-                        curIndex = indexes[i++];
+        if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
+            O->asESArrayObject()->fastShift(arrlen);
+        } else {
+            unsigned cur = 1;
+            std::vector<unsigned> deletableIndexes;
+            while (cur < arrlen) {
+                bool isKFromDeletableIndexes = false;
+                while (deletableIndexes.size() > 0) {
+                    if (deletableIndexes[0] < cur) {
+                        cur = deletableIndexes[0];
+                        deletableIndexes.erase(deletableIndexes.begin());
+                        isKFromDeletableIndexes = true;
+                        break;
+                    } else if (deletableIndexes[0] == cur) {
+                        deletableIndexes.erase(deletableIndexes.begin());
                     } else {
-                        curIndex = deletableIndexes[j++];
+                        break;
                     }
-                } else if (i < len) {
-                    curIndex = indexes[i++];
-                } else {
-                    curIndex = deletableIndexes[j++];
                 }
-                continue;
-            }
 
-            if (curIndex >= arrlen)
-                break;
+                ESValue from = ESValue(cur);
+                ESValue to = ESValue(cur - 1);
+                bool fromPresent = O->hasProperty(from);
 
-            if (std::binary_search(indexes.begin(), indexes.end(), curIndex)) {
-                O->set(ESValue(to), O->get(ESValue(curIndex)), true);
-            } else {
-                O->deletePropertyWithException(ESValue(to));
+                if (fromPresent) {
+                    O->set(to, O->get(from), true);
+                    if (!isKFromDeletableIndexes) {
+                        if (cur + 1 < arrlen) {
+                            deletableIndexes.push_back(cur + 1);
+                        }
+                        cur++;
+                    }
+                } else {
+                    O->deletePropertyWithException(to);
+                    if (!isKFromDeletableIndexes) {
+                        cur = ESArrayObject::nextIndexForward(O, cur, arrlen);
+                    } else {
+                        cur++;
+                    }
+                }
             }
-            prevIndex = curIndex;
         }
         O->deletePropertyWithException(ESValue(arrlen - 1)); // 10
         O->set(strings->length, ESValue(arrlen - 1), true); // 12
@@ -2735,37 +2723,50 @@ void GlobalObject::installArray()
 
     // $22.1.3.28 Array.prototype.unshift(...items)
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("unshift"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
+            if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
+                O->asESArrayObject()->fastUnshift(len, argCount);
+            } else {
+                int64_t cur = static_cast<int64_t>(len) - 1;
+                std::vector<unsigned> deletableIndexes;
+                while (cur >= 0) {
+                    bool isKFromDeletableIndexes = false;
+                    while (deletableIndexes.size() > 0) {
+                        if (deletableIndexes[0] > cur) {
+                            cur = deletableIndexes[0];
+                            deletableIndexes.erase(deletableIndexes.begin());
+                            isKFromDeletableIndexes = true;
+                            break;
+                        } else if (deletableIndexes[0] == cur) {
+                            deletableIndexes.erase(deletableIndexes.begin());
+                        } else {
+                            break;
+                        }
+                    }
+                    ESValue from = ESValue(cur);
+                    ESValue to = ESValue(cur + argCount);
+                    bool fromPresent = O->hasProperty(from);
 
-            std::vector<uint32_t> indexes;
-
-            ESValue ptr = O;
-            while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
-                ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-                    uint32_t index = ESValue::ESInvalidIndexValue;
-                    if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
-                        indexes.push_back(index);
-                });
-                ptr = ptr.asESPointer()->asESObject()->__proto__();
-            }
-            std::sort(indexes.begin(), indexes.end(), std::greater<unsigned>());
-            for (auto k : indexes) {
-                if (!len || k >= len)
-                    continue;
-                ESValue from(k);
-                ESValue to(k + argCount);
-                ESValue fromValue = O->get(from);
-
-                if (((int64_t)k-(int64_t)argCount >= 0) && (!O->hasProperty(ESValue(k-argCount)) && k >= argCount))
-                    O->deletePropertyWithException(ESValue(k));
-
-                O->set(to, fromValue, true);
-                if (((uint64_t)k+argCount) > std::pow(2, 32)-1)
-                    instance->throwError(RangeError::create(ESString::create("Array.prototype.unshift: length is too large")));
+                    if (fromPresent) {
+                        O->set(to, O->get(from), true);
+                        if (!isKFromDeletableIndexes) {
+                            if (cur >= static_cast<int64_t>(argCount)) {
+                                deletableIndexes.push_back(cur - argCount);
+                            }
+                            cur--;
+                        }
+                    } else {
+                        O->deletePropertyWithException(to);
+                        if (!isKFromDeletableIndexes) {
+                            cur = ESArrayObject::nextIndexBackward(O, cur, -1);
+                        } else {
+                            cur--;
+                        }
+                    }
+                }
             }
 
             ESValue* items = instance->currentExecutionContext()->arguments();
