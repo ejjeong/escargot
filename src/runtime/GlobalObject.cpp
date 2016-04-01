@@ -746,7 +746,7 @@ void GlobalObject::initGlobalObject()
                 || t == ',')
                 || t == '#') { // special case
                 escaped.append(1, stringValue->charAt(i));
-            } else if (t < 0x007F) {
+            } else if (t <= 0x007F) {
                 escaped.append("%");
                 escaped.append(char2hex(t));
             } else if (0x0080 <= t && t <= 0x07FF) {
@@ -811,7 +811,7 @@ void GlobalObject::initGlobalObject()
                 || t == '*' || t == '\'' || t == '('
                 || t == ')'))  {
                 escaped.append(1, stringValue->charAt(i));
-            } else if (t < 0x007F) {
+            } else if (t <= 0x007F) {
                 escaped.append("%");
                 escaped.append(char2hex(t));
             } else if (0x0080 <= t && t <= 0x07FF) {

@@ -269,8 +269,8 @@ struct ByteCodeGenerateContext {
             if (m_breakStatementPositions[i] > (unsigned long) frontlimit) {
                 if (m_complexCaseStatementPositions.find(m_breakStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
                     m_complexCaseStatementPositions.insert(std::make_pair(m_breakStatementPositions[i], m_tryStatementScopeCount));
-                  }
-             }
+                }
+            }
         }
 
         for (unsigned i = 0 ; i < m_continueStatementPositions.size() ; i ++) {
