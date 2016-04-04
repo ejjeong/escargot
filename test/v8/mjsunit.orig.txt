@@ -91,7 +91,7 @@ Done running mjsunit/element-read-only: pass
 Done running mjsunit/elements-transition-and-store: pass
 Done running mjsunit/error-accessors: pass
 Done running mjsunit/error-constructors: pass
-Done running mjsunit/error-tostring: FAIL
+Done running mjsunit/error-tostring: pass
 Done running mjsunit/escape: pass
 Done running mjsunit/eval-enclosing-function-name: pass
 Done running mjsunit/eval-typeof-non-existing: pass
@@ -880,7 +880,7 @@ Done running mjsunit/regress/regress-crbug-3184: pass
 Done running mjsunit/regress/regress-crbug-325225: pass
 Done running mjsunit/regress/regress-crbug-350867: pass
 Done running mjsunit/regress/regress-crbug-351262: pass
-Done running mjsunit/regress/regress-crbug-352586: FAIL
+Done running mjsunit/regress/regress-crbug-352586: pass
 Done running mjsunit/regress/regress-crbug-357052: pass
 Done running mjsunit/regress/regress-crbug-357137: pass
 Done running mjsunit/regress/regress-crbug-37853: pass
@@ -961,9 +961,6 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
-=== mjsunit/error-tostring.js ===
---- stdout ---
-Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
@@ -1071,9 +1068,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-crbug-352586.js ===
---- stdout ---
-Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-latin-1.js ===
@@ -1081,6 +1075,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
 
 ===
-=== 42 tests failed
+=== 40 tests failed
 === 2 tests CRASHED
 ===

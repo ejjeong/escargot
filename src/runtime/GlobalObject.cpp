@@ -1551,23 +1551,42 @@ void GlobalObject::installError()
         ESValue v = instance->currentExecutionContext()->resolveThisBinding();
         if (!v.isObject())
             instance->throwError(TypeError::create(ESString::create("Error.prototype.toString(): this value is not object")));
-        ESPointer* o = v.asESPointer();
-        ESStringBuilder builder;
-        ESValue name = o->asESObject()->get(ESValue(strings->name));
-        ESValue message = o->asESObject()->get(ESValue(strings->message));
-        if (name.isUndefined() || name.toString()->length() == 0) { // name is empty
-            if (!(message.isUndefined() || message.toString()->length() == 0)) { // message is not empty
-                builder.appendString(message.toString());
-            }
-            return builder.finalize();
-        } else {
-            builder.appendString(name.toString());
-            if (!(message.isUndefined() || message.toString()->length() == 0)) {
-                builder.appendString(": ");
-                builder.appendString(message.toString());
-            }
-            return builder.finalize();
+
+        ESObject* o = v.toObject();
+
+        StringRecursionChecker checker(o);
+        if (checker.recursionCheck()) {
+            return ESValue(strings->emptyString.string());
         }
+
+        ESValue name = o->get(ESValue(strings->name));
+        escargot::ESString* nameStr;
+        if (name.isUndefined()) {
+            nameStr = strings->Error.string();
+        } else {
+            nameStr = name.toString();
+        }
+        ESValue message = o->get(ESValue(strings->message));
+        escargot::ESString* messageStr;
+        if (message.isUndefined()) {
+            messageStr = strings->emptyString.string();
+        } else {
+            messageStr = message.toString();
+        }
+
+        if (nameStr->length() == 0) {
+            return messageStr;
+        }
+
+        if (messageStr->length() == 0) {
+            return nameStr;
+        }
+
+        ESStringBuilder builder;
+        builder.appendString(nameStr);
+        builder.appendString(": ");
+        builder.appendString(messageStr);
+        return builder.finalize();
     }, strings->toString, 0);
     m_errorPrototype->defineDataProperty(strings->toString, true, false, true, toString);
 
