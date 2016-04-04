@@ -5415,7 +5415,7 @@ void GlobalObject::installNumber()
 
                 int log10_num = trunc(log10(x));
                 if (log10_num + 1 <= p && log10_num > -6) {
-                    if (std::abs(x) > 1) {
+                    if (std::abs(x) >= 1) {
                         stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
                     } else {
                         stream << "%" << log10_num << "." << (p - log10_num) << "lf";
