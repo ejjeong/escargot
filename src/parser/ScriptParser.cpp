@@ -46,8 +46,9 @@ void ScriptParser::dumpStats()
 }
 #endif
 
-ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside)
+ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation)
 {
+    bool strictFromOutside = parserContextInformation.m_strictFromOutside;
     ProgramNode* programNode;
     try {
         // unsigned long start = ESVMInstance::currentInstance()->tickCount();
@@ -82,7 +83,7 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
         }
     };
 
-    bool shouldWorkAroundIdentifier = true;
+    bool shouldWorkAroundIdentifier = parserContextInformation.m_shouldWorkAroundIdentifier;
     std::unordered_map<InternalAtomicString, unsigned, std::hash<InternalAtomicString>, std::equal_to<InternalAtomicString> > knownGlobalNames;
 
     // fill GlobalData
@@ -184,6 +185,8 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
             bool preValue = shouldWorkAroundIdentifier;
             postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, identifierStack, ((FunctionDeclarationNode *)currentNode));
             shouldWorkAroundIdentifier = preValue;
+            if (!shouldWorkAroundIdentifier)
+                markNeedsActivation((FunctionDeclarationNode *)currentNode);
             identifierStack.pop_back();
             // printf("end of process function body-------------------\n");
         } else if (type == NodeType::FunctionExpression) {
@@ -219,6 +222,8 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
             bool preValue = shouldWorkAroundIdentifier;
             postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, identifierStack, ((FunctionExpressionNode *)currentNode));
             shouldWorkAroundIdentifier = preValue;
+            if (!shouldWorkAroundIdentifier)
+                markNeedsActivation((FunctionDeclarationNode *)currentNode);
             identifierStack.pop_back();
             // printf("end of process function body-------------------\n");
         } else if (type == NodeType::Identifier) {
@@ -731,8 +736,9 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
     return programNode;
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, bool strictFromOutside)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, ParserContextInformation& parserContextInformation)
 {
+    bool strictFromOutside = parserContextInformation.m_strictFromOutside;
 #ifdef ENABLE_CODECACHE
     if (source->length() < 1024) {
         if (isForGlobalScope) {
@@ -750,7 +756,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
 #endif
 
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-    ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope, strictFromOutside);
+    ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope, parserContextInformation);
     ASSERT(node->type() == Program);
     CodeBlock* cb = generateByteCode(node, type, source->length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();

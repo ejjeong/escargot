@@ -969,7 +969,8 @@ void GlobalObject::installFunction()
             builder.appendString("\n}");
             escargot::ESString* src = builder.finalize();
             // printf("new Function('%s\n')\n", src->utf8Data());
-            ProgramNode* programNode = instance->scriptParser()->generateAST(instance, src, true);
+            escargot::ScriptParser::ParserContextInformation parserContextInformation;
+            ProgramNode* programNode = instance->scriptParser()->generateAST(instance, src, true, parserContextInformation);
             if (programNode->body().size() != 2)
                 instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) body source code")));
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);

@@ -66,6 +66,8 @@ ESVMInstance::ESVMInstance()
     m_JITConfig = new nanojit::Config();
 #endif
 
+    m_catchDepth = 0;
+
     m_identifierCacheInvalidationCheckCount = 0;
 
     std::setlocale(LC_ALL, "en_US.utf8");
@@ -207,7 +209,8 @@ ESValue ESVMInstance::evaluate(ESString* source)
     m_currentExecutionContext = m_globalExecutionContext;
     bool oldContextIsStrictMode = oldContext->isStrictMode();
 
-    CodeBlock* block = m_scriptParser->parseScript(this, source, true, CodeBlock::ExecutableType::GlobalCode);
+    ScriptParser::ParserContextInformation parserContextInformation;
+    CodeBlock* block = m_scriptParser->parseScript(this, source, true, CodeBlock::ExecutableType::GlobalCode, parserContextInformation);
     if (block->shouldUseStrictMode())
         m_currentExecutionContext->setStrictMode(true);
 
@@ -231,7 +234,9 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
     bool oldGlobalContextIsStrictMode = m_globalExecutionContext->isStrictMode();
 
     bool strictFromOutside = m_currentExecutionContext->isStrictMode() && isDirectCall;
-    CodeBlock* block = m_scriptParser->parseScript(this, source, false, CodeBlock::ExecutableType::EvalCode, strictFromOutside);
+    bool shouldWorkAroundIdentifier = !isInCatchClause();
+    ScriptParser::ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, false, CodeBlock::ExecutableType::EvalCode, parserContextInformation);
     bool isStrictCode = block->shouldUseStrictMode();
     if (!m_currentExecutionContext || !isDirectCall) {
         // $ES5 10.4.2.1. Use global execution context

@@ -207,6 +207,10 @@ public:
         m_checkedObjects.erase(m_checkedObjects.begin(), m_checkedObjects.end());
     }
 
+    bool isInCatchClause() { return m_catchDepth != 0; }
+    void enterCatchClause() { m_catchDepth++; }
+    void exitCatchClause() { ASSERT(isInCatchClause()); m_catchDepth--; }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -292,6 +296,7 @@ protected:
 
     std::unordered_set<ESObject*, std::hash<ESObject*>, std::equal_to<ESObject*>, gc_allocator<ESObject*> > m_checkedObjects;
 
+    size_t m_catchDepth;
 public:
     // FIXME This is to make the return type of getByIdOperation() as ESValue* (not ESValue) for performance.
     // The lifetime is very short, so we should be careful.

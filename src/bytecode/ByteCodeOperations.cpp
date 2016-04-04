@@ -542,6 +542,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
         return;
     }
     LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecordForCatchClause(0, 0, InternalAtomicStringVector(), true, SIZE_MAX, code->m_name, oldEnv->record()), oldEnv);
+    instance->enterCatchClause();
     instance->currentExecutionContext()->setEnvironment(catchEnv);
     // instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
@@ -566,6 +567,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
         instance->currentExecutionContext()->setEnvironment(oldEnv);
         ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1)));
     }
+    instance->exitCatchClause();
 }
 
 NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)

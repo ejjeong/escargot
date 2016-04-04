@@ -650,7 +650,7 @@ Done running mjsunit/regress/regress-2566: pass
 Done running mjsunit/regress/regress-2568: pass
 Done running mjsunit/regress/regress-2570: pass
 Done running mjsunit/regress/regress-259: pass
-Done running mjsunit/regress/regress-2594: CRASH
+Done running mjsunit/regress/regress-2594: pass
 Done running mjsunit/regress/regress-260: pass
 Done running mjsunit/regress/regress-2606: pass
 Done running mjsunit/regress/regress-2615: pass
@@ -1042,9 +1042,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" 
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
-=== mjsunit/regress/regress-2594.js ===
-exit code: -11
---- CRASHED ---
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1075,6 +1072,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, st
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
 
 ===
-=== 40 tests failed
-=== 2 tests CRASHED
+=== 39 tests failed
+=== 1 tests CRASHED
 ===

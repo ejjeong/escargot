@@ -9,8 +9,17 @@ class ProgramNode;
 
 class ScriptParser {
 public:
-    ProgramNode* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside = false);
-    CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, bool strictFromOutside = false);
+    struct ParserContextInformation {
+        ParserContextInformation(bool strictFromOutside = false, bool shouldWorkAroundIdentifier = true)
+            : m_strictFromOutside(strictFromOutside)
+            , m_shouldWorkAroundIdentifier(shouldWorkAroundIdentifier) { }
+
+        bool m_strictFromOutside:1;
+        bool m_shouldWorkAroundIdentifier:1;
+    };
+
+    ProgramNode* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation);
+    CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, ParserContextInformation& parserContextInformation);
 #ifdef ESCARGOT_PROFILE
     static void dumpStats();
 #endif

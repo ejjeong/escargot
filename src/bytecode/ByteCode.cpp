@@ -401,6 +401,9 @@ void dumpBytecode(CodeBlock* codeBlock)
 {
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
     printf("function %s (codeBlock %p)\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)", codeBlock);
+    printf("isStrict %d needs (Activation %d HeapAllocatedEC %d ComplexParameterCopy %d PrepareGenerateArgumentsObject %d)\n",
+        codeBlock->m_isStrict, codeBlock->m_needsActivation, codeBlock->m_needsHeapAllocatedExecutionContext,
+        codeBlock->m_needsComplexParameterCopy, codeBlock->m_needsToPrepareGenerateArgumentsObject);
     size_t idx = 0;
     size_t bytecodeCounter = 0;
     char* code = codeBlock->m_code.data();

@@ -363,6 +363,14 @@ public:
         DeclarativeEnvironmentRecord::createMutableBinding(m_errorName);
     }
 
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName)
+    {
+        if (atomicName == m_errorName)
+            return DeclarativeEnvironmentRecord::hasBinding(atomicName);
+        else
+            return m_parentRecord->hasBinding(atomicName);
+    }
+
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
         m_parentRecord->createMutableBindingForAST(name, canDelete);
