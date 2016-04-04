@@ -502,7 +502,7 @@ Done running mjsunit/regress/regress-1110: pass
 Done running mjsunit/regress/regress-1110164: pass
 Done running mjsunit/regress/regress-1112: pass
 Done running mjsunit/regress/regress-1112051: pass
-Done running mjsunit/regress/regress-1114040: CRASH
+Done running mjsunit/regress/regress-1114040: pass
 Done running mjsunit/regress/regress-1120: pass
 Done running mjsunit/regress/regress-1121: pass
 Done running mjsunit/regress/regress-1122: pass
@@ -1019,9 +1019,6 @@ Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
-=== mjsunit/regress/regress-1114040.js ===
-exit code: -11
---- CRASHED ---
 === mjsunit/regress/regress-114.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14"> found <"FRIEDRICHSTRAßE 14">, stack: undefined}
@@ -1072,6 +1069,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, st
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
 
 ===
-=== 39 tests failed
-=== 1 tests CRASHED
+=== 38 tests failed
 ===

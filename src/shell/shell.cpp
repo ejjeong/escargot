@@ -285,9 +285,11 @@ int main(int argc, char* argv[])
             if (strcmp(argv[i], "-d") == 0) {
                 ES->m_dumpByteCode = true;
             }
+            if (strcmp(argv[i], "-de") == 0) {
+                ES->m_dumpExecuteByteCode = true;
+            }
 #endif
             if (strcmp(argv[i], "-e") == 0) {
-                // ES->m_dumpExecuteByteCode = true;
                 escargot::ESString* str = escargot::ESString::create(argv[++i]);
                 std::jmp_buf tryPosition;
                 if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {

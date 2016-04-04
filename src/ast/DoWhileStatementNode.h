@@ -35,7 +35,7 @@ public:
 
         newContext.consumeContinuePositions(codeBlock, testPos);
         newContext.consumeBreakPositions(codeBlock, doEnd);
-        newContext.m_positionToContinue = context.m_positionToContinue;
+        newContext.m_positionToContinue = testPos;
         newContext.propagateInformationTo(context);
     }
 

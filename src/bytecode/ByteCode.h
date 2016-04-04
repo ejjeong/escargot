@@ -210,7 +210,7 @@ struct ByteCodeGenerateContext {
         , m_isOutermostContext(false)
         , m_shouldGenereateByteCodeInstantly(contextBefore.m_shouldGenereateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
-        , m_offsetToBasePointer(0)
+        , m_offsetToBasePointer(contextBefore.m_offsetToBasePointer)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
 #ifdef ENABLE_ESJIT
         , m_phiIndex(contextBefore.m_phiIndex)
