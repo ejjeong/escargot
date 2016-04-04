@@ -1789,6 +1789,17 @@ private:
     unsigned m_seenAttributes;
 };
 
+struct ESObjectRareData : public gc {
+    ESObjectRareData()
+    {
+        m_hasIndexedPropetyInterceptor = false;
+        m_extraPointerData = nullptr;
+    }
+
+    bool m_hasIndexedPropetyInterceptor;
+    void* m_extraPointerData;
+};
+
 class ESObject : public ESPointer {
     friend class ESHiddenClass;
     friend class ESFunctionObject;
@@ -1869,12 +1880,14 @@ public:
 
     void* extraPointerData()
     {
-        return m_extraPointerData;
+        ASSERT(m_objectRareData);
+        return m_objectRareData->m_extraPointerData;
     }
 
     void setExtraPointerData(void* e)
     {
-        m_extraPointerData = e;
+        ensureRareData();
+        m_objectRareData->m_extraPointerData = e;
     }
 
     void forceNonVectorHiddenClass(bool forceFillHiddenClassInfo = false)
@@ -1947,12 +1960,19 @@ public:
 protected:
     void setValueAsProtoType(const ESValue& obj);
 
+    void ensureRareData()
+    {
+        if (m_objectRareData == nullptr) {
+            m_objectRareData = new ESObjectRareData();
+        }
+    }
+
     ESHiddenClass* m_hiddenClass;
     ESValueVectorStd m_hiddenClassData;
 
     ESValue m___proto__;
 
-    void* m_extraPointerData;
+    ESObjectRareData* m_objectRareData;
 #ifdef ESCARGOT_64
     struct {
         // object
