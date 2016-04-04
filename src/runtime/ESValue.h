@@ -1949,8 +1949,8 @@ public:
 
     inline void set__proto__(const ESValue& obj);
     ALWAYS_INLINE size_t keyCount();
-    inline void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
-    inline void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
+    inline void relocateIndexesForwardSlowly(int64_t start, int64_t end, int64_t offset);
+    inline void relocateIndexesBackwardSlowly(int64_t start, int64_t end, int64_t offset);
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }
@@ -2312,10 +2312,10 @@ public:
         return ret;
     }
 
+    void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
+    void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
     ESArrayObject* fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments);
     escargot::ESString* fastJoin(escargot::ESString* sep, unsigned len);
-    void fastShift(unsigned len);
-    void fastUnshift(unsigned len, unsigned argCount);
 
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)

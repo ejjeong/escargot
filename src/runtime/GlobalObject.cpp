@@ -2340,9 +2340,9 @@ void GlobalObject::installArray()
         }
         ESValue first = O->get(ESValue(0)); // 6
         if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
-            O->asESArrayObject()->fastShift(arrlen);
+            O->asESArrayObject()->relocateIndexesForward(1, arrlen, -1);
         } else {
-            O->relocateIndexesForward(1, arrlen, -1);
+            O->relocateIndexesForwardSlowly(1, arrlen, -1);
         }
         O->deletePropertyWithException(ESValue(arrlen - 1)); // 10
         O->set(strings->length, ESValue(arrlen - 1), true); // 12
@@ -2508,7 +2508,7 @@ void GlobalObject::installArray()
 
         size_t leftInsert = insertCnt;
         if (insertCnt < deleteCnt) {
-            thisBinded->relocateIndexesForward(start + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt) - deleteCnt);
+            thisBinded->relocateIndexesForwardSlowly(start + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt) - deleteCnt);
 
             k = arrlen - 1;
             while (k > static_cast<int64_t>(arrlen) - deleteCnt + insertCnt - 1) {
@@ -2520,7 +2520,7 @@ void GlobalObject::installArray()
                 }
             }
         } else if (insertCnt > deleteCnt) {
-            thisBinded->relocateIndexesBackward(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
+            thisBinded->relocateIndexesBackwardSlowly(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
         }
         k = start;
         size_t argIdx = 2;
@@ -2591,9 +2591,9 @@ void GlobalObject::installArray()
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
         if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
-            O->asESArrayObject()->fastUnshift(len, argCount);
+            O->asESArrayObject()->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
         } else {
-            O->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
+            O->relocateIndexesBackwardSlowly(static_cast<int64_t>(len) - 1, -1, argCount);
         }
 
         ESValue* items = instance->currentExecutionContext()->arguments();

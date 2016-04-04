@@ -852,7 +852,7 @@ Done running mjsunit/regress/regress-builtin-array-op: pass
 Done running mjsunit/regress/regress-builtinbust-1: pass
 Done running mjsunit/regress/regress-builtinbust-3: pass
 Done running mjsunit/regress/regress-builtinbust-4: pass
-Done running mjsunit/regress/regress-builtinbust-5: FAIL
+Done running mjsunit/regress/regress-builtinbust-5: pass
 Done running mjsunit/regress/regress-builtinbust-6: pass
 Done running mjsunit/regress/regress-builtinbust-7: pass
 Done running mjsunit/regress/regress-context-osr: pass
@@ -1074,9 +1074,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-builtinbust-5.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-crbug-352586.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1087,6 +1084,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
 
 ===
-=== 44 tests failed
+=== 43 tests failed
 === 2 tests CRASHED
 ===

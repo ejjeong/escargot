@@ -1163,37 +1163,15 @@ ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t del
     }
 
     if (insertCnt < deleteCnt) {
-        unsigned k = start;
-        while (k < arrlen - deleteCnt) {
-            ESValue from = ESValue(k + deleteCnt);
-            ESValue to = ESValue(k + insertCnt);
-
-            if (hasProperty(from)) {
-                ((ESObject*)this)->set(to, get(from.asUInt32()), true);
-            } else {
-                deletePropertyWithException(to);
-            }
-            k++;
-        }
+        relocateIndexesForward(start + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt) - deleteCnt);
 
         k = arrlen;
         while (k > arrlen - deleteCnt + insertCnt) {
             deleteProperty(ESValue(k - 1));
             k--;
         }
-    } else {
-        unsigned k = arrlen - deleteCnt;
-        while (k > start) {
-            ESValue from = ESValue(k + deleteCnt - 1);
-            ESValue to = ESValue(k + insertCnt - 1);
-
-            if (hasProperty(from)) {
-                ((ESObject*)(this))->set(to, get(from.asUInt32()), true);
-            } else {
-                deletePropertyWithException(to);
-            }
-            k--;
-        }
+    } else if (insertCnt > deleteCnt) {
+        relocateIndexesBackward(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
     }
 
     if (insertCnt > 0) {
@@ -1229,12 +1207,15 @@ ESString* ESArrayObject::fastJoin(escargot::ESString* sep, unsigned len)
     return builder.finalize();
 }
 
-void ESArrayObject::fastShift(unsigned arrlen)
+void ESArrayObject::relocateIndexesForward(int64_t start, int64_t end, int64_t offset)
 {
-    unsigned k = 1;
-    while (k < arrlen) {
+    if (offset == 0)
+        return;
+
+    unsigned k = start;
+    while (k < end) {
         ESValue from = ESValue(k);
-        ESValue to = ESValue(k - 1);
+        ESValue to = ESValue(k + offset);
         bool fromPresent = hasProperty(from);
 
         if (fromPresent) {
@@ -1246,16 +1227,19 @@ void ESArrayObject::fastShift(unsigned arrlen)
     }
 }
 
-void ESArrayObject::fastUnshift(unsigned arrlen, unsigned argCount)
+void ESArrayObject::relocateIndexesBackward(int64_t start, int64_t end, int64_t offset)
 {
-    unsigned k = arrlen;
-    while (k > 0) {
-        ESValue from = ESValue(k - 1);
-        ESValue to = ESValue(k + argCount - 1);
+    if (offset == 0)
+        return;
+
+    int64_t k = start;
+    while (k > end) {
+        ESValue from = ESValue(k);
+        ESValue to = ESValue(k + offset);
         bool fromPresent = hasProperty(from);
 
         if (fromPresent) {
-            ((ESObject*)this)->set(to, get(k - 1), true);
+            ((ESObject*)this)->set(to, get(k), true);
         } else {
             ((ESObject*)this)->deletePropertyWithException(to);
         }
