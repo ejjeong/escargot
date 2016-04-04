@@ -638,7 +638,7 @@ Done running mjsunit/regress/regress-2437: pass
 Done running mjsunit/regress/regress-2438: FAIL
 Done running mjsunit/regress/regress-244: pass
 Done running mjsunit/regress/regress-2441: pass
-Done running mjsunit/regress/regress-2443: FAIL
+Done running mjsunit/regress/regress-2443: pass
 Done running mjsunit/regress/regress-2444: pass
 Done running mjsunit/regress/regress-246: pass
 Done running mjsunit/regress/regress-2470: pass
@@ -1048,9 +1048,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" 
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
-=== mjsunit/regress/regress-2443.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"1.0"> found <"1.00">, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
 exit code: -11
 --- CRASHED ---
@@ -1099,6 +1096,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 48 tests failed
+=== 47 tests failed
 === 3 tests CRASHED
 ===
