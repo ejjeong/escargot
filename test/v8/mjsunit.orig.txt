@@ -1111,6 +1111,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 522 tests failed
+=== 52 tests failed
 === 3 tests CRASHED
 ===
