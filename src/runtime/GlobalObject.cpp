@@ -2590,20 +2590,18 @@ void GlobalObject::installArray()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
-        if (argCount > 0) {
-            if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
-                O->asESArrayObject()->fastUnshift(len, argCount);
-            } else {
-                O->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
-            }
-
-            ESValue* items = instance->currentExecutionContext()->arguments();
-            for (size_t j = 0; j < argCount; j++) {
-                O->set(ESValue(j), *(items+j), true);
-            }
+        if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
+            O->asESArrayObject()->fastUnshift(len, argCount);
+        } else {
+            O->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
         }
 
-        O->set(strings->length.string(), ESValue(len + argCount));
+        ESValue* items = instance->currentExecutionContext()->arguments();
+        for (size_t j = 0; j < argCount; j++) {
+            O->set(ESValue(j), *(items+j), true);
+        }
+
+        O->set(strings->length.string(), ESValue(len + argCount), true);
         return ESValue(len + argCount);
     }, ESString::createAtomicString("unshift"), 1));
 

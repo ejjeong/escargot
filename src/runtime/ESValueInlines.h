@@ -1679,7 +1679,6 @@ ALWAYS_INLINE bool ESObject::setSlowly(const escargot::ESValue& key, const ESVal
 
                 if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
                     return false;
-
             } else if (UNLIKELY(targetObj->isESStringObject())) {
                 if (targetObj->asESStringObject()->length() != 0) {
                     uint32_t idx = key.toIndex();
@@ -1786,6 +1785,9 @@ ALWAYS_INLINE size_t ESObject::keyCount()
 
 inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t offset)
 {
+    if (offset == 0)
+        return;
+
     unsigned cur = start;
     std::vector<unsigned> deletableIndexes;
     while (cur < end) {
@@ -1802,7 +1804,6 @@ inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t
                 break;
             }
         }
-
         ESValue from = ESValue(cur);
         ESValue to = ESValue(cur + offset);
         bool fromPresent = hasProperty(from);
@@ -1828,6 +1829,9 @@ inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t
 
 inline void ESObject::relocateIndexesBackward(int64_t start, int64_t end, int64_t offset)
 {
+    if (offset == 0)
+        return;
+
     int64_t cur = start;
     std::vector<unsigned> deletableIndexes;
     while (cur > end) {
