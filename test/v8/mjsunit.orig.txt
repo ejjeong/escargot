@@ -634,7 +634,7 @@ Done running mjsunit/regress/regress-241344: pass
 Done running mjsunit/regress/regress-2416: pass
 Done running mjsunit/regress/regress-2419: pass
 Done running mjsunit/regress/regress-2433: pass
-Done running mjsunit/regress/regress-2437: FAIL
+Done running mjsunit/regress/regress-2437: pass
 Done running mjsunit/regress/regress-2438: FAIL
 Done running mjsunit/regress/regress-244: pass
 Done running mjsunit/regress/regress-2441: pass
@@ -1045,15 +1045,12 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> fou
 === mjsunit/regress/regress-2058.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
-=== mjsunit/regress/regress-2437.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <1>, stack: undefined}
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
 === mjsunit/regress/regress-2443.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <"1.0"> found <"1.00">, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
 exit code: -11
 --- CRASHED ---
@@ -1102,6 +1099,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 49 tests failed
+=== 48 tests failed
 === 3 tests CRASHED
 ===

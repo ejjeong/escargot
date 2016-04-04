@@ -5249,12 +5249,7 @@ void GlobalObject::installNumber()
         if (arglen > 0) {
             double fractionDigits = instance->currentExecutionContext()->arguments()[0].toNumber();
             digit = (int) trunc(fractionDigits);
-
-            if (digit < 0 || digit > 20) {
-                instance->throwError(ESValue(RangeError::create()));
-            }
         }
-
         if (isnan(number)) { // 3
             return strings->NaN.string();
         }
@@ -5270,6 +5265,10 @@ void GlobalObject::installNumber()
         if (isinf(number)) { // 6
             sprintf(buf, stream.str().c_str(), number, exp);
             return ESString::concatTwoStrings(ESString::create(buf), strings->Infinity.string());
+        }
+
+        if (digit < 0 || digit > 20) {
+            instance->throwError(ESValue(RangeError::create()));
         }
 
         int exp = 0;
@@ -5492,11 +5491,50 @@ void GlobalObject::installNumber()
 
     // $20.1.3.4 Number.prototype.toLocaleString
     m_numberPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
-        ESValue func = thisVal->get(strings->toString.string());
-        if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            instance->throwError(TypeError::create(ESString::create("toLocaleString is not callable")));
-        return ESFunctionObject::call(instance, func, thisVal, NULL, 0, false);
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        double number;
+
+        if (thisValue.isNumber()) {
+            number = thisValue.asNumber();
+        } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
+            number = thisValue.asESPointer()->asESNumberObject()->numberData();
+        } else {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
+        }
+
+        if (isnan(number) || std::isinf(number)) {
+            return (ESValue(number).toString());
+        }
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        double radix = 10;
+        if (arglen >= 1 && !instance->currentExecutionContext()->arguments()[0].isUndefined()) {
+            radix = instance->currentExecutionContext()->arguments()[0].toInteger();
+            if (radix < 2 || radix > 36)
+                instance->throwError(ESValue(RangeError::create(ESString::create(u"String.prototype.toString() radix is not in valid range"))));
+        }
+        if (radix == 10)
+            return (ESValue(number).toString());
+        else {
+            bool isInteger = (static_cast<int64_t>(number) == number);
+            if (isInteger) {
+                bool minusFlag = (number < 0) ? 1 : 0;
+                number = (number < 0) ? (-1 * number) : number;
+                char buffer[256];
+                if (minusFlag) {
+                    buffer[0] = '-';
+                    itoa((int64_t)number, &buffer[1], radix);
+                } else {
+                    itoa((int64_t)number, buffer, radix);
+                }
+                return (ESString::create(buffer));
+            } else {
+                ASSERT(ESValue(number).isDouble());
+                ESNumberObject::RadixBuffer s;
+                const char* str = ESNumberObject::toStringWithRadix(s, number, radix);
+                return ESString::create(str);
+            }
+        }
+        return ESValue();
     }, strings->toLocaleString, 0));
 
     // $20.1.3.26 Number.prototype.valueOf ( )
