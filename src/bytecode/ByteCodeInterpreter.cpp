@@ -1010,6 +1010,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             Try* code = (Try *)currentCode;
             tryOperation(instance, codeBlock, codeBuffer, ec, programCounter, code, stackStorage, heapStorage);
+            ec->tryOrCatchBodyReturnValue() = *lastExpressionStatementValue;
             programCounter = jumpTo(codeBuffer, code->m_statementEndPosition);
             NEXT_INSTRUCTION();
         }
@@ -1018,6 +1019,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             ASSERT(bp == stack);
             ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = ESValue(ESValue::ESEmptyValue);
+            ec->tryOrCatchBodyReturnValue() = *lastExpressionStatementValue;
             return ESValue(ESValue::ESEmptyValue);
         }
 
@@ -1037,10 +1039,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         FinallyEndOpcodeLbl:
         {
             if (ec->tryOrCatchBodyResult().empty()) {
+                *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
                 executeNextCode<FinallyEnd>(programCounter);
                 NEXT_INSTRUCTION();
             } else if (ec->tryOrCatchBodyResult().back().isEmpty()) {
                 ec->tryOrCatchBodyResult().pop_back();
+                *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
                 executeNextCode<FinallyEnd>(programCounter);
                 NEXT_INSTRUCTION();
             } else {
@@ -1059,6 +1063,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                         instance->throwError(val);
                     } else {
                         ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
+                        *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
                         programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());
                         ec->tryOrCatchBodyResult().pop_back();
                         NEXT_INSTRUCTION();
@@ -1080,6 +1085,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                             instance->throwError(val);
                         } else {
                             ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
+                            *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
                             programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());
                             ec->tryOrCatchBodyResult().pop_back();
                             NEXT_INSTRUCTION();

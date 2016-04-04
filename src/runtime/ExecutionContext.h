@@ -98,7 +98,7 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
-    // ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
+    ESValue& tryOrCatchBodyReturnValue() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
     std::vector<ESValue, gc_allocator<ESValue>>& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
 private:
     struct {

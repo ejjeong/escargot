@@ -642,7 +642,7 @@ Done running mjsunit/regress/regress-2443: FAIL
 Done running mjsunit/regress/regress-2444: pass
 Done running mjsunit/regress/regress-246: pass
 Done running mjsunit/regress/regress-2470: pass
-Done running mjsunit/regress/regress-2529: FAIL
+Done running mjsunit/regress/regress-2529: pass
 Done running mjsunit/regress/regress-253: pass
 Done running mjsunit/regress/regress-254: pass
 Done running mjsunit/regress/regress-2565: pass
@@ -1063,9 +1063,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 === mjsunit/regress/regress-2443.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-2529.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"try"> found <"finally">, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
 exit code: -11
 --- CRASHED ---
