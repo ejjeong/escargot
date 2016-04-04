@@ -1945,7 +1945,10 @@ template <typename Comp>
 ALWAYS_INLINE void ESObject::sort(const Comp& c)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
-        std::sort(asESArrayObject()->m_vector.begin(), asESArrayObject()->m_vector.end(), c);
+        ESValueVectorStd values(asESArrayObject()->m_vector);
+        std::sort(values.begin(), values.end(), c);
+        for (size_t i = 0; i < values.size(); i++)
+            asESArrayObject()->set(i, values[i]);
     } else {
         uint32_t len = get(strings->length.string()).toUint32();
         ESValueVector selected(len);

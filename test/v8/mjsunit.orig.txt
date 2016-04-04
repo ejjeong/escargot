@@ -948,7 +948,7 @@ Done running mjsunit/regress/regress-smi-scanning: pass
 Done running mjsunit/regress/regress-sort-arguments: pass
 Done running mjsunit/regress/regress-splice-large-index: pass
 Done running mjsunit/regress/regress-store-global-proxy: pass
-Done running mjsunit/regress/regress-swapelements: CRASH
+Done running mjsunit/regress/regress-swapelements: pass
 Done running mjsunit/regress/regress-undefined-nan2: pass
 Done running mjsunit/regress/regress-unsigned-mul-add: pass
 Done running mjsunit/regress/regress-update-field-type-attributes: pass
@@ -1085,11 +1085,8 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-latin-1.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
-=== mjsunit/regress/regress-swapelements.js ===
-exit code: -11
---- CRASHED ---
 
 ===
-=== 45 tests failed
-=== 3 tests CRASHED
+=== 44 tests failed
+=== 2 tests CRASHED
 ===
