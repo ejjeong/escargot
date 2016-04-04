@@ -1489,7 +1489,7 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
             break;
         }
     } while (result != JSC::Yarr::offsetNoMatch);
-    if (UNLIKELY(testOnly) && isGlobal) {
+    if (UNLIKELY(testOnly)) {
         set(strings->lastIndex, ESValue(0), true);
     }
     return matchResult.m_matchResults.size();

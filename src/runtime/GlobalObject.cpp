@@ -2833,6 +2833,7 @@ void GlobalObject::installString()
         RegexMatchResult result;
         bool testResult = regexp->matchNonGlobally(thisObject, result, false, 0);
         if (!testResult) {
+            regexp->set(strings->lastIndex, ESValue(0), true);
             return ESValue(ESValue::ESNull);
         }
 
@@ -2866,6 +2867,8 @@ void GlobalObject::installString()
                 if (isGlobal) {
                     string->createRegexMatchResult(regexp, result);
                 }
+            } else {
+                regexp->set(strings->lastIndex.string(), ESValue(0), true);
             }
         } else {
             escargot::ESString* searchString = searchValue.toString();
