@@ -5237,7 +5237,6 @@ void GlobalObject::installNumber()
 
         int arglen = instance->currentExecutionContext()->argumentCount();
         int digit = 0; // only used when an argument is given
-        std::basic_ostringstream<char> stream;
         if (arglen > 0) {
             double fractionDigits = instance->currentExecutionContext()->arguments()[0].toNumber();
             digit = (int) trunc(fractionDigits);
@@ -5246,15 +5245,22 @@ void GlobalObject::installNumber()
                 instance->throwError(ESValue(RangeError::create()));
             }
         }
-        if (number < 0) {
+
+        if (isnan(number)) { // 3
+            return strings->NaN.string();
+        }
+
+        char buf[512];
+        std::basic_ostringstream<char> stream;
+        std::basic_ostringstream<char> expStream;
+
+        if (number < 0) { // 5
             stream << "-";
             number = -1 * number;
         }
-        if (isnan(number)) {
-            return strings->NaN.string();
-        }
-        if (isinf(number)) {
-            return strings->Infinity.string();
+        if (isinf(number)) { // 6
+            sprintf(buf, stream.str().c_str(), number, exp);
+            return ESString::concatTwoStrings(ESString::create(buf), strings->Infinity.string());
         }
 
         int exp = 0;
@@ -5269,7 +5275,7 @@ void GlobalObject::installNumber()
         } else if (std::abs(number) < 1) {
             double tmp = number;
             while (tmp < 1) {
-                exp++;
+                exp--;
                 tmp *= 10.0;
             }
         }
@@ -5277,24 +5283,38 @@ void GlobalObject::installNumber()
         number /= pow(10, exp);
 
         if (arglen == 0) {
-            stream << "%lf" << "e";
+            stream << "%lf";
         } else {
-            stream << "%." << digit << "lf" << "e";
+            stream << "%." << digit << "lf";
         }
-        if (exp >= 0) {
-            stream << "+";
-        }
-        stream << "%d";
-        std::string fstr = stream.str();
-        char buf[512];
-        sprintf(buf, fstr.c_str(), number, exp);
+        sprintf(buf, stream.str().c_str(), number, exp);
 
         // remove trailing zeros
-        char* tail = buf + strlen(buf) - 1;
-        while (*tail == '0' && *tail-- != '.') { }
-        *(tail + 1) = '\0';
-        if (*tail == '.')
-            *tail = '\0';
+        char* tail;
+        if (arglen == 0) {
+            tail = buf + strlen(buf) - 1;
+            while (*tail == '0' && *tail-- != '.') { }
+            tail++;
+        } else {
+            for (size_t i = 0; i < strlen(buf); i++) {
+                tail = &buf[i];
+                if (*tail == '.') {
+                    break;
+                }
+            }
+            tail++;
+            for (int i = 0; i < digit; i++)
+                tail++;
+        }
+        if (*(tail-1) == '.')
+            tail--;
+
+        expStream << "e";
+        if (exp >= 0) {
+            expStream << "+";
+        }
+        expStream << "%d";
+        sprintf(tail, expStream.str().c_str(), number, exp);
 
         return ESValue(ESString::create(buf));
 
@@ -5315,7 +5335,14 @@ void GlobalObject::installNumber()
 
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen == 0) {
-            return ESValue(round(number)).toString();
+            bool isInteger = (static_cast<int64_t>(number) == number);
+            if (isInteger) {
+                char buffer[256];
+                itoa(static_cast<int64_t>(number), buffer, 10);
+                return ESString::create(buffer);
+            } else {
+                return ESValue(round(number)).toString();
+            }
         } else if (arglen >= 1) {
             double digit_d = instance->currentExecutionContext()->arguments()[0].toNumber();
             if (digit_d == 0 || isnan(digit_d)) {
@@ -5327,15 +5354,17 @@ void GlobalObject::installNumber()
             }
             if (isnan(number) || isinf(number)) {
                 return ESValue(number).toString();
-            } else if (number >= pow(10, 21)) {
+            } else if (std::abs(number) >= pow(10, 21)) {
                 return ESValue(round(number)).toString();
             }
 
             std::basic_ostringstream<char> stream;
+            if (number < 0)
+                stream << "-";
             stream << "%." << digit << "lf";
             std::string fstr = stream.str();
             char buf[512];
-            sprintf(buf, fstr.c_str(), number);
+            sprintf(buf, fstr.c_str(), std::abs(number));
             return ESValue(ESString::create(buf));
         }
         return ESValue();
@@ -5377,11 +5406,19 @@ void GlobalObject::installNumber()
                 }
 
                 int log10_num = trunc(log10(x));
-                if (log10_num + 1 <= p) {
-                    stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+                if (log10_num + 1 <= p && log10_num > -6) {
+                    if (std::abs(x) > 1) {
+                        stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+                    } else {
+                        stream << "%" << log10_num << "." << (p - log10_num) << "lf";
+                    }
                 } else {
                     x = x / pow(10, log10_num);
-                    stream << "%1." << (p - 1) << "lf" << "e+" << log10_num;
+                    if (std::abs(x) < 1) {
+                        x *= 10;
+                        log10_num--;
+                    }
+                    stream << "%1." << (p - 1) << "lf" << "e" << ((log10_num >= 0) ? "+" : "") << log10_num;
                 }
             }
             std::string fstr = stream.str();

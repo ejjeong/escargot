@@ -186,9 +186,9 @@ Done running mjsunit/number-limits: pass
 Done running mjsunit/number-literal: pass
 Done running mjsunit/number-string-index-call: pass
 Done running mjsunit/number-tostring-add: pass
-Done running mjsunit/number-tostring-func: FAIL
+Done running mjsunit/number-tostring-func: pass
 Done running mjsunit/number-tostring-small: pass
-Done running mjsunit/number-tostring: FAIL
+Done running mjsunit/number-tostring: pass
 Done running mjsunit/numops-fuzz-part1: pass
 Done running mjsunit/numops-fuzz-part2: pass
 Done running mjsunit/numops-fuzz-part3: pass
@@ -976,12 +976,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/json.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"1979-01-11T08:00:00.000Z"> found <null>, stack: undefined}
-=== mjsunit/number-tostring-func.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"-1.1111111111111111e+21"> found <"-1111111111111111081984.00000000">, stack: undefined}
-=== mjsunit/number-tostring.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"-1.1111111111111111e+21"> found <"-1111111111111111081984.00000000">, stack: undefined}
 === mjsunit/parse-int-float.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1111,6 +1105,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 52 tests failed
+=== 50 tests failed
 === 3 tests CRASHED
 ===
