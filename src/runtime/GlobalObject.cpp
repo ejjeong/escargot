@@ -1787,6 +1787,12 @@ void GlobalObject::installArray()
                         curIndex = ESArrayObject::nextIndexForward(arr, curIndex, len);
                     }
                 }
+
+                // array object range is from 0 to 2^32-1
+                if (n > ESValue::ESInvalidIndexValue - len) {
+                    instance->throwError(ESValue(RangeError::create()));
+                }
+
                 n += len;
                 ret->setLength(n);
             } else {

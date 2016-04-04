@@ -770,7 +770,7 @@ Done running mjsunit/regress/regress-540: pass
 Done running mjsunit/regress/regress-545: pass
 Done running mjsunit/regress/regress-57: pass
 Done running mjsunit/regress/regress-580: pass
-Done running mjsunit/regress/regress-581: FAIL
+Done running mjsunit/regress/regress-581: pass
 Done running mjsunit/regress/regress-58740: pass
 Done running mjsunit/regress/regress-588599: pass
 Done running mjsunit/regress/regress-6-9-regexp: pass
@@ -914,7 +914,7 @@ Done running mjsunit/regress/regress-crbug-510426: pass
 Done running mjsunit/regress/regress-crbug-513472: pass
 Done running mjsunit/regress/regress-crbug-513602: pass
 Done running mjsunit/regress/regress-crbug-514081: pass
-Done running mjsunit/regress/regress-crbug-516592: FAIL
+Done running mjsunit/regress/regress-crbug-516592: pass
 Done running mjsunit/regress/regress-crbug-518747: pass
 Done running mjsunit/regress/regress-crbug-522380: pass
 Done running mjsunit/regress/regress-crbug-522496: pass
@@ -1072,9 +1072,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 === mjsunit/regress/regress-355485.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
-=== mjsunit/regress/regress-581.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-builtinbust-5.js ===
@@ -1085,9 +1082,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-crbug-516592.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-latin-1.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
@@ -1096,6 +1090,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 47 tests failed
+=== 45 tests failed
 === 3 tests CRASHED
 ===
