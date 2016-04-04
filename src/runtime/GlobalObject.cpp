@@ -4490,14 +4490,20 @@ void GlobalObject::installJSON()
                             }
                         } else {
                             escargot::ESObject* object = val.asESPointer()->asESObject();
+                            ESValueVectorStd keys;
                             object->enumeration([&](ESValue p) {
-                                ESValue newElement = Walk(val, p.toString());
-                                if (newElement.isUndefined()) {
-                                    object->deleteProperty(p.toString());
-                                } else {
-                                    object->defineDataProperty(p.toString(), true, true, true, newElement);
-                                }
+                                keys.push_back(p.toString());
                             });
+                            for (auto key : keys) {
+                                if (!object->hasOwnProperty(key))
+                                    continue;
+                                ESValue newElement = Walk(val, key.toString());
+                                if (newElement.isUndefined()) {
+                                    object->deleteProperty(key.toString());
+                                } else {
+                                    object->defineDataProperty(key.toString(), true, true, true, newElement);
+                                }
+                            }
                         }
                     }
                     ESValue* arguments = (ESValue *)alloca(sizeof(ESValue) * 2);

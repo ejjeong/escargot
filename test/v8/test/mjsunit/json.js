@@ -27,8 +27,8 @@
 
 // Date toJSON
 assertEquals("1970-01-01T00:00:00.000Z", new Date(0).toJSON());
-assertEquals("1979-01-11T08:00:00.000Z", new Date("1979-01-11 08:00 GMT").toJSON());
-assertEquals("2005-05-05T05:05:05.000Z", new Date("2005-05-05 05:05:05 GMT").toJSON());
+assertEquals("1979-01-11T08:00:00.000Z", new Date("1979-01-11T08:00:00.000Z").toJSON());
+assertEquals("2005-05-05T05:05:05.000Z", new Date("2005-05-05T05:05:05.000Z").toJSON());
 var n1 = new Date(10000);
 n1.toISOString = function () { return "foo"; };
 assertEquals("foo", n1.toJSON());

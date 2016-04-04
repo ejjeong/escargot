@@ -139,7 +139,7 @@ Done running mjsunit/invalid-source-element: pass
 Done running mjsunit/json-parser-recursive: FAIL
 Done running mjsunit/json-replacer-number-wrapper-tostring: pass
 Done running mjsunit/json-replacer-order: pass
-Done running mjsunit/json: FAIL
+Done running mjsunit/json: pass
 Done running mjsunit/keyed-array-call: pass
 Done running mjsunit/keyed-call-generic: pass
 Done running mjsunit/keyed-call-ic: pass
@@ -973,9 +973,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/json.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"1979-01-11T08:00:00.000Z"> found <null>, stack: undefined}
 === mjsunit/parse-int-float.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1105,6 +1102,6 @@ exit code: -11
 --- CRASHED ---
 
 ===
-=== 50 tests failed
+=== 49 tests failed
 === 3 tests CRASHED
 ===
