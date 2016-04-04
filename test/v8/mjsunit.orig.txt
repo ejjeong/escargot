@@ -70,7 +70,7 @@ Done running mjsunit/compare-table-ne: pass
 Done running mjsunit/compare-table-seq: pass
 Done running mjsunit/compare-table-sne: pass
 Done running mjsunit/context-variable-assignments: pass
-Done running mjsunit/cyclic-array-to-string: FAIL
+Done running mjsunit/cyclic-array-to-string: pass
 Done running mjsunit/cyrillic: pass
 Done running mjsunit/d8-os: pass
 Done running mjsunit/date-parse: pass
@@ -961,9 +961,6 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
-=== mjsunit/cyclic-array-to-string.js ===
---- stdout ---
-Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/error-tostring.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1084,6 +1081,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
 
 ===
-=== 43 tests failed
+=== 42 tests failed
 === 2 tests CRASHED
 ===

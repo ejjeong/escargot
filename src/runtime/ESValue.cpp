@@ -98,6 +98,7 @@ ESString* ESValue::toStringSlowCase(bool emptyStringOnError) const
                 tryPositionRegistered = true;
                 ESString* ret = toPrimitive(PreferString).toString();
                 ESVMInstance::currentInstance()->unregisterTryPos(&tryPosition);
+                ESVMInstance::currentInstance()->unregisterCheckedObjectAll();
                 tryPositionRegistered = false;
                 return ret;
             } else {
@@ -1202,7 +1203,7 @@ ESString* ESArrayObject::fastJoin(escargot::ESString* sep, unsigned len)
             }
         }
         if (!elem.isUndefinedOrNull())
-            builder.appendString(elem.toStringOrEmptyString());
+            builder.appendString(elem.toString());
     }
     return builder.finalize();
 }

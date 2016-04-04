@@ -272,6 +272,7 @@ int main(int argc, char* argv[])
                 escargot::ESValue ret = ES->evaluate(str);
                 ES->printValue(ret);
                 ES->unregisterTryPos(&tryPosition);
+                ES->unregisterCheckedObjectAll();
             } else {
                 escargot::ESValue err = ES->getCatchedError();
                 printf("Uncaught ");
@@ -292,6 +293,7 @@ int main(int argc, char* argv[])
                 if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
                     escargot::ESValue ret = ES->evaluate(str);
                     ES->unregisterTryPos(&tryPosition);
+                    ES->unregisterCheckedObjectAll();
                 } else {
                     escargot::ESValue err = ES->getCatchedError();
                     printf("Uncaught ");
@@ -351,6 +353,7 @@ int main(int argc, char* argv[])
                     }
 #endif
                     ES->unregisterTryPos(&tryPosition);
+                    ES->unregisterCheckedObjectAll();
                 } else {
                     escargot::ESValue err = ES->getCatchedError();
                     printf("Uncaught ");
@@ -375,6 +378,7 @@ int main(int argc, char* argv[])
                         escargot::ESValue ret = ES->evaluate(str);
                         ES->printValue(ret);
                         ES->unregisterTryPos(&tryPosition);
+                        ES->unregisterCheckedObjectAll();
                     } else {
                         escargot::ESValue err = ES->getCatchedError();
                         printf("Uncaught ");

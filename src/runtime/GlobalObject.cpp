@@ -2014,6 +2014,11 @@ void GlobalObject::installArray()
             sep = separator.toString();
         }
 
+        StringRecursionChecker checker(thisBinded);
+        if (checker.recursionCheck()) {
+            return ESValue(strings->emptyString.string());
+        }
+
         if (thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode()) {
             return thisBinded->asESArrayObject()->fastJoin(sep, len);
         }
@@ -2034,7 +2039,7 @@ void GlobalObject::installArray()
             ESValue elem = thisBinded->get(ESValue(curIndex));
 
             if (!elem.isUndefinedOrNull()) {
-                builder.appendString(elem.toStringOrEmptyString());
+                builder.appendString(elem.toString());
             }
             prevIndex = curIndex;
             if (elem.isUndefined()) {
@@ -2543,6 +2548,12 @@ void GlobalObject::installArray()
         escargot::ESString* separator = strings->asciiTable[(size_t)','].string();
         if (len == 0)
             return ESValue(strings->emptyString.string());
+
+        StringRecursionChecker checker(array);
+        if (checker.recursionCheck()) {
+            return ESValue(strings->emptyString.string());
+        }
+
         ::escargot::ESString* R;
         ESValue firstElement = array->get(ESValue(0));
         if (firstElement.isUndefinedOrNull())
@@ -2572,6 +2583,7 @@ void GlobalObject::installArray()
             R = ESString::concatTwoStrings(S, R);
             k++;
         }
+
         return ESValue(R);
     }, strings->toLocaleString, 0));
 

@@ -10,6 +10,7 @@ NEVER_INLINE ESValue getByIdOperationWithNoInline(ESVMInstance* instance, Execut
     if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
         ESValue ret = *getByIdOperation(instance, ec, code);
         instance->unregisterTryPos(&tryPosition);
+        instance->unregisterCheckedObjectAll();
         return ret;
     } else {
         ESValue err = instance->getCatchedError();
@@ -524,6 +525,7 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
             ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount)));
         }
         instance->unregisterTryPos(&tryPosition);
+        instance->unregisterCheckedObjectAll();
     } else {
         ESValue err = instance->getCatchedError();
         tryOperationThrowCase(err, oldEnv, backupedEC, instance, codeBlock, codeBuffer, ec, programCounter, code, stackStorage, heapStorage);
@@ -558,6 +560,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
             ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount)));
         }
         instance->unregisterTryPos(&tryPosition);
+        instance->unregisterCheckedObjectAll();
     } else {
         ESValue e = instance->getCatchedError();
         instance->currentExecutionContext()->setEnvironment(oldEnv);

@@ -187,6 +187,26 @@ public:
         return error;
     }
 
+    bool registerCheckableObject(ESObject* obj)
+    {
+        if (m_checkedObjects.find(obj) != m_checkedObjects.end()) {
+            return true;
+        }
+
+        m_checkedObjects.insert(obj);
+        return false;
+    }
+
+    void unregisterCheckedObject(ESObject* obj)
+    {
+        m_checkedObjects.erase(obj);
+    }
+
+    void unregisterCheckedObjectAll()
+    {
+        m_checkedObjects.erase(m_checkedObjects.begin(), m_checkedObjects.end());
+    }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -270,12 +290,44 @@ protected:
         std::hash<ESRegExpObject::RegExpCacheKey>, std::equal_to<ESRegExpObject::RegExpCacheKey>,
         gc_allocator<std::pair<ESRegExpObject::RegExpCacheKey, ESRegExpObject::RegExpCacheEntry> > > m_regexpCache;
 
+    std::unordered_set<ESObject*, std::hash<ESObject*>, std::equal_to<ESObject*>, gc_allocator<ESObject*> > m_checkedObjects;
+
 public:
     // FIXME This is to make the return type of getByIdOperation() as ESValue* (not ESValue) for performance.
     // The lifetime is very short, so we should be careful.
     // This will also introduce small memory leak.
     // When getByIdOperation() function can have ESValue as its return type, this should be removed.
     ESValue m_temporaryAccessorBindingValueHolder;
+};
+
+class StringRecursionChecker {
+public:
+    StringRecursionChecker(ESObject* thisObject)
+        : m_thisObject(thisObject)
+        , m_isRecursiveObject(false)
+    {
+    }
+
+    bool recursionCheck()
+    {
+        m_isRecursiveObject = ESVMInstance::currentInstance()->registerCheckableObject(m_thisObject);
+        return m_isRecursiveObject;
+    }
+
+    ~StringRecursionChecker()
+    {
+        if (m_isRecursiveObject) {
+            m_thisObject = nullptr;
+            return;
+        }
+
+        ESVMInstance::currentInstance()->unregisterCheckedObject(m_thisObject);
+        m_thisObject = nullptr;
+    }
+
+private:
+    ESObject* m_thisObject;
+    bool m_isRecursiveObject;
 };
 
 struct ESSimpleAllocatorMemoryFragment {
