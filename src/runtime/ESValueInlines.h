@@ -1262,7 +1262,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
             return false;
         }
     }
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
 
@@ -1345,7 +1345,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
             return false;
         }
     }
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
 
@@ -1435,7 +1435,7 @@ inline bool ESObject::deleteProperty(const ESValue& key, bool force)
             }
         }
     }
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
 
@@ -1482,7 +1482,7 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
             uint32_t idx = key.toIndex();
             if ((uint32_t)idx < target->asESStringObject()->length())
                 return true;
-        } else if (UNLIKELY(target->hasPropetyInterceptor() && target->hasKeyForPropetyInterceptor(key))) {
+        } else if (UNLIKELY(target->hasPropertyInterceptor() && target->hasKeyForPropertyInterceptor(key))) {
             return true;
         }
 
@@ -1531,7 +1531,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
             }
         }
     }
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return true;
     }
     return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
@@ -1564,8 +1564,8 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* re
                     return ESString::create(c);
                 }
             }
-        } else if (UNLIKELY(target->hasPropetyInterceptor() && target->hasKeyForPropetyInterceptor(key))) {
-            return target->readKeyForPropetyInterceptor(key);
+        } else if (UNLIKELY(target->hasPropertyInterceptor() && target->hasKeyForPropertyInterceptor(key))) {
+            return target->readKeyForPropertyInterceptor(key);
         }
 
         if (!keyString) {
@@ -1616,8 +1616,8 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
             }
         }
     }
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
-        return readKeyForPropetyInterceptor(key);
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
+        return readKeyForPropertyInterceptor(key);
     }
 
 
@@ -1659,7 +1659,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
 
 ALWAYS_INLINE bool ESObject::setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
     escargot::ESString* keyString = key.toString();
@@ -1779,7 +1779,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             if (idx < asESStringObject()->length())
                 return false;
     }
-    if (UNLIKELY(hasPropetyInterceptor() && hasKeyForPropetyInterceptor(key))) {
+    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
 
@@ -1920,8 +1920,8 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
         }
     }
 
-    if (hasPropetyInterceptor()) {
-        ESValueVector v = propertyEnumerationForPropetyInterceptor();
+    if (hasPropertyInterceptor()) {
+        ESValueVector v = propertyEnumerationForPropertyInterceptor();
         for (size_t i = 0; i < v.size(); i ++) {
             t(v[i].toString());
         }
@@ -1970,8 +1970,8 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
         }
     }
 
-    if (hasPropetyInterceptor()) {
-        ESValueVector v = propertyEnumerationForPropetyInterceptor();
+    if (hasPropertyInterceptor()) {
+        ESValueVector v = propertyEnumerationForPropertyInterceptor();
         ESHiddenClassPropertyInfo propertyInfo;
         propertyInfo.m_flags.m_isEnumerable = true;
         propertyInfo.m_flags.m_isDeletedValue = false;

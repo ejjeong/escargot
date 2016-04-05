@@ -1962,7 +1962,7 @@ public:
     inline void relocateIndexesForwardSlowly(int64_t start, int64_t end, int64_t offset);
     inline void relocateIndexesBackwardSlowly(int64_t start, int64_t end, int64_t offset);
 
-    void setPropetyInterceptor(HasPropertyCallback hasIndex, PropertyEnumerationCallback enumeration, PropertyCallback readIndex)
+    void setPropertyInterceptor(HasPropertyCallback hasIndex, PropertyEnumerationCallback enumeration, PropertyCallback readIndex)
     {
         ensureRareData();
         forceNonVectorHiddenClass(true);
@@ -1972,7 +1972,7 @@ public:
         m_objectRareData->m_propertyCallback = readIndex;
     }
 
-    bool hasPropetyInterceptor()
+    bool hasPropertyInterceptor()
     {
         return m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
     }
@@ -1992,21 +1992,21 @@ protected:
         }
     }
 
-    bool hasKeyForPropetyInterceptor(const ESValue& key)
+    bool hasKeyForPropertyInterceptor(const ESValue& key)
     {
-        ASSERT(hasPropetyInterceptor());
+        ASSERT(hasPropertyInterceptor());
         return m_objectRareData->m_hasPropertyCallback(key, this);
     }
 
-    ESValue readKeyForPropetyInterceptor(const ESValue& key)
+    ESValue readKeyForPropertyInterceptor(const ESValue& key)
     {
-        ASSERT(hasKeyForPropetyInterceptor(key));
+        ASSERT(hasKeyForPropertyInterceptor(key));
         return m_objectRareData->m_propertyCallback(key, this);
     }
 
-    ESValueVector propertyEnumerationForPropetyInterceptor()
+    ESValueVector propertyEnumerationForPropertyInterceptor()
     {
-        ASSERT(hasPropetyInterceptor());
+        ASSERT(hasPropertyInterceptor());
         return m_objectRareData->m_propertyEnumerationCallback(this);
     }
 
