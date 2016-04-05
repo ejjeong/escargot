@@ -4201,7 +4201,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
             }
         }
     } else {
-        throwEsprimaException(u"Unnamed function declaration is forbidden");
+        throwEsprimaException(u"Unnamed function declaration is forbidden", ctx);
     }
 
     ctx->m_allowYield = !isGenerator;

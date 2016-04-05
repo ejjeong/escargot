@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  201 tests will be skipped
+ *  206 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1983 tests are expected to pass
+ * 1978 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2122 tests
+Running 2117 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -511,7 +511,6 @@ Done running mjsunit/regress/regress-1130: pass
 Done running mjsunit/regress/regress-1131: pass
 Done running mjsunit/regress/regress-1134697: pass
 Done running mjsunit/regress/regress-113924: pass
-Done running mjsunit/regress/regress-114: FAIL
 Done running mjsunit/regress/regress-1146: pass
 Done running mjsunit/regress/regress-1149: pass
 Done running mjsunit/regress/regress-1150: pass
@@ -575,7 +574,6 @@ Done running mjsunit/regress/regress-1447: pass
 Done running mjsunit/regress/regress-145201: pass
 Done running mjsunit/regress/regress-1472: FAIL
 Done running mjsunit/regress/regress-148378: pass
-Done running mjsunit/regress/regress-149: FAIL
 Done running mjsunit/regress/regress-1491: pass
 Done running mjsunit/regress/regress-1513: pass
 Done running mjsunit/regress/regress-1529: pass
@@ -670,7 +668,6 @@ Done running mjsunit/regress/regress-2931: pass
 Done running mjsunit/regress/regress-294: pass
 Done running mjsunit/regress/regress-2980: pass
 Done running mjsunit/regress/regress-298269: pass
-Done running mjsunit/regress/regress-2984: FAIL
 Done running mjsunit/regress/regress-299979: pass
 Done running mjsunit/regress/regress-3006390: pass
 Done running mjsunit/regress/regress-3010: pass
@@ -705,7 +702,6 @@ Done running mjsunit/regress/regress-350887: pass
 Done running mjsunit/regress/regress-351: pass
 Done running mjsunit/regress/regress-352059: pass
 Done running mjsunit/regress/regress-353551: pass
-Done running mjsunit/regress/regress-355485: FAIL
 Done running mjsunit/regress/regress-357054: pass
 Done running mjsunit/regress/regress-358088: pass
 Done running mjsunit/regress/regress-358090: pass
@@ -933,7 +929,6 @@ Done running mjsunit/regress/regress-is-contextual: pass
 Done running mjsunit/regress/regress-iteration-order: pass
 Done running mjsunit/regress/regress-json-parse-index: pass
 Done running mjsunit/regress/regress-json-stringify-gc: pass
-Done running mjsunit/regress/regress-latin-1: FAIL
 Done running mjsunit/regress/regress-lea-matching: pass
 Done running mjsunit/regress/regress-mask-array-length: pass
 Done running mjsunit/regress/regress-merge-descriptors: pass
@@ -1019,14 +1014,8 @@ Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
-=== mjsunit/regress/regress-114.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14"> found <"FRIEDRICHSTRAßE 14">, stack: undefined}
 === mjsunit/regress/regress-1472.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-149.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"k"> found <"b">, stack: undefined}
 === mjsunit/regress/regress-176.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (zero length match in (?:) with capture in lookahead - array element at index 1): expected <undefined> found <"f">, stack: undefined}
@@ -1042,9 +1031,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-2984.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"x"> found <"ÿ">, stack: undefined}
 === mjsunit/regress/regress-3025.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <9223372036854776000> found <9223372036854778000>, stack: undefined}
@@ -1057,17 +1043,11 @@ Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected
 === mjsunit/regress/regress-3229.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
-=== mjsunit/regress/regress-355485.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-latin-1.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","À"]>, stack: undefined}
 
 ===
-=== 38 tests failed
+=== 33 tests failed
 ===

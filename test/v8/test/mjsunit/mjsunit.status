@@ -826,5 +826,12 @@
   'regress/regress-280531': [SKIP],
   'regress/regress-crbug-501808': [SKIP],
 
+  ## 6. non-ascii's to[Upper|Lower]Case
+  'regress/regress-114': [SKIP],
+  'regress/regress-149': [SKIP],
+  'regress/regress-2984': [SKIP],
+  'regress/regress-355485': [SKIP],
+  'regress/regress-latin-1': [SKIP],  
+
 }],  # 'escargot == True'
 ]
