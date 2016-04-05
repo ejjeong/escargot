@@ -4289,7 +4289,7 @@ void GlobalObject::installDate()
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         ESObject* thisObject = thisValue.toObject();
         ESValue tv = thisValue.toPrimitive(ESValue::PreferNumber);
-        if (tv.isNumber() && (isnan(tv.asNumber()) || isinf(tv.asNumber()))) {
+        if (tv.isNumber() && (isnan(tv.asNumber()) || std::isinf(tv.asNumber()))) {
             return ESValue(ESValue::ESNull);
         }
 
@@ -5089,7 +5089,7 @@ void GlobalObject::installMath()
             }
         }
 
-        if (isinf(x)) {
+        if (std::isinf(x)) {
             if (x > 0) {
                 if (y > 0) {
                     return ESValue(std::numeric_limits<double>::infinity());
@@ -5298,7 +5298,7 @@ void GlobalObject::installNumber()
             stream << "-";
             number = -1 * number;
         }
-        if (isinf(number)) { // 6
+        if (std::isinf(number)) { // 6
             sprintf(buf, stream.str().c_str(), number, exp);
             return ESString::concatTwoStrings(ESString::create(buf), strings->Infinity.string());
         }
@@ -5396,7 +5396,7 @@ void GlobalObject::installNumber()
             if (digit < 0 || digit > 20) {
                 instance->throwError(ESValue(RangeError::create()));
             }
-            if (isnan(number) || isinf(number)) {
+            if (isnan(number) || std::isinf(number)) {
                 return ESValue(number).toString();
             } else if (std::abs(number) >= pow(10, 21)) {
                 return ESValue(round(number)).toString();

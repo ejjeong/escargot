@@ -33,6 +33,7 @@ endif
 
 LOCAL_CFLAGS += -fno-math-errno -I$(SRC_PATH)
 LOCAL_CFLAGS += -fdata-sections -ffunction-sections -frounding-math -fsignaling-nans
+LOCAL_CFLAGS += -DESCARGOT
 
 ifeq ($(REACT_NATIVE), )
 else
@@ -136,7 +137,6 @@ SRCS += $(SRC_THIRD_PARTY)/yarr/PageBlock.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrCanonicalizeUCS2.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrInterpreter.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrPattern.cpp
-SRCS += $(SRC_THIRD_PARTY)/yarr/YarrSyntaxChecker.cpp
 
 ifeq ($(BUILD_TYPE), jit)
 	SRCS += $(SRC_THIRD_PARTY)/nanojit/Allocator.cpp
