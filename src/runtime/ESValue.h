@@ -1789,14 +1789,24 @@ private:
     unsigned m_seenAttributes;
 };
 
+typedef bool (*HasPropertyCallback)(const ESValue& key, ESObject* obj);
+typedef ESValueVector (*PropertyEnumerationCallback)(ESObject* obj);
+typedef ESValue (*PropertyCallback)(const ESValue& key, ESObject* obj);
+
 struct ESObjectRareData : public gc {
     ESObjectRareData()
     {
-        m_hasIndexedPropetyInterceptor = false;
+        m_hasPropertyInterceptor = false;
+        m_hasPropertyCallback = nullptr;
+        m_propertyEnumerationCallback = nullptr;
+        m_propertyCallback = nullptr;
         m_extraPointerData = nullptr;
     }
 
-    bool m_hasIndexedPropetyInterceptor;
+    bool m_hasPropertyInterceptor;
+    HasPropertyCallback m_hasPropertyCallback;
+    PropertyEnumerationCallback m_propertyEnumerationCallback;
+    PropertyCallback m_propertyCallback;
     void* m_extraPointerData;
 };
 
@@ -1952,6 +1962,21 @@ public:
     inline void relocateIndexesForwardSlowly(int64_t start, int64_t end, int64_t offset);
     inline void relocateIndexesBackwardSlowly(int64_t start, int64_t end, int64_t offset);
 
+    void setPropetyInterceptor(HasPropertyCallback hasIndex, PropertyEnumerationCallback enumeration, PropertyCallback readIndex)
+    {
+        ensureRareData();
+        forceNonVectorHiddenClass(true);
+        m_objectRareData->m_hasPropertyInterceptor = true;
+        m_objectRareData->m_hasPropertyCallback = hasIndex;
+        m_objectRareData->m_propertyEnumerationCallback = enumeration;
+        m_objectRareData->m_propertyCallback = readIndex;
+    }
+
+    bool hasPropetyInterceptor()
+    {
+        return m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
+    }
+
 #ifdef ENABLE_ESJIT
     static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }
     static size_t offsetOfHiddenClass() { return offsetof(ESObject, m_hiddenClass); }
@@ -1965,6 +1990,24 @@ protected:
         if (m_objectRareData == nullptr) {
             m_objectRareData = new ESObjectRareData();
         }
+    }
+
+    bool hasKeyForPropetyInterceptor(const ESValue& key)
+    {
+        ASSERT(hasPropetyInterceptor());
+        return m_objectRareData->m_hasPropertyCallback(key, this);
+    }
+
+    ESValue readKeyForPropetyInterceptor(const ESValue& key)
+    {
+        ASSERT(hasKeyForPropetyInterceptor(key));
+        return m_objectRareData->m_propertyCallback(key, this);
+    }
+
+    ESValueVector propertyEnumerationForPropetyInterceptor()
+    {
+        ASSERT(hasPropetyInterceptor());
+        return m_objectRareData->m_propertyEnumerationCallback(this);
     }
 
     ESHiddenClass* m_hiddenClass;
@@ -2216,7 +2259,7 @@ public:
     {
         if (std::isinf(V) || std::isnan(V)) {
             return nan("0");
-        } else if (std::abs(V) >= 8640000000000000) {
+        } else if (std::abs(V) >= 8640000000000000.0) {
             return nan("0");
         } else {
             return ESValue(V).toInteger();

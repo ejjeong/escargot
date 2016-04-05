@@ -236,7 +236,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
 
             // cache miss.
             inlineCache->m_executeCount++;
-            if (inlineCache->m_cache.size() > 3 || inlineCache->m_executeCount <= 3) {
+            if (inlineCache->m_cache.size() > 3 || inlineCache->m_executeCount <= 3 || UNLIKELY(willBeObject->toObject()->hasPropetyInterceptor())) {
                 return willBeObject->toObject()->get(keyString, willBeObject);
             }
 
@@ -373,6 +373,11 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
             cachedHiddenClassChain->clear();
 
             obj = willBeObject->asESPointer()->asESObject();
+            if (UNLIKELY(obj->hasPropetyInterceptor())) {
+                setObjectPreComputedCaseOperationSlowCase(willBeObject, keyString, value);
+                return;
+            }
+
             size_t idx = obj->hiddenClass()->findProperty(keyString);
             if (idx != SIZE_MAX) {
                 // own property
