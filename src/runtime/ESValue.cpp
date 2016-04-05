@@ -1116,7 +1116,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, ESObject* obj, bool thro
 int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const int64_t end)
 {
     ESValue ptr = obj;
-    int64_t ret = std::numeric_limits<int64_t>::max();
+    int64_t ret = end;
     while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
         ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             uint32_t index = ESValue::ESInvalidIndexValue;
@@ -1128,16 +1128,13 @@ int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const 
         });
         ptr = ptr.asESPointer()->asESObject()->__proto__();
     }
-    if (ret == std::numeric_limits<int64_t>::max()) {
-        return end;
-    }
     return ret;
 }
 
 int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end)
 {
     ESValue ptr = obj;
-    int64_t ret = std::numeric_limits<int64_t>::min();
+    int64_t ret = end;
     while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
         ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             uint32_t index = ESValue::ESInvalidIndexValue;
@@ -1148,9 +1145,6 @@ int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const
             }
         });
         ptr = ptr.asESPointer()->asESObject()->__proto__();
-    }
-    if (ret == std::numeric_limits<int64_t>::min()) {
-        return end;
     }
     return ret;
 }

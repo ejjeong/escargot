@@ -2324,7 +2324,7 @@ void GlobalObject::installArray()
         unsigned len = O->get(strings->length.string()).toUint32();
         unsigned middle = std::floor(len / 2);
         unsigned lower = 0;
-        while (middle != lower) {
+        while (middle > lower) {
             unsigned upper = len - lower - 1;
             ESValue upperP = ESValue(upper);
             ESValue lowerP = ESValue(lower);
@@ -2339,7 +2339,6 @@ void GlobalObject::installArray()
             if (upperExists) {
                 upperValue = O->get(upperP);
             }
-
             if (lowerExists && upperExists) {
                 O->set(lowerP, upperValue, true);
                 O->set(upperP, lowerValue, true);
@@ -2349,9 +2348,18 @@ void GlobalObject::installArray()
             } else if (lowerExists && !upperExists) {
                 O->deletePropertyWithException(lowerP);
                 O->set(upperP, lowerValue, true);
+            } else {
+                unsigned x = middle - ESArrayObject::nextIndexForward(O, lower, middle);
+                unsigned y = ESArrayObject::nextIndexBackward(O, upper, middle - 1) - middle;
+                if (x > y) {
+                    lower = middle - x - 1;
+                } else {
+                    lower = middle - y - 1;
+                }
             }
             lower++;
         }
+
         return O;
     }, ESString::createAtomicString("reverse"), 0));
 
