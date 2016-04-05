@@ -3,6 +3,7 @@
 function build-interp() {
   ./build_android.sh armeabi-v7a.32bit.interpreter.release
   mkdir -p test/bin/arm32/escargot/interp
+  mkdir -p test/bin/arm64/escargot/interp
   cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/interp/escargot.release
   ./build_android.sh arm64-v8a.64bit.interpreter.release
   cp ./android/libs/arm64-v8a/escargot ./test/bin/arm64/escargot/interp/escargot.release
