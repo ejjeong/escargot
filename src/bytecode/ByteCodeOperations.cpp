@@ -481,7 +481,8 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     ESValue res;
     if (callBoundFunctionCode) {
         size_t targetFuncArgCount = argc + callBoundFunctionCode->m_boundArgumentsCount;
-        ESValue* targetFuncArgs = (ESValue *)alloca(sizeof(ESValue) * targetFuncArgCount);
+        ESValue* targetFuncArgs;
+        ALLOCA_WRAPPER(targetFuncArgs, ESValue*, sizeof(ESValue) * targetFuncArgCount, false);
         memcpy(targetFuncArgs, callBoundFunctionCode->m_boundArguments, sizeof(ESValue) * callBoundFunctionCode->m_boundArgumentsCount);
         memcpy(targetFuncArgs + callBoundFunctionCode->m_boundArgumentsCount, arguments, sizeof(ESValue) * argc);
         res = ESFunctionObject::call(instance, function, receiver, targetFuncArgs, targetFuncArgCount, true);

@@ -77,7 +77,8 @@ void InternalAtomicString::init(ESVMInstance* instance, const char16_t* src, siz
 {
     ASSERT(instance);
     if (isAllASCII(src, u16len)) {
-        char* abuf = (char *)alloca(u16len);
+        char* abuf;
+        ALLOCA_WRAPPER(abuf, char*, u16len, true);
         for (unsigned i = 0 ; i < u16len ; i ++) {
             abuf[i] = src[i];
         }

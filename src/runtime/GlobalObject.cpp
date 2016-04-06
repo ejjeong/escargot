@@ -1050,14 +1050,14 @@ void GlobalObject::installFunction()
             if (argArray.asESPointer()->isESArrayObject()) {
                 escargot::ESArrayObject* argArrayObj = argArray.asESPointer()->asESArrayObject();
                 arrlen = argArrayObj->length();
-                arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+                ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue) * arrlen, false);
                 for (int i = 0; i < arrlen; i++) {
                     arguments[i] = argArrayObj->get(i);
                 }
             } else {
                 escargot::ESObject* obj = argArray.asESPointer()->asESObject();
                 arrlen = obj->get(strings->length.string()).toInteger();
-                arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+                ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue) * arrlen, false);
                 for (int i = 0; i < arrlen; i++) {
                     arguments[i] = obj->get(ESValue(i));
                 }
@@ -1111,7 +1111,8 @@ void GlobalObject::installFunction()
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         size_t callArgLen = (arglen > 0) ? arglen - 1 : 0;
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
-        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (callArgLen));
+        ESValue* arguments;
+        ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue*) * callArgLen, false);
         for (size_t i = 1; i < arglen; i++) {
             arguments[i - 1] = instance->currentExecutionContext()->arguments()[i];
         }
@@ -2305,7 +2306,8 @@ void GlobalObject::installArray()
             if (kPresent) { // 9.c
                 ESValue kValue = O->get(Pk); // 9.c.i
                 const int fnargc = 4;
-                ESValue* fnargs = (ESValue *)alloca(sizeof(ESValue) * fnargc);
+                ESValue* fnargs;
+                ALLOCA_WRAPPER(fnargs, ESValue*, sizeof(ESValue) * fnargc, false);
                 fnargs[0] = accumulator;
                 fnargs[1] = kValue;
                 fnargs[2] = ESValue(k);
@@ -2942,7 +2944,8 @@ void GlobalObject::installString()
 
             for (uint32_t i = 0; i < matchCount ; i ++) {
                 int subLen = result.m_matchResults[i].size();
-                ESValue* arguments = (ESValue *)alloca((subLen+2)*sizeof(ESValue));
+                ESValue* arguments;
+                ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue) * (subLen + 2), false);
                 for (unsigned j = 0; j < (unsigned)subLen ; j ++) {
                     if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
                         RELEASE_ASSERT_NOT_REACHED(); // implement this case

@@ -220,7 +220,8 @@ inline double ESValue::toNumberSlowCase() const
             return 0;
 
         char* end;
-        char* buf = (char*)alloca(data->length() + 1);
+        char* buf;
+        ALLOCA_WRAPPER(buf, char*, data->length() + 1, true);
         const size_t len = data->length();
         for (unsigned i = 0; i < len ; i ++) {
             char16_t c = data->charAt(i);

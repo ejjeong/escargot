@@ -211,6 +211,8 @@ public:
     void enterCatchClause() { m_catchDepth++; }
     void exitCatchClause() { ASSERT(isInCatchClause()); m_catchDepth--; }
 
+    char* stackStart() { return m_stackStart; }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -304,6 +306,22 @@ public:
     // When getByIdOperation() function can have ESValue as its return type, this should be removed.
     ESValue m_temporaryAccessorBindingValueHolder;
 };
+
+#define ALLOCA_WRAPPER(ptr, type, size, atomic) \
+    char dummy; \
+    if (UNLIKELY(ESVMInstance::currentInstance()->stackStart() - &dummy) > 4 * 1024 * 1024) \
+        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create("Out of memory1"))); \
+    else { \
+        if (size > 32 * 1024 * 1024) { \
+            if (atomic) { \
+                ptr = (type)GC_MALLOC_ATOMIC(size); \
+            } else { \
+                ptr = (type)GC_MALLOC(size); \
+            } \
+        } else { \
+            ptr = (type)alloca(size); \
+        } \
+    }
 
 class StringRecursionChecker {
 public:

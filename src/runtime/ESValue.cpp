@@ -1433,7 +1433,8 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
     else
         chars = str->utf16Data();
     bool isGlobal = option() & ESRegExpObject::Option::Global;
-    unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
+    unsigned* outputBuf;
+    ALLOCA_WRAPPER(outputBuf, unsigned int*, sizeof(unsigned) * 2 * (subPatternNum + 1), true);
     outputBuf[1] = start;
     do {
         start = outputBuf[1];
@@ -2026,7 +2027,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #endif
         }
 
-        ESValue* stackStorage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * cb->m_stackAllocatedIdentifiersCount);
+        ESValue* stackStorage;
+        ALLOCA_WRAPPER(stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);
         if (cb->m_needsHeapAllocatedExecutionContext) {
             auto FE = LexicalEnvironment::newFunctionEnvironment(cb->m_needsToPrepareGenerateArgumentsObject,
                 stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, arguments, argumentCount, fn, cb->m_needsActivation, cb->m_functionExpressionNameIndex);
