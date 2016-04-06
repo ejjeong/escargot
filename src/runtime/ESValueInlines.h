@@ -1543,6 +1543,21 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* re
 {
     ESObject* target = this;
     escargot::ESString* keyString = NULL;
+    if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
+        uint32_t idx = key.toIndex();
+        if (LIKELY(idx < target->asESArrayObject()->length())) {
+            ESValue e = target->asESArrayObject()->m_vector[idx];
+            if (LIKELY(!e.isEmpty()))
+                return e;
+        }
+    }
+    return getSlowPath(key, receiver);
+}
+
+inline ESValue ESObject::getSlowPath(escargot::ESValue key, escargot::ESValue* receiver)
+{
+    ESObject* target = this;
+    escargot::ESString* keyString = NULL;
     while (true) {
         if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
             uint32_t idx = key.toIndex();
@@ -1617,6 +1632,11 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
             }
         }
     }
+    return getOwnPropertySlowPath(key);
+}
+
+inline ESValue ESObject::getOwnPropertySlowPath(escargot::ESValue key)
+{
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return readKeyForPropertyInterceptor(key);
     }
@@ -1731,7 +1751,7 @@ inline bool ESObject::setSlowly(const escargot::ESValue& key, const ESValue& val
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
+inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();

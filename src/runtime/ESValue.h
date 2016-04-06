@@ -1902,11 +1902,13 @@ public:
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key, escargot::ESValue* receiver = nullptr);
+    inline ESValue getSlowPath(escargot::ESValue key, escargot::ESValue* receiver = nullptr);
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
+    inline ESValue getOwnPropertySlowPath(escargot::ESValue key);
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     inline bool setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
-    ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
+    inline bool set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
     ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val, escargot::ESValue* receiver = nullptr)
     {
         return set(ESValue(key), val, receiver);
