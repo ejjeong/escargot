@@ -5706,10 +5706,10 @@ void GlobalObject::installRegExp()
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
     m_regexpPrototype->defineDataProperty(strings->test, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        if (!thisObject->isESRegExpObject())
+        ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
+        if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.test : This object is not Regexp object"))));
-        escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
+        escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         double lastIndex = regexp->m_lastIndex.toInteger();
         if (!regexp->option() & ESRegExpObject::Option::Global) {
@@ -5727,10 +5727,10 @@ void GlobalObject::installRegExp()
     // 21.2.5.2 RegExp.prototype.exec( string )
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
     m_regexpPrototype->defineDataProperty(strings->exec, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        if (!thisObject->isESRegExpObject())
+        ESValue thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object"))));
-        escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
+        escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
         double lastIndex = regexp->m_lastIndex.toInteger();
@@ -5758,16 +5758,14 @@ void GlobalObject::installRegExp()
 
     // $21.2.5.14 RegExp.prototype.toString
     m_regexpPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue R = instance->currentExecutionContext()->resolveThisBinding();
-        if (!R.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type"))));
-        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        if (!thisObject->isESRegExpObject())
+        ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
+        if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.toString : This object is not Regexp object"))));
+        escargot::ESRegExpObject* R = thisVal.asESPointer()->asESRegExpObject();
 
-        escargot::ESString* ret = ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
+        escargot::ESString* ret = ESString::concatTwoStrings(ESString::create(u"/"), R->get(strings->source.string()).toString());
         ret = ESString::concatTwoStrings(ret, ESString::create(u"/"));
-        ESRegExpObject::Option option = R.asESPointer()->asESRegExpObject()->option();
+        ESRegExpObject::Option option = R->option();
 
         char flags[5] = {0};
         int flags_idx = 0;
