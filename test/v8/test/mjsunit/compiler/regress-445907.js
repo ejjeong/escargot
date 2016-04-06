@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 v = [];
-v.length = (1 << 30);
+v.length = (1 << 30 | 3);
 
 function f() {
   v++;
