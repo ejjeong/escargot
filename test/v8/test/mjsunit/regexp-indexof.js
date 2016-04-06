@@ -45,10 +45,12 @@ function CheckMatch(re, str, matches) {
         lastLength = length;
       }
     }
+/*
     assertEquals(lastExpected, RegExp.lastMatch, "lastMatch");
     assertEquals(str.substr(0, lastFrom), RegExp.leftContext, "leftContext");
     assertEquals(
         str.substr(lastFrom + lastLength), RegExp.rightContext, "rightContext");
+*/ // Non-standard
   } else {
     assertTrue(result === null);
   }

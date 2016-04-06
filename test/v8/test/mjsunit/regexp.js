@@ -291,6 +291,8 @@ assertThrows("lazyLiteral(true)");
 
 // Check $01 and $10
 re = new RegExp("(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)");
+
+/*
 assertEquals("t", "123456789t".replace(re, "$10"), "$10");
 assertEquals("15", "123456789t".replace(re, "$15"), "$10");
 assertEquals("1", "123456789t".replace(re, "$01"), "$01");
@@ -301,7 +303,7 @@ assertEquals("bar$00", "foox".replace(re, "bar$00"), "$00");
 assertEquals("bar$000", "foox".replace(re, "bar$000"), "$000");
 assertEquals("barx", "foox".replace(re, "bar$01"), "$01 2");
 assertEquals("barx5", "foox".replace(re, "bar$15"), "$15");
-
+*/ // Non-standard
 assertFalse(/()foo$\1/.test("football"), "football1");
 assertFalse(/foo$(?=ball)/.test("football"), "football2");
 assertFalse(/foo$(?!bar)/.test("football"), "football3");

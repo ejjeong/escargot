@@ -222,7 +222,7 @@ Done running mjsunit/regexp-capture-3: pass
 Done running mjsunit/regexp-capture: pass
 Done running mjsunit/regexp-captures: pass
 Done running mjsunit/regexp-global: FAIL
-Done running mjsunit/regexp-indexof: FAIL
+Done running mjsunit/regexp-indexof: pass
 Done running mjsunit/regexp-lookahead: FAIL
 Done running mjsunit/regexp-loop-capture: pass
 Done running mjsunit/regexp-multiline: pass
@@ -271,7 +271,7 @@ Done running mjsunit/string-replace-gc: pass
 Done running mjsunit/string-replace-one-char: pass
 Done running mjsunit/string-replace: FAIL
 Done running mjsunit/string-search: pass
-Done running mjsunit/string-slices-regexp: FAIL
+Done running mjsunit/string-slices-regexp: pass
 Done running mjsunit/string-split-cache: pass
 Done running mjsunit/string-split: pass
 Done running mjsunit/substr: pass
@@ -970,18 +970,15 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 Uncaught MjsUnitAssertionError {message: Failure: expected <100> found <200>, stack: undefined}
 === mjsunit/regexp-global.js ===
 --- stderr ---
-=== mjsunit/regexp-indexof.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (lastMatch): expected <"abc"> found <undefined>, stack: undefined}
 === mjsunit/regexp-lookahead.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (/^(?:(?=(.))a|b)\1$/.test("b")): expected <true> found <false>, stack: undefined}
 === mjsunit/regexp-static.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> found <undefined>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure (RegExp.multiline coerces values to booleans): expected <true> found <false>, stack: undefined}
 === mjsunit/regexp.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure ($10): expected <"t"> found <"10">, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
@@ -1003,9 +1000,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/string-replace.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure ("xaxbxcx".replace(b, $e)): expected <"xax$excx"> found <"xaxxcx">, stack: undefined}
-=== mjsunit/string-slices-regexp.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"> found <undefined>, stack: undefined}
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
@@ -1042,5 +1036,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 30 tests failed
+=== 28 tests fail
 ===

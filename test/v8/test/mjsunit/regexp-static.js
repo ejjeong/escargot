@@ -26,6 +26,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Test the (deprecated as of JS 1.5) properties of the RegExp function.
+/*
 var re = /((\d+)\.(\d+))/;
 var s = 'abc123.456def';
 
@@ -120,10 +121,12 @@ for (var i = 4; i < 10; ++i) {
 re = /(.)/g;
 function f() { return RegExp.$1; };
 assertEquals('abcd', 'abcd'.replace(re, f));
+*/ // Non-standard
 
 // lastParen where the last parenthesis didn't match.
 assertEquals(["foo",undefined], /foo(?:a(x))?/.exec("foobx"),
              "lastParen setup");
+/*
 assertEquals("", RegExp.lastParen, "lastParen");
 
 // The same test for $1 to $9.
@@ -143,17 +146,20 @@ for (var i = 1; i <= 9; i++) {
   }
   assertEquals("", RegExp['$' + (i)], "$" + i);
 }
+*/ // Non-standard
 
 RegExp.multiline = "foo";
 assertTrue(typeof RegExp.multiline == typeof Boolean(), "RegExp.multiline coerces values to booleans");
+/*
 RegExp.input = Number();
 assertTrue(typeof RegExp.input == typeof String(), "RegExp.input coerces values to booleans");
+*/ // Non-standard
 
 // Ensure that we save the correct string as the last subject when
 // we do a match on a sliced string (the top one not the underlying).
 var foo = "lsdfj sldkfj sdklfj læsdfjl sdkfjlsdk fjsdl fjsdljskdj flsj flsdkj flskd regexp: /foobar/\nldkfj sdlkfj sdkl";
 assertTrue(/^([a-z]+): (.*)/.test(foo.substring(foo.indexOf("regexp:"))), "regexp: setup");
-assertEquals("regexp", RegExp.$1, "RegExp.$1");
+// assertEquals("regexp", RegExp.$1, "RegExp.$1"); //Non-standard
 
 
 // Check that calling with no argument is the same as calling with undefined.

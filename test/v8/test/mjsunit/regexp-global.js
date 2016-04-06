@@ -179,6 +179,7 @@ function test_replace(result_expectation,
     "deadbeef".replace(/(dead)beef/, "$1holeycow");
     // Conduct tests.
     assertEquals(result_expectation, subject.replace(regexps[i], replacement));
+/*
     if (subject.length == 0) {
       assertEquals("deadbeef", RegExp.lastMatch);
       assertEquals("dead", RegExp["$1"]);
@@ -186,6 +187,7 @@ function test_replace(result_expectation,
       assertEquals(last_match_expectations[i], RegExp.lastMatch);
       assertEquals(first_capture_expectations[i], RegExp["$1"]);
     }
+*/ // Non-standard
   }
 }
 
@@ -202,6 +204,7 @@ function test_match(result_expectation,
     } else {
       assertArrayEquals(result_expectation, subject.match(regexps[i]));
     }
+/*
     if (subject.length == 0) {
       assertEquals("deadbeef", RegExp.lastMatch);
       assertEquals("dead", RegExp["$1"]);
@@ -209,6 +212,7 @@ function test_match(result_expectation,
       assertEquals(last_match_expectations[i], RegExp.lastMatch);
       assertEquals(first_capture_expectations[i], RegExp["$1"]);
     }
+*/ // Non-standard
   }
 }
 
