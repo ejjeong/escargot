@@ -27,66 +27,81 @@
 
 function oneMatch(re) {
   "abcd".replace(re, function() { });
+/*
   assertEquals("abcd", RegExp.input);
   assertEquals("a", RegExp.leftContext);
   assertEquals("b", RegExp.lastMatch);
   assertEquals("", RegExp.lastParen);
+*/ // Non-standard
   assertEquals(undefined, RegExp.lastIndex);
   assertEquals(undefined, RegExp.index);
+/*
   assertEquals("cd", RegExp.rightContext);
   for (var i = 1; i < 10; i++) {
     assertEquals("", RegExp['$' + i]);
   }
+*/ // Non-standard
 }
 
 oneMatch(/b/);
 oneMatch(/b/g);
 
 "abcdabcd".replace(/b/g, function() { });
+/*
 assertEquals("abcdabcd", RegExp.input);
 assertEquals("abcda", RegExp.leftContext);
 assertEquals("b", RegExp.lastMatch);
 assertEquals("", RegExp.lastParen);
+*/ // Non-standard
 assertEquals(undefined, RegExp.lastIndex);
 assertEquals(undefined, RegExp.index);
+/*
 assertEquals("cd", RegExp.rightContext);
 for (var i = 1; i < 10; i++) {
   assertEquals("", RegExp['$' + i]);
 }
+*/ // Non-standard
 
 function captureMatch(re) {
   "abcd".replace(re, function() { });
+/*
   assertEquals("abcd", RegExp.input);
   assertEquals("a", RegExp.leftContext);
   assertEquals("bc", RegExp.lastMatch);
   assertEquals("c", RegExp.lastParen);
+*/ // Non-standard
   assertEquals(undefined, RegExp.lastIndex);
   assertEquals(undefined, RegExp.index);
+/*
   assertEquals("d", RegExp.rightContext);
   assertEquals('b', RegExp.$1);
   assertEquals('c', RegExp.$2);
   for (var i = 3; i < 10; i++) {
     assertEquals("", RegExp['$' + i]);
   }
+*/ // Non-standard
 }
 
 captureMatch(/(b)(c)/);
 captureMatch(/(b)(c)/g);
 
 "abcdabcd".replace(/(b)(c)/g, function() { });
+/*
 assertEquals("abcdabcd", RegExp.input);
 assertEquals("abcda", RegExp.leftContext);
 assertEquals("bc", RegExp.lastMatch);
 assertEquals("c", RegExp.lastParen);
+*/ // Non-standard
 assertEquals(undefined, RegExp.lastIndex);
 assertEquals(undefined, RegExp.index);
+/*
 assertEquals("d", RegExp.rightContext);
 assertEquals('b', RegExp.$1);
 assertEquals('c', RegExp.$2);
 for (var i = 3; i < 10; i++) {
   assertEquals("", RegExp['$' + i]);
 }
-
+*/ // Non-standard
 
 function Override() {
   // Set the internal lastMatchInfoOverride.  After calling this we do a normal
@@ -95,7 +110,7 @@ function Override() {
   "abcdabcd".replace(/(b)(c)/g, function() { });
 }
 
-
+/*
 function TestOverride(input, expect, property, re_src) {
   var re = new RegExp(re_src);
   var re_g = new RegExp(re_src, "g");
@@ -124,7 +139,6 @@ input = "foo bar baz";
 var re_str = "bar";
 TestOverride(input, "bar", "$&", re_str);
 
-
 function no_last_match(fn) {
   fn();
   assertEquals("hestfisk", RegExp.$1);
@@ -140,13 +154,13 @@ var base = "In the music.  In the music.  ";
 var cons = base + base + base + base;
 no_last_match(function() { cons.replace("x", "y"); });
 no_last_match(function() { cons.replace("e", "E"); });
-
+*/ // Non-standard
 
 // Here's one that matches once, then tries to match again, but fails.
 // Verify that the last match info is from the last match, not from the
 // failure that came after.
 "bar.foo baz......".replace(/(ba.).*?f/g, function() { return "x";});
-assertEquals("bar", RegExp.$1);
+// assertEquals("bar", RegExp.$1); // Non-standard
 
 
 // A test that initially does a zero width match, but later does a non-zero
