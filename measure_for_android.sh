@@ -1,54 +1,54 @@
 BIN_PATH=/system/bin
 
 
-cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js.bak /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
+cp sunspider/SunSpider/resources/sunspider-standalone-driver.js.bak sunspider/SunSpider/resources/sunspider-standalone-driver.js
 #make full
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
 if [[ $1 == duk32.interp ]]; then
-  cmd="/data/local/tmp/arm32/duk/duk"
+  cmd="arm32/duk/duk"
   tc="duk32"
 elif [[ $1 == jsc32.interp ]]; then
-  cmd="/data/local/tmp/arm32/jsc/interp/jsc"
+  cmd="arm32/jsc/interp/jsc"
   tc="jsc32.interp"
-  ldpath="/data/local/tmp/arm32/jsc/interp"
+  ldpath="arm32/jsc/interp"
 elif [[ $1 == jsc32.base ]]; then
-  cmd="/data/local/tmp/arm32/jsc/baseline/jsc"
+  cmd="arm32/jsc/baseline/jsc"
   tc="jsc32.baseline"
-  ldpath="/data/local/tmp/arm32/jsc/baseline"
+  ldpath="arm32/jsc/baseline"
 elif [[ $1 == escargot32.interp ]]; then
-  cmd="/data/local/tmp/arm32/escargot/interp/escargot.release"
+  cmd="arm32/escargot/interp/escargot.release"
   tc="escargot32.interp"
 elif [[ $1 == escargot.interp ]]; then
-  cmd="/data/local/tmp/arm64/escargot/interp/escargot.release"
+  cmd="arm64/escargot/interp/escargot.release"
   tc="escargot.interp"
 elif [[ $1 == escargot32.jit ]]; then
-  cmd="/data/local/tmp/arm32/escargot/jit/escargot.release"
+  cmd="arm32/escargot/jit/escargot.release"
   tc="escargot32.jit"
 elif [[ $1 == v8.jit ]]; then
-  cmd="/data/local/tmp/arm64/v8/d8"
+  cmd="arm64/v8/d8"
   tc="v8.jit"
   if [[ $2 == time ]]; then
-    cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
+    cp sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js sunspider/SunSpider/resources/sunspider-standalone-driver.js
   fi
 elif [[ $1 == v832.jit ]]; then
-  cmd="/data/local/tmp/arm32/v8/d8"
+  cmd="arm32/v8/d8"
   tc="v832.jit"
   if [[ $2 == time ]]; then
-    cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
+    cp sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js sunspider/SunSpider/resources/sunspider-standalone-driver.js
   fi
 elif [[ $1 == v8.full.jit ]]; then
-  cmd="/data/local/tmp/arm64/v8/d8"
+  cmd="arm64/v8/d8"
   tc="v8.full.jit"
   args="--nocrankshaft"
   if [[ $2 == time ]]; then
-    cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
+    cp sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js sunspider/SunSpider/resources/sunspider-standalone-driver.js
   fi
 elif [[ $1 == v832.full.jit ]]; then
-  cmd="/data/local/tmp/arm32/v8/d8"
+  cmd="arm32/v8/d8"
   tc="v832.full.jit"
   args="--nocrankshaft"
   if [[ $2 == time ]]; then
-    cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
+    cp sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js sunspider/SunSpider/resources/sunspider-standalone-driver.js
   fi
 else
   echo "wrong argument : $1 please choose between [jsc|escargot|v8|duk].[|32].(full)?.[base|interp|jit]"
@@ -56,7 +56,7 @@ else
 fi
 
 echo $cmd
-testpath="/data/local/tmp/sunspider/SunSpider/tests/sunspider-1.0.2"
+testpath="sunspider/SunSpider/tests/sunspider-1.0.2"
 export LD_LIBRARY_PATH=$ldpath
 
 mkdir -p test/out
@@ -156,5 +156,5 @@ else
   rm tmp
 fi
 
-cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js.bak /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
+cp sunspider/SunSpider/resources/sunspider-standalone-driver.js.bak sunspider/SunSpider/resources/sunspider-standalone-driver.js
 echo '-------------------------------------------------finish exe'

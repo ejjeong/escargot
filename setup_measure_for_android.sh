@@ -26,24 +26,26 @@ elif [[ "$1" = "build-interp" ]]; then
   build-interp
 fi
 
-adb push ./run-Sunspider.sh /data/local/tmp
-adb push ./measure_for_android.sh /data/local/tmp
-adb push ./test/bin/memps_arm /data/local/tmp
-adb shell mkdir -p /data/local/tmp/sunspider
-adb push ./test/SunSpiderForAndroid /data/local/tmp/sunspider
-adb shell chmod 777 /data/local/tmp/sunspider/driver.sh
-adb shell mkdir -p /data/local/tmp/arm32/v8
-adb shell mkdir -p /data/local/tmp/arm32/jsc/interp
-adb shell mkdir -p /data/local/tmp/arm32/jsc/baseline
-adb shell mkdir -p /data/local/tmp/arm32/escargot/interp
-adb shell mkdir -p /data/local/tmp/arm32/escargot/jit
-adb shell mkdir -p /data/local/tmp/arm32/duk
-adb push test/bin/arm32 data/local/tmp/arm32
-adb shell mkdir -p /data/local/tmp/arm64/v8
-adb shell mkdir -p /data/local/tmp/arm64/escargot/interp
-adb shell mkdir -p /data/local/tmp/arm64/escargot/jit
-adb shell mkdir -p /data/local/tmp/arm64/duk
-adb push ./test/bin/arm64 data/local/tmp/arm64
-adb push ./android/libs/armeabi-v7a data/local/tmp/arm32/escargot
-#adb shell mkdir /data/local/tmp/arm64/escargot
-#adb push ./android/libs/arm64-v8a data/local/tmp/arm64/escargot
+TARGET_BASE_DIR=/data/local/tmp/recent
+adb shell mkdir -p $TARGET_BASE_DIR
+adb push ./run-Sunspider.sh $TARGET_BASE_DIR
+adb push ./measure_for_android.sh $TARGET_BASE_DIR
+adb push ./test/bin/memps_arm $TARGET_BASE_DIR
+adb shell mkdir -p $TARGET_BASE_DIR/sunspider
+adb push ./test/SunSpiderForAndroid $TARGET_BASE_DIR/sunspider
+adb shell chmod 777 $TARGET_BASE_DIR/sunspider/driver.sh
+adb shell mkdir -p $TARGET_BASE_DIR/arm32/v8
+adb shell mkdir -p $TARGET_BASE_DIR/arm32/jsc/interp
+adb shell mkdir -p $TARGET_BASE_DIR/arm32/jsc/baseline
+adb shell mkdir -p $TARGET_BASE_DIR/arm32/escargot/interp
+adb shell mkdir -p $TARGET_BASE_DIR/arm32/escargot/jit
+adb shell mkdir -p $TARGET_BASE_DIR/arm32/duk
+adb push test/bin/arm32 $TARGET_BASE_DIR/arm32
+adb shell mkdir -p $TARGET_BASE_DIR/arm64/v8
+adb shell mkdir -p $TARGET_BASE_DIR/arm64/escargot/interp
+adb shell mkdir -p $TARGET_BASE_DIR/arm64/escargot/jit
+adb shell mkdir -p $TARGET_BASE_DIR/arm64/duk
+adb push ./test/bin/arm64 $TARGET_BASE_DIR/arm64
+adb push ./android/libs/armeabi-v7a $TARGET_BASE_DIR/arm32/escargot
+#adb shell mkdir $TARGET_BASE_DIR/arm64/escargot
+#adb push ./android/libs/arm64-v8a $TARGET_BASE_DIR/arm64/escargot
