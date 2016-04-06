@@ -460,6 +460,36 @@ ESArrayObject* ESString::createMatchedArray(escargot::ESRegExpObject* regexp, Re
     return ret;
 }
 
+ESRopeString* ESRopeString::createAndConcat(ESString* lstr, ESString* rstr)
+{
+    size_t llen = lstr->length();
+    size_t rlen = rstr->length();
+
+    if (static_cast<int64_t>(llen) > static_cast<int64_t>(ESString::maxLength() - rlen))
+        ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+
+    ESRopeString* rope = ESRopeString::create();
+    rope->m_contentLength = llen + rlen;
+    rope->m_left = lstr;
+    rope->m_right = rstr;
+
+    bool hasNonASCIIChild = false;
+    if (lstr->isESRopeString()) {
+        hasNonASCIIChild |= lstr->asESRopeString()->hasNonASCIIChild();
+    } else {
+        hasNonASCIIChild |= !lstr->isASCIIString();
+    }
+
+    if (rstr->isESRopeString()) {
+        hasNonASCIIChild |= rstr->asESRopeString()->hasNonASCIIChild();
+    } else {
+        hasNonASCIIChild |= !rstr->isASCIIString();
+    }
+
+    rope->m_hasNonASCIIString = hasNonASCIIChild;
+    return rope;
+}
+
 unsigned PropertyDescriptor::defaultAttributes = Configurable | Enumerable | Writable;
 
 PropertyDescriptor::PropertyDescriptor(ESObject* obj)

@@ -310,7 +310,7 @@ public:
 #define ALLOCA_WRAPPER(ptr, type, size, atomic) \
     char dummy; \
     if (UNLIKELY(ESVMInstance::currentInstance()->stackStart() - &dummy) > 4 * 1024 * 1024) \
-        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create("Out of memory1"))); \
+        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create("Out of memory"))); \
     else { \
         if (size > 32 * 1024 * 1024) { \
             if (atomic) { \

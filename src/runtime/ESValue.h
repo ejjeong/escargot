@@ -841,6 +841,7 @@ public:
 
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
+    static constexpr size_t maxLength() { return 1 << 30 | 1; }
 
     ALWAYS_INLINE friend bool operator == (const ESString& a, const char* b);
     ALWAYS_INLINE friend bool operator != (const ESString& a, const char* b);
@@ -1064,29 +1065,7 @@ public:
         return new ESRopeString();
     }
 
-    static ESRopeString* createAndConcat(ESString* lstr, ESString* rstr)
-    {
-        ESRopeString* rope = ESRopeString::create();
-        rope->m_contentLength = lstr->length() + rstr->length();
-        rope->m_left = lstr;
-        rope->m_right = rstr;
-
-        bool hasNonASCIIChild = false;
-        if (lstr->isESRopeString()) {
-            hasNonASCIIChild |= lstr->asESRopeString()->hasNonASCIIChild();
-        } else {
-            hasNonASCIIChild |= !lstr->isASCIIString();
-        }
-
-        if (rstr->isESRopeString()) {
-            hasNonASCIIChild |= rstr->asESRopeString()->hasNonASCIIChild();
-        } else {
-            hasNonASCIIChild |= !rstr->isASCIIString();
-        }
-
-        rope->m_hasNonASCIIString = hasNonASCIIChild;
-        return rope;
-    }
+    static ESRopeString* createAndConcat(ESString* lstr, ESString* rstr);
 
     bool hasNonASCIIChild() const
     {
@@ -1399,7 +1378,6 @@ template<> struct equal_to<escargot::ESString *> {
 };
 
 }
-
 
 #include "runtime/InternalAtomicString.h"
 #include "runtime/StaticStrings.h"

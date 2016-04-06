@@ -2094,6 +2094,9 @@ class ESStringBuilder {
 
     void appendPiece(ESString* str, size_t s, size_t e)
     {
+        if (static_cast<int64_t>(m_contentLength) > static_cast<int64_t>(ESString::maxLength() - (e - s)))
+            ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+
         ESStringBuilderPiece piece;
         piece.m_string = str;
         piece.m_start = s;
@@ -2114,6 +2117,8 @@ public:
         m_contentLength = 0;
         m_piecesInlineStorageUsage = 0;
     }
+
+    size_t contentLength() { return m_contentLength; }
 
     void appendString(const char* str)
     {
@@ -2211,9 +2216,6 @@ inline ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
     int rlen = rstr->length();
     if (rlen == 0)
         return lstr;
-
-    if (llen > std::numeric_limits<std::int32_t>::max() - rlen)
-        ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
 
     if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
         return ESRopeString::createAndConcat(lstr, rstr);

@@ -2028,7 +2028,9 @@ void GlobalObject::installArray()
         ESObject* thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         int64_t len = thisBinded->length();
         ESValue separator = instance->currentExecutionContext()->readArgument(0);
+        size_t lenMax = ESString::maxLength();
         escargot::ESString* sep;
+
         if (separator.isUndefined()) {
             sep = strings->asciiTable[(size_t)','].string();
         } else {
@@ -2050,6 +2052,10 @@ void GlobalObject::installArray()
         while (curIndex < len) {
             if (curIndex != 0) {
                 if (sep->length() > 0) {
+                    if (static_cast<int64_t>(builder.contentLength()) >
+                        static_cast<int64_t>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
+                        instance->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+                    }
                     while (curIndex - prevIndex > 1) {
                         builder.appendString(sep);
                         prevIndex++;
@@ -2070,6 +2076,10 @@ void GlobalObject::installArray()
             }
         }
         if (sep->length() > 0) {
+            if (static_cast<int64_t>(builder.contentLength()) >
+                static_cast<int64_t>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
+                instance->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+            }
             while (curIndex - prevIndex > 1) {
                 builder.appendString(sep);
                 prevIndex++;
