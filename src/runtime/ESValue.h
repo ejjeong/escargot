@@ -1927,7 +1927,7 @@ public:
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    ALWAYS_INLINE bool setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
+    inline bool setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
     ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
     ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val, escargot::ESValue* receiver = nullptr)
     {

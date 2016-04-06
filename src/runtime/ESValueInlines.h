@@ -1658,7 +1658,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
     return ret;
 }
 
-ALWAYS_INLINE bool ESObject::setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
+inline bool ESObject::setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
