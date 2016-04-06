@@ -290,7 +290,8 @@ ALWAYS_INLINE bool isIdentifierStart(char16_t ch)
     return (ch >= 97 && ch <= 122) // a..z
         || (ch >= 65 && ch <= 90) // A..Z
         || (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
-        || (ch == 92); // \ (backslash)
+        || (ch == 92) // \ (backslash)
+        || isIdentifierStartSlow(ch);
 }
 
 bool isIdentifierPartSlow(char16_t ch)
@@ -305,7 +306,8 @@ ALWAYS_INLINE bool isIdentifierPart(char16_t ch)
         || (ch >= 65 && ch <= 90) // A..Z
         || (ch >= 48 && ch <= 57) // 0..9
         || (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
-        || (ch == 92); // \ (backslash)
+        || (ch == 92) // \ (backslash)
+        || isIdentifierPartSlow(ch);
 }
 
 // typedef std::basic_string<char16_t, std::char_traits<char16_t>, escargot::ESSimpleAllocatorStd<char16_t> > ParserString;

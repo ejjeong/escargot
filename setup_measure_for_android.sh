@@ -26,7 +26,7 @@ elif [[ "$1" = "build-interp" ]]; then
   build-interp
 fi
 
-TARGET_BASE_DIR=/data/local/tmp/recent
+TARGET_BASE_DIR=/data/local/tmp/escargot
 adb shell mkdir -p $TARGET_BASE_DIR
 adb push ./run-Sunspider.sh $TARGET_BASE_DIR
 adb push ./measure_for_android.sh $TARGET_BASE_DIR
