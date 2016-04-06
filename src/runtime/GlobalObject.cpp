@@ -5761,6 +5761,9 @@ void GlobalObject::installRegExp()
         ESValue R = instance->currentExecutionContext()->resolveThisBinding();
         if (!R.isObject())
             instance->throwError(ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type"))));
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESRegExpObject())
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.toString : This object is not Regexp object"))));
 
         escargot::ESString* ret = ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
         ret = ESString::concatTwoStrings(ret, ESString::create(u"/"));
