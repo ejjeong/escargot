@@ -563,112 +563,6 @@ Running all tests
 [Math] tan.js .......... Pass
 [Math] constants.js .......... Fail
 [Math] clz32.js .......... Fail
-[Array] array_fastinit.js .......... Pass
-[Array] array_init.js .......... Fail
-[Array] array_init2.js .......... Pass
-[Array] SpliceBtreeMemoryCorruption.js .......... Fail
-[Array] sliceArrayForceBtreeBug616623.js .......... Fail
-[Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Skip (Takes too long)
-[Array] bug1062870.js .......... Pass
-[Array] bug1065362.js .......... Skip (Takes too long)
-[Array] bug4916987.js .......... Pass
-[Array] ArrayBtreeBadCodeGen.js .......... Pass
-[Array] SliceandConcatAlterOriginalArrayBug.js .......... Fail
-[Array] rawLastUsedSegmentBugInFloatArray.js .......... Pass
-[Array] ArrayElementMissingValueSetToZero.js .......... Pass
-[Array] TryGrowHeadSegmentBug.js .......... Pass
-[Array] array_init2.js .......... Pass
-[Array] array_ctr.js .......... Fail
-[Array] array_ctr.js .......... Fail
-[Array] arr_bailout.js .......... Fail
-[Array] concat1.js .......... Fail
-[Array] concat2.js .......... Skip (Takes too long)
-[Array] delete.js .......... Pass
-[Array] es5array_push.js .......... Pass
-[Array] ldindex.js .......... Fail
-[Array] bug612012.js .......... Pass
-[Array] SegmentMapFlagResetInJSArrayConstructor.js .......... Pass
-[Array] LastUsedSegmentHasNULLElement.js .......... Fail
-[Array] array_length.js .......... Fail
-[Array] join2.js .......... Pass
-[Array] missing.js .......... Pass
-[Array] pop1.js .......... Pass
-[Array] pop2.js .......... Pass
-[Array] pop3.js .......... Pass
-[Array] push1.js .......... Pass
-[Array] push2.js .......... Fail
-[Array] push3.js .......... Fail
-[Array] reverse1.js .......... Fail
-[Array] reverse2.js .......... Pass
-[Array] shift_unshift.js .......... Skip (Takes too long)
-[Array] toString.js .......... Fail
-[Array] toString.js .......... Fail
-[Array] toLocaleString.js .......... Fail
-[Array] toLocaleString.js .......... Fail
-[Array] array_slice.js .......... Fail
-[Array] array_slice2.js .......... Skip (Takes too long)
-[Array] array_sort.js .......... Fail
-[Array] array_includes.js .......... Fail
-[Array] array_sort2.js .......... Fail
-[Array] array_sort3.js .......... Fail
-[Array] array_sort3.js .......... Fail
-[Array] array_splice.js .......... Skip (Takes too long)
-[Array] array_splice_double.js .......... Skip (Takes too long)
-[Array] array_splice.js .......... Skip (Takes too long)
-[Array] array_splice1.js .......... Fail
-[Array] array_splice2.js .......... Fail
-[Array] array_splice3.js .......... Fail
-[Array] array_splice4.js .......... Fail
-[Array] sparsearray.js .......... Fail
-[Array] array_lastindexof.js .......... Fail
-[Array] array_indexOf.js .......... Fail
-[Array] array_indexOf.js .......... Fail
-[Array] array_indexOfSparse.js .......... Pass
-[Array] negindex.js .......... Pass
-[Array] array_forin.js .......... Pass
-[Array] array_literal.js .......... Pass
-[Array] array_literal.js .......... Pass
-[Array] nativearray_gen1.js .......... Pass
-[Array] nativearray_gen1.js .......... Pass
-[Array] nativearray_gen2.js .......... Pass
-[Array] nativearray_gen3.js .......... Pass
-[Array] nativearray_gen4.js .......... Pass
-[Array] nativearray_gen5.js .......... Pass
-[Array] nativearray_gen6.js .......... Pass
-[Array] nativearray_gen7.js .......... Pass
-[Array] nativearray_gen8.js .......... Pass
-[Array] arrlit.js .......... Pass
-[Array] protoLookup.js .......... Fail
-[Array] protoLookup_native.js .......... Fail
-[Array] protoLookupWithGetters.js .......... Fail
-[Array] array_apply.js .......... Fail
-[Array] nativeArrayPushInlining.js .......... Fail
-[Array] reverse_native.js .......... Fail
-[Array] nativeFloatArray_shift_unshift.js .......... Pass
-[Array] nativeFloatArray_sort.js .......... Fail
-[Array] missingItemFastPathCheck.js .......... Fail
-[Array] array_opts.js .......... Fail
-[Array] nativeIntPop.js .......... Pass
-[Array] nativeFloatPop.js .......... Pass
-[Array] popImplicitCall.js .......... Pass
-[Array] array_splice_515632.js .......... Fail
-[Array] InlineArrayPopWithIntConstSrc.js .......... Pass
-[Array] FailToSetLength.js .......... Fail
-[Array] foreach_nativearray_change.js .......... Pass
-[Array] newfromargs.js .......... Pass
-[Array] bug945376SizeBoundStartSeg.js .......... Skip (Takes too long)
-[Array] CopyOnAccessArray_bugs.js .......... Fail
-[Array] CopyOnAccessArray_cache_index_overflow.js .......... Fail
-[Array] memop_lifetime_bug.js .......... Fail
-[Array] memset.js .......... Fail
-[Array] memset_invariant.js .......... Fail
-[Array] memset2.js .......... Fail
-[Array] memcopy.js .......... Fail
-[Array] memop_alias.js .......... Fail
-[Array] memop_field.js .......... Fail
-[Array] memop_slot.js .......... Fail
-[Array] memop_bounds_check.js .......... Fail
-[Array] bug4587739.js .......... Fail
 [TaggedIntegers] remBailout.js .......... Fail
 [TaggedIntegers] comparison.js .......... Pass
 [TaggedIntegers] addition.js .......... Pass
@@ -915,7 +809,7 @@ Running all tests
 [Optimizer] bailonnoprofile_objtypespecstore.js .......... Fail
 [Optimizer] Non32bitOverflow.js .......... Pass
 [Optimizer] implicit_upwardexposed.js .......... Pass
-[Optimizer] bug1288834.js .......... Fail
+[Optimizer] bug1288834.js .......... Pass
 [Optimizer] opttagchecks1.js .......... Pass
 [Optimizer] opttagchecks2.js .......... Fail
 [Optimizer] trycatch_functional.js .......... Fail
@@ -1748,10 +1642,9 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               Number		8		4		3		1		(50%)
          ControlFlow		17		13		4		0		(76%)
                 Math		21		18		3		0		(85%)
-               Array		106		42		55		9		(39%)
       TaggedIntegers		44		42		2		0		(95%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		165		40		1		(80%)
+           Optimizer		206		166		39		1		(80%)
             Function		61		21		37		3		(34%)
               Object		58		26		28		4		(44%)
                Regex		33		13		20		0		(39%)
@@ -1780,4 +1673,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1720		886		789		45		(51%)
+               Total		1614		845		733		36		(52%)
