@@ -676,7 +676,7 @@ Done running mjsunit/regress/regress-3026: pass
 Done running mjsunit/regress/regress-3027: pass
 Done running mjsunit/regress/regress-3116: pass
 Done running mjsunit/regress/regress-312: pass
-Done running mjsunit/regress/regress-3135: FAIL
+Done running mjsunit/regress/regress-3135: pass
 Done running mjsunit/regress/regress-3138: pass
 Done running mjsunit/regress/regress-317: FAIL
 Done running mjsunit/regress/regress-318: pass
@@ -1020,9 +1020,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/regress/regress-3025.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <9223372036854776000> found <9223372036854778000>, stack: undefined}
-=== mjsunit/regress/regress-3135.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"{}"> found <"{\"x\":1,\"1\":1}">, stack: undefined}
 === mjsunit/regress/regress-317.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected <"a$ec"> found <"ac">, stack: undefined}
@@ -1033,5 +1030,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 27 tests failed
+=== 26 tests failed
 ===

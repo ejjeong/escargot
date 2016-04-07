@@ -1151,14 +1151,9 @@ void GlobalObject::installObject()
 {
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
     m_object = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int len = instance->currentExecutionContext()->argumentCount();
-        ESValue value;
-        if (len > 0)
-            value = instance->currentExecutionContext()->arguments()[0];
+        ESValue value = instance->currentExecutionContext()->readArgument(0);
         if (value.isUndefined() || value.isNull()) {
-            ESObject* object = ESObject::create();
-            object->set__proto__(instance->globalObject()->objectPrototype());
-            return object;
+            return ESObject::create();
         } else {
             return value.toObject();
         }
@@ -4588,6 +4583,7 @@ void GlobalObject::installJSON()
         UTF16String indent = u"";
         ESValueVectorStd stack;
         ESValueVectorStd propertyList;
+        bool propertyListTouched = false;
 
         // 4
         escargot::ESFunctionObject* replacerFunc = NULL;
@@ -4595,24 +4591,27 @@ void GlobalObject::installJSON()
             if (replacer.isESPointer() && replacer.asESPointer()->isESFunctionObject()) {
                 replacerFunc = replacer.asESPointer()->asESFunctionObject();
             } else if (replacer.isESPointer() && replacer.asESPointer()->isESArrayObject()) {
+                propertyListTouched = true;
                 escargot::ESArrayObject* arrObject = replacer.asESPointer()->asESArrayObject();
 
                 std::vector<unsigned> indexes;
                 arrObject->enumerationWithNonEnumerable([&indexes](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-                    indexes.push_back(key.toIndex());
+                    uint32_t idx = key.toIndex();
+                    if (idx != ESValue::ESInvalidIndexValue) {
+                        indexes.push_back(idx);
+                    }
                 });
                 std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
                 for (uint32_t i = 0; i < indexes.size(); ++i) {
-                    ESValue item;
+                    ESValue item = ESValue();
                     ESValue property = arrObject->get(indexes[i]);
                     if (property.isESString()) {
                         item = property;
                     } else if (property.isNumber()) {
                         item = property.toString();
                     } else if (property.isObject()) {
-                        if (property.isESPointer()
-                            && (property.asESPointer()->isESStringObject()
-                                || property.asESPointer()->isESNumberObject())) {
+                        if (property.asESPointer()->isESStringObject()
+                            || property.asESPointer()->isESNumberObject()) {
                             item = property.toString();
                         }
                     }
@@ -4700,7 +4699,7 @@ void GlobalObject::installJSON()
             if (value.isNumber()) {
                 double d = value.toNumber();
                 if (std::isfinite(d)) {
-                    return ESValue(value.toString());
+                    return value.toString();
                 }
                 return strings->null.string();
             }
@@ -4839,7 +4838,7 @@ void GlobalObject::installJSON()
             indent = indent + gap;
             // 5, 6
             ESValueVectorStd k;
-            if (propertyList.size() > 0) {
+            if (propertyListTouched) {
                 k = propertyList;
             } else {
                 value.asESPointer()->asESObject()->enumeration([&](ESValue key) {
@@ -4852,7 +4851,7 @@ void GlobalObject::installJSON()
             // 8
             int len = k.size();
             for (int i = 0; i < len; ++i) {
-                ESValue strP = Str(k[i], value.asESPointer()->asESObject());
+                ESValue strP = Str(k[i], value.toObject());
                 if (!strP.isUndefined()) {
                     UTF16String member = Quote(k[i]);
                     member.append(u":");
@@ -4905,10 +4904,10 @@ void GlobalObject::installJSON()
         };
 
         // 9
-        ESValue wrapper = newOperation(instance, instance->globalObject(), instance->globalObject()->object(), NULL, 0);
+        ESObject* wrapper = ESObject::create();
         // 10
-        wrapper.asESPointer()->asESObject()->defineDataProperty(strings->emptyString, true, true, true, value);
-        return Str(ESString::create(u""), wrapper.asESPointer()->asESObject());
+        wrapper->defineDataProperty(strings->emptyString, true, true, true, value);
+        return Str(strings->emptyString.string(), wrapper);
     }, strings->stringify, 3));
 }
 
