@@ -2154,7 +2154,7 @@ class ESStringBuilder {
     void appendPiece(ESString* str, size_t s, size_t e)
     {
         if (static_cast<int64_t>(m_contentLength) > static_cast<int64_t>(ESString::maxLength() - (e - s)))
-            ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+            ESVMInstance::currentInstance()->throwOOMError();
 
         ESStringBuilderPiece piece;
         piece.m_string = str;

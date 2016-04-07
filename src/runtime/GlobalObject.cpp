@@ -2049,7 +2049,7 @@ void GlobalObject::installArray()
                 if (sep->length() > 0) {
                     if (static_cast<int64_t>(builder.contentLength()) >
                         static_cast<int64_t>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
-                        instance->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+                        instance->throwOOMError();
                     }
                     while (curIndex - prevIndex > 1) {
                         builder.appendString(sep);
@@ -2073,7 +2073,7 @@ void GlobalObject::installArray()
         if (sep->length() > 0) {
             if (static_cast<int64_t>(builder.contentLength()) >
                 static_cast<int64_t>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
-                instance->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+                instance->throwOOMError();
             }
             while (curIndex - prevIndex > 1) {
                 builder.appendString(sep);

@@ -164,6 +164,13 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    void throwOOMError()
+    {
+        // TODO execution must stop
+        throwError(RangeError::create(ESString::create("Out of memory")));
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
     std::jmp_buf& registerTryPos(std::jmp_buf* arg)
     {
         ASSERT(m_error.isEmpty());
@@ -212,6 +219,25 @@ public:
     void exitCatchClause() { ASSERT(isInCatchClause()); m_catchDepth--; }
 
     char* stackStart() { return m_stackStart; }
+
+    void nativeHeapAllocated(size_t size, void* ptr)
+    {
+        m_nativeHeapUsage += size;
+
+        (void)ptr;
+        // printf("allocate %zu (current %zu) %p\n", size, m_nativeHeapUsage, ptr);
+
+        if (m_nativeHeapUsage > 300 * 1024 * 1024)
+            throwOOMError();
+    }
+    void nativeHeapDeallocated(size_t size, void* ptr)
+    {
+        m_nativeHeapUsage -= size;
+
+        (void)ptr;
+        // printf("deallocate %zu (current %zu) %p\n", size, m_nativeHeapUsage, ptr);
+    }
+    size_t nativeHeapUsage() { return m_nativeHeapUsage; }
 
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
@@ -286,6 +312,8 @@ protected:
     ESValue m_error;
 
     std::vector<ESSimpleAllocatorMemoryFragment, pointer_free_allocator<ESSimpleAllocatorMemoryFragment> > m_allocatedMemorys;
+    size_t m_nativeHeapUsage;
+
 #ifdef ENABLE_ESJIT
     nanojit::Config* m_JITConfig;
 #endif
@@ -310,7 +338,7 @@ public:
 #define ALLOCA_WRAPPER(ptr, type, size, atomic) \
     char dummy; \
     if (UNLIKELY(ESVMInstance::currentInstance()->stackStart() - &dummy) > 4 * 1024 * 1024) \
-        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create("Out of memory"))); \
+        ESVMInstance::currentInstance()->throwOOMError(); \
     else { \
         if (size > 32 * 1024 * 1024) { \
             if (atomic) { \
@@ -487,6 +515,74 @@ inline bool operator==(const ESSimpleAllocatorStd<T1>&, const ESSimpleAllocatorS
 
 template <class T1, class T2>
 inline bool operator!=(const ESSimpleAllocatorStd<T1>&, const ESSimpleAllocatorStd<T2>&)
+{
+    return false;
+}
+
+
+template<class T>
+class ESNativeHeapUsageCounter {
+public:
+    typedef size_t     size_type;
+    typedef ptrdiff_t  difference_type;
+    typedef T*       pointer;
+    typedef const T* const_pointer;
+    typedef T&       reference;
+    typedef const T& const_reference;
+    typedef T        value_type;
+
+    template <class T2> struct rebind {
+        typedef ESNativeHeapUsageCounter<T2> other;
+    };
+
+    ESNativeHeapUsageCounter() { }
+    ESNativeHeapUsageCounter(const ESNativeHeapUsageCounter&) throw() { }
+    template <class T2> ESNativeHeapUsageCounter(const ESNativeHeapUsageCounter<T2>&) throw() { }
+    ~ESNativeHeapUsageCounter() throw() { }
+
+    pointer address(reference GC_x) const { return &GC_x; }
+    const_pointer address(const_reference GC_x) const { return &GC_x; }
+
+    T* allocate(size_type GC_n, const void* = 0)
+    {
+        void* __p = malloc(GC_n * sizeof(T));
+        ESVMInstance::currentInstance()->nativeHeapAllocated(GC_n * sizeof(T), __p);
+        return static_cast<T*>(__p);
+    }
+
+    void deallocate(pointer __p, size_type GC_ATTR_UNUSED GC_n)
+    {
+        ESVMInstance::currentInstance()->nativeHeapDeallocated(GC_n * sizeof(T), __p);
+        free(__p);
+    }
+
+    size_type max_size() const throw() { return size_t(-1) / sizeof(T); }
+
+    void construct(pointer __p, const T& __val) { new(__p) T(__val); }
+    void destroy(pointer __p) { __p->~T(); }
+};
+
+template<>
+class ESNativeHeapUsageCounter<void> {
+    typedef size_t      size_type;
+    typedef ptrdiff_t   difference_type;
+    typedef void*       pointer;
+    typedef const void* const_pointer;
+    typedef void        value_type;
+
+    template <class T2> struct rebind {
+        typedef ESNativeHeapUsageCounter<T2> other;
+    };
+};
+
+template <class T1, class T2>
+inline bool operator==(const ESNativeHeapUsageCounter<T1>&, const ESNativeHeapUsageCounter<T2>&)
+{
+    return true;
+}
+
+template <class T1, class T2>
+inline bool operator!=(const ESNativeHeapUsageCounter<T1>&, const ESNativeHeapUsageCounter<T2>&)
 {
     return false;
 }

@@ -833,5 +833,9 @@
   'regress/regress-355485': [SKIP],
   'regress/regress-latin-1': [SKIP],  
 
+  ## 7. Accepted timeout (due to yarr performance limitation)
+  'ascii-regexp-subject': [TIMEOUT], # 50s
+  'regress/regress-crbug-482998': [TIMEOUT], # 10m~
+
 }],  # 'escargot == True'
 ]

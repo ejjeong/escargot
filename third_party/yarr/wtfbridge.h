@@ -921,7 +921,7 @@ enum HashTableDeletedValueType { HashTableDeletedValue };
 template<typename T, size_t N = 0>
 class Vector {
   public:
-    std::vector<T> impl;
+    std::vector<T, escargot::ESNativeHeapUsageCounter<T> > impl;
   public:
     Vector() {}
 

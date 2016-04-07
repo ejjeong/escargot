@@ -27,14 +27,30 @@
 
 // Avoid excessive expansions of regexp repetitions inside regexp repetitions.
 // Some of these caused stack overflows, others cause out-of-memory.
+try {
 var r1 = /(?:a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:m(?:n(?:o(?:p(?:q(?:r(?:s(?:t(?:u(?:v(?:w(?:x(?:y(?:z(?:FooBar)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)+)/;
 "xxx".match(r1);
+} catch (e) {
+    assertEquals("Out of memory", e.message);
+}
 
+try {
 var r2 = /(?:a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:FooBar){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}){0,2}/;
 "xxx".match(r2);
+} catch (e) {
+    assertEquals("Out of memory", e.message);
+}
 
+try {
 var r3 = /(?:a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:FooBar){2}){2}){2}){2}){2}){2}){2}){2}){2}){2}){2}){2}){2}/;
 "xxx".match(r3);
+} catch (e) {
+    assertEquals("Out of memory", e.message);
+}
 
+try {
 var r4 = /(?:a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:FooBar){3,6}){3,6}){3,6}){3,6}){3,6}){3,6}){3,6}){3,6}){3,6}){3,6}/;
 "xxx".match(r4);
+} catch (e) {
+    assertEquals("Out of memory", e.message);
+}

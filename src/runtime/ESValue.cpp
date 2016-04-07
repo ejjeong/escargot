@@ -466,7 +466,7 @@ ESRopeString* ESRopeString::createAndConcat(ESString* lstr, ESString* rstr)
     size_t rlen = rstr->length();
 
     if (static_cast<int64_t>(llen) > static_cast<int64_t>(ESString::maxLength() - rlen))
-        ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+        ESVMInstance::currentInstance()->throwOOMError();
 
     ESRopeString* rope = ESRopeString::create();
     rope->m_contentLength = llen + rlen;

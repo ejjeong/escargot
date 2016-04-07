@@ -1,9 +1,9 @@
 >>> Running tests for x64.release
 Total: 2347 tests
  *  206 tests will be skipped
- *    1 tests are expected to timeout sometimes
+ *    3 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1978 tests are expected to pass
+ * 1977 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
@@ -40,7 +40,7 @@ Done running mjsunit/array-slice: pass
 Done running mjsunit/array-splice: pass
 Done running mjsunit/array-tostring: pass
 Done running mjsunit/array-unshift: pass
-Done running mjsunit/ascii-regexp-subject: FAIL
+Done running mjsunit/ascii-regexp-subject: pass
 Done running mjsunit/big-object-literal: pass
 Done running mjsunit/binary-operation-overwrite: pass
 Done running mjsunit/bit-not: pass
@@ -572,7 +572,7 @@ Done running mjsunit/regress/regress-1439135: pass
 Done running mjsunit/regress/regress-143967: pass
 Done running mjsunit/regress/regress-1447: pass
 Done running mjsunit/regress/regress-145201: pass
-Done running mjsunit/regress/regress-1472: FAIL
+Done running mjsunit/regress/regress-1472: pass
 Done running mjsunit/regress/regress-148378: pass
 Done running mjsunit/regress/regress-1491: pass
 Done running mjsunit/regress/regress-1513: pass
@@ -894,7 +894,7 @@ Done running mjsunit/regress/regress-crbug-454091: pass
 Done running mjsunit/regress/regress-crbug-469768: pass
 Done running mjsunit/regress/regress-crbug-477924: pass
 Done running mjsunit/regress/regress-crbug-478011: pass
-Done running mjsunit/regress/regress-crbug-482998: FAIL
+Done running mjsunit/regress/regress-crbug-482998: pass
 Done running mjsunit/regress/regress-crbug-487105: pass
 Done running mjsunit/regress/regress-crbug-490680: pass
 Done running mjsunit/regress/regress-crbug-493290: pass
@@ -954,8 +954,6 @@ Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 
-=== mjsunit/ascii-regexp-subject.js ===
---- TIMEOUT ---
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -980,8 +978,6 @@ Uncaught MjsUnitAssertionError {message: Failure ("xaxbxcx".replace(b, $e)): exp
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
-=== mjsunit/regress/regress-1472.js ===
---- TIMEOUT ---
 === mjsunit/regress/regress-176.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (zero length match in (?:) with capture in lookahead - array element at index 1): expected <undefined> found <"f">, stack: undefined}
@@ -1003,9 +999,7 @@ Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected
 === mjsunit/regress/regress-3229.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
-=== mjsunit/regress/regress-crbug-482998.js ===
---- TIMEOUT ---
 
 ===
-=== 18 tests failed
+=== 15 tests failed
 ===
