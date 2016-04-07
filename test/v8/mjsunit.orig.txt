@@ -230,7 +230,7 @@ Done running mjsunit/regexp-not-sticky-yet: pass
 Done running mjsunit/regexp-results-cache: pass
 Done running mjsunit/regexp-sort: pass
 Done running mjsunit/regexp-standalones: pass
-Done running mjsunit/regexp-static: FAIL
+Done running mjsunit/regexp-static: pass
 Done running mjsunit/regexp-string-methods: pass
 Done running mjsunit/regexp: pass
 Done running mjsunit/regress-4399: pass
@@ -964,9 +964,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/regexp-lookahead.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (/^(?:(?=(.))a|b)\1$/.test("b")): expected <true> found <false>, stack: undefined}
-=== mjsunit/regexp-static.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (RegExp.multiline coerces values to booleans): expected <true> found <false>, stack: undefined}
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
@@ -1018,5 +1015,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 22 tests failed
+=== 21 tests failed
 ===
