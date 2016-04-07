@@ -57,7 +57,7 @@ fi
 
 echo $cmd
 testpath="sunspider/SunSpider/tests/sunspider-1.0.2"
-export LD_LIBRARY_PATH=$ldpath
+export LD_LIBRARY_PATH=../$ldpath
 
 mkdir -p test/out
 rm test/out/*.out -f
@@ -70,7 +70,7 @@ if [[ $2 == mem* ]]; then
   echo 'No Measure Time'
 else
   cd sunspider
-  $driver $cmd $args sunspider.js 1 1
+  $driver ../$cmd $args sunspider.js 1 1
   cd -
 fi
 
