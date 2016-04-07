@@ -236,8 +236,8 @@ GetObjectPreComputedCaseInlineCacheOperation:
 
             // cache miss.
             inlineCache->m_executeCount++;
-            if (inlineCache->m_cache.size() > 3 || inlineCache->m_executeCount <= 3 || UNLIKELY(willBeObject->toObject()->hasPropertyInterceptor())) {
-                return willBeObject->toObject()->get(keyString, willBeObject);
+            if (inlineCache->m_cache.size() > 3 || inlineCache->m_executeCount <= 3 || UNLIKELY(willBeObject->toTransientObject(globalObject)->hasPropertyInterceptor())) {
+                return willBeObject->toTransientObject(globalObject)->get(keyString, willBeObject);
             }
 
             obj = targetObj;
@@ -280,7 +280,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             targetObj = obj = globalObject->numberObjectProxy();
             goto GetObjectPreComputedCaseInlineCacheOperation;
         }
-        return willBeObject->toObject()->get(keyString, willBeObject);
+        return willBeObject->toTransientObject(globalObject)->get(keyString, willBeObject);
     }
 }
 

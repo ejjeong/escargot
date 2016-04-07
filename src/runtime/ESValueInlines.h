@@ -143,17 +143,58 @@ ALWAYS_INLINE ESString* ESValue::toStringOrEmptyString() const
     }
 }
 
-inline ESObject* ESValue::toObject() const
+ALWAYS_INLINE ESObject* ESValue::toObject() const
 {
-    ESObject* object;
     if (LIKELY(isESPointer() && asESPointer()->isESObject())) {
         return asESPointer()->asESObject();
-    } else if (isNumber()) {
+    }
+    return toObjectSlowPath();
+}
+
+inline ESObject* ESValue::toObjectSlowPath() const
+{
+    ESObject* object;
+    if (isNumber()) {
         object = ESNumberObject::create(toNumber());
     } else if (isBoolean()) {
         object = ESBooleanObject::create(toBoolean());
     } else if (isESString()) {
         object = ESStringObject::create(asESPointer()->asESString());
+    } else if (isNull()) {
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert null into object"))));
+    } else if (isUndefined()) {
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert undefined into object"))));
+    } else {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    return object;
+}
+
+inline ESObject* ESValue::toTransientObject(GlobalObject* globalObject) const
+{
+    if (LIKELY(isESPointer() && asESPointer()->isESObject())) {
+        return asESPointer()->asESObject();
+    }
+    return toTransientObjectSlowPath(globalObject);
+}
+
+inline ESObject* ESValue::toTransientObjectSlowPath(GlobalObject* globalObject) const
+{
+    if (!globalObject)
+        globalObject = ESVMInstance::currentInstance()->globalObject();
+    ESObject* object;
+    if (isESString()) {
+        ESStringObject* stringObjectProxy = globalObject->stringObjectProxy();
+        stringObjectProxy->setStringData(asESPointer()->asESString());
+        object = stringObjectProxy;
+    } else if (isNumber()) {
+        ESNumberObject* numberObjectProxy = globalObject->numberObjectProxy();
+        numberObjectProxy->setNumberData(toNumber());
+        object = numberObjectProxy;
+    } else if (isBoolean()) {
+        ESBooleanObject* booleanObjectProxy = globalObject->booleanObjectProxy();
+        booleanObjectProxy->setBooleanData(toBoolean());
+        object = booleanObjectProxy;
     } else if (isNull()) {
         ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert null into object"))));
     } else if (isUndefined()) {
@@ -1682,6 +1723,14 @@ inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& v
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
+
+    if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue)
+            if (idx < asESStringObject()->length())
+                return false;
+    }
+
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
 
@@ -1689,8 +1738,6 @@ inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& v
         ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
     }
     if (idx == SIZE_MAX) {
-        if (UNLIKELY(!isExtensible()))
-            return false;
         ESValue target = __proto__();
         bool foundInPrototype = false; // for GetObjectPreComputedCase vector mode cache
         while (true) {
@@ -1732,6 +1779,8 @@ inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& v
             }
             target = targetObj->__proto__();
         }
+        if (UNLIKELY(!isExtensible()))
+            return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, true, true, true, foundInPrototype);
         m_hiddenClassData.push_back(val);
 
@@ -1792,15 +1841,6 @@ inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, esca
         uint32_t idx = key.toIndex();
         asESTypedArrayObjectWrapper()->set(idx, val);
         return true;
-    }
-    if (isESStringObject()) {
-        uint32_t idx = key.toIndex();
-        if (idx != ESValue::ESInvalidIndexValue)
-            if (idx < asESStringObject()->length())
-                return false;
-    }
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return false;
     }
 
     return setSlowPath(key, val, receiver);

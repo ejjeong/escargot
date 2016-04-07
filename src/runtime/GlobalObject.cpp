@@ -3424,6 +3424,7 @@ void GlobalObject::installString()
 
     m_stringObjectProxy = ESStringObject::create();
     m_stringObjectProxy->set__proto__(m_string->protoType());
+    m_stringObjectProxy->setExtensible(false);
 }
 
 void GlobalObject::installDate()
@@ -5618,6 +5619,7 @@ void GlobalObject::installNumber()
 
     m_numberObjectProxy = ESNumberObject::create(0);
     m_numberObjectProxy->set__proto__(m_numberPrototype);
+    m_numberObjectProxy->setExtensible(false);
 }
 
 void GlobalObject::installBoolean()
@@ -5686,6 +5688,10 @@ void GlobalObject::installBoolean()
 
     // add number to global object
     defineDataProperty(strings->Boolean, true, false, true, m_boolean);
+
+    m_booleanObjectProxy = ESBooleanObject::create(false);
+    m_booleanObjectProxy->set__proto__(m_booleanPrototype);
+    m_booleanObjectProxy->setExtensible(false);
 }
 
 void GlobalObject::installRegExp()

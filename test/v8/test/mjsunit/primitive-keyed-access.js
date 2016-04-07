@@ -24,6 +24,7 @@ assertThrows(function(){"use strict"; var o = "123"; o[1] = 10; });
 assertThrows(function(){"use strict"; var o = ""; o[1] = 10; });
 assertThrows(function(){"use strict"; var o = 1; o[1] = 10; });
 
+/*
 assertThrows(function() {
   "use strict";
   var sym = Symbol('66');
@@ -41,6 +42,7 @@ assertThrows(function() {
   var sym = Symbol('66');
   sym[62] = 0;
 });
+*/
 
 assertThrows(function() {
   "use strict";

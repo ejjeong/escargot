@@ -178,7 +178,10 @@ public:
     ALWAYS_INLINE ESString* toString() const; // $7.1.12 ToString
     ALWAYS_INLINE ESString* toStringOrEmptyString() const;
     ESString* toStringSlowCase(bool emptyStringOnError) const; // $7.1.12 ToString
-    inline ESObject* toObject() const; // $7.1.13 ToObject
+    ALWAYS_INLINE ESObject* toObject() const; // $7.1.13 ToObject
+    inline ESObject* toObjectSlowPath() const; // $7.1.13 ToObject
+    inline ESObject* toTransientObject(GlobalObject* globalObject = nullptr) const; // ES5 $8.7.2 transient object
+    inline ESObject* toTransientObjectSlowPath(GlobalObject* globalObject = nullptr) const; // ES5 $8.7.2 transient object
     inline double toLength() const; // $7.1.15 ToLength
 
     enum { ESInvalidIndexValue = std::numeric_limits<uint32_t>::max() };
@@ -1963,6 +1966,7 @@ public:
     static size_t offsetOf__proto__() { return offsetof(ESObject, m___proto__); }
 #endif
 protected:
+
     void setValueAsProtoType(const ESValue& obj);
 
     void ensureRareData()

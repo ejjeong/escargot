@@ -181,6 +181,11 @@ public:
         return m_booleanPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESBooleanObject* booleanObjectProxy()
+    {
+        return m_booleanObjectProxy;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* eval()
     {
         return m_eval;
@@ -383,6 +388,7 @@ protected:
     escargot::ESNumberObject* m_numberObjectProxy;
     escargot::ESFunctionObject* m_boolean;
     escargot::ESBooleanObject* m_booleanPrototype;
+    escargot::ESBooleanObject* m_booleanObjectProxy;
     escargot::ESFunctionObject* m_regexp;
     escargot::ESRegExpObject* m_regexpPrototype;
     escargot::ESFunctionObject* m_error;
