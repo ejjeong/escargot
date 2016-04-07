@@ -23,9 +23,9 @@ Int32ArrayView = new Int32Array(16);
 val = 987654321.987654321;
 m(val);
 if (Float64ArrayView[4] === val && Int32ArrayView[4] === (val | 0)) {
-  print("PASSED");
+  print("PASS");
 } else {
   print(Float64ArrayView[4]);
   print(Int32ArrayView[4]);
-  print("FAILED");
+  print("FAIL");
 }

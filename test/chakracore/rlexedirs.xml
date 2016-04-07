@@ -89,11 +89,6 @@
 </dir>
 <dir>
   <default>
-    <files>Array</files>
-  </default>
-</dir>
-<dir>
-  <default>
     <files>TaggedIntegers</files>
   </default>
 </dir>

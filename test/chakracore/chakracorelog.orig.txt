@@ -8,7 +8,7 @@ Running all tests
 [Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Skip (Takes too long)
 [Array] bug1062870.js .......... Pass
 [Array] bug1065362.js .......... Skip (Takes too long)
-[Array] bug4916987.js .......... Fail
+[Array] bug4916987.js .......... Pass
 [Array] ArrayBtreeBadCodeGen.js .......... Pass
 [Array] SliceandConcatAlterOriginalArrayBug.js .......... Fail
 [Array] rawLastUsedSegmentBugInFloatArray.js .......... Pass
@@ -571,7 +571,7 @@ Running all tests
 [Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Skip (Takes too long)
 [Array] bug1062870.js .......... Pass
 [Array] bug1065362.js .......... Skip (Takes too long)
-[Array] bug4916987.js .......... Fail
+[Array] bug4916987.js .......... Pass
 [Array] ArrayBtreeBadCodeGen.js .......... Pass
 [Array] SliceandConcatAlterOriginalArrayBug.js .......... Fail
 [Array] rawLastUsedSegmentBugInFloatArray.js .......... Pass
@@ -1733,7 +1733,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		41		56		9		(38%)
+               Array		106		42		55		9		(39%)
               Basics		56		27		29		0		(48%)
                  es5		56		24		31		1		(42%)
                   EH		17		5		9		3		(29%)
@@ -1748,7 +1748,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               Number		8		4		3		1		(50%)
          ControlFlow		17		13		4		0		(76%)
                 Math		21		18		3		0		(85%)
-               Array		106		41		56		9		(38%)
+               Array		106		42		55		9		(39%)
       TaggedIntegers		44		42		2		0		(95%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		165		40		1		(80%)
@@ -1780,4 +1780,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1720		884		791		45		(51%)
+               Total		1720		886		789		45		(51%)
