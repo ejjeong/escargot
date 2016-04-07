@@ -1542,7 +1542,6 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* receiver)
 {
     ESObject* target = this;
-    escargot::ESString* keyString = NULL;
     if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
         if (LIKELY(idx < target->asESArrayObject()->length())) {
