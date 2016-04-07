@@ -2953,11 +2953,12 @@ void GlobalObject::installString()
                 ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue) * (subLen + 2), false);
                 for (unsigned j = 0; j < (unsigned)subLen ; j ++) {
                     if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
-                        RELEASE_ASSERT_NOT_REACHED(); // implement this case
-
-                    ESStringBuilder argStrBuilder;
-                    argStrBuilder.appendSubString(string, result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end);
-                    arguments[j] = argStrBuilder.finalize();
+                        arguments[j] = ESValue(ESValue::ESUndefined);
+                    else {
+                        ESStringBuilder argStrBuilder;
+                        argStrBuilder.appendSubString(string, result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end);
+                        arguments[j] = argStrBuilder.finalize();
+                    }
                 }
                 arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
                 arguments[subLen + 1] = string;

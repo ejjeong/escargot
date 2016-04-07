@@ -221,7 +221,7 @@ Done running mjsunit/regexp-call-as-function: pass
 Done running mjsunit/regexp-capture-3: pass
 Done running mjsunit/regexp-capture: pass
 Done running mjsunit/regexp-captures: pass
-Done running mjsunit/regexp-global: FAIL
+Done running mjsunit/regexp-global: pass
 Done running mjsunit/regexp-indexof: pass
 Done running mjsunit/regexp-lookahead: FAIL
 Done running mjsunit/regexp-loop-capture: pass
@@ -959,8 +959,6 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regexp-global.js ===
---- stderr ---
 === mjsunit/regexp-lookahead.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (/^(?:(?=(.))a|b)\1$/.test("b")): expected <true> found <false>, stack: undefined}
@@ -1015,5 +1013,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 21 tests failed
+=== 20 tests failed
 ===
