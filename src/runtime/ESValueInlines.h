@@ -1677,7 +1677,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
     return ret;
 }
 
-inline bool ESObject::setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
+inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
@@ -1761,7 +1761,7 @@ inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, esca
                 if (asESArrayObject()->shouldConvertToSlowMode(idx + 1)) {
                     asESArrayObject()->convertToSlowMode();
                     asESArrayObject()->setLength(idx + 1);
-                    return setSlowly(key, val, receiver);
+                    return setSlowPath(key, val, receiver);
                 } else {
                     asESArrayObject()->setLength(idx + 1);
                 }
@@ -1803,7 +1803,7 @@ inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, esca
         return false;
     }
 
-    return setSlowly(key, val, receiver);
+    return setSlowPath(key, val, receiver);
 }
 
 ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion, escargot::ESValue* receiver)

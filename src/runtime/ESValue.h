@@ -1907,7 +1907,6 @@ public:
     inline ESValue getOwnPropertySlowPath(escargot::ESValue key);
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    inline bool setSlowly(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
     inline bool set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
     ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val, escargot::ESValue* receiver = nullptr)
     {
@@ -1919,6 +1918,7 @@ public:
     }
 
     ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExeption, escargot::ESValue* receiver = nullptr);
+    inline bool setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
 
     ALWAYS_INLINE uint32_t length();
     ALWAYS_INLINE ESValue pop();
