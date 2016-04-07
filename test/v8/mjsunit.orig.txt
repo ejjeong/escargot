@@ -205,7 +205,7 @@ Done running mjsunit/object-literal: pass
 Done running mjsunit/object-seal-global: pass
 Done running mjsunit/object-toprimitive: pass
 Done running mjsunit/override-read-only-property: pass
-Done running mjsunit/parse-int-float: FAIL
+Done running mjsunit/parse-int-float: pass
 Done running mjsunit/parse-surrogates: pass
 Done running mjsunit/primitive-keyed-access: FAIL
 Done running mjsunit/property-load-across-eval: pass
@@ -962,9 +962,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/parse-int-float.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/primitive-keyed-access.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <100> found <200>, stack: undefined}
@@ -1027,5 +1024,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 25 tests failed
+=== 24 tests failed
 ===

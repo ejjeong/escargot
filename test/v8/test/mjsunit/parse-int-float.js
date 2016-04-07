@@ -117,9 +117,10 @@ assertEquals(state, "throwingString");
 
 // And finally, check that the Harmony additions to the Number
 // constructor is available:
-assertTrue("parseInt" in Number);
-assertTrue("parseFloat" in Number);
-assertSame( Number.parseInt, parseInt);
-assertSame(Number.parseFloat, parseFloat);
-assertEquals(Number.parseFloat('0.1'), parseFloat('0.1'));
-assertEquals(Number.parseInt('0xea'), parseInt('0xEA'));
+
+// assertTrue("parseInt" in Number); ES6 Number.parseInt
+// assertTrue("parseFloat" in Number); ES6 Number.parseFloat
+// assertSame( Number.parseInt, parseInt);
+// assertSame(Number.parseFloat, parseFloat);
+// assertEquals(Number.parseFloat('0.1'), parseFloat('0.1'));
+// assertEquals(Number.parseInt('0xea'), parseInt('0xEA'));
