@@ -1112,7 +1112,7 @@ void GlobalObject::installFunction()
         size_t callArgLen = (arglen > 0) ? arglen - 1 : 0;
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
         ESValue* arguments;
-        ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue*) * callArgLen, false);
+        ALLOCA_WRAPPER(arguments, ESValue*, sizeof(ESValue) * callArgLen, false);
         for (size_t i = 1; i < arglen; i++) {
             arguments[i - 1] = instance->currentExecutionContext()->arguments()[i];
         }
