@@ -262,7 +262,10 @@ ALWAYS_INLINE bool isOctalDigit(char16_t ch)
     return (ch >= '0' && ch < '8'); // 0..7
 }
 
-
+ALWAYS_INLINE uint8_t toHexNumericValue(char16_t ch)
+{
+    return ch < 'A' ? ch - '0' : (ch - 'A' + 10) & 0xF;
+}
 
 // ECMA-262 11.6 Identifier Names and Identifiers
 ALWAYS_INLINE char16_t fromCodePoint(char16_t cp)
@@ -2168,16 +2171,20 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
 
 PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
 {
-    std::string number;
+    bool scanned = false;
+    uint64_t number = 0;
 
     while (ctx->m_index < ctx->m_length) {
-        if (!isHexDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+        char16_t ch = ctx->m_sourceString->charAt(ctx->m_index);
+        if (!isHexDigit(ch)) {
             break;
         }
-        number += ctx->m_sourceString->charAt(ctx->m_index++);
+        number = (number << 4) + toHexNumericValue(ch);
+        ctx->m_index++;
+        scanned = true;
     }
 
-    if (number.length() == 0) {
+    if (!scanned) {
         throwEsprimaException();
     }
 
@@ -2185,11 +2192,9 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
         throwEsprimaException();
     }
 
-    long long int ll = strtoll(number.data(), NULL, 16);
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
-    // ps->m_value = number.data();
-    ps->m_valueNumber = ll;
+    ps->m_valueNumber = number;
     ps->m_lineNumber = ctx->m_lineNumber;
     ps->m_lineStart = ctx->m_lineStart;
     ps->m_start = start;
@@ -2209,36 +2214,35 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
 
 PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 {
-    char16_t ch;
-    std::string number;
+    uint64_t number = 0;
+    bool scanned = false;
 
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->charAt(ctx->m_index);
+        char16_t ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (ch != '0' && ch != '1') {
             break;
         }
-        number += ctx->m_sourceString->charAt(ctx->m_index++);
+        number = (number << 1) +  ch - '0';
+        ctx->m_index++;
+        scanned = true;
     }
 
-    if (number.length() == 0) {
+    if (!scanned) {
         // only 0b or 0B
         throwEsprimaException();
     }
 
     if (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->charAt(ctx->m_index);
+        char16_t ch = ctx->m_sourceString->charAt(ctx->m_index);
         /* istanbul ignore else */
         if (isIdentifierStart(ch) || isDecimalDigit(ch)) {
             throwEsprimaException();
         }
     }
 
-    long long int ll = strtoll(number.data(), NULL, 2);
-
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
-    // ps->m_value = number;
-    ps->m_valueNumber = ll;
+    ps->m_valueNumber = number;
     ps->m_lineNumber = ctx->m_lineNumber;
     ps->m_lineStart = ctx->m_lineStart;
     ps->m_start = start;
@@ -2261,27 +2265,21 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
     if (ctx->m_strict)
         throwEsprimaException();
 
-    std::string number;
-    bool octal;
-
-    if (isOctalDigit(prefix)) {
-        octal = true;
-        number += "0";
-        number += ctx->m_sourceString->charAt(ctx->m_index++);
-    } else {
-        octal = false;
-        ++ctx->m_index;
-        // number = '';
-    }
+    uint64_t number = 0;
+    bool scanned = false;
+    bool octal = isOctalDigit(prefix);
 
     while (ctx->m_index < ctx->m_length) {
-        if (!isOctalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+        char16_t ch = ctx->m_sourceString->charAt(ctx->m_index);
+        if (!isOctalDigit(ch)) {
             break;
         }
-        number += ctx->m_sourceString->charAt(ctx->m_index++);
+        number = (number << 3) + ch - '0';
+        ctx->m_index++;
+        scanned = true;
     }
 
-    if (!octal && number.length() == 0) {
+    if (!octal && !scanned) {
         // only 0o or 0O
         throwEsprimaException();
     }
@@ -2290,13 +2288,10 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
         throwEsprimaException();
     }
 
-    long long int ll = strtoll(number.data(), NULL, 8);
-
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
     ps->m_octal = true;
-    // ps->m_value = number;
-    ps->m_valueNumber = ll;
+    ps->m_valueNumber = number;
     ps->m_lineNumber = ctx->m_lineNumber;
     ps->m_lineStart = ctx->m_lineStart;
     ps->m_start = start;

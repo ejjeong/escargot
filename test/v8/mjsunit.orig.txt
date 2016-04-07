@@ -671,7 +671,7 @@ Done running mjsunit/regress/regress-298269: pass
 Done running mjsunit/regress/regress-299979: pass
 Done running mjsunit/regress/regress-3006390: pass
 Done running mjsunit/regress/regress-3010: pass
-Done running mjsunit/regress/regress-3025: FAIL
+Done running mjsunit/regress/regress-3025: pass
 Done running mjsunit/regress/regress-3026: pass
 Done running mjsunit/regress/regress-3027: pass
 Done running mjsunit/regress/regress-3116: pass
@@ -958,7 +958,7 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 --- TIMEOUT ---
 === mjsunit/hex-parsing.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <10256>, stack: undefined}
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1017,9 +1017,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-3025.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <9223372036854776000> found <9223372036854778000>, stack: undefined}
 === mjsunit/regress/regress-317.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected <"a$ec"> found <"ac">, stack: undefined}
@@ -1030,5 +1027,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 26 tests failed
+=== 25 tests failed
 ===
