@@ -2173,13 +2173,25 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
 {
     bool scanned = false;
     uint64_t number = 0;
+    double numberDouble = 0.0;
+    bool shouldUseDouble = false;
 
+    size_t shiftCount = 0;
     while (ctx->m_index < ctx->m_length) {
         char16_t ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (!isHexDigit(ch)) {
             break;
         }
-        number = (number << 4) + toHexNumericValue(ch);
+        if (shouldUseDouble) {
+            numberDouble = numberDouble * 16 + toHexNumericValue(ch);
+        } else {
+            number = (number << 4) + toHexNumericValue(ch);
+            if (++shiftCount >= 16) {
+                shouldUseDouble = true;
+                numberDouble = number;
+                number = 0;
+            }
+        }
         ctx->m_index++;
         scanned = true;
     }
@@ -2194,11 +2206,18 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
-    ps->m_valueNumber = number;
+    if (shouldUseDouble) {
+        ASSERT(number == 0);
+        ps->m_valueNumber = numberDouble;
+    } else {
+        ASSERT(numberDouble == 0.0);
+        ps->m_valueNumber = number;
+    }
     ps->m_lineNumber = ctx->m_lineNumber;
     ps->m_lineStart = ctx->m_lineStart;
     ps->m_start = start;
     ps->m_end = ctx->m_index;
+
     /*
     return {
         type: Token.NumericLiteral,

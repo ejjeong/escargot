@@ -124,7 +124,7 @@ Done running mjsunit/global-load-from-nested-eval: pass
 Done running mjsunit/global-vars-eval: pass
 Done running mjsunit/has-own-property-evaluation-order: pass
 Done running mjsunit/has-own-property: pass
-Done running mjsunit/hex-parsing: FAIL
+Done running mjsunit/hex-parsing: pass
 Done running mjsunit/html-comments: pass
 Done running mjsunit/if-in-undefined: pass
 Done running mjsunit/in: pass
@@ -956,9 +956,6 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 
 === mjsunit/ascii-regexp-subject.js ===
 --- TIMEOUT ---
-=== mjsunit/hex-parsing.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <10256>, stack: undefined}
 === mjsunit/json-parser-recursive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1021,5 +1018,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 23 tests failed
+=== 22 tests failed
 ===
