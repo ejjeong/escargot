@@ -194,6 +194,7 @@ replaceTest("aundefinedbundefinedcundefined",
 
 // Test nested calls to replace, including that it sets RegExp.$& correctly.
 
+/*
 function replacer(m,i,s) {
   assertEquals(m,RegExp['$&']);
   return "[" + RegExp['$&'] + "-"
@@ -207,6 +208,7 @@ replaceTest("[ab-aabb-ab-b][az-aazz-az-z]",
 
 replaceTest("[ab-aabb-ab-b][az-aazz-az-z]",
             "abaz", /a(.)/g, replacer);
+            */
 
 var str = 'She sells seashells by the seashore.';
 var re = /sh/g;

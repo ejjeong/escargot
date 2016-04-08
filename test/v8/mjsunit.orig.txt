@@ -269,7 +269,7 @@ Done running mjsunit/string-oom-replace-global-regexp-with-string: pass
 Done running mjsunit/string-oom-replace-regexp-global-with-function: pass
 Done running mjsunit/string-replace-gc: pass
 Done running mjsunit/string-replace-one-char: pass
-Done running mjsunit/string-replace: FAIL
+Done running mjsunit/string-replace: pass
 Done running mjsunit/string-search: pass
 Done running mjsunit/string-slices-regexp: pass
 Done running mjsunit/string-split-cache: pass
@@ -966,9 +966,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abc
 === mjsunit/string-oom-array-join.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/string-replace.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure ("abc".replace(/(.)(?=(.))/g, [$$$$$$1$$$$$11$01$2$21$02$020$002$3$03])): expected <"[$$$1$$a1abb1bb0$002$3$03][$$$1$$b1bcc1cc0$002$3$03]c"> found <"[$$$1$$a1a1bb1a2a20a02$3a3][$$$1$$b1b1cc1b2b20b02$3b3]c">, stack: undefined}
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
@@ -986,5 +983,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
 
 ===
-=== 10 tests failed
+=== 9 tests failed
 ===

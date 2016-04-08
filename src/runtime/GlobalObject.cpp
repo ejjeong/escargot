@@ -2930,6 +2930,11 @@ void GlobalObject::installString()
             ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.replace(): Invalid bound this value")));
         escargot::ESString* string = thisValue.toString();
         ESValue searchValue = instance->currentExecutionContext()->readArgument(0);
+        ESValue replaceValue = instance->currentExecutionContext()->readArgument(1);
+        escargot::ESString* replaceString = nullptr;
+        bool replaceValueIsFunction = replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject();
+        if (!replaceValueIsFunction)
+            replaceString = replaceValue.toString();
         RegexMatchResult result;
 
         if (searchValue.isESPointer() && searchValue.asESPointer()->isESRegExpObject()) {
@@ -2965,8 +2970,7 @@ void GlobalObject::installString()
             return string;
         }
 
-        ESValue replaceValue = instance->currentExecutionContext()->readArgument(1);
-        if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
+        if (replaceValueIsFunction) {
             uint32_t matchCount = result.m_matchResults.size();
             ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
 
@@ -3000,7 +3004,7 @@ void GlobalObject::installString()
             escargot::ESString* resultString = builer.finalize();
             return resultString;
         } else {
-            escargot::ESString* replaceString = replaceValue.toString();
+            ASSERT(replaceString);
 
             bool hasDollar = false;
             for (size_t i = 0; i < replaceString->length() ; i ++) {
@@ -3040,13 +3044,27 @@ void GlobalObject::installString()
                             } else if (c == '`') {
                                 builder.appendSubString(string, 0, result.m_matchResults[i][0].m_start);
                             } else if ('0' <= c && c <= '9') {
-                                // TODO support morethan 2-digits
                                 size_t idx = c - '0';
-                                if (idx < result.m_matchResults[i].size()) {
+                                int peek = replaceString->charAt(j + 2) - '0';
+                                bool usePeek = false;
+                                if (0 <= peek && peek <= 9) {
+                                    idx *= 10;
+                                    idx += peek;
+                                    usePeek = true;
+                                }
+
+                                if (idx < result.m_matchResults[i].size() && idx != 0) {
                                     builder.appendSubString(string, result.m_matchResults[i][idx].m_start, result.m_matchResults[i][idx].m_end);
+                                    if (usePeek)
+                                        j++;
                                 } else {
-                                    builder.appendChar('$');
-                                    builder.appendChar(c);
+                                    idx = c - '0';
+                                    if (idx < result.m_matchResults[i].size() && idx != 0) {
+                                        builder.appendSubString(string, result.m_matchResults[i][idx].m_start, result.m_matchResults[i][idx].m_end);
+                                    } else {
+                                        builder.appendChar('$');
+                                        builder.appendChar(c);
+                                    }
                                 }
                             } else {
                                 builder.appendChar('$');
