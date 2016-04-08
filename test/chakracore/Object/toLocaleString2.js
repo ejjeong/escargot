@@ -44,6 +44,7 @@ var tests = [
             assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to call the 'toString' property from the this parameter of object with toString function that throws", "toString");
         }
     },
+    /*
     {
         name: "Object#toLocaleString passes the this argument as-is to the toString function we load from ToObject(this)",
         body: function () {
@@ -59,6 +60,7 @@ var tests = [
             assert.areEqual('boolean', toLocaleString.call(false), "Calling Object#toLocaleString with a primitive this argument performs ToObject(this).toString.call(this) which will call the function we added to Boolean#toString - even if we apply/call it");
         }
     },
+    */ // ES6 Spec
 ];
 
 testRunner.runTests(tests, { verbose: WScript.Arguments[0] != "summary" });

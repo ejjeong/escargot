@@ -51,7 +51,7 @@ function compareResults(start, end) {
   {
     if(x[i] !== x2[i])
     {
-      print(`Invalid value: a[${i}] != b[${i}]`);
+      print("Invalid value: a[" + i + "] != b[" + i + "]");
       passed = 0;
       break;
     }

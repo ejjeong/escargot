@@ -99,7 +99,7 @@ Running all tests
 [Array] memop_lifetime_bug.js .......... Pass
 [Array] memset.js .......... Fail
 [Array] memset_invariant.js .......... Fail
-[Array] memset2.js .......... Fail
+[Array] memset2.js .......... Pass
 [Array] memcopy.js .......... Fail
 [Array] memop_alias.js .......... Fail
 [Array] memop_field.js .......... Fail
@@ -1484,7 +1484,7 @@ Running all tests
 [inlining] bug594138.js .......... Pass
 [inlining] inlineeArgoutCount.js .......... Pass
 [inlining] markTempArgOut.js .......... Pass
-[inlining] bug1469518.js .......... Fail
+[inlining] bug1469518.js .......... Pass
 [inlining] bug1355201.js .......... Pass
 [inlining] recursive_inline.js .......... Pass
 [inlining] recursive_inline2.js .......... Pass
@@ -1627,7 +1627,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		46		50		10		(43%)
+               Array		106		47		49		10		(44%)
               Basics		56		27		29		0		(48%)
                  es5		56		25		30		1		(44%)
                   EH		17		5		9		3		(29%)
@@ -1667,10 +1667,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		75		36		0		(67%)
          FixedFields		16		15		1		0		(93%)
-            inlining		34		20		14		0		(58%)
+            inlining		34		21		13		0		(61%)
          DynamicCode		3		0		3		0		(0%)
      switchStatement		28		24		4		0		(85%)
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1614		903		672		39		(55%)
+               Total		1614		905		670		39		(56%)

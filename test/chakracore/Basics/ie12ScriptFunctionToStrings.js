@@ -3,9 +3,9 @@
 // Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
 //-------------------------------------------------------------------------------------------------------
 
-if (this.WScript && this.WScript.LoadScriptFile) { // Check for running in ch
-    this.WScript.LoadScriptFile("..\\UnitTestFramework\\UnitTestFramework.js");
-}
+//if (this.WScript && this.WScript.LoadScriptFile) { // Check for running in ch
+//    this.WScript.LoadScriptFile("..\\UnitTestFramework\\UnitTestFramework.js");
+//}
 var tests = [
     {
         name: "function declaration test",
@@ -75,6 +75,7 @@ var tests = [
              assert.areEqual("function foo() { return foo.toString(); }", a(),"confirm that even if we call toString internally it has no effect on the name")
         }
    },
+   /*
    {
         name: "class method test",
         body: function ()
@@ -96,6 +97,7 @@ var tests = [
              assert.areEqual("constructor() {}",quxObj.constructor.toString(),"The constructor should have the toString with name constructor")
         }
    },
+   */ // ES6 Spec
    {
         name: "shorthand method function test",
         body: function ()
@@ -104,6 +106,7 @@ var tests = [
              assert.areEqual("f() {}",o.f.toString());
         }
    },
+   /*
    {
         name: "arrow function Test",
         body: function ()
@@ -112,5 +115,6 @@ var tests = [
              assert.areEqual("() => {}",arrowDecl.toString(),"Make sure arrow functions remain unaffected by ie12 formatting");
         }
    }
+   */ //ES6 Spec
 ];
 testRunner.runTests(tests, { verbose: WScript.Arguments[0] != "summary" });
