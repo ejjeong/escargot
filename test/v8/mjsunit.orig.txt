@@ -248,7 +248,7 @@ Done running mjsunit/smi-ops: pass
 Done running mjsunit/sparse-array-reverse: FAIL
 Done running mjsunit/sparse-array: pass
 Done running mjsunit/store-dictionary: pass
-Done running mjsunit/str-to-num: FAIL
+Done running mjsunit/str-to-num: pass
 Done running mjsunit/stress-array-push: pass
 Done running mjsunit/strict-equals: pass
 Done running mjsunit/strict-mode-eval: pass
@@ -963,9 +963,6 @@ Uncaught MjsUnitAssertionError {message: Failure (/^(?:(?=(.))a|b)\1$/.test("b")
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
-=== mjsunit/str-to-num.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/string-match.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (Nonglobal-$&): expected <"A"> found <undefined>, stack: undefined}
@@ -1001,5 +998,5 @@ Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
 
 ===
-=== 15 tests failed
+=== 14 tests failed
 ===

@@ -271,7 +271,7 @@ inline double ESValue::toNumberSlowCase() const
             buf[i] = c;
         }
         buf[len] = 0;
-        if (len >= 3 && strncmp("-0x", buf, 3) == 0) { // hex number with Unary Minus is invalid in JavaScript while it is valid in C
+        if (len >= 3 && (!strncmp("-0x", buf, 3) || !strncmp("+0x", buf, 3))) { // hex number with Unary Plus or Minus is invalid in JavaScript while it is valid in C
             val = std::numeric_limits<double>::quiet_NaN();
             return val;
         }
