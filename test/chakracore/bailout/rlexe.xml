@@ -71,7 +71,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>bailout7.js</files>
       <compile-flags>-bailoutbytecode:742 -off:deferparse</compile-flags>
       <tags>exclude_fre</tags>

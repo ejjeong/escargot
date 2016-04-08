@@ -56,7 +56,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>PrototypeChainModifications.js</files>
       <baseline>PrototypeChainModifications.baseline</baseline>
     </default>

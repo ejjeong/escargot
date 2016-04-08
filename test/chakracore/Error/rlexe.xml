@@ -22,21 +22,18 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>OutOfMem.js</files>
       <baseline>OutOfMem.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>Stack.js</files>
       <baseline>Stack.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>Stack2.js</files>
       <baseline>Stack2.baseline</baseline>
     </default>
@@ -140,7 +137,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>stackoverflow.js</files>
       <baseline>stackoverflow.baseline</baseline>
       <tags>Slow</tags>

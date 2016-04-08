@@ -79,7 +79,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>date_cache_bug.js</files>
       <baseline>date_cache_bug.baseline</baseline>
     </default>

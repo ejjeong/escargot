@@ -47,7 +47,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>parseInt.js</files>
       <baseline>parseInt.baseline</baseline>
     </default>

@@ -35,7 +35,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <compile-flags>-ForceArrayBTree</compile-flags>
       <files>bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js</files>
       <tags>BugFix</tags>
@@ -49,7 +48,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>bug1065362.js</files>
       <tags>BugFix</tags>
     </default>
@@ -128,7 +126,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>concat2.js</files>
       <baseline>concat2.baseline</baseline>
     </default>
@@ -242,7 +239,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>shift_unshift.js</files>
       <baseline>shift_unshift.baseline</baseline>
     </default>
@@ -322,21 +318,18 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>array_splice.js</files>
       <baseline>array_splice.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>array_splice_double.js</files>
       <baseline>array_splice_double.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <compile-flags>-arrayValidate</compile-flags>
       <files>array_splice.js</files>
       <baseline>array_splice.baseline</baseline>
@@ -601,7 +594,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <compile-flags>-ForceArrayBTree</compile-flags>
       <files>bug945376SizeBoundStartSeg.js</files>
       <tags>BugFix</tags>

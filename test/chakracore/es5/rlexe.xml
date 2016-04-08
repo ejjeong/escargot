@@ -145,7 +145,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>ES5ArrayIndexList.js</files>
       <tags>exclude_chk,Slow</tags>
       <timeout>900</timeout>

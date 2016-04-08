@@ -301,7 +301,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>FuncBody.bug227901.js</files>
       <baseline>FuncBody.bug227901.baseline</baseline>
       <compile-flags>-off:deferparse</compile-flags>
@@ -309,7 +308,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>FuncBody.bug232281.js</files>
       <baseline>FuncBody.bug232281.baseline</baseline>
       <compile-flags>-off:deferparse</compile-flags>
