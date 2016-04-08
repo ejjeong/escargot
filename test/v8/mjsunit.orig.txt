@@ -265,7 +265,7 @@ Done running mjsunit/string-localecompare: pass
 Done running mjsunit/string-match: FAIL
 Done running mjsunit/string-oom-array-join: FAIL
 Done running mjsunit/string-oom-concat: pass
-Done running mjsunit/string-oom-replace-global-regexp-with-string: FAIL
+Done running mjsunit/string-oom-replace-global-regexp-with-string: pass
 Done running mjsunit/string-oom-replace-regexp-global-with-function: FAIL
 Done running mjsunit/string-replace-gc: pass
 Done running mjsunit/string-replace-one-char: pass
@@ -974,9 +974,6 @@ Uncaught MjsUnitAssertionError {message: Failure (Nonglobal-$&): expected <"A"> 
 === mjsunit/string-oom-array-join.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/string-oom-replace-global-regexp-with-string.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/string-oom-replace-regexp-global-with-function.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1013,5 +1010,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 --- TIMEOUT ---
 
 ===
-=== 20 tests failed
+=== 19 tests failed
 ===
