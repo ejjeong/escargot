@@ -5,9 +5,9 @@ Running all tests
 [Array] array_init2.js .......... Pass
 [Array] SpliceBtreeMemoryCorruption.js .......... Fail
 [Array] sliceArrayForceBtreeBug616623.js .......... Fail
-[Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Skip (Takes too long)
+[Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Pass
 [Array] bug1062870.js .......... Pass
-[Array] bug1065362.js .......... Skip (Takes too long)
+[Array] bug1065362.js .......... Pass
 [Array] bug4916987.js .......... Pass
 [Array] ArrayBtreeBadCodeGen.js .......... Pass
 [Array] SliceandConcatAlterOriginalArrayBug.js .......... Fail
@@ -19,7 +19,7 @@ Running all tests
 [Array] array_ctr.js .......... Fail
 [Array] arr_bailout.js .......... Pass
 [Array] concat1.js .......... Fail
-[Array] concat2.js .......... Skip (Takes too long)
+[Array] concat2.js .......... Fail
 [Array] delete.js .......... Pass
 [Array] es5array_push.js .......... Pass
 [Array] ldindex.js .......... Pass
@@ -37,7 +37,7 @@ Running all tests
 [Array] push3.js .......... Fail
 [Array] reverse1.js .......... Fail
 [Array] reverse2.js .......... Pass
-[Array] shift_unshift.js .......... Skip (Takes too long)
+[Array] shift_unshift.js .......... Fail
 [Array] toString.js .......... Fail
 [Array] toString.js .......... Fail
 [Array] toLocaleString.js .......... Fail
@@ -49,9 +49,9 @@ Running all tests
 [Array] array_sort2.js .......... Fail
 [Array] array_sort3.js .......... Fail
 [Array] array_sort3.js .......... Fail
-[Array] array_splice.js .......... Skip (Takes too long)
-[Array] array_splice_double.js .......... Skip (Takes too long)
-[Array] array_splice.js .......... Skip (Takes too long)
+[Array] array_splice.js .......... Fail
+[Array] array_splice_double.js .......... Fail
+[Array] array_splice.js .......... Fail
 [Array] array_splice1.js .......... Fail
 [Array] array_splice2.js .......... Fail
 [Array] array_splice3.js .......... Fail
@@ -93,7 +93,7 @@ Running all tests
 [Array] FailToSetLength.js .......... Fail
 [Array] foreach_nativearray_change.js .......... Pass
 [Array] newfromargs.js .......... Pass
-[Array] bug945376SizeBoundStartSeg.js .......... Skip (Takes too long)
+[Array] bug945376SizeBoundStartSeg.js .......... Pass
 [Array] CopyOnAccessArray_bugs.js .......... Fail
 [Array] CopyOnAccessArray_cache_index_overflow.js .......... Fail
 [Array] memop_lifetime_bug.js .......... Pass
@@ -184,7 +184,7 @@ Running all tests
 [es5] extensible.js .......... Fail
 [es5] array_length.js .......... Fail
 [es5] array_length.js .......... Fail
-[es5] ES5ArrayIndexList.js .......... Skip (Takes too long (and Slowdown))
+[es5] ES5ArrayIndexList.js .......... Pass
 [es5] createdp.js .......... Fail
 [es5] defineProperty.js .......... Pass
 [es5] defineProperty.js .......... Pass
@@ -221,7 +221,7 @@ Running all tests
 [EH] capture.js .......... Fail
 [EH] capture.js .......... Fail
 [EH] capture.js .......... Fail
-[EH] oos2.js .......... Skip (Takes too long (and Slowdown))
+[EH] oos2.js .......... Pass
 [EH] try1.js .......... Pass
 [EH] try2.js .......... Fail
 [EH] try3.js .......... Pass
@@ -230,8 +230,8 @@ Running all tests
 [EH] try6.js .......... Fail
 [EH] try.bug188541.js .......... Pass
 [EH] try.bug188541.v5.js .......... Fail
-[EH] so.js .......... Skip (Takes too long (and Slowdown))
-[EH] newso.js .......... Skip (Takes too long (and Slowdown))
+[EH] so.js .......... Pass
+[EH] newso.js .......... Fail
 [EH] trylabel.js .......... Pass
 [EH] alignment.js .......... Fail
 [EH] 101832.js .......... Fail
@@ -244,7 +244,7 @@ Running all tests
 [InlineCaches] test6.js .......... Fail
 [InlineCaches] TypePropertyCache_CrossContext.js .......... Fail
 [InlineCaches] getter_sideeffect.js .......... Pass
-[InlineCaches] prototypeChainModifications.js .......... Skip (Takes too long)
+[InlineCaches] prototypeChainModifications.js .......... Pass
 [InlineCaches] inlnieLocalCacheWithoutProperty.js .......... Pass
 [InlineCaches] writable1.js .......... Pass
 [InlineCaches] writable2.js .......... Pass
@@ -446,7 +446,7 @@ Running all tests
 [Strings] charCodeAt.js .......... Fail
 [Strings] concat1.js .......... Pass
 [Strings] concat2.js .......... Pass
-[Strings] concat3.js .......... Skip (Takes too long)
+[Strings] concat3.js .......... Fail
 [Strings] concat4.js .......... Pass
 [Strings] concat5.js .......... Pass
 [Strings] concat6.js .......... Pass
@@ -487,14 +487,14 @@ Running all tests
 [Date] MillisecondTruncationCheckAfterCopyConstructor.js .......... Pass
 [Date] Conversions.js .......... Fail
 [Date] Conversions.js .......... Fail
-[Date] date_cache_bug.js .......... Skip (Takes too long)
+[Date] date_cache_bug.js .......... Pass
 [Date] formatting.js .......... Fail
 [Error] errorProps.js .......... Fail
 [Error] ErrorCtorProps.js .......... Fail
 [Error] NativeErrors.js .......... Fail
-[Error] outofmem.js .......... Skip (Takes too long)
-[Error] stack.js .......... Skip (Takes too long)
-[Error] stack2.js .......... Skip (Takes too long)
+[Error] outofmem.js .......... Fail
+[Error] stack.js .......... Fail
+[Error] stack2.js .......... Fail
 [Error] errorCtor.js .......... Fail
 [Error] errorNum.js .......... Fail
 [Error] CallNonFunction.js .......... Fail
@@ -509,7 +509,7 @@ Running all tests
 [Error] RuntimeCompileStackOverflow.js .......... Fail
 [Error] encodeoverflow.js .......... Skip (Takes too long)
 [Error] bug560940.js .......... Pass
-[Error] stackoverflow.js .......... Skip (Takes too long (and Slowdown))
+[Error] stackoverflow.js .......... Fail
 [Error] inlineSameFunc.js .......... Fail
 [Error] PartInitStackFrame.js .......... Fail
 [Boolean] simple1.js .......... Pass
@@ -622,7 +622,7 @@ Running all tests
 [Optimizer] cse2.js .......... Pass
 [Optimizer] cse3.js .......... Pass
 [Optimizer] NullTypeSpec.js .......... Fail
-[Optimizer] optpeep.js .......... Skip (Takes too long (and Slowdown))
+[Optimizer] optpeep.js .......... Fail
 [Optimizer] shru_peep.js .......... Pass
 [Optimizer] test0.js .......... Pass
 [Optimizer] test1.js .......... Pass
@@ -859,8 +859,8 @@ Running all tests
 [Function] typeErrorAccessor.js .......... Fail
 [Function] FuncBody.js .......... Fail
 [Function] FuncBody.bug133933.js .......... Fail
-[Function] FuncBody.bug227901.js .......... Skip (Takes too long (and Slowdown))
-[Function] FuncBody.bug232281.js .......... Skip (Takes too long)
+[Function] FuncBody.bug227901.js .......... Fail
+[Function] FuncBody.bug232281.js .......... Fail
 [Function] FuncBody.bug236810.js .......... Pass
 [Function] FuncBody.bug231397.js .......... Fail
 [Function] bug_258259.js .......... Fail
@@ -980,7 +980,7 @@ Running all tests
 [GlobalFunctions] evalDeferred.js .......... Fail
 [GlobalFunctions] eval-strict-delete.js .......... Pass
 [GlobalFunctions] parseFloat.js .......... Fail
-[GlobalFunctions] parseInt.js .......... Skip (Takes too long)
+[GlobalFunctions] parseInt.js .......... Pass
 [GlobalFunctions] parseShortCut.js .......... Pass
 [GlobalFunctions] InternalToString.js .......... Fail
 [GlobalFunctions] ParseInt1.js .......... Pass
@@ -1049,7 +1049,7 @@ Running all tests
 [JSON] simple.js .......... Pass
 [JSON] simple.withLog.js .......... Fail
 [JSON] simple.stringify.js .......... Pass
-[JSON] parseWithGc.js .......... Skip (Takes too long)
+[JSON] parseWithGc.js .......... Pass
 [JSON] jsonCache.js .......... Fail
 [JSON] jsonCache.js .......... Fail
 [JSON] json_parse_Blue_548957.js .......... Pass
@@ -1277,7 +1277,7 @@ Running all tests
 [bailout] bailout4.js .......... Pass
 [bailout] bailout5.js .......... Pass
 [bailout] bailout6.js .......... Pass
-[bailout] bailout7.js .......... Skip (Takes too long)
+[bailout] bailout7.js .......... Pass
 [bailout] bailout_loopbodystart.js .......... Pass
 [bailout] bailout_loopbodystart.js .......... Pass
 [bailout] bailout_loopbodystart.js .......... Pass
@@ -1317,8 +1317,8 @@ Running all tests
 [StackTrace] LongCallStackThrow.js .......... Fail
 [StackTrace] LongCallStackThrow.js .......... Fail
 [StackTrace] StackTraceLimit.js .......... Fail
-[StackTrace] StackTraceLimitOOS.js .......... Skip (Takes too long)
-[StackTrace] StackTraceLimitOOS.js .......... Skip (Takes too long)
+[StackTrace] StackTraceLimitOOS.js .......... Fail
+[StackTrace] StackTraceLimitOOS.js .......... Fail
 [StackTrace] dynamic.js .......... Fail
 [StackTrace] ErrorPrototype.js .......... Fail
 [StackTrace] ErrorDotStackAlreadyExists.js .......... Fail
@@ -1627,43 +1627,43 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		47		49		10		(44%)
+               Array		106		50		54		2		(47%)
               Basics		56		27		29		0		(48%)
-                 es5		56		25		30		1		(44%)
-                  EH		17		5		9		3		(29%)
-        InlineCaches		21		16		4		1		(76%)
+                 es5		56		26		30		0		(46%)
+                  EH		17		7		10		0		(41%)
+        InlineCaches		21		17		4		0		(80%)
               Basics		56		27		29		0		(48%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		6		0		(66%)
-             Strings		36		25		10		1		(69%)
-                Date		12		1		10		1		(8%)
-               Error		23		2		16		5		(8%)
+             Strings		36		25		11		0		(69%)
+                Date		12		2		10		0		(16%)
+               Error		23		2		20		1		(8%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
          ControlFlow		17		13		4		0		(76%)
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		177		26		3		(85%)
-            Function		61		21		37		3		(34%)
+           Optimizer		206		177		27		2		(85%)
+            Function		61		21		39		1		(34%)
               Object		58		29		25		4		(50%)
                Regex		33		13		20		0		(39%)
           Prototypes		7		5		2		0		(71%)
-     GlobalFunctions		13		5		7		1		(38%)
+     GlobalFunctions		13		6		7		0		(46%)
            Operators		32		21		11		0		(65%)
          Conversions		5		3		2		0		(60%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
                  Lib		16		3		13		0		(18%)
-                JSON		13		7		5		1		(53%)
+                JSON		13		8		5		0		(61%)
                 Bugs		36		19		17		0		(52%)
               strict		104		38		66		0		(36%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		4		22		0		(15%)
           typedarray		45		7		38		0		(15%)
-             bailout		34		24		9		1		(70%)
+             bailout		34		25		9		0		(73%)
                 loop		6		4		2		0		(66%)
-          StackTrace		17		0		15		2		(0%)
+          StackTrace		17		0		17		0		(0%)
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		75		36		0		(67%)
          FixedFields		16		15		1		0		(93%)
@@ -1673,4 +1673,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1614		905		670		39		(56%)
+               Total		1614		916		686		12		(56%)
