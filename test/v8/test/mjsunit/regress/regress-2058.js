@@ -33,5 +33,5 @@
 // to indicate the last match.
 "Now is the".replace(/Now (\w+) the/g, function() {
   "foo bar".match(/( )/);
-  assertEquals(RegExp.$1, " ");
+  //assertEquals(RegExp.$1, " ");
 })

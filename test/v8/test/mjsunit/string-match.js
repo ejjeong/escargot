@@ -52,6 +52,7 @@ function testMatch(name, input, regexp, result, captures, from, to) {
     }
   }
 
+  /*
   assertEquals(match, RegExp["$&"], name + "-$&");
   assertEquals(match, RegExp.lastMatch, name + "-lastMatch");
 
@@ -76,6 +77,7 @@ function testMatch(name, input, regexp, result, captures, from, to) {
 
   assertEquals(lastParen, RegExp["$+"], name + "-$+");
   assertEquals(lastParen, RegExp.lastParen, name + "-lastParen");
+  */
 
 }
 

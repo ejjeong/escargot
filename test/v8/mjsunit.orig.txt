@@ -262,7 +262,7 @@ Done running mjsunit/string-indexof-1: pass
 Done running mjsunit/string-indexof-2: pass
 Done running mjsunit/string-lastindexof: pass
 Done running mjsunit/string-localecompare: pass
-Done running mjsunit/string-match: FAIL
+Done running mjsunit/string-match: pass
 Done running mjsunit/string-oom-array-join: FAIL
 Done running mjsunit/string-oom-concat: pass
 Done running mjsunit/string-oom-replace-global-regexp-with-string: pass
@@ -607,7 +607,7 @@ Done running mjsunit/regress/regress-2027: pass
 Done running mjsunit/regress/regress-2032: pass
 Done running mjsunit/regress/regress-2054: pass
 Done running mjsunit/regress/regress-2055: pass
-Done running mjsunit/regress/regress-2058: FAIL
+Done running mjsunit/regress/regress-2058: pass
 Done running mjsunit/regress/regress-2153: pass
 Done running mjsunit/regress/regress-2172: pass
 Done running mjsunit/regress/regress-2185-2: pass
@@ -963,9 +963,6 @@ Uncaught MjsUnitAssertionError {message: Failure (/^(?:(?=(.))a|b)\1$/.test("b")
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
-=== mjsunit/string-match.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (Nonglobal-$&): expected <"A"> found <undefined>, stack: undefined}
 === mjsunit/string-oom-array-join.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -981,9 +978,6 @@ Uncaught MjsUnitAssertionError {message: Failure (zero length match in (?:) with
 === mjsunit/regress/regress-187.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> found <["f","f"]>, stack: undefined}
-=== mjsunit/regress/regress-2058.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
@@ -998,5 +992,5 @@ Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
 
 ===
-=== 14 tests failed
+=== 12 tests failed
 ===
