@@ -678,7 +678,7 @@ Done running mjsunit/regress/regress-3116: pass
 Done running mjsunit/regress/regress-312: pass
 Done running mjsunit/regress/regress-3135: pass
 Done running mjsunit/regress/regress-3138: pass
-Done running mjsunit/regress/regress-317: FAIL
+Done running mjsunit/regress/regress-317: pass
 Done running mjsunit/regress/regress-318: pass
 Done running mjsunit/regress/regress-3185905: pass
 Done running mjsunit/regress/regress-3199913: pass
@@ -968,7 +968,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abc
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/string-replace.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure ("xaxbxcx".replace(b, $e)): expected <"xax$excx"> found <"xaxxcx">, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure ("abc".replace(/(.)(?=(.))/g, [$$$$$$1$$$$$11$01$2$21$02$020$002$3$03])): expected <"[$$$1$$a1abb1bb0$002$3$03][$$$1$$b1bcc1cc0$002$3$03]c"> found <"[$$$1$$a1a1bb1a2a20a02$3a3][$$$1$$b1b1cc1b2b20b02$3b3]c">, stack: undefined}
 === mjsunit/compiler/literals.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
@@ -984,13 +984,10 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-317.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure ($e isn't meaningful): expected <"a$ec"> found <"ac">, stack: undefined}
 === mjsunit/regress/regress-3229.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
 
 ===
-=== 12 tests failed
+=== 11 tests failed
 ===

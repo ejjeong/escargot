@@ -3022,6 +3022,9 @@ void GlobalObject::installString()
                                     builder.appendChar('$');
                                     builder.appendChar(c);
                                 }
+                            } else {
+                                builder.appendChar('$');
+                                builder.appendChar(c);
                             }
                             j++;
                         } else {
