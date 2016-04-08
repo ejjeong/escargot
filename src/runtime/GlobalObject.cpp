@@ -952,27 +952,53 @@ void GlobalObject::installFunction()
             codeBlock->pushCode(End(), context, NULL);
             codeBlock->m_hasCode = true;
         } else {
-
-            ESStringBuilder builder;
-            builder.appendString("function anonymous(");
-            for (int i = 0; i < len-1; i++) {
-                builder.appendString("\n");
-                escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
-                builder.appendString(arg);
-                if (i != len-2) {
-                    builder.appendString(strings->asciiTable[(size_t)','].string());
-                }
-            }
-            builder.appendString("\n/**/){/**/\n");
-            escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
-            builder.appendString(body);
-            builder.appendString("\n}");
-            escargot::ESString* src = builder.finalize();
-            // printf("new Function('%s\n')\n", src->utf8Data());
+            ProgramNode* programNode;
             escargot::ScriptParser::ParserContextInformation parserContextInformation;
-            ProgramNode* programNode = instance->scriptParser()->generateAST(instance, src, true, parserContextInformation);
-            if (programNode->body().size() != 2)
-                instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) body source code")));
+            bool strict = parserContextInformation.m_strictFromOutside;
+            try {
+                ESStringBuilder argBuilder, bodyBuilder;
+                argBuilder.appendString(strings->asciiTable[(size_t)'('].string());
+                for (int i = 0; i < len-1; i++) {
+                    argBuilder.appendString(instance->currentExecutionContext()->arguments()[i].toString());
+                    if (i != len-2) {
+                        argBuilder.appendString(strings->asciiTable[(size_t)','].string());
+                    }
+                }
+                argBuilder.appendString(strings->asciiTable[(size_t)'\n'].string());
+                argBuilder.appendString(strings->asciiTable[(size_t)')'].string());
+                escargot::ESString* args = argBuilder.finalize();
+                esprima::ParseContext argCtx(args, strict);
+                esprima::peek(&argCtx);
+                InternalAtomicStringVector argVec = esprima::parseParams(&argCtx);
+                if (argCtx.m_lookahead->m_type != esprima::Token::EOFToken) {
+                    instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) argument source code")));
+                }
+
+                bodyBuilder.appendString(strings->asciiTable[(size_t)'{'].string());
+                escargot::ESString* rawBody = instance->currentExecutionContext()->arguments()[len-1].toString();
+                bodyBuilder.appendString(rawBody);
+                bodyBuilder.appendString(strings->asciiTable[(size_t)'\n'].string());
+                bodyBuilder.appendString(strings->asciiTable[(size_t)'}'].string());
+                escargot::ESString* body = bodyBuilder.finalize();
+                esprima::ParseContext bodyCtx(body, strict);
+                esprima::peek(&bodyCtx);
+                Node* bodyNode = esprima::parseFunctionSourceElements(&bodyCtx);
+                if (bodyCtx.m_lookahead->m_type != esprima::Token::EOFToken) {
+                    instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) body source code")));
+                }
+                programNode = new ProgramNode(esprima::makeAnonymousFunctionNoeVector(&bodyCtx, argVec, bodyNode), strict);
+            } catch(const char16_t* msg) {
+                instance->throwError(SyntaxError::create(ESString::create(msg)));
+            } catch(escargot::ESString* msg) {
+                instance->throwError(SyntaxError::create(msg));
+            } catch(EsprimaError& err) {
+                throw err;
+            } catch(...) {
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+            // printf("new Function('%s\n')\n", src->utf8Data());
+
+            programNode = instance->scriptParser()->generateAST(instance, nullptr, true, parserContextInformation, programNode);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
             ByteCodeGenerateContext context(codeBlock, false);
 

@@ -19,8 +19,8 @@ function test()
   enterFunc ('test');
   printBugNumber(BUGNUMBER);
   printStatus (summary);
- 
-  expect = "SyntaxError: Unexpected Identifier 'print'. Expected ';' (Parse Error 2 line)"
+
+  expect = "SyntaxError: Unexpected Identifier 'print'. Expected ';'"
 
   var s = 'var x = function f() { \n return 42; } print(x);';
 

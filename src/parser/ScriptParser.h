@@ -18,7 +18,7 @@ public:
         bool m_shouldWorkAroundIdentifier:1;
     };
 
-    ProgramNode* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation);
+    ProgramNode* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode = nullptr);
     CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, ParserContextInformation& parserContextInformation);
 #ifdef ESCARGOT_PROFILE
     static void dumpStats();

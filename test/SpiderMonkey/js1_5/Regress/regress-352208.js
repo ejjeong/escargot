@@ -19,8 +19,8 @@ function test()
   enterFunc ('test');
   printBugNumber(BUGNUMBER);
   printStatus (summary);
- 
-  expect = 'SyntaxError: unterminated string literal (Parse Error 1 line)';
+
+  expect = 'SyntaxError: unterminated string literal';
   try
   {
     eval('new Function("setter/*\n");');

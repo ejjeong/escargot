@@ -19,8 +19,8 @@ function test()
   enterFunc ('test');
   printBugNumber(BUGNUMBER);
   printStatus (summary);
- 
-  expect = 'SyntaxError:  (Parse Error 1 line)';
+
+  expect = 'SyntaxError';
 
   try
   {

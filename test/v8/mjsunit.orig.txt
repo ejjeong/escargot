@@ -654,7 +654,7 @@ Done running mjsunit/regress/regress-2606: pass
 Done running mjsunit/regress/regress-2615: pass
 Done running mjsunit/regress/regress-265: pass
 Done running mjsunit/regress/regress-267: pass
-Done running mjsunit/regress/regress-2686: FAIL
+Done running mjsunit/regress/regress-2686: pass
 Done running mjsunit/regress/regress-2690: pass
 Done running mjsunit/regress/regress-270142: pass
 Done running mjsunit/regress/regress-2711: pass
@@ -981,13 +981,10 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> fou
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
-=== mjsunit/regress/regress-2686.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-3229.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
 
 ===
-=== 11 tests failed
+=== 10 tests failed
 ===

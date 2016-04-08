@@ -46,13 +46,14 @@ void ScriptParser::dumpStats()
 }
 #endif
 
-ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation)
+ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode)
 {
     bool strictFromOutside = parserContextInformation.m_strictFromOutside;
-    ProgramNode* programNode;
     try {
         // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-        programNode = (ProgramNode *)esprima::parse(source, strictFromOutside);
+        if (programNode == nullptr) {
+            programNode = (ProgramNode *)esprima::parse(source, strictFromOutside);
+        }
         // unsigned long end = ESVMInstance::currentInstance()->tickCount();
         // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
         // printf("esprima takes %lfms\n", (end-start)/1000.0);

@@ -11,19 +11,6 @@ using namespace JSC::Yarr;
 
 namespace esprima {
 
-enum Token {
-    BooleanLiteralToken = 1,
-    EOFToken = 2,
-    IdentifierToken = 3,
-    KeywordToken = 4,
-    NullLiteralToken = 5,
-    NumericLiteralToken = 6,
-    PunctuatorToken = 7,
-    StringLiteralToken = 8,
-    RegularExpressionToken = 9,
-    TemplateToken = 10
-};
-
 const char16_t* TokenName[] = {
     u"",
     u"Boolean",
@@ -53,139 +40,6 @@ const char16_t* PuncuatorsTokens[] = {
     u"=>"
 };
 
-/*
-enum Syntax {
-    AssignmentExpression,
-    AssignmentPattern,
-    ArrayExpression,
-    ArrayPattern,
-    ArrowFunctionExpression,
-    BlockStatement,
-    BinaryExpression,
-    BreakStatement,
-    CallExpression,
-    CatchClause,
-    ClassBody,
-    ClassDeclaration,
-    ClassExpression,
-    ConditionalExpression,
-    ContinueStatement,
-    DoWhileStatement,
-    DebuggerStatement,
-    EmptyStatement,
-    ExportAllDeclaration,
-    ExportDefaultDeclaration,
-    ExportNamedDeclaration,
-    ExportSpecifier,
-    ExpressionStatement,
-    ForStatement,
-    ForOfStatement,
-    ForInStatement,
-    FunctionDeclaration,
-    FunctionExpression,
-    Identifier,
-    IfStatement,
-    ImportDeclaration,
-    ImportDefaultSpecifier,
-    ImportNamespaceSpecifier,
-    ImportSpecifier,
-    Literal,
-    LabeledStatement,
-    LogicalExpression,
-    MemberExpression,
-    MetaProperty,
-    MethodDefinition,
-    NewExpression,
-    ObjectExpression,
-    ObjectPattern,
-    Program,
-    Property,
-    RestElement,
-    ReturnStatement,
-    SequenceExpression,
-    SpreadElement,
-    Super,
-    SwitchCase,
-    SwitchStatement,
-    TaggedTemplateExpression,
-    TemplateElement,
-    TemplateLiteral,
-    ThisExpression,
-    ThrowStatement,
-    TryStatement,
-    UnaryExpression,
-    UpdateExpression,
-    VariableDeclaration,
-    VariableDeclarator,
-    WhileStatement,
-    WithStatement,
-    YieldExpression
-};*/
-
-enum PlaceHolders {
-    ArrowParameterPlaceHolder
-};
-
-enum PunctuatorsKind {
-    LeftParenthesis,
-    RightParenthesis,
-    LeftBrace,
-    RightBrace,
-    Period,
-    PeriodPeriodPeriod,
-    Comma,
-    Colon,
-    SemiColon,
-    LeftSquareBracket,
-    RightSquareBracket,
-    GuessMark,
-    Wave,
-    UnsignedRightShift,
-    RightShift,
-    LeftShift,
-    Plus,
-    Minus,
-    Multiply,
-    Divide,
-    Mod,
-    ExclamationMark,
-    StrictEqual,
-    NotStrictEqual,
-    Equal,
-    NotEqual,
-    LogicalAnd,
-    LogicalOr,
-    PlusPlus,
-    MinusMinus,
-    BitwiseAnd,
-    BitwiseOr,
-    BitwiseXor,
-    LeftInequality,
-    RightInequality,
-    InPunctuator,
-    InstanceOfPunctuator,
-
-    Substitution,
-    UnsignedRightShiftEqual,
-    RightShiftEqual,
-    LeftShiftEqual,
-    PlusEqual,
-    MinusEqual,
-    MultiplyEqual,
-    DivideEqual,
-    ModEqual,
-    // ExclamationMarkEqual,
-    BitwiseAndEqual,
-    BitwiseOrEqual,
-    BitwiseXorEqual,
-    LeftInequalityEqual,
-    RightInequalityEqual,
-    SubstitutionEnd,
-
-    Arrow,
-    PunctuatorsKindEnd,
-};
-
 const char16_t* KeywordTokens[] = {
     u"", u"if", u"in", u"do", u"var", u"for", u"new", u"try", u"this",
     u"else", u"case", u"void", u"with", u"enum", u"while", u"break",
@@ -196,61 +50,12 @@ const char16_t* KeywordTokens[] = {
     u"static", u"yield", u"let"
 };
 
-enum KeywordKind {
-    NotKeyword,
-    If,
-    In,
-    Do,
-    Var,
-    For,
-    New,
-    Try,
-    This,
-    Else,
-    Case,
-    Void,
-    With,
-    Enum,
-    While,
-    Break,
-    Catch,
-    Throw,
-    Const,
-    Class,
-    Super,
-    Return,
-    Typeof,
-    Delete,
-    Switch,
-    Export,
-    Import,
-    Default,
-    Finally,
-    Extends,
-    Function,
-    Continue,
-    Debugger,
-    InstanceofKeyword,
-    StrictModeReservedWord,
-    Implements,
-    Interface,
-    Package,
-    Private,
-    Protected,
-    Public,
-    Static,
-    Yield,
-    Let,
-    KeywordKindEnd
-};
-
 // TODO handle error
 
 ALWAYS_INLINE bool isDecimalDigit(char16_t ch)
 {
     return (ch >= '0' && ch <= '9'); // 0..9
 }
-
 
 ALWAYS_INLINE bool isHexDigit(char16_t ch)
 {
@@ -312,197 +117,6 @@ ALWAYS_INLINE bool isIdentifierPart(char16_t ch)
         || (ch == 92) // \ (backslash)
         || isIdentifierPartSlow(ch);
 }
-
-// typedef std::basic_string<char16_t, std::char_traits<char16_t>, escargot::ESSimpleAllocatorStd<char16_t> > ParserString;
-typedef std::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t> > ParserStringStd;
-
-class ParserString {
-public:
-    ParserString()
-    {
-        m_buffer = NULL;
-        m_length = 0;
-    }
-
-    ParserString(char16_t ch)
-    {
-        m_buffer = NULL;
-        m_length = 0;
-        m_stdString = ch;
-    }
-
-    ParserString(const ParserString& ps)
-    {
-        m_buffer = ps.m_buffer;
-        m_length = ps.m_length;
-        m_stdString = ps.m_stdString;
-        m_isASCIIString = ps.m_isASCIIString;
-    }
-
-    void operator =(const ParserString& ps)
-    {
-        m_buffer = ps.m_buffer;
-        m_length = ps.m_length;
-        m_stdString = ps.m_stdString;
-        m_isASCIIString = ps.m_isASCIIString;
-    }
-
-    ParserString(const ParserStringStd& ps)
-    {
-        m_buffer = 0;
-        m_length = 0;
-        m_stdString = ps;
-    }
-
-    static const size_t npos = static_cast<size_t>(-1);
-
-    void convertIntoStdString()
-    {
-        if (m_buffer) {
-            if (m_isASCIIString) {
-                m_stdString.clear();
-                m_stdString.shrink_to_fit();
-                m_stdString.reserve(m_length);
-                for (size_t i = 0; i < m_length; i ++)
-                    m_stdString += (char16_t)bufferAsASCIIBuffer()[i];
-            } else {
-                m_stdString.assign(bufferAsUTF16Buffer(), &bufferAsUTF16Buffer()[m_length]);
-            }
-            m_buffer = 0;
-            m_length = 0;
-        } else {
-
-        }
-    }
-
-    size_t find(char16_t c)
-    {
-        if (m_buffer) {
-            for (size_t i = 0; i < m_length ; i ++) {
-                if (operator[](i) == c) {
-                    return i;
-                }
-            }
-            return npos;
-        } else {
-            return m_stdString.find(c);
-        }
-    }
-
-    bool operator ==(const char16_t* src) const
-    {
-        if (m_buffer) {
-            for (unsigned i = 0; i < m_length ; i++) {
-                char16_t s = src[i];
-                if (s != operator[](i)) {
-                    return false;
-                }
-            }
-            return src[m_length] == 0;
-        } else
-            return m_stdString == src;
-    }
-
-    bool operator ==(const ParserString& src) const
-    {
-        if (m_buffer) {
-            if (m_length != src.length()) {
-                return false;
-            }
-            for (unsigned i = 0; i < m_length ; i++) {
-                char16_t s = src[i];
-                if (s != operator[](i)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            // FIXME
-            const_cast<ParserString &>(src).convertIntoStdString();
-            return m_stdString == src.m_stdString;
-        }
-    }
-
-    escargot::ESString* toESString()
-    {
-        if (m_buffer) {
-            if (m_isASCIIString) {
-                return escargot::ESString::create(std::move(escargot::ASCIIString(bufferAsASCIIBuffer(), m_length)));
-            } else {
-                return escargot::ESString::createASCIIStringIfNeeded(bufferAsUTF16Buffer(), m_length);
-            }
-        } else {
-            return escargot::ESString::createASCIIStringIfNeeded(std::move(escargot::UTF16String(m_stdString.begin(), m_stdString.end())));
-        }
-    }
-
-    escargot::InternalAtomicString toInternalAtomicString()
-    {
-        if (m_buffer) {
-            if (m_isASCIIString) {
-                return escargot::InternalAtomicString(bufferAsASCIIBuffer(), m_length);
-            } else {
-                return escargot::InternalAtomicString(bufferAsUTF16Buffer(), m_length);
-            }
-        } else {
-            return escargot::InternalAtomicString(m_stdString.data(), m_stdString.length());
-        }
-    }
-
-    void operator +=(char16_t src)
-    {
-        convertIntoStdString();
-        m_stdString += src;
-    }
-
-    void assign(const char16_t* start, const char16_t* end)
-    {
-        m_buffer = 0;
-        m_length = 0;
-        m_stdString.assign(start, end);
-    }
-
-    ParserString substr(size_t pos, size_t n)
-    {
-        convertIntoStdString();
-        return ParserString(m_stdString.substr(pos, n));
-    }
-
-    size_t length() const
-    {
-        if (m_buffer)
-            return m_length;
-        return m_stdString.length();
-    }
-
-    char16_t operator[](const size_t& idx) const
-    {
-        if (m_buffer) {
-            if (m_isASCIIString)
-                return bufferAsASCIIBuffer()[idx];
-            else
-                return bufferAsUTF16Buffer()[idx];
-        }
-        return m_stdString[idx];
-    }
-
-    const char* bufferAsASCIIBuffer() const
-    {
-        ASSERT(m_isASCIIString);
-        return (const char*)m_buffer;
-    }
-
-    const char16_t* bufferAsUTF16Buffer() const
-    {
-        ASSERT(!m_isASCIIString);
-        return (const char16_t*)m_buffer;
-    }
-
-    ParserStringStd m_stdString;
-    bool m_isASCIIString;
-    const void* m_buffer;
-    size_t m_length;
-};
 
 ParserString makeParserString(escargot::ESString* str, size_t start, size_t len)
 {
@@ -720,124 +334,21 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
     return NotKeyword;
 }
 
-struct ParseStatus;
-
-ALWAYS_INLINE ParseStatus* psMalloc();
-ALWAYS_INLINE void psFree(void* p);
-
-struct ParseStatus : public RefCounted<ParseStatus> {
-    Token m_type;
-    ParserString m_value;
-    bool m_octal;
-    size_t m_lineNumber;
-    size_t m_lineStart;
-    size_t m_start;
-    size_t m_end;
-    int m_prec;
-
-    // ParserString m_value_cooked;
-    // ParserString m_value_raw;
-    bool m_head;
-    bool m_tail;
-
-    double m_valueNumber;
-
-    ParserString m_regexBody;
-    ParserString m_regexFlag;
-
-    PunctuatorsKind m_punctuatorsKind;
-    KeywordKind m_keywordKind;
-
-    ~ParseStatus()
-    {
-    }
-
-    ParseStatus()
-    {
-        m_valueNumber = 0;
-        m_head = false;
-        m_tail = false;
-        m_octal = false;
-        m_prec = -1;
-    }
-
-    ParseStatus(Token t, size_t a, size_t b, size_t c, size_t d)
-    {
-        m_valueNumber = 0;
-
-        m_type = t;
-        m_lineNumber = a;
-        m_lineStart = b;
-        m_start = c;
-        m_end = d;
-        m_head = false;
-        m_tail = false;
-        m_prec = -1;
-        m_octal = false;
-    }
-
-    ParseStatus(Token t, ParserString&& data, size_t a, size_t b, size_t c, size_t d)
-    {
-        m_valueNumber = 0;
-
-        m_type = t;
-        m_value = std::move(data);
-        m_lineNumber = a;
-        m_lineStart = b;
-        m_start = c;
-        m_end = d;
-        m_head = false;
-        m_tail = false;
-        m_prec = -1;
-        m_octal = false;
-    }
-
-    ParseStatus(Token t, ParserString&& data, bool octal, size_t a, size_t b, size_t c, size_t d)
-    {
-        m_valueNumber = 0;
-
-        m_type = t;
-        m_value = std::move(data);
-        m_octal = octal;
-        m_lineNumber = a;
-        m_lineStart = b;
-        m_start = c;
-        m_end = d;
-        m_head = false;
-        m_tail = false;
-        m_prec = -1;
-    }
-
-    void* operator new(size_t, void* p) { return p; }
-    void* operator new[](size_t, void* p) { return p; }
-    void* operator new(size_t size)
-    {
-        return psMalloc();
-    }
-    void operator delete(void* p)
-    {
-        return psFree(p);
-    }
-    void* operator new[](size_t size)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-        return malloc(size);
-    }
-    void operator delete[](void* p)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-        return free(p);
-    }
-};
-
 bool isPSMallocInited = false;
 #define PS_POOL_SIZE 64
 ParseStatus* psPool[PS_POOL_SIZE];
 size_t psPoolUsage = 0;
 
-struct ParseContext;
-typedef escargot::ESErrorObject::Code ErrorCode;
-void throwEsprimaException(const char16_t* token = u"", ParseContext* ctx = nullptr, ErrorCode code = ErrorCode::SyntaxError);
+void throwEsprimaException(const char16_t* msg = u"", ParseContext* ctx = nullptr, ErrorCode code = ErrorCode::SyntaxError);
+void throwEsprimaException(escargot::UTF16String msg, ParseContext* ctx = nullptr, ErrorCode code = ErrorCode::SyntaxError);
+
+ParserStackChecker::ParserStackChecker(ParseContext* ctx)
+    : m_ctx(ctx)
+{
+    m_ctx->m_stackCounter++;
+    if (UNLIKELY(m_ctx->m_stackCounter == 2048))
+        throwEsprimaException(u"Maximum call stack size exceeded.", ctx, ErrorCode::RangeError);
+}
 
 ALWAYS_INLINE ParseStatus* psMalloc()
 {
@@ -857,72 +368,15 @@ ALWAYS_INLINE void psFree(void* p)
         free(p);
 }
 
-struct Curly {
-    char m_curly[4];
-    Curly() { }
-    Curly(const char curly[4])
-    {
-        m_curly[0] = curly[0];
-        m_curly[1] = curly[1];
-        m_curly[2] = curly[2];
-        m_curly[3] = curly[3];
-    }
-};
+void* ParseStatus::operator new(size_t size)
+{
+    return psMalloc();
+}
 
-struct ParseContext {
-    ParseContext(escargot::ESString* src)
-        : m_sourceString(src)
-    {
-    }
-    escargot::ESString* m_sourceString;
-
-    size_t m_index;
-    size_t m_lineNumber;
-    size_t m_lineStart;
-    size_t m_startIndex;
-    size_t m_startLineNumber;
-    size_t m_startLineStart;
-    size_t m_lastIndex;
-    size_t m_lastLineNumber;
-    size_t m_lastLineStart;
-    size_t m_length;
-    bool m_allowIn;
-    bool m_allowYield;
-    std::vector<escargot::ESString *, gc_allocator<escargot::ESString *>> m_labelSet;
-    bool m_inFunctionBody;
-    bool m_inIteration;
-    bool m_inSwitch;
-    bool m_inCatch;
-    int m_lastCommentStart;
-    std::vector<Curly> m_curlyStack;
-    bool m_strict;
-    bool m_scanning;
-    bool m_hasLineTerminator;
-    bool m_isBindingElement;
-    bool m_isAssignmentTarget;
-    bool m_isFunctionIdentifier;
-    RefPtr<ParseStatus> m_firstCoverInitializedNameError;
-    RefPtr<ParseStatus> m_lookahead;
-    int m_parenthesizedCount;
-    int m_stackCounter;
-    escargot::StatementNodeVector* m_currentBody;
-};
-
-struct ParserStackChecker {
-    ParserStackChecker(ParseContext* ctx)
-        : m_ctx(ctx)
-    {
-        m_ctx->m_stackCounter++;
-        if (UNLIKELY(m_ctx->m_stackCounter == 2048))
-            throwEsprimaException(u"Maximum call stack size exceeded.", ctx, ErrorCode::RangeError);
-    }
-    ~ParserStackChecker()
-    {
-        m_ctx->m_stackCounter--;
-    }
-    void* operator new(std::size_t) = delete;
-    ParseContext* m_ctx;
-};
+void ParseStatus::operator delete(void* p)
+{
+    return psFree(p);
+}
 
 #define PARSER_STACK_CHECK ParserStackChecker __checker(ctx)
 
@@ -959,11 +413,20 @@ void throwEsprimaException(escargot::ESString* message)
     throw message;
 }
 
-void throwEsprimaException(const char16_t* message, ParseContext* ctx, ErrorCode code)
+void throwEsprimaException(escargot::UTF16String message, ParseContext* ctx, ErrorCode code)
 {
-    if (code != ErrorCode::SyntaxError)
+    if (ctx != nullptr) {
         throw EsprimaError(ctx->m_lineNumber, escargot::ESString::create(message), code);
-    throw escargot::ESString::create(message);
+    }
+    escargot::ESVMInstance::currentInstance()->throwError(escargot::ESErrorObject::create(escargot::ESString::create(message), code));
+}
+
+void throwEsprimaException(const char16_t* message, ParseContext* ctx, escargot::ESErrorObject::Code code)
+{
+    if (ctx != nullptr) {
+        throw EsprimaError(ctx->m_lineNumber, escargot::ESString::create(message), code);
+    }
+    escargot::ESVMInstance::currentInstance()->throwError(escargot::ESErrorObject::create(escargot::ESString::create(message), code));
 }
 
 escargot::UTF16String tokenToString(RefPtr<ParseStatus> token)
@@ -991,7 +454,7 @@ void throwUnexpectedToken(RefPtr<ParseStatus> token, escargot::UTF16String messa
     } else {
         err_msg.append(u"\'.");
     }
-    throwEsprimaException(err_msg.c_str());
+    throwEsprimaException(err_msg);
 }
 
 void throwUnexpectedToken(RefPtr<ParseStatus> token, PunctuatorsKind kind, const char16_t* message = u"")
@@ -1042,7 +505,7 @@ void throwDuplicateIdentifierError(escargot::InternalAtomicString name, const ch
     err_msg.append(u"Cannot declare a parameter named '");
     err_msg.append(name.string()->toUTF16String());
     err_msg.append(u"' in strict mode as it has already been declared.");
-    throwEsprimaException(err_msg.c_str());
+    throwEsprimaException(err_msg);
 }
 
 void throwRestrictedWordUsedError(escargot::InternalAtomicString name)
@@ -1051,7 +514,7 @@ void throwRestrictedWordUsedError(escargot::InternalAtomicString name)
     err_msg.append(u"Cannot use a variable named '");
     err_msg.append(name.string()->toUTF16String());
     err_msg.append(u"' in strict mode.");
-    throwEsprimaException(err_msg.c_str());
+    throwEsprimaException(err_msg);
 }
 
 void throwRestrictedWordUsedError(RefPtr<ParseStatus> token)
@@ -2950,7 +2413,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
                     err_msg.append(u"' as a variable name.");
                 }
             }
-            throwEsprimaException(err_msg.c_str());
+            throwEsprimaException(err_msg);
         }
     }
     /*
@@ -4264,6 +3727,26 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     ctx->m_allowYield = previousAllowYield;
 
     return NULL;
+}
+
+escargot::StatementNodeVector makeAnonymousFunctionNoeVector(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, escargot::Node* body)
+{
+    escargot::StatementNodeVector stmtNodeVec;
+    RefPtr<ParseStatus> firstRestricted;
+
+    escargot::FunctionDeclarationNode* nd = new escargot::FunctionDeclarationNode(escargot::InternalAtomicString("anonymous"), std::move(vec), body, false, false, ctx->m_strict);
+    nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+    stmtNodeVec.insert(stmtNodeVec.begin(), nd);
+    validateFunctionParamsLazily(ctx, nd, firstRestricted, false);
+
+    escargot::IdentifierNode* idNode = new escargot::IdentifierNode(escargot::InternalAtomicString("anonymous"));
+    idNode->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+    escargot::VariableDeclaratorNode* v = new escargot::VariableDeclaratorNode(
+        idNode
+    );
+    stmtNodeVec.insert(stmtNodeVec.begin(), v);
+
+    return stmtNodeVec;
 }
 
 escargot::Node* parseFunctionExpression(ParseContext* ctx)
@@ -6365,31 +5848,7 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
     ASSERT_STATIC((sizeof(KeywordTokens) / sizeof(char16_t*)) == KeywordKind::KeywordKindEnd,
         "Sizeof keyword names array should be equal to sizeof keyword enum");
 
-    ParseContext ctx(source);
-    ctx.m_index = 0;
-    ctx.m_lineNumber = (source->length() > 0) ? 1 : 0;
-    ctx.m_lineStart = 0;
-    ctx.m_startIndex = ctx.m_index;
-    ctx.m_startLineNumber = ctx.m_lineNumber;
-    ctx.m_startLineStart = ctx.m_lineStart;
-    ctx.m_length = source->length();
-    ctx.m_allowIn = true;
-    ctx.m_allowYield = true;
-    ctx.m_inFunctionBody = false;
-    ctx.m_inIteration = false;
-    ctx.m_inSwitch = false;
-    ctx.m_inCatch = false;
-    ctx.m_lastCommentStart = -1;
-    ctx.m_strict = strict;
-    ctx.m_scanning = false;
-    ctx.m_isAssignmentTarget = false;
-    ctx.m_isBindingElement = false;
-    ctx.m_isFunctionIdentifier = false;
-    ctx.m_firstCoverInitializedNameError = NULL;
-    ctx.m_parenthesizedCount = 0;
-    ctx.m_lookahead = nullptr;
-    ctx.m_currentBody = nullptr;
-    ctx.m_stackCounter = 0;
+    ParseContext ctx(source, strict);
     try {
         escargot::Node* node = parseProgram(&ctx);
         return node;
