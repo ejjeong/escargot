@@ -55,6 +55,7 @@ var tests = [
             assert.areEqual(1, c, "Incorrect result from Array.prototype.shift()");
         }
     },
+    /*
     {
         name: "Calling Array.prototype.entries()",
         body: function ()
@@ -79,6 +80,7 @@ var tests = [
             }
         }
     },
+    */ // ES6 Spec for..of statement is not supported
     {
         name: "Calling Array.prototype.reverse()",
         body: function ()

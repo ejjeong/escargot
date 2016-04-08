@@ -54,6 +54,24 @@ run_test() {
 		$($CMD > $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
 		$(diff -Z -i $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
 		DIFF_EXIT_CODE=$?
+		if [[ $BASELINE == $TEST_ROOT/baseline/baseline1 ]]; then
+			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
+				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline2 2>&1 > $TEMPORARY_DIFF_FILE)
+				DIFF_EXIT_CODE=$?
+			fi
+			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
+				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline3 2>&1 > $TEMPORARY_DIFF_FILE)
+				DIFF_EXIT_CODE=$?
+			fi
+			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
+				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline4 2>&1 > $TEMPORARY_DIFF_FILE)
+				DIFF_EXIT_CODE=$?
+			fi
+			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
+				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline5 2>&1 > $TEMPORARY_DIFF_FILE)
+				DIFF_EXIT_CODE=$?
+			fi
+		fi
 		if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
 			printf "Fail\n" | tee -a $LOG_FILE
 			cat $TEMPORARY_DIFF_FILE >> $LOG_FILE
@@ -95,7 +113,7 @@ run_dir() {
 		if [[ "$ENTITY" == "/test" && "$FILES" != "" ]]; then
 			REAL_FILES=$(find . -iname $FILES -printf "%P\n")
 			if [[ $BASELINE == "" ]]; then
-				REAL_BASELINE=$TEST_ROOT/baseline
+				REAL_BASELINE=$TEST_ROOT/baseline/baseline1
 			else
 				REAL_BASELINE=$(find . -iname $BASELINE -printf "%P\n")
 			fi

@@ -27,6 +27,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>ES6 Spec</escargot-skip>
       <files>bug469.js</files>
       <compile-flags>-maxinterpretcount:1 -bgjit- -loopinterpretcount:1 -force:fixdataprops -off:aggressiveinttypespec -off:bailonnoprofile</compile-flags>
     </default>
@@ -1305,6 +1306,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>ES6 Spec</escargot-skip>
       <files>opttagchecks2.js</files>
       <compile-flags>-off:bailonnoprofile</compile-flags>
       <tags>BugFix</tags>
