@@ -18,7 +18,7 @@ Running all tests
 [Array] array_ctr.js .......... Fail
 [Array] array_ctr.js .......... Fail
 [Array] arr_bailout.js .......... Pass
-[Array] concat1.js .......... Fail
+[Array] concat1.js .......... Pass
 [Array] concat2.js .......... Fail
 [Array] delete.js .......... Pass
 [Array] es5array_push.js .......... Pass
@@ -52,7 +52,7 @@ Running all tests
 [Array] array_splice.js .......... Fail
 [Array] array_splice_double.js .......... Fail
 [Array] array_splice.js .......... Fail
-[Array] array_splice1.js .......... Fail
+[Array] array_splice1.js .......... Pass
 [Array] array_splice2.js .......... Fail
 [Array] array_splice3.js .......... Fail
 [Array] array_splice4.js .......... Fail
@@ -151,13 +151,13 @@ Running all tests
 [Basics] DeleteProperty1.js .......... Fail
 [Basics] Accessors.js .......... Pass
 [Basics] DefProp.js .......... Pass
-[Basics] scopedaccessors.js .......... Fail
+[Basics] scopedaccessors.js .......... Skip (Not in scope (wtih))
 [Basics] flags.js .......... Fail
 [Basics] Branching.js .......... Pass
 [Basics] inlinecache.js .......... Fail
 [Basics] scan.js .......... Fail
 [Basics] enum.js .......... Pass
-[Basics] with3.js .......... Fail
+[Basics] with3.js .......... Skip (Not in scope (wtih))
 [Basics] Enumerator-deprecated.js .......... Pass
 [Basics] Enumerator-WebViewHost.js .......... Fail
 [Basics] cross_site_accessor_main.js .......... Fail
@@ -167,7 +167,7 @@ Running all tests
 [es5] array_every.js .......... Pass
 [es5] array_some.js .......... Pass
 [es5] array_forEach.js .......... Pass
-[es5] array_map.js .......... Fail
+[es5] array_map.js .......... Pass
 [es5] array_filter.js .......... Pass
 [es5] array_reduce.js .......... Pass
 [es5] array_reduceright.js .......... Pass
@@ -208,7 +208,7 @@ Running all tests
 [es5] augmentPrimitive.js .......... Fail
 [es5] setget.js .......... Pass
 [es5] es5array_objproto.js .......... Pass
-[es5] es5array_arrayproto.js .......... Fail
+[es5] es5array_arrayproto.js .......... Pass
 [es5] es5array_arrayproto_opt.js .......... Pass
 [es5] es5array_arrayproto_crosssite.js .......... Fail
 [es5] es5array_protoarr.js .......... Pass
@@ -703,7 +703,7 @@ Running all tests
 [Optimizer] test133.js .......... Fail
 [Optimizer] test134.js .......... Pass
 [Optimizer] test135.js .......... Fail
-[Optimizer] test136.js .......... Fail
+[Optimizer] test136.js .......... Pass
 [Optimizer] test137.js .......... Pass
 [Optimizer] test138.js .......... Pass
 [Optimizer] test138.js .......... Pass
@@ -887,9 +887,9 @@ Running all tests
 [Regex] regex_replacefn.js .......... Pass
 [Regex] regex_replacefn_this.js .......... Pass
 [Regex] class-case.js .......... Pass
-[Regex] prioritizedalternatives.js .......... Fail
+[Regex] prioritizedalternatives.js .......... Pass
 [Regex] multiline.js .......... Pass
-[Regex] regex_assertion.js .......... Fail
+[Regex] regex_assertion.js .......... Pass
 [Regex] regex_deviations.js .......... Fail
 [Regex] undefined_option.js .......... Pass
 [Regex] toString.js .......... Fail
@@ -905,7 +905,7 @@ Running all tests
 [Regex] BoiHardFail.js .......... Fail
 [Regex] leadtrail.js .......... Pass
 [Regex] Bug517864.js .......... Pass
-[Regex] stackregex_box.js .......... Fail
+[Regex] stackregex_box.js .......... Pass
 [Regex] blue_102584_1.js .......... Fail
 [Regex] blue_102584_2.js .......... Pass
 [Regex] Bug737451.js .......... Pass
@@ -1423,9 +1423,9 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		55		42		9		(51%)
-              Basics		56		28		23		5		(50%)
-                 es5		56		30		26		0		(53%)
+               Array		106		57		40		9		(53%)
+              Basics		56		28		21		7		(50%)
+                 es5		56		32		24		0		(57%)
                   EH		17		7		10		0		(41%)
         InlineCaches		21		17		4		0		(80%)
            Generated		110		108		2		0		(98%)
@@ -1439,10 +1439,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		178		26		2		(86%)
+           Optimizer		206		179		25		2		(86%)
             Function		61		21		39		1		(34%)
               Object		58		30		24		4		(51%)
-               Regex		33		14		19		0		(42%)
+               Regex		33		17		16		0		(51%)
           Prototypes		7		5		2		0		(71%)
      GlobalFunctions		13		6		7		0		(46%)
            Operators		32		21		11		0		(65%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		901		481		24		(64%)
+               Total		1406		909		471		26		(64%)

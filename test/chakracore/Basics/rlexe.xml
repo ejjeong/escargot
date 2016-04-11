@@ -326,8 +326,9 @@
   </test>
   <test>
     <default>
-      <files>ScopedAccessors.js</files>
-      <baseline>ScopedAccessors.baseline</baseline>
+      <escargot-skip>Not in scope (wtih)</escargot-skip>
+      <files>scopedaccessors.js</files>
+      <baseline>scopedaccessors.baseline</baseline>
     </default>
   </test>
   <test>
@@ -365,6 +366,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (wtih)</escargot-skip>
       <files>with3.js</files>
       <baseline>with3.baseline</baseline>
       <tags>fail_mutators</tags>
