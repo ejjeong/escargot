@@ -92,18 +92,14 @@ class CodeBlock;
     F(SetObjectPropertyGetter, 0, 2, 0, 0, 0) \
     F(GetObject, 1, 2, 0, 1, 1) \
     F(GetObjectAndPushObject, 2, 2, 0, 1, 1) \
-    F(GetObjectSlowMode, 1, 2, 0, 0, 0) \
-    F(GetObjectAndPushObjectSlowMode, 2, 2, 0, 0, 0) \
     F(GetObjectWithPeeking, 1, 0, 2, 1, 1) \
-    F(GetObjectWithPeekingSlowMode, 1, 0, 2, 0, 0) \
     F(GetObjectPreComputedCase, 1, 1, 0, 1, 1) \
     F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0, 1, 1) \
     F(GetObjectPreComputedCaseSlowMode, 1, 1, 0, 0, 0) \
     F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0, 0, 0) \
-    F(GetObjectWithPeekingPreComputedCase, 1, 0, 1, 1, 1) \
-    F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 1, 0, 0) \
+    F(GetObjectPreComputedCaseWithPeeking, 1, 0, 1, 1, 1) \
+    F(GetObjectPreComputedCaseWithPeekingSlowMode, 1, 0, 1, 0, 0) \
     F(SetObject, 1, 3, 0, 1, 0) \
-    F(SetObjectSlowMode, 1, 3, 0, 0, 0) \
     F(SetObjectPreComputedCase, 1, 2, 0, 1, 0) \
     F(SetObjectPreComputedCaseSlowMode, 1, 2, 0, 0, 0) \
     \
@@ -1582,38 +1578,6 @@ public:
 
 ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectAndPushObject), "");
 
-class GetObjectSlowMode : public GetObject {
-public:
-    GetObjectSlowMode()
-        : GetObject(GetObjectSlowModeOpcode)
-    {
-    }
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("GetObjectSlowMode <>\n");
-    }
-#endif
-};
-
-ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectSlowMode), "");
-
-class GetObjectAndPushObjectSlowMode : public GetObjectAndPushObject {
-public:
-    GetObjectAndPushObjectSlowMode()
-        : GetObjectAndPushObject(GetObjectAndPushObjectSlowModeOpcode)
-    {
-    }
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("GetObjectAndPushObjectSlowMode <>\n");
-    }
-#endif
-};
-
-ASSERT_STATIC(sizeof(GetObjectAndPushObject) == sizeof(GetObjectAndPushObjectSlowMode), "");
-
 class GetObjectWithPeeking : public ByteCode, public JITProfileTarget {
 public:
     GetObjectWithPeeking(Opcode code = GetObjectWithPeekingOpcode)
@@ -1628,22 +1592,6 @@ public:
     }
 #endif
 };
-
-class GetObjectWithPeekingSlowMode : public GetObjectWithPeeking {
-public:
-    GetObjectWithPeekingSlowMode()
-        : GetObjectWithPeeking(GetObjectWithPeekingSlowModeOpcode)
-    {
-    }
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("GetObjectWithPeekingSlowMode <>\n");
-    }
-#endif
-};
-
-ASSERT_STATIC(sizeof(GetObjectWithPeeking) == sizeof(GetObjectWithPeekingSlowMode), "");
 
 class GetObjectPreComputedCase : public ByteCode, public JITProfileTarget {
 public:
@@ -1713,9 +1661,9 @@ public:
 
 ASSERT_STATIC(sizeof(GetObjectPreComputedCaseAndPushObject) == sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode), "");
 
-class GetObjectWithPeekingPreComputedCase : public ByteCode, public JITProfileTarget  {
+class GetObjectPreComputedCaseWithPeeking : public ByteCode, public JITProfileTarget  {
 public:
-    GetObjectWithPeekingPreComputedCase(const ESValue& v, Opcode code = GetObjectWithPeekingPreComputedCaseOpcode)
+    GetObjectPreComputedCaseWithPeeking(const ESValue& v, Opcode code = GetObjectPreComputedCaseWithPeekingOpcode)
         : ByteCode(code)
     {
         m_propertyValue = v.toString();
@@ -1727,26 +1675,26 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectWithPeekingPreComputedCase <>\n");
+        printf("GetObjectPreComputedCaseWithPeeking <>\n");
     }
 #endif
 };
 
-class GetObjectWithPeekingPreComputedCaseSlowMode : public GetObjectWithPeekingPreComputedCase {
+class GetObjectPreComputedCaseWithPeekingSlowMode : public GetObjectPreComputedCaseWithPeeking {
 public:
-    GetObjectWithPeekingPreComputedCaseSlowMode(const ESValue& v)
-        : GetObjectWithPeekingPreComputedCase(v, GetObjectWithPeekingPreComputedCaseSlowModeOpcode)
+    GetObjectPreComputedCaseWithPeekingSlowMode(const ESValue& v)
+        : GetObjectPreComputedCaseWithPeeking(v, GetObjectPreComputedCaseWithPeekingSlowModeOpcode)
     {
     }
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectWithPeekingPreComputedCaseSlowMode <>\n");
+        printf("GetObjectPreComputedCaseWithPeekingSlowMode <>\n");
     }
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObjectWithPeekingPreComputedCase) == sizeof(GetObjectWithPeekingPreComputedCaseSlowMode), "");
+ASSERT_STATIC(sizeof(GetObjectPreComputedCaseWithPeeking) == sizeof(GetObjectPreComputedCaseWithPeekingSlowMode), "");
 
 class SetObject : public ByteCode {
 public:
@@ -1762,22 +1710,6 @@ public:
     }
 #endif
 };
-
-class SetObjectSlowMode : public SetObject {
-public:
-    SetObjectSlowMode()
-        : SetObject(SetObjectSlowModeOpcode)
-    {
-    }
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("SetObjectSlowMode <>\n");
-    }
-#endif
-};
-
-ASSERT_STATIC(sizeof(SetObject) == sizeof(SetObjectSlowMode), "");
 
 class SetObjectPreComputedCase : public ByteCode {
 public:

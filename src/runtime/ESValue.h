@@ -1807,11 +1807,11 @@ public:
     {
         return defineDataProperty(name.string(), isWritable, isEnumerable, isConfigurable, initalValue, force);
     }
-    inline bool defineDataProperty(const escargot::ESValue& key,
+    inline bool defineDataProperty(const ESValue& key,
         bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue(), bool force = false, bool forceNewHiddenClass = false);
-    inline bool defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data,
+    inline bool defineAccessorProperty(const ESValue& key, ESPropertyAccessorData* data,
         bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, bool force = false);
-    inline bool defineAccessorProperty(const escargot::ESValue& key, ESNativeGetter getter, ESNativeSetter setter,
+    inline bool defineAccessorProperty(const ESValue& key, ESNativeGetter getter, ESNativeSetter setter,
         bool isWritable, bool isEnumerable, bool isConfigurable, bool force = false)
     {
         return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable, force);
@@ -1825,9 +1825,10 @@ public:
 
     inline bool deletePropertyWithException(const ESValue& key, bool force = false);
     inline bool deleteProperty(const ESValue& key, bool force = false);
+    inline bool deletePropertySlowPath(const ESValue& key, bool force = false);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
-    inline bool hasProperty(const escargot::ESValue& key);
-    inline bool hasOwnProperty(const escargot::ESValue& key);
+    inline bool hasProperty(const ESValue& key);
+    inline bool hasOwnProperty(const ESValue& key);
 
     bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
     bool defineOwnProperty(const ESValue& key, ESObject* obj, bool throwFlag);
@@ -1904,27 +1905,26 @@ public:
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ALWAYS_INLINE ESValue get(escargot::ESValue key, escargot::ESValue* receiver = nullptr);
-    inline ESValue getSlowPath(escargot::ESValue key, escargot::ESValue* receiver = nullptr);
+    ALWAYS_INLINE ESValue get(escargot::ESValue key, ESValue* receiver = nullptr);
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
+    inline ESValue getOwnPropertyFastPath(escargot::ESValue key);
     inline ESValue getOwnPropertySlowPath(escargot::ESValue key);
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    inline bool set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
-    ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val, escargot::ESValue* receiver = nullptr)
+    inline bool set(const escargot::ESValue& key, const ESValue& val, ESValue* receiver = nullptr);
+    ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val, ESValue* receiver = nullptr)
     {
         return set(ESValue(key), val, receiver);
     }
-    ALWAYS_INLINE void set(escargot::ESString* key, const ESValue& val, bool throwException, escargot::ESValue* receiver = nullptr)
+    ALWAYS_INLINE void set(escargot::ESString* key, const ESValue& val, bool throwException, ESValue* receiver = nullptr)
     {
         set(ESValue(key), val, throwException, receiver);
     }
 
-    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExeption, escargot::ESValue* receiver = nullptr);
-    inline bool setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
+    ALWAYS_INLINE void set(const ESValue& key, const ESValue& val, bool throwExeption, ESValue* receiver = nullptr);
+    inline bool setSlowPath(const ESValue& key, const ESValue& val, ESValue* receiver = nullptr);
 
     ALWAYS_INLINE uint32_t length();
-    ALWAYS_INLINE ESValue pop();
     ALWAYS_INLINE void eraseValues(uint32_t, int);
 
     template <typename Functor>
@@ -2329,20 +2329,8 @@ public:
         set(m_length, val);
     }
 
-    ESValue fastPop()
-    {
-        ASSERT(isFastmode());
-        if (m_length == 0)
-            return ESValue();
-        ESValue ret = m_vector[m_vector.size() - 1];
-        setLength(length() - 1);
-        return ret;
-    }
-
     void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
     void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
-    ESArrayObject* fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments);
-    escargot::ESString* fastJoin(escargot::ESString* sep, unsigned len);
 
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)
@@ -2391,8 +2379,10 @@ public:
 
         ESValue* dataPtr = m_vector.data();
         for (uint32_t i = 0; i < len; i++) {
-            if (dataPtr[i] != ESValue(ESValue::ESEmptyValue))
-                ESObject::set(ESValue(i).toString(), dataPtr[i]);
+            if (dataPtr[i] != ESValue(ESValue::ESEmptyValue)) {
+                m_hiddenClass = m_hiddenClass->defineProperty(ESValue(i).toString(), true, true, true, true, false);
+                m_hiddenClassData.push_back(dataPtr[i]);
+            }
         }
         m_vector.clear();
     }
@@ -2404,10 +2394,7 @@ public:
 
     void setLength(unsigned newLength);
 
-    bool isFastmode()
-    {
-        return m_flags.m_isFastMode;
-    }
+    bool isFastmode();
 
     const uint32_t& length()
     {
@@ -2417,8 +2404,8 @@ public:
     bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
     bool defineOwnProperty(const ESValue& key, ESObject* desc, bool throwFlag);
 
-    static int64_t nextIndexForward(ESObject* obj, const int64_t cur, const int64_t len);
-    static int64_t nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end);
+    static int64_t nextIndexForward(ESObject* obj, const int64_t cur, const int64_t len, const bool skipUndefined);
+    static int64_t nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined);
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }

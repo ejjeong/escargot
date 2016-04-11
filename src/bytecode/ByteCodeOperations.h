@@ -161,10 +161,10 @@ ALWAYS_INLINE bool abstractRelationalComparisonOrEqual(ESValue* left, ESValue* r
 NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject);
 ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if (LIKELY(willBeObject->isESPointer())) {
-        if (LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
-            ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
+        ESPointer* ptr = willBeObject->asESPointer();
+        if (LIKELY(ptr->isESArrayObject())) {
+            ESArrayObject* arr = ptr->asESArrayObject();
             if (LIKELY(arr->isFastmode())) {
                 uint32_t idx = property->toIndex();
                 if (LIKELY(idx < arr->length())) {
@@ -177,14 +177,14 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
                     }
                 }
             }
-        } else if (willBeObject->asESPointer()->isESTypedArrayObject()) {
+        } else if (ptr->isESTypedArrayObject()) {
             uint32_t idx = property->toIndex();
-            ESTypedArrayObjectWrapper* arr = willBeObject->asESPointer()->asESTypedArrayObjectWrapper();
+            ESTypedArrayObjectWrapper* arr =ptr->asESTypedArrayObjectWrapper();
             return arr->get(idx);
-        } else if (willBeObject->asESPointer()->isESString()) {
+        } else if (ptr->isESString()) {
             uint32_t idx = property->toIndex();
-            if (LIKELY(idx < willBeObject->asESString()->length())) {
-                char16_t c = willBeObject->asESString()->charAt(idx);
+            if (LIKELY(idx < ptr->asESString()->length())) {
+                char16_t c = ptr->asESString()->charAt(idx);
                 if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                     return strings->asciiTable[c].string();
                 } else {
@@ -200,7 +200,6 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, GlobalObject* globalObject
     , ESHiddenClassInlineCache* inlineCache)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     ESObject* obj;
     ESObject* targetObj;
     if (LIKELY(willBeObject->isESPointer())) {
@@ -292,10 +291,10 @@ NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* pro
 NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_t idx, const ESValue& value);
 ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if (LIKELY(willBeObject->isESPointer())) {
-        if (LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
-            ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
+        ESPointer* ptr = willBeObject->asESPointer();
+        if (LIKELY(ptr->isESArrayObject())) {
+            ESArrayObject* arr = ptr->asESArrayObject();
             if (LIKELY(arr->isFastmode())) {
                 uint32_t idx = property->toIndex();
                 if (LIKELY(idx < arr->length())) {
@@ -313,9 +312,9 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                     }
                 }
             }
-        } else if (willBeObject->asESPointer()->isESTypedArrayObject()) {
+        } else if (ptr->isESTypedArrayObject()) {
             uint32_t idx = property->toIndex();
-            willBeObject->asESPointer()->asESTypedArrayObjectWrapper()->set(idx, value);
+            ptr->asESTypedArrayObjectWrapper()->set(idx, value);
             return;
         }
     }
@@ -449,8 +448,8 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
     setObjectPreComputedCaseOperationSlowCase(willBeObject, keyString, value);
 }
 
-NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject);
-NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value);
+NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject);
+NEVER_INLINE void setObjectPrecomputedCaseOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value);
 
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval);
 NEVER_INLINE ESValue typeOfOperation(ESValue* v);

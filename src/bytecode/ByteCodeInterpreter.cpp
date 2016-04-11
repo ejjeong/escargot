@@ -688,9 +688,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             NEXT_INSTRUCTION();
         }
 
-        GetObjectWithPeekingPreComputedCaseOpcodeLbl:
+        GetObjectPreComputedCaseWithPeekingOpcodeLbl:
         {
-            GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
+            GetObjectPreComputedCaseWithPeeking* code = (GetObjectPreComputedCaseWithPeeking*)currentCode;
             ESValue* willBeObject = PEEK(stack, bp);
 #ifndef ENABLE_ESJIT
             PUSH(stack, topOfStack, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
@@ -701,7 +701,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             PUSH(stack, topOfStack, value);
             code->m_profile.addProfile(value);
 #endif
-            executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+            executeNextCode<GetObjectPreComputedCaseWithPeeking>(programCounter);
             NEXT_INSTRUCTION();
         }
 
@@ -1256,31 +1256,20 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             const ESValue& value = *POP(stack, bp);
             ESValue* willBeObject = POP(stack, bp);
             ESValue v(code->m_propertyValue);
-            setObjectOperationSlowMode(willBeObject, &v, value);
+            setObjectPrecomputedCaseOperationSlowMode(willBeObject, &v, value);
             PUSH(stack, topOfStack, value);
             executeNextCode<SetObjectPreComputedCaseSlowMode>(programCounter);
             NEXT_INSTRUCTION();
         }
 
-        SetObjectSlowModeOpcodeLbl:
+        GetObjectPreComputedCaseWithPeekingSlowModeOpcodeLbl:
         {
-            const ESValue& value = *POP(stack, bp);
-            ESValue* property = POP(stack, bp);
-            ESValue* willBeObject = POP(stack, bp);
-            setObjectOperationSlowMode(willBeObject, property, value);
-            PUSH(stack, topOfStack, value);
-            executeNextCode<SetObjectSlowMode>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        GetObjectWithPeekingPreComputedCaseSlowModeOpcodeLbl:
-        {
-            GetObjectWithPeekingPreComputedCaseSlowMode* code = (GetObjectWithPeekingPreComputedCaseSlowMode*)currentCode;
+            GetObjectPreComputedCaseWithPeekingSlowMode* code = (GetObjectPreComputedCaseWithPeekingSlowMode*)currentCode;
             ESValue* willBeObject = POP(stack, bp);
             stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
             ESValue v(code->m_propertyValue);
-            PUSH(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, globalObject));
-            executeNextCode<GetObjectWithPeekingPreComputedCaseSlowMode>(programCounter);
+            PUSH(stack, topOfStack, getObjectPrecomputedCaseOperationSlowMode(willBeObject, &v, globalObject));
+            executeNextCode<GetObjectPreComputedCaseWithPeekingSlowMode>(programCounter);
             NEXT_INSTRUCTION();
         }
 
@@ -1289,7 +1278,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             GetObjectPreComputedCaseSlowMode* code = (GetObjectPreComputedCaseSlowMode*)currentCode;
             ESValue* willBeObject = POP(stack, bp);
             ESValue v(code->m_propertyValue);
-            PUSH(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, globalObject));
+            PUSH(stack, topOfStack, getObjectPrecomputedCaseOperationSlowMode(willBeObject, &v, globalObject));
             executeNextCode<GetObjectPreComputedCaseSlowMode>(programCounter);
             NEXT_INSTRUCTION();
         }
@@ -1299,38 +1288,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             GetObjectPreComputedCaseAndPushObjectSlowMode* code = (GetObjectPreComputedCaseAndPushObjectSlowMode*)currentCode;
             ESValue willBeObject = *POP(stack, bp);
             ESValue v(code->m_propertyValue);
-            PUSH(stack, topOfStack, getObjectOperationSlowMode(&willBeObject, &v, globalObject));
+            PUSH(stack, topOfStack, getObjectPrecomputedCaseOperationSlowMode(&willBeObject, &v, globalObject));
             PUSH(stack, topOfStack, willBeObject);
             executeNextCode<GetObjectPreComputedCaseSlowMode>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        GetObjectWithPeekingSlowModeOpcodeLbl:
-        {
-            ESValue* property = POP(stack, bp);
-            ESValue* willBeObject = POP(stack, bp);
-            stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
-            PUSH(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, globalObject));
-            executeNextCode<GetObjectWithPeekingSlowMode>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        GetObjectSlowModeOpcodeLbl:
-        {
-            ESValue* property = POP(stack, bp);
-            ESValue* willBeObject = POP(stack, bp);
-            PUSH(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, globalObject));
-            executeNextCode<GetObjectSlowMode>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        GetObjectAndPushObjectSlowModeOpcodeLbl:
-        {
-            ESValue* property = POP(stack, bp);
-            ESValue willBeObject = *POP(stack, bp);
-            PUSH(stack, topOfStack, getObjectOperationSlowMode(&willBeObject, property, globalObject));
-            PUSH(stack, topOfStack, &willBeObject);
-            executeNextCode<GetObjectSlowMode>(programCounter);
             NEXT_INSTRUCTION();
         }
 

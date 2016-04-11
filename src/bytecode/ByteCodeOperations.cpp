@@ -258,7 +258,7 @@ NEVER_INLINE void setObjectPreComputedCaseOperationWithNeverInline(ESValue* will
     return setObjectPreComputedCaseOperation(willBeObject, keyString, value, cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
 }
 
-NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
+NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if (willBeObject->isESPointer()) {
@@ -321,7 +321,7 @@ NEVER_INLINE void throwUndefinedReferenceError(const ESString* name)
     ESVMInstance::currentInstance()->throwError(receiver);
 }
 
-NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
+NEVER_INLINE void setObjectPrecomputedCaseOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if (!willBeObject->toTransientObject()->setSlowPath(*property, value, willBeObject)) {

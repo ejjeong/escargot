@@ -1450,33 +1450,8 @@ inline bool ESObject::deletePropertyWithException(const ESValue& key, bool force
     return true;
 }
 
-// $9.1.10
-inline bool ESObject::deleteProperty(const ESValue& key, bool force)
+inline bool ESObject::deletePropertySlowPath(const ESValue& key, bool force)
 {
-    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
-        uint32_t i = key.toIndex();
-        if (i != ESValue::ESInvalidIndexValue) {
-            if (i < asESArrayObject()->length()) {
-                asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
-                return true;
-            }
-            return true;
-        }
-    }
-    if (isESTypedArrayObject()) {
-        uint32_t i = key.toIndex();
-        if (i != ESValue::ESInvalidIndexValue) {
-            return true;
-        }
-    }
-    if (isESStringObject()) {
-        uint32_t i = key.toIndex();
-        if (i != ESValue::ESInvalidIndexValue) {
-            if (i < asESStringObject()->length()) {
-                return false;
-            }
-        }
-    }
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
     }
@@ -1502,39 +1477,42 @@ inline bool ESObject::deleteProperty(const ESValue& key, bool force)
     return true;
 }
 
+// $9.1.10
+inline bool ESObject::deleteProperty(const ESValue& key, bool force)
+{
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvalidIndexValue) {
+            if (i < asESArrayObject()->length()) {
+                asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
+                return true;
+            }
+            return true;
+        }
+    } else if (isESTypedArrayObject()) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvalidIndexValue) {
+            return true;
+        }
+    } else if (isESStringObject()) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvalidIndexValue) {
+            if (i < asESStringObject()->length()) {
+                return false;
+            }
+        }
+    }
+
+    return deletePropertySlowPath(key, force);
+}
+
 ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
 {
     ESObject* target = this;
-    escargot::ESString* keyString = NULL;
     while (true) {
-        if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
-            uint32_t idx = key.toIndex();
-            if (idx != ESValue::ESInvalidIndexValue) {
-                if (LIKELY(idx < target->asESArrayObject()->length())) {
-                    ESValue e = target->asESArrayObject()->m_vector[idx];
-                    if (LIKELY(!e.isEmpty()))
-                        return true;
-                }
-            }
-        } else if (target->isESTypedArrayObject()) {
-            uint32_t idx = key.toIndex();
-            if (idx != ESValue::ESInvalidIndexValue && (uint32_t)idx < target->asESTypedArrayObjectWrapper()->length())
-                return true;
-        } else if (target->isESStringObject()) {
-            uint32_t idx = key.toIndex();
-            if ((uint32_t)idx < target->asESStringObject()->length())
-                return true;
-        } else if (UNLIKELY(target->hasPropertyInterceptor() && target->hasKeyForPropertyInterceptor(key))) {
+        if (target->hasOwnProperty(key)) {
             return true;
         }
-
-        if (!keyString) {
-            keyString = key.toString();
-        }
-        size_t t = target->m_hiddenClass->findProperty(keyString);
-        if (t != SIZE_MAX)
-            return true;
-
         if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject()) {
             target = target->__proto__().asESPointer()->asESObject();
         } else {
@@ -1546,87 +1524,45 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
 
 ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 {
-    if ((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
-            if (LIKELY(isESArrayObject())) {
-                if (idx < asESArrayObject()->length() && asESArrayObject()->m_vector[idx] != ESValue(ESValue::ESEmptyValue)) {
+            if (LIKELY(idx < asESArrayObject()->length())) {
+                ESValue e = asESArrayObject()->m_vector[idx];
+                if (LIKELY(!e.isEmpty()))
                     return true;
-                } else {
-                    return false;
-                }
-            } else {
-                if ((uint32_t)idx < asESTypedArrayObjectWrapper()->length()) {
-                    return true;
-                } else {
-                    return false;
-                }
             }
-        } else {
         }
-    }
-    if (isESStringObject()) {
+    } else if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
-        if (idx != ESValue::ESInvalidIndexValue) {
-            if ((uint32_t)idx < asESStringObject()->length()) {
-                return true;
-            }
-        }
-    }
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
+        if (idx != ESValue::ESInvalidIndexValue && (uint32_t)idx < asESTypedArrayObjectWrapper()->length())
+            return true;
+    } else if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if ((uint32_t)idx < asESStringObject()->length())
+            return true;
+    } else if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return true;
     }
+
     return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* receiver)
+inline ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* receiver)
 {
     ESObject* target = this;
-    if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
-        uint32_t idx = key.toIndex();
-        if (LIKELY(idx < target->asESArrayObject()->length())) {
-            ESValue e = target->asESArrayObject()->m_vector[idx];
-            if (LIKELY(!e.isEmpty()))
-                return e;
-        }
-    }
-    return getSlowPath(key, receiver);
-}
 
-inline ESValue ESObject::getSlowPath(escargot::ESValue key, escargot::ESValue* receiver)
-{
-    ESObject* target = this;
-    escargot::ESString* keyString = NULL;
     while (true) {
-        if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
-            uint32_t idx = key.toIndex();
-            if (LIKELY(idx < target->asESArrayObject()->length())) {
-                ESValue e = target->asESArrayObject()->m_vector[idx];
-                if (LIKELY(!e.isEmpty()))
-                    return e;
-            }
-        } else if (target->isESTypedArrayObject()) {
-            uint32_t idx = key.toIndex();
-            if (idx != ESValue::ESInvalidIndexValue)
-                return target->asESTypedArrayObjectWrapper()->get(idx);
-        } else if (target->isESStringObject()) {
-            uint32_t idx = key.toIndex();
-            if (idx < target->asESStringObject()->stringData()->length()) {
-                char16_t c = target->asESStringObject()->stringData()->charAt(idx);
-                if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                    return strings->asciiTable[c].string();
-                } else {
-                    return ESString::create(c);
-                }
-            }
-        } else if (UNLIKELY(target->hasPropertyInterceptor() && target->hasKeyForPropertyInterceptor(key))) {
+        ESValue val = target->getOwnPropertyFastPath(key);
+        if (!val.isEmpty())
+            return val;
+
+        if (UNLIKELY(target->hasPropertyInterceptor() && target->hasKeyForPropertyInterceptor(key))) {
             return target->readKeyForPropertyInterceptor(key);
         }
 
-        if (!keyString) {
-            keyString = key.toString();
-        }
+        escargot::ESString* keyString = key.toString();
         size_t t = target->m_hiddenClass->findProperty(keyString);
         if (t != SIZE_MAX) {
             ESValue receiverVal(this);
@@ -1648,23 +1584,28 @@ inline ESValue ESObject::getSlowPath(escargot::ESValue key, escargot::ESValue* r
 
 ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
 {
+    ESValue val = getOwnPropertyFastPath(key);
+    if (val.isEmpty()) {
+        return getOwnPropertySlowPath(key);
+    }
+    return val;
+}
+
+inline ESValue ESObject::getOwnPropertyFastPath(escargot::ESValue key)
+{
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
             if (LIKELY(idx < asESArrayObject()->length())) {
-                ESValue e = asESArrayObject()->m_vector[idx];
-                if (LIKELY(!e.isEmpty()))
-                    return e;
+                return asESArrayObject()->m_vector[idx];
             }
         }
-    }
-    if (isESTypedArrayObject()) {
+    } else if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
             return asESTypedArrayObjectWrapper()->get(idx);
         }
-    }
-    if (isESStringObject()) {
+    } else if (isESStringObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
             if (LIKELY(idx < asESStringObject()->length())) {
@@ -1672,7 +1613,8 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
             }
         }
     }
-    return getOwnPropertySlowPath(key);
+
+    return ESValue(ESValue::ESEmptyValue);
 }
 
 inline ESValue ESObject::getOwnPropertySlowPath(escargot::ESValue key)
@@ -1680,7 +1622,6 @@ inline ESValue ESObject::getOwnPropertySlowPath(escargot::ESValue key)
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return readKeyForPropertyInterceptor(key);
     }
-
 
     escargot::ESString* keyString = key.toString();
     size_t t = m_hiddenClass->findProperty(keyString);
@@ -1698,37 +1639,11 @@ ALWAYS_INLINE uint32_t ESObject::length()
     else
         return get(strings->length.string()).toUint32();
 }
-ALWAYS_INLINE ESValue ESObject::pop()
-{
-    uint32_t len = length();
-    if (len == 0) {
-        if (!set(strings->length.string(), ESValue(0))) {
-            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Cannot assign to read only property 'length'"))));
-        }
-        return ESValue();
-    }
-    if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode())) {
-        ESValue ret = asESArrayObject()->fastPop();
-        if (!ret.isEmpty())
-            return ret;
-    }
-    ESValue ret = get(ESValue(len-1));
-    deletePropertyWithException(ESValue(len-1));
-    set(strings->length.string(), ESValue(len - 1), true);
-    return ret;
-}
 
 inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
     if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
         return false;
-    }
-
-    if (isESStringObject()) {
-        uint32_t idx = key.toIndex();
-        if (idx != ESValue::ESInvalidIndexValue)
-            if (idx < asESStringObject()->length())
-                return false;
     }
 
     escargot::ESString* keyString = key.toString();
@@ -1769,13 +1684,11 @@ inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& v
 
                 if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
                     return false;
-            } else if (UNLIKELY(targetObj->isESStringObject())) {
-                if (targetObj->asESStringObject()->length() != 0) {
-                    uint32_t idx = key.toIndex();
-                    if (idx != ESValue::ESInvalidIndexValue)
-                        if (idx < targetObj->asESStringObject()->length())
-                            return false;
-                }
+            } else if (targetObj->isESStringObject()) {
+                uint32_t idx = key.toIndex();
+                if (idx != ESValue::ESInvalidIndexValue)
+                    if (idx < targetObj->asESStringObject()->length())
+                        return false;
             }
             target = targetObj->__proto__();
         }
@@ -1836,11 +1749,15 @@ inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, esca
                 return true;
             }
         }
-    }
-    if (isESTypedArrayObject()) {
+    } else if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
         asESTypedArrayObjectWrapper()->set(idx, val);
         return true;
+    } else if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue)
+            if (idx < asESStringObject()->length())
+                return false;
     }
 
     return setSlowPath(key, val, receiver);
@@ -1905,7 +1822,7 @@ inline void ESObject::relocateIndexesForwardSlowly(int64_t start, int64_t end, i
         } else {
             deletePropertyWithException(to);
             if (!isKFromDeletableIndexes) {
-                cur = ESArrayObject::nextIndexForward(this, cur, end);
+                cur = ESArrayObject::nextIndexForward(this, cur, end, false);
             } else {
                 cur++;
             }
@@ -1949,7 +1866,7 @@ inline void ESObject::relocateIndexesBackwardSlowly(int64_t start, int64_t end, 
         } else {
             deletePropertyWithException(to);
             if (!isKFromDeletableIndexes) {
-                cur = ESArrayObject::nextIndexBackward(this, cur, -1);
+                cur = ESArrayObject::nextIndexBackward(this, cur, -1, false);
             } else {
                 cur--;
             }

@@ -1143,7 +1143,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, ESObject* obj, bool thro
     return defineOwnProperty(P, PropertyDescriptor { obj }, throwFlag);
 }
 
-int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const int64_t end)
+int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined)
 {
     ESValue ptr = obj;
     int64_t ret = end;
@@ -1151,6 +1151,9 @@ int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const 
         ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             uint32_t index = ESValue::ESInvalidIndexValue;
             if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue) {
+                if (skipUndefined && ptr.asESPointer()->asESObject()->get(key).isUndefined()) {
+                    return;
+                }
                 if (index > cur) {
                     ret = std::min(static_cast<int64_t>(index), ret);
                 }
@@ -1161,7 +1164,7 @@ int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const 
     return ret;
 }
 
-int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end)
+int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined)
 {
     ESValue ptr = obj;
     int64_t ret = end;
@@ -1169,6 +1172,9 @@ int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const
         ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             uint32_t index = ESValue::ESInvalidIndexValue;
             if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue) {
+                if (skipUndefined && ptr.asESPointer()->asESObject()->get(key).isUndefined()) {
+                    return;
+                }
                 if (index < cur) {
                     ret = std::max(static_cast<int64_t>(index), ret);
                 }
@@ -1177,64 +1183,6 @@ int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const
         ptr = ptr.asESPointer()->asESObject()->__proto__();
     }
     return ret;
-}
-
-ESArrayObject* ESArrayObject::fastSplice(size_t arrlen, size_t start, size_t deleteCnt, size_t insertCnt, ESValue* arguments)
-{
-    escargot::ESArrayObject* ret = ESArrayObject::create(0);
-    unsigned k = 0;
-    while (k < deleteCnt) {
-        ESValue from = ESValue(start + k);
-
-        if (hasProperty(from)) {
-            ret->defineDataProperty(ESValue(k), true, true, true, get(from.asUInt32()));
-        }
-        k++;
-    }
-
-    if (insertCnt < deleteCnt) {
-        relocateIndexesForward(start + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt) - deleteCnt);
-
-        k = arrlen;
-        while (k > arrlen - deleteCnt + insertCnt) {
-            deleteProperty(ESValue(k - 1));
-            k--;
-        }
-    } else if (insertCnt > deleteCnt) {
-        relocateIndexesBackward(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
-    }
-
-    if (insertCnt > 0) {
-        size_t k = start;
-        size_t leftInsert = insertCnt;
-        size_t argIdx = 2;
-        while (leftInsert > 0) {
-            set(k, arguments[argIdx]);
-            leftInsert--;
-            argIdx++;
-            k++;
-        }
-    }
-
-    ((ESObject*)this)->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
-
-    return ret;
-}
-
-ESString* ESArrayObject::fastJoin(escargot::ESString* sep, unsigned len)
-{
-    ESStringBuilder builder;
-    for (size_t i = 0; i < len; i++) {
-        ESValue elem = get(i);
-        if (sep->length() > 0) {
-            if (i != 0) {
-                builder.appendString(sep);
-            }
-        }
-        if (!elem.isUndefinedOrNull())
-            builder.appendString(elem.toString());
-    }
-    return builder.finalize();
 }
 
 void ESArrayObject::relocateIndexesForward(int64_t start, int64_t end, int64_t offset)
@@ -1398,6 +1346,15 @@ inline ESString* escapeSlashInPattern(ESString* patternStr)
             return retval;
     }
 }
+
+bool ESArrayObject::isFastmode()
+{
+    if (ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
+        convertToSlowMode();
+    }
+    return m_flags.m_isFastMode;
+}
+
 ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue optionValue)
 {
     if (patternValue.isESPointer() && patternValue.asESPointer()->isESRegExpObject()) {

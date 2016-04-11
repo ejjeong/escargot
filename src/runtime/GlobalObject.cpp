@@ -1833,7 +1833,7 @@ void GlobalObject::installArray()
                         ret->defineDataProperty(ESValue(n + curIndex), true, true, true, arr->get(curIndex));
                         curIndex++;
                     } else {
-                        curIndex = ESArrayObject::nextIndexForward(arr, curIndex, len);
+                        curIndex = ESArrayObject::nextIndexForward(arr, curIndex, len, false);
                     }
                 }
 
@@ -2070,10 +2070,6 @@ void GlobalObject::installArray()
             return ESValue(strings->emptyString.string());
         }
 
-        if (thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode()) {
-            return thisBinded->asESArrayObject()->fastJoin(sep, len);
-        }
-
         ESStringBuilder builder;
         int64_t prevIndex = 0;
         int64_t curIndex = 0;
@@ -2098,7 +2094,7 @@ void GlobalObject::installArray()
             }
             prevIndex = curIndex;
             if (elem.isUndefined()) {
-                curIndex = ESArrayObject::nextIndexForward(thisBinded, prevIndex, len);
+                curIndex = ESArrayObject::nextIndexForward(thisBinded, prevIndex, len, true);
             } else {
                 curIndex++;
             }
@@ -2219,41 +2215,34 @@ void GlobalObject::installArray()
     // $22.1.3.16 Array.prototype.pop ( )
     m_arrayPrototype->ESObject::defineDataProperty(strings->pop, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        return thisBinded->pop();
+        uint32_t len = thisBinded->length();
+        if (len == 0) {
+            thisBinded->set(strings->length.string(), ESValue(0), true);
+            return ESValue();
+        }
+
+        ESValue idx = ESValue(len - 1);
+        ESValue ret = thisBinded->get(idx);
+        thisBinded->deletePropertyWithException(idx);
+        thisBinded->set(strings->length.string(), idx, true);
+        return ret;
     }, strings->pop, 0));
 
     // $22.1.3.17 Array.prototype.push(item)
     m_arrayPrototype->ESObject::defineDataProperty(strings->push, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         uint32_t argc = instance->currentExecutionContext()->argumentCount();
-        if (LIKELY(thisBinded->isESArrayObject())) {
-            auto thisVal = thisBinded->asESArrayObject();
-            uint32_t len = thisVal->length();
-            bool shouldThrow = false;
-            for (uint32_t i = 0; i < argc; i++) {
-                ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                ((ESObject*)thisVal)->set(ESValue(double(len) + i), val, true);
-                if (len >= UINT_MAX - i) {
-                    shouldThrow = true;
-                }
-            }
-            if (shouldThrow) {
-                thisVal->setLength(UINT_MAX);
-                instance->throwError(ESValue(RangeError::create()));
-            }
-            return ESValue(thisVal->length());
-        } else {
-            ASSERT(thisBinded->isESObject());
-            ESObject* O = thisBinded->asESObject();
-            uint32_t len = O->get(strings->length.string()).toUint32();
-            for (uint32_t i = 0; i < argc; i++) {
-                ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                O->set(ESValue((double(len) + i)), val, true);
-            }
-            ESValue ret = ESValue(double(len) + argc);
-            O->set(strings->length.string(), ret, true);
-            return ret;
+        uint32_t len = thisBinded->length();
+
+        for (uint32_t i = 0; i < argc; i++) {
+            ESValue& val = instance->currentExecutionContext()->arguments()[i];
+            thisBinded->set(ESValue((double(len) + i)), val, true);
         }
+
+        ESValue newLen = ESValue(double(len) + argc);
+        thisBinded->set(strings->length.string(), newLen, true);
+        return newLen;
+
     }, strings->push, 1));
 
     // $22.1.3.18 Array.prototype.reduce
@@ -2389,8 +2378,8 @@ void GlobalObject::installArray()
                 O->deletePropertyWithException(lowerP);
                 O->set(upperP, lowerValue, true);
             } else {
-                unsigned x = middle - ESArrayObject::nextIndexForward(O, lower, middle);
-                unsigned y = ESArrayObject::nextIndexBackward(O, upper, middle - 1) - middle;
+                unsigned x = middle - ESArrayObject::nextIndexForward(O, lower, middle, false);
+                unsigned y = ESArrayObject::nextIndexBackward(O, upper, middle - 1, false) - middle;
                 if (x > y) {
                     lower = middle - x - 1;
                 } else {
@@ -2412,7 +2401,7 @@ void GlobalObject::installArray()
             return ESValue();
         }
         ESValue first = O->get(ESValue(0)); // 6
-        if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
+        if (LIKELY(O->isESArrayObject() && O->asESArrayObject()->isFastmode())) {
             O->asESArrayObject()->relocateIndexesForward(1, arrlen, -1);
         } else {
             O->relocateIndexesForwardSlowly(1, arrlen, -1);
@@ -2424,7 +2413,7 @@ void GlobalObject::installArray()
 
     // $22.1.3.22 Array.prototype.slice(start, end)
     m_arrayPrototype->ESObject::defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESObject* thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         uint32_t arrlen = thisBinded->length();
         double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger(), relativeEnd;
         uint32_t k, finalEnd;
@@ -2560,10 +2549,6 @@ void GlobalObject::installArray()
             dc = 0;
         deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
 
-        if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
-            return thisBinded->asESArrayObject()->fastSplice(arrlen, start, deleteCnt, insertCnt, instance->currentExecutionContext()->arguments());
-        }
-
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
 
         k = start;
@@ -2574,7 +2559,7 @@ void GlobalObject::installArray()
                 ret->defineDataProperty(ESValue(k - start), true, true, true, thisBinded->get(from));
                 k++;
             } else {
-                k = ESArrayObject::nextIndexForward(thisBinded, k, arrlen);
+                k = ESArrayObject::nextIndexForward(thisBinded, k, arrlen, false);
             }
         }
 
@@ -2589,7 +2574,7 @@ void GlobalObject::installArray()
                     thisBinded->deletePropertyWithException(ESValue(k));
                     k--;
                 } else {
-                    k = ESArrayObject::nextIndexBackward(thisBinded, k, -1);
+                    k = ESArrayObject::nextIndexBackward(thisBinded, k, -1, false);
                 }
             }
         } else if (insertCnt > deleteCnt) {
@@ -2670,7 +2655,7 @@ void GlobalObject::installArray()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
-        if (O->isESArrayObject() && O->asESArrayObject()->isFastmode()) {
+        if (LIKELY(O->isESArrayObject() && O->asESArrayObject()->isFastmode())) {
             O->asESArrayObject()->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
         } else {
             O->relocateIndexesBackwardSlowly(static_cast<int64_t>(len) - 1, -1, argCount);
@@ -6237,36 +6222,6 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                 continue;
             iterateByteCode(m_codeBlocks[i], [](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
                 switch (opcode) {
-                case GetObjectOpcode:
-                    {
-                        GetObjectSlowMode n;
-                        n.assignOpcodeInAddress();
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-                        block->m_extraData[idx].m_opcode = GetObjectSlowModeOpcode;
-#endif
-                        memcpy(code, &n, sizeof(GetObjectSlowMode));
-                        break;
-                    }
-                case GetObjectAndPushObjectOpcode:
-                    {
-                        GetObjectAndPushObjectSlowMode n;
-                        n.assignOpcodeInAddress();
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-                        block->m_extraData[idx].m_opcode = GetObjectAndPushObjectSlowModeOpcode;
-#endif
-                        memcpy(code, &n, sizeof(GetObjectAndPushObjectSlowMode));
-                        break;
-                    }
-                case GetObjectWithPeekingOpcode:
-                    {
-                        GetObjectWithPeekingSlowMode n;
-                        n.assignOpcodeInAddress();
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-                        block->m_extraData[idx].m_opcode = GetObjectWithPeekingSlowModeOpcode;
-#endif
-                        memcpy(code, &n, sizeof(GetObjectWithPeekingSlowMode));
-                        break;
-                    }
                 case GetObjectPreComputedCaseOpcode:
                     {
                         GetObjectPreComputedCaseSlowMode n(((GetObjectPreComputedCase *)code)->m_propertyValue);
@@ -6287,24 +6242,14 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                         memcpy(code, &n, sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode));
                         break;
                     }
-                case GetObjectWithPeekingPreComputedCaseOpcode:
+                case GetObjectPreComputedCaseWithPeekingOpcode:
                     {
-                        GetObjectWithPeekingPreComputedCaseSlowMode n(((GetObjectWithPeekingPreComputedCase *)code)->m_propertyValue);
+                        GetObjectPreComputedCaseWithPeekingSlowMode n(((GetObjectPreComputedCaseWithPeeking *)code)->m_propertyValue);
                         n.assignOpcodeInAddress();
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-                        block->m_extraData[idx].m_opcode = GetObjectWithPeekingPreComputedCaseSlowModeOpcode;
+                        block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseWithPeekingSlowModeOpcode;
 #endif
-                        memcpy(code, &n, sizeof(GetObjectWithPeekingPreComputedCaseSlowMode));
-                        break;
-                    }
-                case SetObjectOpcode:
-                    {
-                        SetObjectSlowMode n;
-                        n.assignOpcodeInAddress();
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-                        block->m_extraData[idx].m_opcode = SetObjectSlowModeOpcode;
-#endif
-                        memcpy(code, &n, sizeof(SetObjectSlowMode));
+                        memcpy(code, &n, sizeof(GetObjectPreComputedCaseWithPeekingSlowMode));
                         break;
                     }
                 case SetObjectPreComputedCaseOpcode:
