@@ -1044,6 +1044,7 @@ void GlobalObject::installFunction()
 
     ESVMInstance::currentInstance()->setGlobalFunctionPrototype(m_functionPrototype);
 
+    // Function.prototype.toString
     m_functionPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // FIXME
         if (instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject()) {
@@ -1051,7 +1052,10 @@ void GlobalObject::installFunction()
             ESStringBuilder builder;
             builder.appendString("function ");
             builder.appendString(fn->name());
-            builder.appendString("() {}");
+            builder.appendString("() {");
+            if (fn->codeBlock()->m_isBuiltInFunction)
+                builder.appendString(" [native code] ");
+            builder.appendString("}");
             return builder.finalize();
         }
         instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
