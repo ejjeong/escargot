@@ -623,13 +623,15 @@
   </test>
   <test>
      <default>
+        <escargot-skip>Not in scope (es6)</escargot-skip>
         <files>memset.js</files>
         <compile-flags>-mic:1 -off:simplejit -off:JITLoopBody -off:inline -mmoc:0</compile-flags>
      </default>
   </test>
   <test>
      <default>
-        <files>memset_invariant.js</files>
+        <escargot-skip>Not in scope (es6)</escargot-skip>
+	<files>memset_invariant.js</files>
         <compile-flags>-mic:1 -off:simplejit -mmoc:0 -off:JITLoopBody</compile-flags>
      </default>
   </test>
@@ -641,7 +643,8 @@
   </test>
   <test>
      <default>
-        <files>memcopy.js</files>
+        <escargot-skip>Not in scope (es6)</escargot-skip>
+	<files>memcopy.js</files>
         <compile-flags>-mic:1 -off:simplejit -off:JITLoopBody -off:inline -off:globopt:1.18-1.30 -mmoc:0</compile-flags>
      </default>
   </test>

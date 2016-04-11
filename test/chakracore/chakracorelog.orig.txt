@@ -97,10 +97,10 @@ Running all tests
 [Array] CopyOnAccessArray_bugs.js .......... Fail
 [Array] CopyOnAccessArray_cache_index_overflow.js .......... Fail
 [Array] memop_lifetime_bug.js .......... Pass
-[Array] memset.js .......... Fail
-[Array] memset_invariant.js .......... Fail
+[Array] memset.js .......... Skip (Not in scope (es6))
+[Array] memset_invariant.js .......... Skip (Not in scope (es6))
 [Array] memset2.js .......... Pass
-[Array] memcopy.js .......... Fail
+[Array] memcopy.js .......... Skip (Not in scope (es6))
 [Array] memop_alias.js .......... Fail
 [Array] memop_field.js .......... Skip (ES6 Spec)
 [Array] memop_slot.js .......... Skip (ES6 Spec)
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		55		46		5		(51%)
+               Array		106		55		43		8		(51%)
               Basics		56		28		28		0		(50%)
                  es5		56		30		26		0		(53%)
                   EH		17		7		10		0		(41%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		901		490		15		(64%)
+               Total		1406		901		487		18		(64%)
