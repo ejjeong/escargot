@@ -223,15 +223,15 @@ Running all tests
 [EH] capture.js .......... Fail
 [EH] oos2.js .......... Pass
 [EH] try1.js .......... Pass
-[EH] try2.js .......... Fail
+[EH] try2.js .......... Skip (Not in scope (with))
 [EH] try3.js .......... Pass
 [EH] try4.js .......... Pass
-[EH] try5-ES3.js .......... Fail
-[EH] try6.js .......... Fail
+[EH] try5-ES3.js .......... Pass
+[EH] try6.js .......... Pass
 [EH] try.bug188541.js .......... Pass
 [EH] try.bug188541.v5.js .......... Fail
 [EH] so.js .......... Pass
-[EH] newso.js .......... Fail
+[EH] newso.js .......... Pass
 [EH] trylabel.js .......... Pass
 [EH] alignment.js .......... Fail
 [EH] 101832.js .......... Fail
@@ -453,7 +453,7 @@ Running all tests
 [Error] RuntimeCompileStackOverflow.js .......... Fail
 [Error] encodeoverflow.js .......... Skip (Takes too long)
 [Error] bug560940.js .......... Pass
-[Error] stackoverflow.js .......... Fail
+[Error] stackoverflow.js .......... Pass
 [Error] inlineSameFunc.js .......... Fail
 [Error] PartInitStackFrame.js .......... Fail
 [Boolean] simple1.js .......... Pass
@@ -1426,13 +1426,13 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                Array		106		58		39		9		(54%)
               Basics		56		28		21		7		(50%)
                  es5		56		32		24		0		(57%)
-                  EH		17		7		10		0		(41%)
+                  EH		17		10		6		1		(58%)
         InlineCaches		21		17		4		0		(80%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		6		0		(66%)
              Strings		36		27		9		0		(75%)
                 Date		12		2		10		0		(16%)
-               Error		23		2		20		1		(8%)
+               Error		23		3		19		1		(13%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
          ControlFlow		17		14		3		0		(82%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		928		452		26		(66%)
+               Total		1406		932		447		27		(66%)
