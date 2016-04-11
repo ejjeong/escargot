@@ -262,7 +262,7 @@ Done running mjsunit/string-indexof-2: pass
 Done running mjsunit/string-lastindexof: pass
 Done running mjsunit/string-localecompare: pass
 Done running mjsunit/string-match: pass
-Done running mjsunit/string-oom-array-join: FAIL
+Done running mjsunit/string-oom-array-join: pass
 Done running mjsunit/string-oom-concat: pass
 Done running mjsunit/string-oom-replace-global-regexp-with-string: pass
 Done running mjsunit/string-oom-replace-regexp-global-with-function: pass
@@ -381,7 +381,7 @@ Done running mjsunit/compiler/globals: pass
 Done running mjsunit/compiler/inline-conditional: pass
 Done running mjsunit/compiler/lazy-iife-no-parens: pass
 Done running mjsunit/compiler/literals-assignment: pass
-Done running mjsunit/compiler/literals: FAIL
+Done running mjsunit/compiler/literals: pass
 Done running mjsunit/compiler/logical-and: pass
 Done running mjsunit/compiler/logical-or: pass
 Done running mjsunit/compiler/loopcount: pass
@@ -957,19 +957,12 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
-=== mjsunit/string-oom-array-join.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/compiler/literals.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\\x1/">, stack: undefined}
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
 === mjsunit/regress/regress-3229.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, stack: undefined}
+--- stderr ---
 
 ===
-=== 6 tests failed
+=== 4 tests failed
 ===

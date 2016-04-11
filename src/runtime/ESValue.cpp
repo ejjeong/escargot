@@ -1323,6 +1323,81 @@ void ESArrayObject::setLength(unsigned newLength)
     m_length = newLength;
 }
 
+inline ESString* escapeSlashInPattern(ESString* patternStr)
+{
+    if (patternStr->length() == 0)
+        return patternStr;
+    else if (patternStr->isASCIIString()) {
+        ASCIIString pattern(*patternStr->asASCIIString());
+        size_t len = patternStr->length();
+        ASCIIString buf = "";
+        size_t i, start = 0;
+        bool slashFlag = false;
+        ESString* retval = strings->emptyString.string();
+        while (true) {
+            for (i = 0; start + i < len; i++) {
+                if (UNLIKELY(pattern[start + i] == '/' && (i == 0 || pattern[start + i - 1] != '\\'))) {
+                    slashFlag = true;
+                    buf.append(pattern.substr(start, i));
+                    buf.push_back('\\');
+                    buf.push_back('/');
+                    retval = ESString::concatTwoStrings(retval, ESString::create(buf));
+
+                    start = i + 1;
+                    i = 0;
+                    buf = "";
+                    break;
+                }
+            }
+            if (start + i >= len) {
+                if (UNLIKELY(slashFlag)) {
+                    buf.append(pattern.substr(start, i));
+                    retval = ESString::concatTwoStrings(retval, ESString::create(buf));
+                }
+                break;
+            }
+        }
+        if (!slashFlag)
+            return patternStr;
+        else
+            return retval;
+
+    } else {
+        UTF16String pattern(*patternStr->asUTF16String());
+        size_t len = patternStr->length();
+        UTF16String buf = u"";
+        size_t i, start = 0;
+        bool slashFlag = false;
+        ESString* retval = ESString::create(u"");
+        while (true) {
+            for (i = 0; start + i < len; i++) {
+                if (UNLIKELY(pattern[start + i] == '/' && (i == 0 || pattern[start + i - 1] != '\\'))) {
+                    slashFlag = true;
+                    buf.append(pattern.substr(start, i));
+                    buf.push_back('\\');
+                    buf.push_back('/');
+                    retval = ESString::concatTwoStrings(retval, ESString::create(buf));
+
+                    start = i + 1;
+                    i = 0;
+                    buf = u"";
+                    break;
+                }
+            }
+            if (start + i >= len) {
+                if (UNLIKELY(slashFlag)) {
+                    buf.append(pattern.substr(start, i));
+                    retval = ESString::concatTwoStrings(retval, ESString::create(buf));
+                }
+                break;
+            }
+        }
+        if (!slashFlag)
+            return patternStr;
+        else
+            return retval;
+    }
+}
 ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue optionValue)
 {
     if (patternValue.isESPointer() && patternValue.asESPointer()->isESRegExpObject()) {
@@ -1361,11 +1436,12 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 
 void ESRegExpObject::setSource(escargot::ESString* src)
 {
-    auto entry = getCacheEntryAndCompileIfNeeded(src, m_option);
+    escargot::ESString* escapedSrc = escapeSlashInPattern(src);
+    auto entry = getCacheEntryAndCompileIfNeeded(escapedSrc, m_option);
     if (entry.m_yarrError)
         ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
 
-    m_source = src;
+    m_source = escapedSrc;
     m_yarrPattern = entry.m_yarrPattern;
     m_bytecodePattern = entry.m_bytecodePattern;
 }
