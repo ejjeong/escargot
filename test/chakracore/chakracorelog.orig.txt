@@ -25,7 +25,7 @@ Running all tests
 [Array] ldindex.js .......... Pass
 [Array] bug612012.js .......... Pass
 [Array] SegmentMapFlagResetInJSArrayConstructor.js .......... Pass
-[Array] LastUsedSegmentHasNULLElement.js .......... Skip (ES6 Spec)
+[Array] LastUsedSegmentHasNULLElement.js .......... Skip (Not in scope (es6))
 [Array] array_length.js .......... Fail
 [Array] join2.js .......... Pass
 [Array] missing.js .......... Pass
@@ -406,7 +406,7 @@ Running all tests
 [Strings] trim.js .......... Fail
 [Strings] lastindexof.js .......... Pass
 [Strings] indexof.js .......... Pass
-[Strings] substring.js .......... Fail
+[Strings] substring.js .......... Pass
 [Strings] HTMLHelpers.js .......... Fail
 [Strings] stringindex.js .......... Pass
 [Strings] length.js .......... Fail
@@ -477,7 +477,7 @@ Running all tests
 [ControlFlow] ForLoop2.js .......... Pass
 [ControlFlow] WhileLoop.js .......... Pass
 [ControlFlow] WhileLoop2.js .......... Pass
-[ControlFlow] forInMisc.js .......... Fail
+[ControlFlow] forInMisc.js .......... Pass
 [ControlFlow] forInObjectDelete.js .......... Pass
 [ControlFlow] forInObjectAdd.js .......... Pass
 [ControlFlow] forInObjectAddDelete.js .......... Fail
@@ -557,7 +557,7 @@ Running all tests
 [Optimizer] bug713.js .......... Pass
 [Optimizer] bug1788761.js .......... Pass
 [Optimizer] bug1868543.js .......... Fail
-[Optimizer] bug469.js .......... Skip (ES6 Spec)
+[Optimizer] bug469.js .......... Skip (Not in scope (es6))
 [Optimizer] bug3831075.js .......... Pass
 [Optimizer] conv_bool.js .......... Pass
 [Optimizer] cmbail.js .......... Pass
@@ -755,7 +755,7 @@ Running all tests
 [Optimizer] implicit_upwardexposed.js .......... Pass
 [Optimizer] bug1288834.js .......... Pass
 [Optimizer] opttagchecks1.js .......... Pass
-[Optimizer] opttagchecks2.js .......... Skip (ES6 Spec)
+[Optimizer] opttagchecks2.js .......... Skip (Not in scope (es6))
 [Optimizer] trycatch_functional.js .......... Fail
 [Optimizer] trycatch_assert.js .......... Fail
 [Function] apply.js .......... Pass
@@ -849,7 +849,7 @@ Running all tests
 [Object] getOwnPropertyDescriptor.js .......... Pass
 [Object] objectCreationOptimizations.js .......... Pass
 [Object] multivardecl.js .......... Pass
-[Object] propertyStrings.js .......... Fail
+[Object] propertyStrings.js .......... Pass
 [Object] forinenumcache.js .......... Fail
 [Object] forinnonenumerableshadowing.js .......... Fail
 [Object] forinfastpath.js .......... Pass
@@ -1162,8 +1162,8 @@ Running all tests
 [UnifiedRegex] sets.js .......... Fail
 [UnifiedRegex] split.js .......... Fail
 [UnifiedRegex] WOOB1138949.js .......... Pass
-[UnifiedRegex] propertyString.js .......... Fail
-[UnifiedRegex] propertyString.js .......... Fail
+[UnifiedRegex] propertyString.js .......... Pass
+[UnifiedRegex] propertyString.js .......... Pass
 [UnifiedRegex] bugFixVersioned.js .......... Pass
 [UnifiedRegex] mru.js .......... Pass
 [UnifiedRegex] SourceToString.js .......... Fail
@@ -1218,7 +1218,7 @@ Running all tests
 [Miscellaneous] SetTimeout.js .......... Fail
 [fieldopts] equiv-finaltypeandpoly.js .......... Pass
 [fieldopts] equiv-missing.js .......... Fail
-[fieldopts] equiv-mismatch.js .......... Fail
+[fieldopts] equiv-mismatch.js .......... Pass
 [fieldopts] equiv-locktypeid.js .......... Fail
 [fieldopts] equiv-needmonocheck.js .......... Pass
 [fieldopts] equiv-needsmonocheck2.js .......... Pass
@@ -1377,9 +1377,9 @@ Running all tests
 [inlining] OS_2733280.js .......... Fail
 [inlining] OS_2733280.js .......... Fail
 [inlining] builtInApplyTarget.js .......... Pass
-[DynamicCode] eval-nativecodedata.js .......... Fail
-[DynamicCode] eval-nativenumber.js .......... Fail
-[DynamicCode] eval-nativenumber.js .......... Fail
+[DynamicCode] eval-nativecodedata.js .......... Pass
+[DynamicCode] eval-nativenumber.js .......... Pass
+[DynamicCode] eval-nativenumber.js .......... Pass
 [es6] Skipping whole directory (Not in scope (es6))
 [switchStatement] allIIntCases.js .......... Pass
 [switchStatement] emptyCases.js .......... Pass
@@ -1409,96 +1409,8 @@ Running all tests
 [switchStatement] CallBetweenSwitchExprUses.js .......... Pass
 [switchStatement] switchDefNotStringBug.js .......... Pass
 [switchStatement] singleCharStringCase.js .......... Pass
-[stackfunc] simple_escape.js .......... Fail
-[stackfunc] simple_stackfunc.js .......... Fail
-[stackfunc] simple_stackfunc.js .......... Fail
-[stackfunc] trycatch_stackfunc.js .......... Fail
-[stackfunc] simple_namedstackfunc.js .......... Fail
-[stackfunc] tostring_escape.js .......... Fail
-[stackfunc] chain_assign.js .......... Fail
-[stackfunc] nested_escape.js .......... Fail
-[stackfunc] funcname_escape.js .......... Fail
-[stackfunc] call_escape.js .......... Fail
-[stackfunc] argout_escape.js .......... Fail
-[stackfunc] throw_escape.js .......... Fail
-[stackfunc] funcname_asg.js .......... Fail
-[stackfunc] arrlit_escape.js .......... Fail
-[stackfunc] arrlit_asg_escape.js .......... Fail
-[stackfunc] objlit_escape.js .......... Fail
-[stackfunc] formal_asg.js .......... Fail
-[stackfunc] argument_escape.js .......... Fail
-[stackfunc] arguments_assignment.js .......... Pass
-[stackfunc] cross_scope.js .......... Fail
-[stackfunc] eval_escape.js .......... Fail
-[stackfunc] child_eval_escape.js .......... Fail
-[stackfunc] with_namedfunc.js .......... Fail
-[stackfunc] formal_namedfunc.js .......... Fail
-[stackfunc] throw_func.js .......... Fail
-[stackfunc] glo_asg.js .......... Fail
-[stackfunc] multinested_escape.js .......... Fail
-[stackfunc] let_stackfunc.js .......... Fail
-[stackfunc] let_blockescape.js .......... Fail
-[stackfunc] simple_escape.js .......... Fail
-[stackfunc] simple_stackfunc.js .......... Fail
-[stackfunc] simple_namedstackfunc.js .......... Fail
-[stackfunc] tostring_escape.js .......... Fail
-[stackfunc] chain_assign.js .......... Fail
-[stackfunc] nested_escape.js .......... Fail
-[stackfunc] funcname_escape.js .......... Fail
-[stackfunc] call_escape.js .......... Fail
-[stackfunc] throw_escape.js .......... Fail
-[stackfunc] funcname_asg.js .......... Fail
-[stackfunc] arrlit_escape.js .......... Fail
-[stackfunc] arrlit_asg_escape.js .......... Fail
-[stackfunc] objlit_escape.js .......... Fail
-[stackfunc] formal_asg.js .......... Fail
-[stackfunc] argument_escape.js .......... Fail
-[stackfunc] cross_scope.js .......... Fail
-[stackfunc] eval_escape.js .......... Fail
-[stackfunc] child_eval_escape.js .......... Fail
-[stackfunc] with_namedfunc.js .......... Fail
-[stackfunc] formal_namedfunc.js .......... Fail
-[stackfunc] throw_func.js .......... Fail
-[stackfunc] glo_asg.js .......... Fail
-[stackfunc] multinested_escape.js .......... Fail
-[stackfunc] let_stackfunc.js .......... Fail
-[stackfunc] let_blockescape.js .......... Fail
-[stackfunc] box.js .......... Fail
-[stackfunc] box.js .......... Fail
-[stackfunc] callee_escape.js .......... Fail
-[stackfunc] callee_escape2.js .......... Fail
-[stackfunc] callee_escape2.js .......... Fail
-[stackfunc] caller_escape.js .......... Fail
-[stackfunc] singleuse.js .......... Fail
-[stackfunc] iffuncdecl.js .......... Fail
-[stackfunc] cachescope.js .......... Fail
-[stackfunc] box_callparam.js .......... Fail
-[stackfunc] inlinee_box.js .......... Fail
-[stackfunc] blockscope_funcdecl.js .......... Fail
-[stackfunc] recurse.js .......... Fail
-[stackfunc] jitdefer.js .......... Fail
-[stackfunc] box_bailout.js .......... Fail
-[stackfunc] box_inline_bailout.js .......... Fail
-[stackfunc] withref_delayobjscope.js .......... Fail
-[stackfunc] funcexpr.js .......... Fail
-[stackfunc] funcexpr_2.js .......... Fail
-[stackfunc] funcexpr_2.js .......... Fail
-[stackfunc] with_existing.js .......... Fail
-[stackfunc] with_crossscope.js .......... Fail
-[stackfunc] bug565705.js .......... Fail
-[stackfunc] box_postjit.js .......... Pass
-[stackfunc] box_jitloopbody.js .......... Fail
-[stackfunc] box_jitloopbody2.js .......... Pass
-[stackfunc] 602481.js .......... Fail
-[stackfunc] 605893.js .......... Fail
-[stackfunc] 622043.js .......... Pass
-[stackfunc] delaycapture.js .......... Pass
-[stackfunc] closure-1129602.js .......... Pass
-[stackfunc] box_blockscope.js .......... Fail
-[PerfHint] try_with_eval_perfhint.js .......... Fail
-[PerfHint] try_with_eval_perfhint.js .......... Fail
-[PerfHint] arguments1.js .......... Fail
-[PerfHint] polymorphictest.js .......... Fail
+[stackfunc] Skipping whole directory (Chakracore-only)
+[PerfHint] Skipping whole directory (Chakracore-only)
 [AsmJs] Skipping whole directory (Not in scope)
 [AsmJSFloat] Skipping whole directory (Not in scope)
 [ASMJSParser] Skipping whole directory (Not in scope)
@@ -1518,18 +1430,18 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         InlineCaches		21		17		4		0		(80%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		6		0		(66%)
-             Strings		36		26		10		0		(72%)
+             Strings		36		27		9		0		(75%)
                 Date		12		2		10		0		(16%)
                Error		23		2		20		1		(8%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
-         ControlFlow		17		13		4		0		(76%)
+         ControlFlow		17		14		3		0		(82%)
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		178		26		2		(86%)
             Function		61		21		39		1		(34%)
-              Object		58		29		25		4		(50%)
+              Object		58		30		24		4		(51%)
                Regex		33		14		19		0		(42%)
           Prototypes		7		5		2		0		(71%)
      GlobalFunctions		13		6		7		0		(46%)
@@ -1542,16 +1454,14 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Bugs		36		20		16		0		(55%)
               strict		104		38		66		0		(36%)
                 utf8		3		0		3		0		(0%)
-        UnifiedRegex		26		5		21		0		(19%)
+        UnifiedRegex		26		7		19		0		(26%)
              bailout		34		25		9		0		(73%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
-           fieldopts		111		76		35		0		(68%)
+           fieldopts		111		77		34		0		(69%)
          FixedFields		16		15		1		0		(93%)
             inlining		34		21		13		0		(61%)
-         DynamicCode		3		0		3		0		(0%)
+         DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
-           stackfunc		86		6		80		0		(6%)
-            PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1496		898		583		15		(60%)
+               Total		1406		901		490		15		(64%)

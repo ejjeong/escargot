@@ -27,3 +27,4 @@ for (var j = 0; j < 1000;j ++)
 
 f = null;
 CollectGarbage();
+WScript.Echo("pass");

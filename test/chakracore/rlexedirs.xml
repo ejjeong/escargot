@@ -236,12 +236,14 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Chakracore-only</escargot-skip>
     <files>stackfunc</files>
     <tags>exclude_serialized,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Chakracore-only</escargot-skip>
     <files>PerfHint</files>
     <tags>exclude_serialized,exclude_snap,require_backend</tags>
   </default>
