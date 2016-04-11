@@ -2350,7 +2350,7 @@ void GlobalObject::installArray()
     // $22.1.3.20 Array.prototype.reverse()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("reverse"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
-        unsigned len = O->get(strings->length.string()).toUint32();
+        unsigned len = O->length();
         unsigned middle = std::floor(len / 2);
         unsigned lower = 0;
         while (middle > lower) {
@@ -2378,13 +2378,20 @@ void GlobalObject::installArray()
                 O->deletePropertyWithException(lowerP);
                 O->set(upperP, lowerValue, true);
             } else {
-                unsigned x = middle - ESArrayObject::nextIndexForward(O, lower, middle, false);
-                unsigned y = ESArrayObject::nextIndexBackward(O, upper, middle - 1, false) - middle;
+                unsigned nextLower = ESArrayObject::nextIndexForward(O, lower, middle, false);
+                unsigned nextUpper = ESArrayObject::nextIndexBackward(O, upper, middle, false);
+                unsigned x = middle - nextLower;
+                unsigned y = nextUpper - middle;
+                unsigned lowerCandidate;
                 if (x > y) {
-                    lower = middle - x - 1;
+                    lowerCandidate = nextLower;
                 } else {
-                    lower = middle - y - 1;
+                    lowerCandidate = len - nextUpper - 1;
                 }
+                if (lower == lowerCandidate)
+                    break;
+                lower = lowerCandidate;
+                continue;
             }
             lower++;
         }

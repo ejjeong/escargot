@@ -244,7 +244,7 @@ Done running mjsunit/short-circuit-boolean: pass
 Done running mjsunit/simple-constructor: pass
 Done running mjsunit/smi-negative-zero: pass
 Done running mjsunit/smi-ops: pass
-Done running mjsunit/sparse-array-reverse: FAIL
+Done running mjsunit/sparse-array-reverse: pass
 Done running mjsunit/sparse-array: pass
 Done running mjsunit/store-dictionary: pass
 Done running mjsunit/str-to-num: pass
@@ -951,10 +951,6 @@ Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 
-=== mjsunit/sparse-array-reverse.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
-
 ===
-=== 1 tests failed
+=== All tests succeeded
 ===
