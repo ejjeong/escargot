@@ -180,6 +180,7 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope (es6)</escargot-skip>
     <files>typedarray</files>
   </default>
 </dir>
@@ -196,6 +197,7 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope (Error.prototype.stack)</escargot-skip>
     <files>StackTrace</files>
   </default>
 </dir>

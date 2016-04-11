@@ -1223,51 +1223,7 @@ Running all tests
 [UnifiedRegex] bugFixVersioned.js .......... Pass
 [UnifiedRegex] mru.js .......... Pass
 [UnifiedRegex] SourceToString.js .......... Fail
-[typedarray] arraybuffer.js .......... Fail
-[typedarray] arraybufferType_v5.js .......... Fail
-[typedarray] arraybufferType.js .......... Fail
-[typedarray] TypedArrayBuiltins.js .......... Fail
-[typedarray] BadNaN.js .......... Fail
-[typedarray] int8array.js .......... Fail
-[typedarray] uint8array.js .......... Fail
-[typedarray] int16array.js .......... Fail
-[typedarray] uint16array.js .......... Fail
-[typedarray] int32array.js .......... Fail
-[typedarray] uint32array.js .......... Fail
-[typedarray] float32array.js .......... Fail
-[typedarray] float64array.js .......... Fail
-[typedarray] dataview.js .......... Fail
-[typedarray] objectproperty.js .......... Fail
-[typedarray] nan.js .......... Fail
-[typedarray] negIndexes.js .......... Pass
-[typedarray] set.js .......... Fail
-[typedarray] samethread.js .......... Fail
-[typedarray] crossthread.js .......... Fail
-[typedarray] Int8Array2.js .......... Fail
-[typedarray] UInt8Array2.js .......... Fail
-[typedarray] Int16Array2.js .......... Fail
-[typedarray] UInt16Array2.js .......... Fail
-[typedarray] Int32Array2.js .......... Fail
-[typedarray] UInt32Array2.js .......... Fail
-[typedarray] Float32Array2.js .......... Fail
-[typedarray] Float64Array2.js .......... Fail
-[typedarray] subarray.js .......... Fail
-[typedarray] dataview1.js .......... Fail
-[typedarray] allocation.js .......... Pass
-[typedarray] allocation2.js .......... Pass
-[typedarray] typedArrayProfile.js .......... Pass
-[typedarray] pixelArrayRounding.js .......... Pass
-[typedarray] pixelArrayRounding.js .......... Pass
-[typedarray] cseTypedArray.js .......... Pass
-[typedarray] Uint8ClampedArray.js .......... Fail
-[typedarray] setDifferentTypes.js .......... Fail
-[typedarray] bug2230916.js .......... Fail
-[typedarray] bug2268573.js .......... Fail
-[typedarray] bug_4653428.js .......... Fail
-[typedarray] transfer.js .......... Fail
-[typedarray] memset.js .......... Fail
-[typedarray] memcopy.js .......... Skip (ES6 Spec)
-[typedarray] memcopy_negative.js .......... Skip (ES6 Spec)
+[typedarray] Skipping whole directory (Not in scope (es6))
 [bailout] arrayctor.js .......... Pass
 [bailout] bailout.js .......... Pass
 [bailout] bailout.js .......... Pass
@@ -1308,23 +1264,7 @@ Running all tests
 [loop] loopinversion.js .......... Pass
 [loop] loopinversion.js .......... Pass
 [loop] infinite.js .......... Pass
-[StackTrace] SimpleThrow.js .......... Fail
-[StackTrace] PropertyValidation.js .......... Fail
-[StackTrace] PropertyValidation.js .......... Fail
-[StackTrace] SimpleThrow.js .......... Fail
-[StackTrace] LongCallStackThrow.js .......... Fail
-[StackTrace] LongCallStackThrow.js .......... Fail
-[StackTrace] LongCallStackThrow.js .......... Fail
-[StackTrace] LongCallStackThrow.js .......... Fail
-[StackTrace] StackTraceLimit.js .......... Fail
-[StackTrace] StackTraceLimitOOS.js .......... Fail
-[StackTrace] StackTraceLimitOOS.js .......... Fail
-[StackTrace] dynamic.js .......... Fail
-[StackTrace] ErrorPrototype.js .......... Fail
-[StackTrace] ErrorDotStackAlreadyExists.js .......... Fail
-[StackTrace] FunctionName.js .......... Fail
-[StackTrace] x64StackWalk.js .......... Fail
-[StackTrace] x64StackWalkLoopBody.js .......... Fail
+[StackTrace] Skipping whole directory (Not in scope (Error.prototype.stack))
 [Miscellaneous] HasOnlyWritableDataPropertiesCache.js .......... Fail
 [Miscellaneous] longstring.js .......... Pass
 [Miscellaneous] etwtest.js .......... Pass
@@ -1660,10 +1600,8 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               strict		104		38		66		0		(36%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		5		21		0		(19%)
-          typedarray		45		7		36		2		(15%)
              bailout		34		25		9		0		(73%)
                 loop		6		4		2		0		(66%)
-          StackTrace		17		0		17		0		(0%)
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		76		35		0		(68%)
          FixedFields		16		15		1		0		(93%)
@@ -1673,4 +1611,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1614		933		664		17		(57%)
+               Total		1552		926		611		15		(59%)
