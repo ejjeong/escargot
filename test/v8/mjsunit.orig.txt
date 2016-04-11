@@ -958,7 +958,8 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abc
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
 === mjsunit/regress/regress-3229.js ===
---- stderr ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
 
 ===
 === 3 tests failed

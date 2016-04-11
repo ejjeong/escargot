@@ -1343,7 +1343,7 @@ inline ESString* escapeSlashInPattern(ESString* patternStr)
                     buf.push_back('/');
                     retval = ESString::concatTwoStrings(retval, ESString::create(buf));
 
-                    start = i + 1;
+                    start = start + i + 1;
                     i = 0;
                     buf = "";
                     break;
