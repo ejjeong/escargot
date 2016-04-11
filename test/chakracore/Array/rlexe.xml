@@ -163,7 +163,7 @@
   </test>
   <test>
     <default>
-      <escargot-skip>ES6 Spec</escargot-skip>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>LastUsedSegmentHasNULLElement.js</files>
       <compile-flags> -maxinterpretcount:1 -maxsimplejitruncount:2  -ForceArrayBTree</compile-flags>
       <tags>exclude_ship</tags>
