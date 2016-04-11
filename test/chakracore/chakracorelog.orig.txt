@@ -101,10 +101,10 @@ Running all tests
 [Array] memset_invariant.js .......... Skip (Not in scope (es6))
 [Array] memset2.js .......... Pass
 [Array] memcopy.js .......... Skip (Not in scope (es6))
-[Array] memop_alias.js .......... Fail
-[Array] memop_field.js .......... Skip (ES6 Spec)
-[Array] memop_slot.js .......... Skip (ES6 Spec)
-[Array] memop_bounds_check.js .......... Skip (ES6 Spec)
+[Array] memop_alias.js .......... Skip (Not in scope (es6))
+[Array] memop_field.js .......... Skip (Not in scope (es6))
+[Array] memop_slot.js .......... Skip (Not in scope (es6))
+[Array] memop_bounds_check.js .......... Skip (Not in scope (es6))
 [Array] bug4587739.js .......... Fail
 [Basics] Array.js .......... Pass
 [Basics] ie12ScriptFunctionToStrings.js .......... Fail
@@ -142,11 +142,11 @@ Running all tests
 [Basics] typeofcombi.js .......... Pass
 [Basics] TypePromotion.js .......... Pass
 [Basics] UndefinedVsNull.js .......... Pass
-[Basics] With.js .......... Fail
-[Basics] withBug940841.js .......... Fail
-[Basics] withBug940841_2.js .......... Fail
-[Basics] With2.js .......... Fail
-[Basics] witheval.js .......... Fail
+[Basics] With.js .......... Skip (Not in scope (wtih))
+[Basics] withBug940841.js .......... Skip (Not in scope (wtih))
+[Basics] withBug940841_2.js .......... Skip (Not in scope (wtih))
+[Basics] With2.js .......... Skip (Not in scope (wtih))
+[Basics] witheval.js .......... Skip (Not in scope (wtih))
 [Basics] TernaryOperator.js .......... Pass
 [Basics] DeleteProperty1.js .......... Fail
 [Basics] Accessors.js .......... Pass
@@ -1423,8 +1423,8 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		55		43		8		(51%)
-              Basics		56		28		28		0		(50%)
+               Array		106		55		42		9		(51%)
+              Basics		56		28		23		5		(50%)
                  es5		56		30		26		0		(53%)
                   EH		17		7		10		0		(41%)
         InlineCaches		21		17		4		0		(80%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		901		487		18		(64%)
+               Total		1406		901		481		24		(64%)
