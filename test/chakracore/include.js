@@ -1,6 +1,12 @@
 var WScript = {
     Echo : print,
-    LoadScriptFile : load,
+    LoadScriptFile : function(path) {
+        try {
+            load(path)
+        } catch (e) {
+            load("test\\chakracore\\UnitTestFramework\\" + path);
+        }
+    }
 };
 
 function CollectGarbage() {
