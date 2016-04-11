@@ -434,7 +434,7 @@ Running all tests
 [Date] date_cache_bug.js .......... Pass
 [Date] formatting.js .......... Fail
 [Error] errorProps.js .......... Fail
-[Error] ErrorCtorProps.js .......... Fail
+[Error] ErrorCtorProps.js .......... Pass
 [Error] NativeErrors.js .......... Fail
 [Error] outofmem.js .......... Fail
 [Error] stack.js .......... Fail
@@ -1089,7 +1089,7 @@ Running all tests
 [strict] 09.ObjectLiteral.js .......... Skip (-ForceStrictMode)
 [strict] 09.ObjectLiteral_sm.js .......... Pass
 [strict] 10.eval.js .......... Pass
-[strict] 10.eval_sm.js .......... Fail
+[strict] 10.eval_sm.js .......... Pass
 [strict] 11.this.js .......... Pass
 [strict] 11.this.js .......... Skip (-ForceStrictMode)
 [strict] 11.this_sm.js .......... Pass
@@ -1113,8 +1113,8 @@ Running all tests
 [strict] 18.formal.js .......... Pass
 [strict] 18.formal.js .......... Skip (-ForceStrictMode)
 [strict] 18.formal_sm.js .......... Pass
-[strict] 19.function.js .......... Fail
-[strict] 19.function_sm.js .......... Fail
+[strict] 19.function.js .......... Skip (Deprecated)
+[strict] 19.function_sm.js .......... Pass
 [strict] 20.function.js .......... Pass
 [strict] 20.function.js .......... Skip (-ForceStrictMode)
 [strict] 20.function_sm.js .......... Pass
@@ -1133,10 +1133,10 @@ Running all tests
 [strict] strictkwd-deferred.js .......... Fail
 [strict] comma_bug219390.js .......... Fail
 [strict] comma_bug219390.js .......... Fail
-[strict] nestedfnnameargs.js .......... Fail
-[strict] nestedfnnameargs.js .......... Fail
-[strict] bug212755.js .......... Fail
-[strict] bug212755.js .......... Fail
+[strict] nestedfnnameargs.js .......... Pass
+[strict] nestedfnnameargs.js .......... Pass
+[strict] bug212755.js .......... Skip (Not in scope (with))
+[strict] bug212755.js .......... Skip (Not in scope (with))
 [strict] OS_1362136.js .......... Pass
 [utf8] invalidutf8.js .......... Fail
 [utf8] unicode_digit_as_identifier_should_work.js .......... Fail
@@ -1432,7 +1432,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
             Closures		18		12		6		0		(66%)
              Strings		36		27		9		0		(75%)
                 Date		12		2		10		0		(16%)
-               Error		23		3		19		1		(13%)
+               Error		23		4		18		1		(17%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
          ControlFlow		17		14		3		0		(82%)
@@ -1452,7 +1452,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                  Lib		16		3		13		0		(18%)
                 JSON		13		9		4		0		(69%)
                 Bugs		36		20		16		0		(55%)
-              strict		104		61		18		25		(58%)
+              strict		104		65		11		28		(62%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		7		19		0		(26%)
              bailout		34		25		9		0		(73%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		946		408		52		(67%)
+               Total		1406		951		400		55		(67%)

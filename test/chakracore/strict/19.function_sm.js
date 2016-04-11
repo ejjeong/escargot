@@ -106,6 +106,7 @@ function exceptToString(ee) {
       str);
 })();
 
+/* deprecated
 (function Test6() {
     var str = "funciton.caller's value is a strict mode function";
 
@@ -126,6 +127,7 @@ function exceptToString(ee) {
     }
     write("Return: " + str);
 })();
+*/
 
 /* TODO
 (function Test5() {

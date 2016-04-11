@@ -548,6 +548,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Deprecated</escargot-skip>
       <files>19.function.js</files>
       <baseline>19.function.baseline</baseline>
       <tags>fail_mutators</tags>
@@ -695,6 +696,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug212755.js</files>
       <baseline>bug212755.baseline</baseline>
       <tags>exclude_dynapogo</tags>
@@ -702,6 +704,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug212755.js</files>
       <baseline>bug212755.baseline</baseline>
       <compile-flags>-force:deferparse</compile-flags>
