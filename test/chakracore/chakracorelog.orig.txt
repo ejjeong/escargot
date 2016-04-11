@@ -1057,76 +1057,76 @@ Running all tests
 [strict] delete.js .......... Pass
 [strict] delete.js .......... Pass
 [strict] 01.octal.js .......... Pass
-[strict] 01.octal.js .......... Fail
+[strict] 01.octal.js .......... Skip (-ForceStrictMode)
 [strict] 01.octal_sm.js .......... Pass
 [strict] 03.assign.js .......... Pass
-[strict] 03.assign.js .......... Fail
-[strict] 03.assign.js .......... Fail
+[strict] 03.assign.js .......... Skip (-ForceStrictMode)
+[strict] 03.assign.js .......... Skip (-Force:Deferparse -ForceStrictMode)
 [strict] 03.assign_sm.js .......... Pass
 [strict] 03.assign_sm.js .......... Pass
 [strict] 04.eval.js .......... Pass
 [strict] 04.eval.js .......... Pass
 [strict] 05.arguments.js .......... Pass
-[strict] 05.arguments.js .......... Fail
-[strict] 05.arguments.js .......... Fail
-[strict] 05.arguments.js .......... Fail
+[strict] 05.arguments.js .......... Skip (-ForceStrictMode)
+[strict] 05.arguments.js .......... Skip (-Serialized -ForceStrictMode)
+[strict] 05.arguments.js .......... Skip (-Force:Deferparse -ForceStrictMode)
 [strict] 05.arguments_sm.js .......... Fail
 [strict] 05.arguments_sm.js .......... Fail
 [strict] 05.arguments_sm.js .......... Fail
 [strict] 06.arguments.js .......... Pass
-[strict] 06.arguments.js .......... Fail
-[strict] 06.arguments.js .......... Fail
-[strict] 06.arguments.js .......... Fail
+[strict] 06.arguments.js .......... Skip (-ForceStrictMode)
+[strict] 06.arguments.js .......... Skip (-Force:Deferparse -ForceStrictMode)
+[strict] 06.arguments.js .......... Skip (-force:cachedscope -ForceStrictMode)
 [strict] 06.arguments_sm.js .......... Pass
 [strict] 06.arguments_sm.js .......... Pass
 [strict] 06.arguments_sm.js .......... Pass
 [strict] 07.arguments.js .......... Pass
 [strict] 07.arguments_sm.js .......... Pass
 [strict] 08.ObjectLiteral.js .......... Fail
-[strict] 08.ObjectLiteral.js .......... Fail
+[strict] 08.ObjectLiteral.js .......... Skip (-ForceStrictMode)
 [strict] 08.ObjectLiteral_sm.js .......... Fail
 [strict] 09.ObjectLiteral.js .......... Pass
-[strict] 09.ObjectLiteral.js .......... Fail
+[strict] 09.ObjectLiteral.js .......... Skip (-ForceStrictMode)
 [strict] 09.ObjectLiteral_sm.js .......... Pass
 [strict] 10.eval.js .......... Pass
 [strict] 10.eval_sm.js .......... Fail
 [strict] 11.this.js .......... Fail
-[strict] 11.this.js .......... Fail
+[strict] 11.this.js .......... Skip (-ForceStrictMode)
 [strict] 11.this_sm.js .......... Fail
 [strict] 11.this_sm.js .......... Fail
 [strict] 12.delete.js .......... Pass
-[strict] 12.delete.js .......... Fail
+[strict] 12.delete.js .......... Skip (-ForceStrictMode)
 [strict] 12.delete_sm.js .......... Pass
 [strict] 13.delete.js .......... Pass
 [strict] 14.var.js .......... Pass
-[strict] 14.var.js .......... Fail
+[strict] 14.var.js .......... Skip (-ForceStrictMode)
 [strict] 14.var_sm.js .......... Pass
 [strict] 15.with.js .......... Fail
-[strict] 15.with.js .......... Pass
+[strict] 15.with.js .......... Skip (-ForceStrictMode)
 [strict] 15.with_sm.js .......... Pass
 [strict] 16.catch.js .......... Pass
-[strict] 16.catch.js .......... Fail
+[strict] 16.catch.js .......... Skip (-ForceStrictMode)
 [strict] 16.catch_sm.js .......... Pass
 [strict] 17.formal.js .......... Pass
-[strict] 17.formal_sm.js .......... Pass
+[strict] 17.formal_sm.js .......... Skip (-ForceStrictMode)
 [strict] 17.formal_sm.js .......... Pass
 [strict] 18.formal.js .......... Pass
-[strict] 18.formal.js .......... Fail
+[strict] 18.formal.js .......... Skip (-ForceStrictMode)
 [strict] 18.formal_sm.js .......... Pass
 [strict] 19.function.js .......... Fail
 [strict] 19.function_sm.js .......... Fail
 [strict] 20.function.js .......... Pass
-[strict] 20.function.js .......... Fail
+[strict] 20.function.js .......... Skip (-ForceStrictMode)
 [strict] 20.function_sm.js .......... Pass
 [strict] 21.functionDeclaration.js .......... Fail
-[strict] 21.functionDeclaration.js .......... Fail
+[strict] 21.functionDeclaration.js .......... Skip (-ForceStrictMode)
 [strict] 21.functionDeclaration_sm.js .......... Fail
 [strict] 22.callerCalleeArguments.js .......... Fail
 [strict] 22.callerCalleeArguments_sm.js .......... Fail
 [strict] 23.reservedWords.js .......... Fail
 [strict] 23.reservedWords_sm.js .......... Fail
 [strict] 24.properties.js .......... Pass
-[strict] 24.properties.js .......... Fail
+[strict] 24.properties.js .......... Skip (-ForceStrictMode)
 [strict] 24.properties_sm.js .......... Pass
 [strict] strictkwd.js .......... Fail
 [strict] strictkwd.js .......... Fail
@@ -1452,7 +1452,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                  Lib		16		3		13		0		(18%)
                 JSON		13		8		5		0		(61%)
                 Bugs		36		20		16		0		(55%)
-              strict		104		56		48		0		(53%)
+              strict		104		54		29		21		(51%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		7		19		0		(26%)
              bailout		34		25		9		0		(73%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		932		447		27		(66%)
+               Total		1406		930		428		48		(66%)

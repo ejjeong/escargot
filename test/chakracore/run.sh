@@ -110,6 +110,11 @@ run_dir() {
 		if [[ $ENTITY == escargot-skip ]]; then
 			SKIP=$CONTENT
 		fi
+		if [[ $ENTITY == compile-flags ]]; then
+			if [[ $CONTENT == *-ForceStrictMode* ]]; then
+				SKIP=$CONTENT
+			fi
+		fi
 		if [[ "$ENTITY" == "/test" && "$FILES" != "" ]]; then
 			REAL_FILES=$(find . -iname $FILES -printf "%P\n")
 			if [[ $BASELINE == "" ]]; then
