@@ -382,8 +382,25 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 
 
 namespace escargot {
+
 typedef std::basic_string<char16_t, std::char_traits<char16_t>, gc_allocator<char16_t> > UTF16String;
 typedef std::basic_string<char, std::char_traits<char>, gc_allocator<char> > ASCIIString;
+
+namespace options {
+
+static const size_t KB = 1024;
+static const size_t MB = 1024 * KB;
+
+// TODO these should be changed on various devices
+static const size_t CodeCacheThreshold = 1 * KB;
+static const size_t LazyByteCodeGenerationThreshold = 1 * MB;
+static const size_t MaxStackDepth = 4 * MB;
+static const size_t AllocaOnHeapThreshold = 32 * MB;
+static const size_t NativeHeapUsageThreshold = 300 * MB;
+static const size_t MaximumArgumentCount = 65535;
+
+}
+
 }
 
 #ifdef ENABLE_ESJIT

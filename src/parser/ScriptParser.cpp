@@ -741,7 +741,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
 {
     bool strictFromOutside = parserContextInformation.m_strictFromOutside;
 #ifdef ENABLE_CODECACHE
-    if (source->length() < 1024) {
+    if (source->length() < options::CodeCacheThreshold) {
         if (isForGlobalScope) {
             auto iter = m_globalCodeCache.find(std::make_pair(source, strictFromOutside));
             if (iter != m_globalCodeCache.end()) {
@@ -759,11 +759,11 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope, parserContextInformation);
     ASSERT(node->type() == Program);
-    CodeBlock* cb = generateByteCode(node, type, source->length() > 1024 * 1024 ? false : true);
+    CodeBlock* cb = generateByteCode(node, type, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
 #ifdef ENABLE_CODECACHE
-    if (source->length() < 1024) {
+    if (source->length() < options::CodeCacheThreshold) {
         if (isForGlobalScope) {
             cb->m_isCached = true;
             m_globalCodeCache.insert(std::make_pair(std::make_pair(source, strictFromOutside), cb));

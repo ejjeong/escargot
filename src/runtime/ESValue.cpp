@@ -1540,7 +1540,7 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
         chars = str->utf16Data();
     bool isGlobal = option() & ESRegExpObject::Option::Global;
     unsigned* outputBuf;
-    ALLOCA_WRAPPER(outputBuf, unsigned int*, sizeof(unsigned) * 2 * (subPatternNum + 1), true);
+    ALLOCA_WRAPPER(ESVMInstance::currentInstance(), outputBuf, unsigned int*, sizeof(unsigned) * 2 * (subPatternNum + 1), true);
     outputBuf[1] = start;
     do {
         start = outputBuf[1];
@@ -2085,10 +2085,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
 
 ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
-    char dummy;
-    if (UNLIKELY(instance->m_stackStart - &dummy) > 4 * 1024 * 1024) // maximum call stack size : 4MB
-        instance->throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
-    if (UNLIKELY(argumentCount) > 65535) // maximum number of arguments : 65535
+    stackCheck();
+    if (UNLIKELY(argumentCount > options::MaximumArgumentCount)) // maximum number of arguments : 65535
         instance->throwError(RangeError::create(ESString::create("Maximum number of arguments exceeded.")));
     ESValue result(ESValue::ESForceUninitialized);
     if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
@@ -2134,7 +2132,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         }
 
         ESValue* stackStorage;
-        ALLOCA_WRAPPER(stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);
+        ALLOCA_WRAPPER(instance, stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);
         if (cb->m_needsHeapAllocatedExecutionContext) {
             auto FE = LexicalEnvironment::newFunctionEnvironment(cb->m_needsToPrepareGenerateArgumentsObject,
                 stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, arguments, argumentCount, fn, cb->m_needsActivation, cb->m_functionExpressionNameIndex);

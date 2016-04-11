@@ -994,7 +994,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             CallBoundFunction* code = (CallBoundFunction*)currentCode;
             size_t argc = code->m_boundArgumentsCount + instance->currentExecutionContext()->argumentCount();
             ESValue* mergedArguments;
-            ALLOCA_WRAPPER(mergedArguments, ESValue*, sizeof(ESValue) * argc, false);
+            ALLOCA_WRAPPER(instance, mergedArguments, ESValue*, sizeof(ESValue) * argc, false);
             if (code->m_boundArgumentsCount)
                 memcpy(mergedArguments, code->m_boundArguments, sizeof(ESValue) * code->m_boundArgumentsCount);
             if (instance->currentExecutionContext()->argumentCount())

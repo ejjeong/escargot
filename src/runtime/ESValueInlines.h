@@ -262,7 +262,7 @@ inline double ESValue::toNumberSlowCase() const
 
         char* end;
         char* buf;
-        ALLOCA_WRAPPER(buf, char*, data->length() + 1, true);
+        ALLOCA_WRAPPER(ESVMInstance::currentInstance(), buf, char*, data->length() + 1, true);
         const size_t len = data->length();
         for (unsigned i = 0; i < len ; i ++) {
             char16_t c = data->charAt(i);

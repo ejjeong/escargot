@@ -220,6 +220,13 @@ public:
 
     char* stackStart() { return m_stackStart; }
 
+    ALWAYS_INLINE void stackCheck()
+    {
+        char dummy;
+        if (UNLIKELY(static_cast<size_t>(stackStart() - &dummy) > options::MaxStackDepth))
+            throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
+    }
+
     void nativeHeapAllocated(size_t size, void* ptr)
     {
         m_nativeHeapUsage += size;
@@ -227,7 +234,7 @@ public:
         (void)ptr;
         // printf("allocate %zu (current %zu) %p\n", size, m_nativeHeapUsage, ptr);
 
-        if (m_nativeHeapUsage > 300 * 1024 * 1024)
+        if (m_nativeHeapUsage > options::NativeHeapUsageThreshold)
             throwOOMError();
     }
     void nativeHeapDeallocated(size_t size, void* ptr)
@@ -335,20 +342,21 @@ public:
     ESValue m_temporaryAccessorBindingValueHolder;
 };
 
-#define ALLOCA_WRAPPER(ptr, type, size, atomic) \
-    char dummy; \
-    if (UNLIKELY(ESVMInstance::currentInstance()->stackStart() - &dummy) > 4 * 1024 * 1024) \
-        ESVMInstance::currentInstance()->throwOOMError(); \
-    else { \
-        if (size > 32 * 1024 * 1024) { \
-            if (atomic) { \
-                ptr = (type)GC_MALLOC_ATOMIC(size); \
-            } else { \
-                ptr = (type)GC_MALLOC(size); \
-            } \
+ALWAYS_INLINE void stackCheck()
+{
+    ESVMInstance::currentInstance()->stackCheck();
+}
+
+#define ALLOCA_WRAPPER(instance, ptr, type, size, atomic) \
+    instance->stackCheck(); \
+    if (size > options::AllocaOnHeapThreshold) { \
+        if (atomic) { \
+            ptr = (type)GC_MALLOC_ATOMIC(size); \
         } else { \
-            ptr = (type)alloca(size); \
+            ptr = (type)GC_MALLOC(size); \
         } \
+    } else { \
+        ptr = (type)alloca(size); \
     }
 
 class StringRecursionChecker {
@@ -586,7 +594,6 @@ inline bool operator!=(const ESNativeHeapUsageCounter<T1>&, const ESNativeHeapUs
 {
     return false;
 }
-
 
 }
 

@@ -136,7 +136,7 @@ Done running mjsunit/int32-ops: pass
 Done running mjsunit/integer-to-string: pass
 Done running mjsunit/invalid-lhs: pass
 Done running mjsunit/invalid-source-element: pass
-Done running mjsunit/json-parser-recursive: FAIL
+Done running mjsunit/json-parser-recursive: pass
 Done running mjsunit/json-replacer-number-wrapper-tostring: pass
 Done running mjsunit/json-replacer-order: pass
 Done running mjsunit/json: pass
@@ -951,9 +951,6 @@ Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: pass
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 
-=== mjsunit/json-parser-recursive.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
@@ -964,5 +961,5 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack:
 --- stderr ---
 
 ===
-=== 4 tests failed
+=== 3 tests failed
 ===
