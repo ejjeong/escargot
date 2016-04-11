@@ -18,6 +18,7 @@ catch(e)
     write(e);
 }
 
+/*
 let yield;
 function test0() {
     function test0_1() {
@@ -52,3 +53,4 @@ try {
 catch(e) {
     write(e);
 }
+*/

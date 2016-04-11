@@ -1745,7 +1745,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start)
 {
     if (ctx->m_strict)
-        throwEsprimaException();
+        throwEsprimaException(u"Octal numeric literals and escape characters not allowed in strict mode");
 
     uint64_t number = 0;
     bool scanned = false;

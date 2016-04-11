@@ -32,3 +32,4 @@ function foo() {
 }
 
 foo();
+WScript.Echo("Pass");

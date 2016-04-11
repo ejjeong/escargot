@@ -1035,27 +1035,27 @@ Running all tests
 [Bugs] bug_OS_4683246.js .......... Pass
 [Bugs] fabs1.js .......... Fail
 [strict] GlobalEval.js .......... Pass
-[strict] basics_function_in_SM.js .......... Fail
-[strict] basics_function_in_SM.js .......... Fail
+[strict] basics_function_in_SM.js .......... Pass
+[strict] basics_function_in_SM.js .......... Pass
 [strict] callerOrArgsNoAccess.js .......... Pass
-[strict] stricteval-deferred.js .......... Fail
-[strict] stricteval2-deferred.js .......... Fail
-[strict] stricteval3-deferred.js .......... Fail
-[strict] strictargs-deferred.js .......... Fail
-[strict] strictargs2-deferred.js .......... Fail
-[strict] strictargs3-deferred.js .......... Fail
-[strict] evalargs.js .......... Fail
-[strict] evalargs.js .......... Fail
+[strict] stricteval-deferred.js .......... Pass
+[strict] stricteval2-deferred.js .......... Pass
+[strict] stricteval3-deferred.js .......... Pass
+[strict] strictargs-deferred.js .......... Pass
+[strict] strictargs2-deferred.js .......... Pass
+[strict] strictargs3-deferred.js .......... Pass
+[strict] evalargs.js .......... Pass
+[strict] evalargs.js .......... Pass
 [strict] evalThis.js .......... Fail
 [strict] evalThis2.js .......... Pass
 [strict] evalThisNested.js .......... Fail
-[strict] formal_samename1.js .......... Fail
-[strict] formal_samename1.js .......... Fail
-[strict] formal_samename2.js .......... Fail
-[strict] formal_samename2.js .......... Fail
-[strict] multiunit.js .......... Fail
-[strict] delete.js .......... Fail
-[strict] delete.js .......... Fail
+[strict] formal_samename1.js .......... Pass
+[strict] formal_samename1.js .......... Pass
+[strict] formal_samename2.js .......... Pass
+[strict] formal_samename2.js .......... Pass
+[strict] multiunit.js .......... Pass
+[strict] delete.js .......... Pass
+[strict] delete.js .......... Pass
 [strict] 01.octal.js .......... Pass
 [strict] 01.octal.js .......... Fail
 [strict] 01.octal_sm.js .......... Pass
@@ -1066,7 +1066,7 @@ Running all tests
 [strict] 03.assign_sm.js .......... Pass
 [strict] 04.eval.js .......... Pass
 [strict] 04.eval.js .......... Pass
-[strict] 05.arguments.js .......... Fail
+[strict] 05.arguments.js .......... Pass
 [strict] 05.arguments.js .......... Fail
 [strict] 05.arguments.js .......... Fail
 [strict] 05.arguments.js .......... Fail
@@ -1452,7 +1452,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                  Lib		16		3		13		0		(18%)
                 JSON		13		8		5		0		(61%)
                 Bugs		36		20		16		0		(55%)
-              strict		104		38		66		0		(36%)
+              strict		104		56		48		0		(53%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		7		19		0		(26%)
              bailout		34		25		9		0		(73%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		909		471		26		(64%)
+               Total		1406		927		453		26		(65%)

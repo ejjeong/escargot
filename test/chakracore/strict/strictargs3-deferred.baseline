@@ -1,2 +1,1 @@
-SyntaxError: Invalid usage of 'arguments' in strict mode
-	at code (strictargs3-deferred.js:8:61)
+Uncaught SyntaxError: Cannot use a variable named 'arguments' in strict mode.

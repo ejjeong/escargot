@@ -1,2 +1,1 @@
-SyntaxError: Duplicate formal parameter names not allowed in strict mode
-	at code (multiunit.js:43:17)
+Uncaught SyntaxError: Cannot declare a parameter named 'a' in strict mode as it has already been declared.
