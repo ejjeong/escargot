@@ -257,62 +257,6 @@ Running all tests
 [InlineCaches] instanceOfCacheCrossRegistration.js .......... Pass
 [InlineCaches] bug_vso_os_1206083.js .......... Fail
 [LetConst] Skipping whole directory (Not in scope)
-[Basics] Array.js .......... Pass
-[Basics] ie12ScriptFunctionToStrings.js .......... Fail
-[Basics] DomProperties.js .......... Pass
-[Basics] ArrayConcat.js .......... Pass
-[Basics] arrayinit.js .......... Pass
-[Basics] IdsWithEscapes.js .......... Fail
-[Basics] ArrayResize.js .......... Pass
-[Basics] DirectCall.js .......... Pass
-[Basics] equal.js .......... Pass
-[Basics] equal_object.js .......... Pass
-[Basics] label1.js .......... Fail
-[Basics] label1.js .......... Fail
-[Basics] label2.js .......... Fail
-[Basics] label2.js .......... Fail
-[Basics] label3.js .......... Fail
-[Basics] label3.js .......... Fail
-[Basics] label4.js .......... Fail
-[Basics] label4.js .......... Fail
-[Basics] label5.js .......... Fail
-[Basics] label5.js .......... Fail
-[Basics] label6.js .......... Fail
-[Basics] label6.js .......... Fail
-[Basics] Length.js .......... Pass
-[Basics] Logical.js .......... Pass
-[Basics] ParameterOrder.js .......... Pass
-[Basics] Parameters.js .......... Pass
-[Basics] StringCharCodeAt.js .......... Pass
-[Basics] StringField.js .......... Pass
-[Basics] StringFromCharCode.js .......... Pass
-[Basics] StringSubstring.js .......... Pass
-[Basics] switch.js .......... Pass
-[Basics] Switch2.js .......... Pass
-[Basics] typeof.js .......... Pass
-[Basics] typeofcombi.js .......... Pass
-[Basics] TypePromotion.js .......... Pass
-[Basics] UndefinedVsNull.js .......... Pass
-[Basics] With.js .......... Fail
-[Basics] withBug940841.js .......... Fail
-[Basics] withBug940841_2.js .......... Fail
-[Basics] With2.js .......... Fail
-[Basics] witheval.js .......... Fail
-[Basics] TernaryOperator.js .......... Pass
-[Basics] DeleteProperty1.js .......... Fail
-[Basics] Accessors.js .......... Pass
-[Basics] DefProp.js .......... Pass
-[Basics] scopedaccessors.js .......... Fail
-[Basics] flags.js .......... Fail
-[Basics] Branching.js .......... Pass
-[Basics] inlinecache.js .......... Fail
-[Basics] scan.js .......... Fail
-[Basics] enum.js .......... Pass
-[Basics] with3.js .......... Fail
-[Basics] Enumerator-deprecated.js .......... Pass
-[Basics] Enumerator-WebViewHost.js .......... Fail
-[Basics] cross_site_accessor_main.js .......... Fail
-[Basics] bug650104.js .......... Fail
 [Generated] mul.js .......... Pass
 [Generated] mul0.js .......... Pass
 [Generated] mul1.js .......... Pass
@@ -1572,7 +1516,6 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                  es5		56		30		26		0		(53%)
                   EH		17		7		10		0		(41%)
         InlineCaches		21		17		4		0		(80%)
-              Basics		56		28		28		0		(50%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		6		0		(66%)
              Strings		36		26		10		0		(72%)
@@ -1611,4 +1554,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1552		926		611		15		(59%)
+               Total		1496		898		583		15		(60%)

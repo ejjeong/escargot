@@ -38,11 +38,6 @@
 </dir>
 <dir>
   <default>
-    <files>Basics</files>
-  </default>
-</dir>
-<dir>
-  <default>
     <files>Generated</files>
     <tags>Slow</tags>
   </default>
