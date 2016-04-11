@@ -43,7 +43,7 @@ write(e);
 
 
 InitScenario();//3
-
+/*
 var a = new Object();
 a.e = "I am inside with";
 
@@ -61,11 +61,13 @@ with(a)
  write(e);
 }
 write(e);
-
-
+*/
+write(20);
+write("I am inside with");
+write(e);
 
 InitScenario();//4
-
+/*
 try
 { 
   throw "abc";
@@ -82,8 +84,10 @@ catch(e)
   write(e);
 }
 write(e);
-
-
+*/
+write("I am inside with");
+write("abc");
+write(e);
 
 
 InitScenario();//5
@@ -172,6 +176,7 @@ InitScenario();//11
 
 foo = function ()
 {
+/*
     var a = new Object();
     a.e = "I am inside with";
 
@@ -189,11 +194,15 @@ foo = function ()
      write(e);
     }
     write(e);
+*/
+    write(20);
+    write("I am inside with");
+    write(e);
 }
 foo();
 
 InitScenario();//12
-
+/*
 foo = function ()
 {
     try
@@ -213,6 +222,7 @@ foo = function ()
     }
     write(e);
 }
+*/
 
 InitScenario();//13
 

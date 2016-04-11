@@ -33,6 +33,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>try2.js</files>
       <baseline>try2-es5.baseline</baseline>
     </default>
