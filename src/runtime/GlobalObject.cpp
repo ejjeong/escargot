@@ -2543,7 +2543,7 @@ void GlobalObject::installArray()
         double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger();
         size_t start;
         size_t deleteCnt = 0, insertCnt = 0;
-        size_t k;
+        int64_t k;
 
         if (relativeStart < 0)
             start = arrlen+relativeStart > 0 ? arrlen+relativeStart : 0;
@@ -2559,7 +2559,7 @@ void GlobalObject::installArray()
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
 
         k = start;
-        while (k < deleteCnt + start) {
+        while (k < static_cast<int64_t>(deleteCnt + start)) {
             ESValue from = ESValue(k);
 
             if (thisBinded->hasProperty(from)) {
@@ -2573,10 +2573,10 @@ void GlobalObject::installArray()
 
         size_t leftInsert = insertCnt;
         if (insertCnt < deleteCnt) {
-            thisBinded->relocateIndexesForwardSlowly(start + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt) - deleteCnt);
+            thisBinded->relocateIndexesForwardSlowly(static_cast<int64_t>(start + deleteCnt), static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt- deleteCnt));
 
             k = arrlen - 1;
-            while (k > static_cast<int64_t>(arrlen) - deleteCnt + insertCnt - 1) {
+            while (k > static_cast<int64_t>(arrlen - deleteCnt + insertCnt - 1)) {
                 if (thisBinded->hasProperty(ESValue(k))) {
                     thisBinded->deletePropertyWithException(ESValue(k));
                     k--;
@@ -2585,7 +2585,7 @@ void GlobalObject::installArray()
                 }
             }
         } else if (insertCnt > deleteCnt) {
-            thisBinded->relocateIndexesBackwardSlowly(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
+            thisBinded->relocateIndexesBackwardSlowly(static_cast<int64_t>(arrlen - 1), static_cast<int64_t>(start + deleteCnt - 1), static_cast<int64_t>(insertCnt - deleteCnt));
         }
         k = start;
         size_t argIdx = 2;
@@ -2663,9 +2663,9 @@ void GlobalObject::installArray()
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
         if (LIKELY(O->isESArrayObject() && O->asESArrayObject()->isFastmode())) {
-            O->asESArrayObject()->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
+            O->asESArrayObject()->relocateIndexesBackward(static_cast<int64_t>(len - 1), -1, argCount);
         } else {
-            O->relocateIndexesBackwardSlowly(static_cast<int64_t>(len) - 1, -1, argCount);
+            O->relocateIndexesBackwardSlowly(static_cast<int64_t>(len - 1), -1, argCount);
         }
 
         ESValue* items = instance->currentExecutionContext()->arguments();
@@ -5576,9 +5576,9 @@ void GlobalObject::installNumber()
                 char buffer[256];
                 if (minusFlag) {
                     buffer[0] = '-';
-                    itoa((int64_t)number, &buffer[1], radix);
+                    itoa(static_cast<int64_t>(number), &buffer[1], radix);
                 } else {
-                    itoa((int64_t)number, buffer, radix);
+                    itoa(static_cast<int64_t>(number), buffer, radix);
                 }
                 return (ESString::create(buffer));
             } else {
@@ -5628,9 +5628,9 @@ void GlobalObject::installNumber()
                 char buffer[256];
                 if (minusFlag) {
                     buffer[0] = '-';
-                    itoa((int64_t)number, &buffer[1], radix);
+                    itoa(static_cast<int64_t>(number), &buffer[1], radix);
                 } else {
-                    itoa((int64_t)number, buffer, radix);
+                    itoa(static_cast<int64_t>(number), buffer, radix);
                 }
                 return (ESString::create(buffer));
             } else {
