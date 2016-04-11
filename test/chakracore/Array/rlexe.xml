@@ -653,18 +653,21 @@
   </test>
   <test>
      <default>
+        <escargot-skip>ES6 Spec</escargot-skip>
         <files>memop_field.js</files>
         <compile-flags>-mic:1 -off:simplejit -mmoc:0</compile-flags>
      </default>
   </test>
   <test>
      <default>
+        <escargot-skip>ES6 Spec</escargot-skip>
         <files>memop_slot.js</files>
         <compile-flags>-mic:1 -off:simplejit -mmoc:0</compile-flags>
      </default>
   </test>
   <test>
      <default>
+        <escargot-skip>ES6 Spec</escargot-skip>
         <files>memop_bounds_check.js</files>
         <compile-flags>-mic:1 -off:simplejit -mmoc:0</compile-flags>
      </default>

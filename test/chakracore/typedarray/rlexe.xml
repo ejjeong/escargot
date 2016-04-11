@@ -306,12 +306,14 @@ Below test fails with difference in space. Investigate the cause and re-enable t
   </test>
   <test>
     <default>
+      <escargot-skip>ES6 Spec</escargot-skip>
       <files>memcopy.js</files>
       <compile-flags>-mic:1 -off:simplejit -off:JITLoopBody -mmoc:0</compile-flags>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>ES6 Spec</escargot-skip>
       <files>memcopy_negative.js</files>
       <compile-flags>-mic:1 -off:simplejit -off:JITLoopBody -mmoc:0</compile-flags>
     </default>
