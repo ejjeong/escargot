@@ -51,7 +51,7 @@ run_test() {
 		((LOCAL_SKIP+=1))
 		printf "Skip ($SKIP)\n" | tee -a $LOG_FILE
 	else
-		$($CMD > $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
+		$($CMD | sed 's/\[object global\]/[object Object]/g' > $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
 		$(diff -Z -i $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
 		DIFF_EXIT_CODE=$?
 		if [[ $BASELINE == $TEST_ROOT/baseline/baseline1 ]]; then
