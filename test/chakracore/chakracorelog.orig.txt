@@ -83,7 +83,7 @@ Running all tests
 [Array] reverse_native.js .......... Pass
 [Array] nativeFloatArray_shift_unshift.js .......... Pass
 [Array] nativeFloatArray_sort.js .......... Pass
-[Array] missingItemFastPathCheck.js .......... Fail
+[Array] missingItemFastPathCheck.js .......... Pass
 [Array] array_opts.js .......... Pass
 [Array] nativeIntPop.js .......... Pass
 [Array] nativeFloatPop.js .......... Pass
@@ -102,9 +102,9 @@ Running all tests
 [Array] memset2.js .......... Pass
 [Array] memcopy.js .......... Fail
 [Array] memop_alias.js .......... Fail
-[Array] memop_field.js .......... Fail
-[Array] memop_slot.js .......... Fail
-[Array] memop_bounds_check.js .......... Fail
+[Array] memop_field.js .......... Skip (ES6 Spec)
+[Array] memop_slot.js .......... Skip (ES6 Spec)
+[Array] memop_bounds_check.js .......... Skip (ES6 Spec)
 [Array] bug4587739.js .......... Fail
 [Basics] Array.js .......... Pass
 [Basics] ie12ScriptFunctionToStrings.js .......... Fail
@@ -743,7 +743,7 @@ Running all tests
 [Optimizer] test117.js .......... Pass
 [Optimizer] test118.js .......... Pass
 [Optimizer] test119.js .......... Fail
-[Optimizer] test120.js .......... Fail
+[Optimizer] test120.js .......... Pass
 [Optimizer] test121.js .......... Pass
 [Optimizer] test122.js .......... Pass
 [Optimizer] test123.js .......... Pass
@@ -1088,7 +1088,7 @@ Running all tests
 [Bugs] bug1288931.js .......... Pass
 [Bugs] OS_1362136.js .......... Pass
 [Bugs] SIMDExtendArgCSE.js .......... Fail
-[Bugs] bug_OS_4683246.js .......... Fail
+[Bugs] bug_OS_4683246.js .......... Pass
 [Bugs] fabs1.js .......... Fail
 [strict] GlobalEval.js .......... Pass
 [strict] basics_function_in_SM.js .......... Fail
@@ -1266,8 +1266,8 @@ Running all tests
 [typedarray] bug_4653428.js .......... Fail
 [typedarray] transfer.js .......... Fail
 [typedarray] memset.js .......... Fail
-[typedarray] memcopy.js .......... Fail
-[typedarray] memcopy_negative.js .......... Fail
+[typedarray] memcopy.js .......... Skip (ES6 Spec)
+[typedarray] memcopy_negative.js .......... Skip (ES6 Spec)
 [bailout] arrayctor.js .......... Pass
 [bailout] bailout.js .......... Pass
 [bailout] bailout.js .......... Pass
@@ -1627,7 +1627,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		54		50		2		(50%)
+               Array		106		55		46		5		(51%)
               Basics		56		28		28		0		(50%)
                  es5		56		30		26		0		(53%)
                   EH		17		7		10		0		(41%)
@@ -1644,7 +1644,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		177		27		2		(85%)
+           Optimizer		206		178		26		2		(86%)
             Function		61		21		39		1		(34%)
               Object		58		29		25		4		(50%)
                Regex		33		14		19		0		(42%)
@@ -1656,11 +1656,11 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              VT_DATE		1		0		1		0		(0%)
                  Lib		16		3		13		0		(18%)
                 JSON		13		8		5		0		(61%)
-                Bugs		36		19		17		0		(52%)
+                Bugs		36		20		16		0		(55%)
               strict		104		38		66		0		(36%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		5		21		0		(19%)
-          typedarray		45		7		38		0		(15%)
+          typedarray		45		7		36		2		(15%)
              bailout		34		25		9		0		(73%)
                 loop		6		4		2		0		(66%)
           StackTrace		17		0		17		0		(0%)
@@ -1673,4 +1673,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1614		930		672		12		(57%)
+               Total		1614		933		664		17		(57%)

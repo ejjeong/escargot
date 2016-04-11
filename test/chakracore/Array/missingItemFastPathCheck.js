@@ -45,7 +45,7 @@ var GiantPrintArray = [];
 function test1(){
     var v386361 = -2147483646;
     {
-        const v386361 = 1;
+        var v386361 = 1;
         GiantPrintArray.push(v386361);
     }
     GiantPrintArray.push(v386361);
