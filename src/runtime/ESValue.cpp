@@ -1185,46 +1185,6 @@ int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const
     return ret;
 }
 
-void ESArrayObject::relocateIndexesForward(int64_t start, int64_t end, int64_t offset)
-{
-    if (offset == 0)
-        return;
-
-    unsigned k = start;
-    while (k < end) {
-        ESValue from = ESValue(k);
-        ESValue to = ESValue(k + offset);
-        bool fromPresent = hasProperty(from);
-
-        if (fromPresent) {
-            ((ESObject*)this)->set(to, get(k), true);
-        } else {
-            ((ESObject*)this)->deletePropertyWithException(to);
-        }
-        k++;
-    }
-}
-
-void ESArrayObject::relocateIndexesBackward(int64_t start, int64_t end, int64_t offset)
-{
-    if (offset == 0)
-        return;
-
-    int64_t k = start;
-    while (k > end) {
-        ESValue from = ESValue(k);
-        ESValue to = ESValue(k + offset);
-        bool fromPresent = hasProperty(from);
-
-        if (fromPresent) {
-            ((ESObject*)this)->set(to, get(k), true);
-        } else {
-            ((ESObject*)this)->deletePropertyWithException(to);
-        }
-        k--;
-    }
-}
-
 void ESArrayObject::setLength(unsigned newLength)
 {
     if (m_flags.m_isFastMode) {

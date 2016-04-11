@@ -1942,8 +1942,8 @@ public:
 
     inline void set__proto__(const ESValue& obj);
     ALWAYS_INLINE size_t keyCount();
-    inline void relocateIndexesForwardSlowly(int64_t start, int64_t end, int64_t offset);
-    inline void relocateIndexesBackwardSlowly(int64_t start, int64_t end, int64_t offset);
+    inline void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
+    inline void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
 
     void setPropertyInterceptor(HasPropertyCallback hasIndex, PropertyEnumerationCallback enumeration, PropertyCallback readIndex)
     {
@@ -2328,9 +2328,6 @@ public:
     {
         set(m_length, val);
     }
-
-    void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
-    void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
 
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)

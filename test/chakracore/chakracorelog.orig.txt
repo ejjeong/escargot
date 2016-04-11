@@ -35,7 +35,7 @@ Running all tests
 [Array] push1.js .......... Pass
 [Array] push2.js .......... Fail
 [Array] push3.js .......... Fail
-[Array] reverse1.js .......... Fail
+[Array] reverse1.js .......... Pass
 [Array] reverse2.js .......... Pass
 [Array] shift_unshift.js .......... Fail
 [Array] toString.js .......... Fail
@@ -936,7 +936,7 @@ Running all tests
 [Operators] biops.js .......... Fail
 [Operators] binop-kills.js .......... Pass
 [Operators] delete1.js .......... Pass
-[Operators] delete2.js .......... Fail
+[Operators] delete2.js .......... Pass
 [Operators] delete3.js .......... Fail
 [Operators] div.js .......... Fail
 [Operators] equals.js .......... Fail
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		64		33		9		(60%)
+               Array		106		65		32		9		(61%)
               Basics		56		28		21		7		(50%)
                  es5		56		32		24		0		(57%)
                   EH		17		10		6		1		(58%)
@@ -1445,7 +1445,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                Regex		33		18		15		0		(54%)
           Prototypes		7		5		2		0		(71%)
      GlobalFunctions		13		6		7		0		(46%)
-           Operators		32		21		11		0		(65%)
+           Operators		32		22		10		0		(68%)
          Conversions		5		3		2		0		(60%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		957		394		55		(68%)
+               Total		1406		959		392		55		(68%)

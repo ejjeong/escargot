@@ -2408,11 +2408,7 @@ void GlobalObject::installArray()
             return ESValue();
         }
         ESValue first = O->get(ESValue(0)); // 6
-        if (LIKELY(O->isESArrayObject() && O->asESArrayObject()->isFastmode())) {
-            O->asESArrayObject()->relocateIndexesForward(1, arrlen, -1);
-        } else {
-            O->relocateIndexesForwardSlowly(1, arrlen, -1);
-        }
+        O->relocateIndexesForward(1, arrlen, -1);
         O->deletePropertyWithException(ESValue(arrlen - 1)); // 10
         O->set(strings->length, ESValue(arrlen - 1), true); // 12
         return first;
@@ -2573,7 +2569,7 @@ void GlobalObject::installArray()
 
         size_t leftInsert = insertCnt;
         if (insertCnt < deleteCnt) {
-            thisBinded->relocateIndexesForwardSlowly(static_cast<int64_t>(start + deleteCnt), static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt- deleteCnt));
+            thisBinded->relocateIndexesForward(static_cast<int64_t>(start + deleteCnt), static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt- deleteCnt));
 
             k = arrlen - 1;
             while (k > static_cast<int64_t>(arrlen - deleteCnt + insertCnt - 1)) {
@@ -2585,7 +2581,7 @@ void GlobalObject::installArray()
                 }
             }
         } else if (insertCnt > deleteCnt) {
-            thisBinded->relocateIndexesBackwardSlowly(static_cast<int64_t>(arrlen - 1), static_cast<int64_t>(start + deleteCnt - 1), static_cast<int64_t>(insertCnt - deleteCnt));
+            thisBinded->relocateIndexesBackward(static_cast<int64_t>(arrlen - 1), static_cast<int64_t>(start + deleteCnt - 1), static_cast<int64_t>(insertCnt - deleteCnt));
         }
         k = start;
         size_t argIdx = 2;
@@ -2662,11 +2658,7 @@ void GlobalObject::installArray()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
-        if (LIKELY(O->isESArrayObject() && O->asESArrayObject()->isFastmode())) {
-            O->asESArrayObject()->relocateIndexesBackward(static_cast<int64_t>(len - 1), -1, argCount);
-        } else {
-            O->relocateIndexesBackwardSlowly(static_cast<int64_t>(len - 1), -1, argCount);
-        }
+        O->relocateIndexesBackward(static_cast<int64_t>(len - 1), -1, argCount);
 
         ESValue* items = instance->currentExecutionContext()->arguments();
         for (size_t j = 0; j < argCount; j++) {
