@@ -227,6 +227,12 @@ public:
             throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
     }
 
+    ALWAYS_INLINE void argumentCountCheck(size_t arglen)
+    {
+        if (UNLIKELY(arglen > options::MaximumArgumentCount))
+            throwError(RangeError::create(ESString::create("Maximum number of arguments exceeded.")));
+    }
+
     void nativeHeapAllocated(size_t size, void* ptr)
     {
         m_nativeHeapUsage += size;

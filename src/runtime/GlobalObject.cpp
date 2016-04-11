@@ -1066,7 +1066,7 @@ void GlobalObject::installFunction()
         auto thisVal = thisValue.asESPointer()->asESFunctionObject();
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
         ESValue argArray = instance->currentExecutionContext()->readArgument(1);
-        int arrlen;
+        size_t arrlen;
         ESValue* arguments;
         if (argArray.isUndefinedOrNull()) {
             // do nothing
@@ -1076,15 +1076,17 @@ void GlobalObject::installFunction()
             if (argArray.asESPointer()->isESArrayObject()) {
                 escargot::ESArrayObject* argArrayObj = argArray.asESPointer()->asESArrayObject();
                 arrlen = argArrayObj->length();
+                instance->argumentCountCheck(arrlen);
                 ALLOCA_WRAPPER(instance, arguments, ESValue*, sizeof(ESValue) * arrlen, false);
-                for (int i = 0; i < arrlen; i++) {
+                for (size_t i = 0; i < arrlen; i++) {
                     arguments[i] = argArrayObj->get(i);
                 }
             } else {
                 escargot::ESObject* obj = argArray.asESPointer()->asESObject();
                 arrlen = obj->get(strings->length.string()).toInteger();
+                instance->argumentCountCheck(arrlen);
                 ALLOCA_WRAPPER(instance, arguments, ESValue*, sizeof(ESValue) * arrlen, false);
-                for (int i = 0; i < arrlen; i++) {
+                for (size_t i = 0; i < arrlen; i++) {
                     arguments[i] = obj->get(ESValue(i));
                 }
             }
@@ -1137,6 +1139,7 @@ void GlobalObject::installFunction()
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         size_t callArgLen = (arglen > 0) ? arglen - 1 : 0;
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
+        instance->argumentCountCheck(callArgLen);
         ESValue* arguments;
         ALLOCA_WRAPPER(instance, arguments, ESValue*, sizeof(ESValue) * callArgLen, false);
         for (size_t i = 1; i < arglen; i++) {

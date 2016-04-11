@@ -2087,9 +2087,9 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
 
 ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
-    stackCheck();
-    if (UNLIKELY(argumentCount > options::MaximumArgumentCount)) // maximum number of arguments : 65535
-        instance->throwError(RangeError::create(ESString::create("Maximum number of arguments exceeded.")));
+    instance->stackCheck();
+    instance->argumentCountCheck(argumentCount);
+
     ESValue result(ESValue::ESForceUninitialized);
     if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = instance->currentExecutionContext();
