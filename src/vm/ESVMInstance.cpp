@@ -317,17 +317,13 @@ void ESVMInstance::printValue(ESValue val, bool newLine)
             } else if (o->isESFunctionObject()) {
                 str.append((v.toString()->toUTF16String()));
             } else if (o->isESArrayObject()) {
-                str.append(u"[");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if (!isFirst)
                         str.append(u",");
-                    str.append((key.toString()->toUTF16String()));
-                    str.append(u": ");
                     str.append((o->asESObject()->getOwnProperty(key).toString()->toUTF16String()));
                     isFirst = false;
                 });
-                str.append(u"]");
             } else if (o->isESErrorObject()) {
                 str.append((v.toString()->toUTF16String()));
             } else if (o->isESObject()) {
