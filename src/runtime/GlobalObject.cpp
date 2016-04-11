@@ -2902,6 +2902,7 @@ void GlobalObject::installString()
             regexp = ESRegExpObject::create(argument, ESValue(ESValue::ESUndefined));
         }
 
+        (void)regexp->lastIndex().toInteger();
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
         if (isGlobal) {
             regexp->set(strings->lastIndex.string(), ESValue(0), true);
@@ -2939,6 +2940,7 @@ void GlobalObject::installString()
 
         if (searchValue.isESPointer() && searchValue.asESPointer()->isESRegExpObject()) {
             escargot::ESRegExpObject* regexp = searchValue.asESPointer()->asESRegExpObject();
+            (void)regexp->lastIndex().toInteger();
             bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
 
             if (isGlobal) {
@@ -5774,7 +5776,7 @@ void GlobalObject::installRegExp()
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.test : This object is not Regexp object"))));
         escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
-        double lastIndex = regexp->m_lastIndex.toInteger();
+        double lastIndex = regexp->lastIndex().toInteger();
         if (!regexp->option() & ESRegExpObject::Option::Global) {
             lastIndex = 0;
         }
@@ -5796,7 +5798,7 @@ void GlobalObject::installRegExp()
         escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
-        double lastIndex = regexp->m_lastIndex.toInteger();
+        double lastIndex = regexp->lastIndex().toInteger();
         if (!isGlobal) {
             lastIndex = 0;
         }

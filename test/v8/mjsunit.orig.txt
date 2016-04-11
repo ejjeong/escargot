@@ -630,7 +630,7 @@ Done running mjsunit/regress/regress-2416: pass
 Done running mjsunit/regress/regress-2419: pass
 Done running mjsunit/regress/regress-2433: pass
 Done running mjsunit/regress/regress-2437: pass
-Done running mjsunit/regress/regress-2438: FAIL
+Done running mjsunit/regress/regress-2438: pass
 Done running mjsunit/regress/regress-244: pass
 Done running mjsunit/regress/regress-2441: pass
 Done running mjsunit/regress/regress-2443: pass
@@ -954,10 +954,7 @@ Done running mjsunit/third_party/regexp-pcre/regexp-pcre: pass
 === mjsunit/sparse-array-reverse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abcdeletedde">, stack: undefined}
-=== mjsunit/regress/regress-2438.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
 
 ===
-=== 2 tests failed
+=== 1 tests failed
 ===
