@@ -20,7 +20,8 @@ var WScript = {
         } catch (e) {
             load("test\\chakracore\\UnitTestFramework\\" + path);
         }
-    }
+    },
+    Arguments : ["summary"]
 };
 
 function CollectGarbage() {

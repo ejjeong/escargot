@@ -4,13 +4,13 @@ Running all tests
 [Array] array_init.js .......... Fail
 [Array] array_init2.js .......... Pass
 [Array] SpliceBtreeMemoryCorruption.js .......... Fail
-[Array] sliceArrayForceBtreeBug616623.js .......... Fail
+[Array] sliceArrayForceBtreeBug616623.js .......... Pass
 [Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Pass
 [Array] bug1062870.js .......... Pass
 [Array] bug1065362.js .......... Pass
 [Array] bug4916987.js .......... Pass
 [Array] ArrayBtreeBadCodeGen.js .......... Pass
-[Array] SliceandConcatAlterOriginalArrayBug.js .......... Fail
+[Array] SliceandConcatAlterOriginalArrayBug.js .......... Pass
 [Array] rawLastUsedSegmentBugInFloatArray.js .......... Pass
 [Array] ArrayElementMissingValueSetToZero.js .......... Pass
 [Array] TryGrowHeadSegmentBug.js .......... Pass
@@ -738,7 +738,7 @@ Running all tests
 [Optimizer] UnreachableCode.js .......... Fail
 [Optimizer] PrePassValues.js .......... Pass
 [Optimizer] missing_len.js .......... Pass
-[Optimizer] ArrayCheckHoist.js .......... Fail
+[Optimizer] ArrayCheckHoist.js .......... Pass
 [Optimizer] ArrayCheckHoist.js .......... Fail
 [Optimizer] ArrayCheckHoist.js .......... Fail
 [Optimizer] ArrayCheckHoist.js .......... Fail
@@ -890,7 +890,7 @@ Running all tests
 [Regex] prioritizedalternatives.js .......... Pass
 [Regex] multiline.js .......... Pass
 [Regex] regex_assertion.js .......... Pass
-[Regex] regex_deviations.js .......... Fail
+[Regex] regex_deviations.js .......... Pass
 [Regex] undefined_option.js .......... Pass
 [Regex] toString.js .......... Fail
 [Regex] trigram.js .......... Pass
@@ -1196,8 +1196,8 @@ Running all tests
 [bailout] flags.js .......... Fail
 [bailout] initlocals.js .......... Pass
 [bailout] implicit_nosideeffect.js .......... Fail
-[bailout] inlineBuiltIns.js .......... Fail
-[bailout] inlineBuiltIns.js .......... Fail
+[bailout] inlineBuiltIns.js .......... Pass
+[bailout] inlineBuiltIns.js .......... Pass
 [bailout] bailout-branch.js .......... Pass
 [bailout] bailout-checkthis.js .......... Fail
 [bailout] inline_call_bailout.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		62		35		9		(58%)
+               Array		106		64		33		9		(60%)
               Basics		56		28		21		7		(50%)
                  es5		56		32		24		0		(57%)
                   EH		17		10		6		1		(58%)
@@ -1439,10 +1439,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		179		25		2		(86%)
+           Optimizer		206		180		24		2		(87%)
             Function		61		21		39		1		(34%)
               Object		58		32		22		4		(55%)
-               Regex		33		17		16		0		(51%)
+               Regex		33		18		15		0		(54%)
           Prototypes		7		5		2		0		(71%)
      GlobalFunctions		13		6		7		0		(46%)
            Operators		32		21		11		0		(65%)
@@ -1455,7 +1455,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               strict		104		65		11		28		(62%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		7		19		0		(26%)
-             bailout		34		25		9		0		(73%)
+             bailout		34		27		7		0		(79%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		78		33		0		(70%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		951		400		55		(67%)
+               Total		1406		957		394		55		(68%)
