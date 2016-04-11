@@ -680,7 +680,7 @@ Done running mjsunit/regress/regress-318: pass
 Done running mjsunit/regress/regress-3185905: pass
 Done running mjsunit/regress/regress-3199913: pass
 Done running mjsunit/regress/regress-3218530: pass
-Done running mjsunit/regress/regress-3229: FAIL
+Done running mjsunit/regress/regress-3229: pass
 Done running mjsunit/regress/regress-3230771: pass
 Done running mjsunit/regress/regress-3247124: pass
 Done running mjsunit/regress/regress-3252443: pass
@@ -957,10 +957,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abcde"> found <"abc
 === mjsunit/regress/regress-2438.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <2>, stack: undefined}
-=== mjsunit/regress/regress-3229.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
 
 ===
-=== 3 tests failed
+=== 2 tests failed
 ===

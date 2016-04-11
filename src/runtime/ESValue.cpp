@@ -1408,6 +1408,8 @@ ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue
     }
 
     escargot::ESString* patternStr = patternValue.isUndefined() ? strings->defaultRegExpString.string() : patternValue.toString();
+    if (patternStr->length() == 0)
+        patternStr = strings->defaultRegExpString.string();
     ESRegExpObject::Option option = parseOption(optionValue.isUndefined()? strings->emptyString.string(): optionValue.toString());
 
     return new ESRegExpObject(patternStr, option);
