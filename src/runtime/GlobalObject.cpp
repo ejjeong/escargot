@@ -2555,7 +2555,7 @@ void GlobalObject::installArray()
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
 
         k = start;
-        while (k < static_cast<int64_t>(deleteCnt + start)) {
+        while (k < static_cast<int64_t>(static_cast<int64_t>(deleteCnt) + start)) {
             ESValue from = ESValue(k);
 
             if (thisBinded->hasProperty(from)) {
@@ -2569,10 +2569,10 @@ void GlobalObject::installArray()
 
         size_t leftInsert = insertCnt;
         if (insertCnt < deleteCnt) {
-            thisBinded->relocateIndexesForward(static_cast<int64_t>(start + deleteCnt), static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt- deleteCnt));
+            thisBinded->relocateIndexesForward(static_cast<int64_t>(start) + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt)- deleteCnt);
 
             k = arrlen - 1;
-            while (k > static_cast<int64_t>(arrlen - deleteCnt + insertCnt - 1)) {
+            while (k > static_cast<int64_t>(static_cast<int64_t>(arrlen) - deleteCnt + insertCnt - 1)) {
                 if (thisBinded->hasProperty(ESValue(k))) {
                     thisBinded->deletePropertyWithException(ESValue(k));
                     k--;
@@ -2581,7 +2581,7 @@ void GlobalObject::installArray()
                 }
             }
         } else if (insertCnt > deleteCnt) {
-            thisBinded->relocateIndexesBackward(static_cast<int64_t>(arrlen - 1), static_cast<int64_t>(start + deleteCnt - 1), static_cast<int64_t>(insertCnt - deleteCnt));
+            thisBinded->relocateIndexesBackward(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
         }
         k = start;
         size_t argIdx = 2;
@@ -2658,7 +2658,7 @@ void GlobalObject::installArray()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
-        O->relocateIndexesBackward(static_cast<int64_t>(len - 1), -1, argCount);
+        O->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
 
         ESValue* items = instance->currentExecutionContext()->arguments();
         for (size_t j = 0; j < argCount; j++) {
