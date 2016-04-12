@@ -22,6 +22,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>ES6 Spec Array.prototype.splice 22.1.3.25.9 when the number of actual argument is 1</escargot-skip>
       <compile-flags>-args summary -endargs -ForceArrayBTree -recyclerStress</compile-flags>
       <files>SpliceBtreeMemoryCorruption.js</files>
       <tags>exclude_fre,Slow</tags>
