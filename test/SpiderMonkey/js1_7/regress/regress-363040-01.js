@@ -30,7 +30,7 @@ function test()
   testdesc = 'Test reduce of empty array without initializer.';
   try
   {
-    expect = 'TypeError: reduce of empty array with no initial value';
+    expect = 'TypeError: Array.prototype.reduce: reduce of empty array with no initial value';
     arr0elms.reduce(f);
   }
   catch(ex)
@@ -42,7 +42,7 @@ function test()
   testdesc = 'Test reduceRight of empty array without initializer.';
   try
   {
-    expect = 'TypeError: reduce of empty array with no initial value';
+    expect = 'TypeError: Array.prototype.reduceRight: reduce of empty array with no initial value';
     arr0elms.reduceRight(f);
   }
   catch(ex)

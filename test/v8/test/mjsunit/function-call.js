@@ -154,7 +154,7 @@ function checkExpectedMessage(e) {
       e.message.indexOf("invoked on undefined or null value") >= 0 ||
       e.message.indexOf("cannot convert null into object") >= 0 ||
       e.message.indexOf("cannot convert undefined into object") >= 0 ||
-      e.message.indexOf("Invalid bound this value") >= 0 ||
+      e.message.indexOf("this value is undefined or null") >= 0 ||
       e.message.indexOf("Cannot convert undefined or null to object") >= 0);
 }
 

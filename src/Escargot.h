@@ -38,12 +38,14 @@
 #include <signal.h>
 
 #define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseFullPrecisionFlag
+#define RAPIDJSON_ERROR_CHARTYPE char
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/memorystream.h>
 #include <rapidjson/internal/dtoa.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
+#include <rapidjson/error/en.h>
 
 // #define PROFILE_MASSIF
 

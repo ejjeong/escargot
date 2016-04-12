@@ -33,6 +33,7 @@ class ESString;
     F(MIN_VALUE) \
     F(eval) \
     F(Object) \
+    F(GlobalObject) \
     F(Boolean) \
     F(Error) \
     F(ReferenceError) \
@@ -134,6 +135,7 @@ class ESString;
     F(input) \
     F(index) \
     F(compile) \
+    F(TypedArray) \
     F(Int8Array) \
     F(Int16Array) \
     F(Int32Array) \

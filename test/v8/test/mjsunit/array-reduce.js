@@ -442,7 +442,7 @@ try {
   exception = true;
   assertTrue(e instanceof TypeError,
              "reduce no initial value not throwing TypeError");
-  assertEquals("reduce of empty array with no initial value", e.message,
+  assertEquals("Array.prototype.reduce: reduce of empty array with no initial value", e.message,
                "reduce no initial TypeError type");
 }
 assertTrue(exception);
@@ -454,7 +454,7 @@ try {
   exception = true;
   assertTrue(e instanceof TypeError,
              "reduceRight no initial value not throwing TypeError");
-  assertEquals("reduce of empty array with no initial value", e.message,
+  assertEquals("Array.prototype.reduceRight: reduce of empty array with no initial value", e.message,
                "reduceRight no initial TypeError type");
 }
 assertTrue(exception);
@@ -466,7 +466,7 @@ try {
   exception = true;
   assertTrue(e instanceof TypeError,
              "reduce sparse no initial value not throwing TypeError");
-  assertEquals("reduce of empty array with no initial value", e.message,
+  assertEquals("Array.prototype.reduce: reduce of empty array with no initial value", e.message,
                "reduce no initial TypeError type");
 }
 assertTrue(exception);
@@ -478,7 +478,7 @@ try {
   exception = true;
   assertTrue(e instanceof TypeError,
              "reduceRight sparse no initial value not throwing TypeError");
-  assertEquals("reduce of empty array with no initial value", e.message,
+  assertEquals("Array.prototype.reduceRight: reduce of empty array with no initial value", e.message,
                "reduceRight no initial TypeError type");
 }
 assertTrue(exception);

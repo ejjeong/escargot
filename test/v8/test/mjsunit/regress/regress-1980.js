@@ -34,7 +34,7 @@ for (var i = 0; i < invalid_this.length; i++) {
     Error.prototype.toString.call(invalid_this[i]);
   } catch (e) {
     exception = true;
-    assertEquals("Error.prototype.toString(): this value is not object", e.message);
+    assertEquals("Error.prototype.toString: this value is not an object", e.message);
   }
   assertTrue(exception);
 }
