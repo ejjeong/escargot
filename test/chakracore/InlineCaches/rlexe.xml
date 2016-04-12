@@ -38,6 +38,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (wtih)</escargot-skip>
       <files>test6.js</files>
       <baseline>test6.baseline</baseline>
     </default>

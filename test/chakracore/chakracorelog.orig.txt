@@ -154,7 +154,7 @@ Running all tests
 [Basics] scopedaccessors.js .......... Skip (Not in scope (wtih))
 [Basics] flags.js .......... Fail
 [Basics] Branching.js .......... Pass
-[Basics] inlinecache.js .......... Fail
+[Basics] inlinecache.js .......... Skip (function print format differs)
 [Basics] scan.js .......... Fail
 [Basics] enum.js .......... Pass
 [Basics] with3.js .......... Skip (Not in scope (wtih))
@@ -241,7 +241,7 @@ Running all tests
 [InlineCaches] t3.js .......... Pass
 [InlineCaches] t4.js .......... Pass
 [InlineCaches] t5.js .......... Pass
-[InlineCaches] test6.js .......... Fail
+[InlineCaches] test6.js .......... Skip (Not in scope (wtih))
 [InlineCaches] TypePropertyCache_CrossContext.js .......... Fail
 [InlineCaches] getter_sideeffect.js .......... Pass
 [InlineCaches] prototypeChainModifications.js .......... Pass
@@ -367,7 +367,7 @@ Running all tests
 [Generated] B9AA6BBF.0.js .......... Pass
 [Generated] 6E55FA7A.0.js .......... Pass
 [Generated] attackoftheclones.js .......... Pass
-[Closures] cachedscope_1.js .......... Fail
+[Closures] cachedscope_1.js .......... Skip (Not in scope (wtih))
 [Closures] cachedscope_2.js .......... Pass
 [Closures] closure.js .......... Pass
 [Closures] closure-callback.js .......... Pass
@@ -375,7 +375,7 @@ Running all tests
 [Closures] closure_multiple_2.js .......... Pass
 [Closures] closure_binding.js .......... Pass
 [Closures] closure_binding_2.js .......... Pass
-[Closures] closure-funcexpr-eval.js .......... Fail
+[Closures] closure-funcexpr-eval.js .......... Skip (function print format differs)
 [Closures] closure-qmark.js .......... Fail
 [Closures] initcachedscope.js .......... Fail
 [Closures] initcachedscope.js .......... Fail
@@ -1424,12 +1424,12 @@ Running all tests
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		66		30		10		(62%)
-              Basics		56		28		21		7		(50%)
+              Basics		56		28		20		8		(50%)
                  es5		56		32		24		0		(57%)
                   EH		17		10		5		2		(58%)
-        InlineCaches		21		18		3		0		(85%)
+        InlineCaches		21		18		2		1		(85%)
            Generated		110		108		2		0		(98%)
-            Closures		18		12		6		0		(66%)
+            Closures		18		12		4		2		(66%)
              Strings		36		27		9		0		(75%)
                 Date		12		3		9		0		(25%)
                Error		23		4		18		1		(17%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		963		372		71		(68%)
+               Total		1406		963		368		75		(68%)

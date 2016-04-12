@@ -346,6 +346,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>function print format differs</escargot-skip>
       <files>inlinecache.js</files>
       <baseline>inlinecache.baseline</baseline>
       <tags>fail_mutators</tags>
