@@ -1,3 +1,1 @@
-ReferenceError: obj3 is not defined
-	at Anonymous function() (fieldhoist7.js:7:28)
-	at Global code (fieldhoist7.js:6:2)
+Uncaught ReferenceError: obj3 is not defined

@@ -47,5 +47,5 @@ delete third.prototype.value;
 check(obj1, 1);
 
 if (Failed == 0) {
-    WScript.Echo("Pass\n");
+    WScript.Echo("Pass");
 }

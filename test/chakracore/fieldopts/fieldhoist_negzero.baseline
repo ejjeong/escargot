@@ -1,3 +1,1 @@
-ReferenceError: obj0 is not defined
-	at Anonymous function() (fieldhoist_negzero.js:9:28)
-	at Global code (fieldhoist_negzero.js:7:2)
+Uncaught ReferenceError: obj0 is not defined

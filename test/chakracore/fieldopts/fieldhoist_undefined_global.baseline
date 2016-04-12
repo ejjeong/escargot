@@ -1,3 +1,1 @@
-ReferenceError: d is not defined
-	at Anonymous function() (fieldhoist_undefined_global.js:12:5)
-	at Global code (fieldhoist_undefined_global.js:7:2)
+Uncaught ReferenceError: d is not defined
