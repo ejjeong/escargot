@@ -1,7 +1,7 @@
 Running all tests
 [UnitTestFramework] UTFTests.js .......... Pass
 [Array] array_fastinit.js .......... Pass
-[Array] array_init.js .......... Fail
+[Array] array_init.js .......... Pass
 [Array] array_init2.js .......... Pass
 [Array] SpliceBtreeMemoryCorruption.js .......... Fail
 [Array] sliceArrayForceBtreeBug616623.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		65		32		9		(61%)
+               Array		106		66		31		9		(62%)
               Basics		56		28		21		7		(50%)
                  es5		56		32		24		0		(57%)
                   EH		17		10		5		2		(58%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		962		374		70		(68%)
+               Total		1406		963		373		70		(68%)

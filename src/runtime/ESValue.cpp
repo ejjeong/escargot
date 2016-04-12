@@ -1045,6 +1045,11 @@ ESArrayObject::ESArrayObject(int length)
     setGlobalObject(ESVMInstance::currentInstance()->globalObject());
     if (!globalObject()->didSomePrototypeObjectDefineIndexedProperty())
         m_flags.m_isFastMode = true;
+
+    // defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
+    m_hiddenClassData.push_back((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData());
+
     m_length = 0;
     if (length == -1)
         convertToSlowMode();
@@ -1053,10 +1058,6 @@ ESArrayObject::ESArrayObject(int length)
     } else {
         m_vector.reserve(6);
     }
-
-    // defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
-    m_hiddenClass = globalObject()->instance()->initialHiddenClassForArrayObject();
-    m_hiddenClassData.push_back((ESPointer *)globalObject()->instance()->arrayLengthAccessorData());
 }
 
 bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& desc, bool throwFlag)
