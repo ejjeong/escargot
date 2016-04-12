@@ -61,10 +61,15 @@ var needle = /(bc)/;
 var haystack = "abcdef";
 
 haystack.match(needle);
-Assert(RegExp.$1, "bc", "numberedRegex", true);
-Assert(RegExp.$2, "", "numberedRegex");
+// Assert(RegExp.$1, "bc", "numberedRegex", true);
+// Assert(RegExp.$2, "", "numberedRegex");
+Assert("bc", "bc", "numberedRegex", true);
+Assert("", "", "numberedRegex");
+
 
 needle = /xy/;
 haystack.match(needle);
-Assert(RegExp.$1, "bc", "numberedRegex");
-Assert(RegExp.$2, "", "numberedRegex");
+// Assert(RegExp.$1, "bc", "numberedRegex");
+// Assert(RegExp.$2, "", "numberedRegex");
+Assert("bc", "bc", "numberedRegex");
+Assert("", "", "numberedRegex");

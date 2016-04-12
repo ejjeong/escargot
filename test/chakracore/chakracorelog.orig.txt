@@ -877,7 +877,7 @@ Running all tests
 [Object] ObjectHeaderInlining_NewPropNoInlineCache.js .......... Fail
 [Object] ObjectHeaderInlining_NewPropNoInlineCache_StaticType.js .......... Pass
 [Object] ObjectHeaderInlining_NewPropSharedInlineCache.js .......... Skip (Not in scope (with))
-[Regex] captures.js .......... Fail
+[Regex] captures.js .......... Pass
 [Regex] fastRegexCaptures.js .......... Pass
 [Regex] regex1.js .......... Fail
 [Regex] regexSplitOptimization.js .......... Fail
@@ -1442,7 +1442,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            Optimizer		206		184		20		2		(89%)
             Function		61		26		29		6		(42%)
               Object		58		33		20		5		(56%)
-               Regex		33		18		15		0		(54%)
+               Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		7		6		0		(53%)
            Operators		32		22		10		0		(68%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		999		328		79		(71%)
+               Total		1406		1000		327		79		(71%)

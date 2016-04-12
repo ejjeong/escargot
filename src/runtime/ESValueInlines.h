@@ -2069,8 +2069,10 @@ public:
                 const ASCIIString& str = *data->asASCIIString();
                 size_t s = m_piecesInlineStorage[i].m_start;
                 size_t e = m_piecesInlineStorage[i].m_end;
-                memcpy((void *)(ret.data() + currentLength), &str[s], e - s);
-                currentLength += e - s;
+                if (e - s) {
+                    memcpy((void *)(ret.data() + currentLength), &str[s], e - s);
+                    currentLength += e - s;
+                }
             }
 
             for (size_t i = 0; i < m_pieces.size(); i ++) {
