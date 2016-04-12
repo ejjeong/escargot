@@ -4329,15 +4329,15 @@ void GlobalObject::installDate()
         if (thisObject->isESDateObject()) {
             escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();        
 
-            // it is out of spec, but chakracore requires string like this
-            if (isnan(thisDateObject->timeValueAsDouble()))
-                return ESString::create(u"Invalid Date");
-
             char buffer[512];
-            snprintf(buffer, 512, "%d-%02d-%02dT%02d:%02d:%02d.%03dZ"
-                , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
-                , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
-            return ESString::create(buffer);
+            if (!isnan(thisDateObject->timeValueAsDouble())) {
+                snprintf(buffer, 512, "%d-%02d-%02dT%02d:%02d:%02d.%03dZ"
+                    , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
+                    , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+                return ESString::create(buffer);
+            } else {
+                instance->throwError(ESValue(RangeError::create()));
+            }
         } else {
             instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.toISOString : This object is not Date object"))));
         }      
