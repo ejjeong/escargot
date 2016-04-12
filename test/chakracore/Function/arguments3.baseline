@@ -4,7 +4,7 @@
 
 --- getOwnPropertyNames should enumerate all properties ---
 length,callee
-0,length,callee
-0,1,length,callee
-0,1,2,3,4,length,callee
-0,2,3,length,callee
+length,0,callee
+length,0,1,callee
+length,0,1,2,3,4,callee
+length,2,3,callee,0

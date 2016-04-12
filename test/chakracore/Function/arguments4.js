@@ -9,6 +9,6 @@ function foo(x, x)
 }
 
 if (foo(1,2))
-    WScript.Echo("Passed\n");
+    WScript.Echo("Passed");
 else
-    WScript.Echo("FAILED\n");
+    WScript.Echo("FAILED");

@@ -299,7 +299,7 @@
       "location": {
         "start": 704,
         "length": 109,
-        "text": "function () {\n    (function () {\n        return false ? x : false;\n    })();\n    function x() { }; \n})()",
+        "text": "function () {\n    (function () {\n        return false ? x : false;\n    })();\n    function x() {}; \n})()",
         "frameDescription": "Global code"
       }
     }
@@ -345,7 +345,7 @@
       {
         "start": 704,
         "length": 109,
-        "text": "function () {\n    (function () {\n        return false ? x : false;\n    })();\n    function x() { }; \n})()",
+        "text": "function () {\n    (function () {\n        return false ? x : false;\n    })();\n    function x() {}; \n})()",
         "frameDescription": "Global code"
       }
     ]

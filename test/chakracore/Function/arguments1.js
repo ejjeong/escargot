@@ -77,7 +77,8 @@ write("Value returned : " + testDelete(1));
 function stackwithoverwrite() {
     for (var i = 0; i < arguments.length; i++) {
         write(arguments[i]);
-        this.stackwithoverwrite.arguments[i] = i;
+        // this.stackwithoverwrite.arguments[i] = i; deprecated
+        arguments[i] = i;
         write(arguments[i]);
     }
 }

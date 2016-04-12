@@ -13,8 +13,8 @@ hello
 goodbye
 undefined
 good night
-function () { }
-function () { }
+function () {}
+function () {}
 2
 2
 undefined

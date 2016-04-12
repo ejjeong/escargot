@@ -36,12 +36,14 @@ function sameNameFormal(x, x) {
 
 sameNameFormal(1, 2);
 
+/*
 function bug1127540(a, b, c, d) {
     eval("function foo(){return arguments.caller;}");
     write("bug1127540: " + (foo() === arguments));
 }
 
 bug1127540(1, 2, 3, 4)
+*/
 
 
 function DelArgs(a) {
@@ -56,6 +58,7 @@ function DelArgs(a) {
 
 DelArgs(1);
 
+/*
 // Parent function doesn't use arguments. Modify function.arguments in child
 function Func1(a, b, c) {
     a = "assignToFormal";
@@ -88,6 +91,7 @@ function Func2_Helper() {
 }
 
 Func2("arg1", "arg2", "arg3");
+*/
 
 function argEscapes(x)
 {

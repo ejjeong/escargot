@@ -397,7 +397,7 @@ static const size_t GB = 1024 * MB;
 // TODO these should be changed on various devices
 static const size_t CodeCacheThreshold = 1 * KB;
 static const size_t LazyByteCodeGenerationThreshold = 1 * MB;
-static const size_t MaxStackDepth = 4 * MB;
+static const size_t MaxStackDepth = 5 * MB;
 static const size_t AllocaOnHeapThreshold = 32 * MB;
 static const size_t NativeHeapUsageThreshold = 300 * MB;
 static const size_t MaximumArgumentCount = 65535;

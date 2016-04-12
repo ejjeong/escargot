@@ -8,9 +8,9 @@ function () {
     a = a + 1;
 }
 Test 'toString()' on an anonymous, unhinted function expression:
-function () { }
+function () {}
 Test 'toString()' on an anonymous, unhinted function expression in parentheses (different behavior in standards mode):
-function () { }
+function () {}
 Test 'toString()' on parent and nested function:
 in parent
 in nested
