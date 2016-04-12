@@ -2863,9 +2863,16 @@ int ESDateObject::dayFromYear(long year) // day number of the first day of year 
 long ESDateObject::yearFromTime(long long t)
 {
     long estimate = ceil(t / msPerDay / 365.0) + 1970;
+
     while (makeDay(estimate, 0, 1) * msPerDay > t) {
         estimate--;
     }
+
+    while (makeDay(estimate + 1, 0, 1) * msPerDay < t) {
+        estimate++;
+    }
+
+
     return estimate;
 }
 
@@ -2970,7 +2977,7 @@ double ESDateObject::makeDay(long year, int month, int date)
 //        return nan;
 //    }
     // adjustment on argument[0],[1] is performed at setTimeValue(with 7 arguments) function
-    ASSERT(month < 12);
+    ASSERT(0 <= month && month < 12);
     long ym = year;
     int mn = month;
     long long t = timeFromYear(ym) + dayFromMonth(ym, mn) * msPerDay;
@@ -3009,21 +3016,19 @@ void ESDateObject::setTimeValue(const ESValue str)
     }
 }
 
-void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond, bool convertToUTC)
+void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, double second, double millisecond, bool convertToUTC)
 {
-    long ym = year + floor(month / 12);
-    int mn = month % 12;
+    long ym = year + floor(month / 12.0);
+    int mn = ((month % 12) + 12) % 12;
 //    parseYmdhmsToDate(&m_cachedTM, ym, mn, date, hour, minute, second);
 //    m_cachedTM.tm_isdst = true;
 //    double primitiveValue = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec) * 1000. + (double) millisecond;
-    double primitiveValue = ymdhmsToSeconds(ym, mn, date, hour, minute, second) * 1000. + (double) millisecond;
+    double primitiveValue = ymdhmsToSeconds(ym, mn, date, hour, minute, second) * 1000. + millisecond;
     if (convertToUTC) {
         primitiveValue = toUTC(primitiveValue);
     }
-
     m_primitiveValue = primitiveValue;
     if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
-        m_isCacheDirty = false;
         m_hasValidDate = true;
     } else {
         setTimeValueAsNaN();
@@ -3110,7 +3115,7 @@ int ESDateObject::getHours()
 }
 int ESDateObject::getMilliseconds()
 {
-    return (int) (m_primitiveValue % 1000);
+    return (((long long) m_primitiveValue % (int) msPerSecond) + (int) msPerSecond) % (int) msPerSecond;
 }
 int ESDateObject::getMinutes()
 {
@@ -3159,7 +3164,7 @@ int ESDateObject::getUTCDate()
 
 int ESDateObject::getUTCDay()
 {
-    RELEASE_ASSERT_NOT_REACHED();
+    return (int) (day(m_primitiveValue) + 4) % 7;
 }
 
 int ESDateObject::getUTCFullYear()

@@ -3512,7 +3512,7 @@ void GlobalObject::installDate()
                     thisObject->setTimeValueAsNaN();
                     return ESString::create(u"Invalid Date");
                 }
-                thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
+                thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, second, millisecond);
             }
 
             return thisObject->toFullString();
@@ -3738,7 +3738,7 @@ void GlobalObject::installDate()
             instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCDay : This object is not Date object"))));
 
         if (thisObject->asESDateObject()->isValid())
-            return ESValue(thisObject->asESDateObject()->getDay());
+            return ESValue(thisObject->asESDateObject()->getUTCDay());
         else
             return ESValue(std::numeric_limits<double>::quiet_NaN());
     }, strings->getUTCDay, 0));
@@ -3917,7 +3917,7 @@ void GlobalObject::installDate()
         }
 
         thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , (int) args[0], (int) args[1], (int) args[2], (int) args[3]);
+            , (int) args[0], (int) args[1], args[2], args[3]);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setHours, 4));
@@ -3948,7 +3948,7 @@ void GlobalObject::installDate()
         }
 
         thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , thisDateObject->getHours(), thisDateObject->getMinutes(), thisDateObject->getSeconds(), (int) args[0]);
+            , thisDateObject->getHours(), thisDateObject->getMinutes(), thisDateObject->getSeconds(), args[0]);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setMilliseconds, 1));
@@ -3983,7 +3983,7 @@ void GlobalObject::installDate()
         }
 
         thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , thisDateObject->getHours(), (int) args[0], (int) args[1], (int) args[2]);
+            , thisDateObject->getHours(), (int) args[0], args[1], args[2]);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setMinutes, 3));
@@ -4053,7 +4053,7 @@ void GlobalObject::installDate()
         }
 
         thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , thisDateObject->getHours(), thisDateObject->getMinutes(), (int) args[0], (int) args[1]);
+            , thisDateObject->getHours(), thisDateObject->getMinutes(), args[0], args[1]);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setSeconds, 2));
@@ -4101,8 +4101,8 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), (int) args[0]
-            , thisDateObject->getHours(), thisDateObject->getMinutes(), thisDateObject->getSeconds(), thisDateObject->getMilliseconds(), false);
+        thisDateObject->setTimeValue(thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth(), (int) args[0]
+            , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds(), false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCDate, 1));
@@ -4136,8 +4136,8 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue((int) args[0], (int) args[1], (int) args[2], thisDateObject->getHours(), thisDateObject->getMinutes()
-            , thisDateObject->getSeconds(), thisDateObject->getMilliseconds());
+        thisDateObject->setTimeValue((int) args[0], (int) args[1], (int) args[2], thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes()
+            , thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCFullYear, 3));
@@ -4171,7 +4171,7 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
+        thisDateObject->setTimeValue(thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth(), thisDateObject->getUTCDate()
             , (int) args[0], (int) args[1], (int) args[2], (int) args[3], false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
@@ -4202,8 +4202,8 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , thisDateObject->getHours(), thisDateObject->getMinutes(), thisDateObject->getSeconds(), (int) args[0], false);
+        thisDateObject->setTimeValue(thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth(), thisDateObject->getUTCDate()
+            , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), (int) args[0], false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCMilliseconds, 1));
@@ -4237,8 +4237,8 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , thisDateObject->getHours(), (int) args[0], (int) args[1], (int) args[2], false);
+        thisDateObject->setTimeValue(thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth(), thisDateObject->getUTCDate()
+            , thisDateObject->getUTCHours(), (int) args[0], (int) args[1], (int) args[2], false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCMinutes, 3));
@@ -4272,8 +4272,8 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue(thisDateObject->getFullYear(), (int) args[0], (int) args[1]
-            , thisDateObject->getHours(), thisDateObject->getMinutes(), thisDateObject->getSeconds(), thisDateObject->getMilliseconds(), false);
+        thisDateObject->setTimeValue(thisDateObject->getUTCFullYear(), (int) args[0], (int) args[1]
+            , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds(), false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCMonth, 2));
@@ -4307,19 +4307,20 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
-        thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
-            , thisDateObject->getHours(), thisDateObject->getMinutes(), (int) args[0], (int) args[1], false);
+        thisDateObject->setTimeValue(thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth(), thisDateObject->getUTCDate()
+            , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), (int) args[0], (int) args[1], false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCSeconds, 2));
 
     // $20.3.4.35 Date.prototype.toDateString()
     m_datePrototype->defineDataProperty(strings->toDateString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        ESValue func = thisObject->get(strings->toString.string());
-        if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            instance->throwError(TypeError::create(ESString::create("toDateString is not callable")));
-        return ESFunctionObject::call(instance, func, thisObject, NULL, 0, false);
+        ESValue e = instance->currentExecutionContext()->resolveThisBinding();
+        if (e.isESPointer() && e.asESPointer()->isESDateObject())
+            return e.asESPointer()->asESDateObject()->toDateString();
+        else
+            instance->throwError(TypeError::create(ESString::create(u"this is not a Date object")));
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->toDateString, 0));
 
     // $20.3.4.36 Date.prototype.toISOString
@@ -4328,15 +4329,15 @@ void GlobalObject::installDate()
         if (thisObject->isESDateObject()) {
             escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();        
 
+            // it is out of spec, but chakracore requires string like this
+            if (isnan(thisDateObject->timeValueAsDouble()))
+                return ESString::create(u"Invalid Date");
+
             char buffer[512];
-            if (!isnan(thisDateObject->timeValueAsDouble())) {
-                snprintf(buffer, 512, "%d-%02d-%02dT%02d:%02d:%02d.%03dZ"
-                    , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
-                    , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
-                return ESString::create(buffer);
-            } else {
-                instance->throwError(ESValue(RangeError::create()));
-            }
+            snprintf(buffer, 512, "%d-%02d-%02dT%02d:%02d:%02d.%03dZ"
+                , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
+                , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+            return ESString::create(buffer);
         } else {
             instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.toISOString : This object is not Date object"))));
         }      

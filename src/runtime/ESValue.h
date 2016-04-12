@@ -2201,7 +2201,7 @@ public:
     void setTimeValue();
     void setTimeValue(double t);
     void setTimeValue(const ESValue str);
-    void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond, bool convertToUTC = true);
+    void setTimeValue(int year, int month, int date, int hour, int minute, double second, double millisecond, bool convertToUTC = true);
     void setTimeValueAsNaN()
     {
         m_hasValidDate = false;
