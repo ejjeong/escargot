@@ -132,6 +132,7 @@ static bool isInfinity(ESString* str, unsigned p, unsigned length)
 
 void GlobalObject::initGlobalObject()
 {
+    m_instance = ESVMInstance::currentInstance();
     forceNonVectorHiddenClass(true);
     m_objectPrototype = ESObject::create();
     m_objectPrototype->forceNonVectorHiddenClass(true);

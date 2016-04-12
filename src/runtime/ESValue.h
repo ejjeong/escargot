@@ -1957,7 +1957,7 @@ public:
 
     bool hasPropertyInterceptor()
     {
-        return m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
+        return !isESArrayObject() && m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
     }
 
 #ifdef ENABLE_ESJIT
@@ -1971,6 +1971,7 @@ protected:
 
     void ensureRareData()
     {
+        ASSERT(!isESArrayObject());
         if (m_objectRareData == nullptr) {
             m_objectRareData = new ESObjectRareData();
         }
@@ -1999,7 +2000,12 @@ protected:
 
     ESValue m___proto__;
 
-    ESObjectRareData* m_objectRareData;
+    union {
+        ESObjectRareData* m_objectRareData;
+
+        // used only for ESArrayObject (to make accessing didSomePrototypeObjectDefineIndexedProperty() faster)
+        GlobalObject* m_globalObjectForESArrayObject;
+    };
 #ifdef ESCARGOT_64
     struct {
         // object
@@ -2363,11 +2369,15 @@ public:
         return false;
     }
 
-    void convertToSlowMode()
+    inline void convertToSlowMode()
     {
         // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
         if (!m_flags.m_isFastMode)
             return;
+        convertToSlowModeSlowPath();
+    }
+
+    NEVER_INLINE void convertToSlowModeSlowPath() {
         forceNonVectorHiddenClass();
         m_flags.m_isFastMode = false;
         uint32_t len = length();
@@ -2391,7 +2401,7 @@ public:
 
     void setLength(unsigned newLength);
 
-    bool isFastmode();
+    inline bool isFastmode();
 
     const uint32_t& length()
     {
@@ -2403,6 +2413,9 @@ public:
 
     static int64_t nextIndexForward(ESObject* obj, const int64_t cur, const int64_t len, const bool skipUndefined);
     static int64_t nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined);
+
+    inline GlobalObject* globalObject() { return m_globalObjectForESArrayObject; }
+    inline void setGlobalObject(GlobalObject* globalObject) { m_globalObjectForESArrayObject = globalObject; }
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }

@@ -971,7 +971,8 @@ ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject), ESVMInstance::currentInstance()->globalObject()->arrayPrototype(), 3)
     , m_vector(0)
 {
-    if (!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty())
+    setGlobalObject(ESVMInstance::currentInstance()->globalObject());
+    if (!globalObject()->didSomePrototypeObjectDefineIndexedProperty())
         m_flags.m_isFastMode = true;
     m_length = 0;
     if (length == -1)
@@ -983,8 +984,8 @@ ESArrayObject::ESArrayObject(int length)
     }
 
     // defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
-    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
-    m_hiddenClassData.push_back((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData());
+    m_hiddenClass = globalObject()->instance()->initialHiddenClassForArrayObject();
+    m_hiddenClassData.push_back((ESPointer *)globalObject()->instance()->arrayLengthAccessorData());
 }
 
 bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& desc, bool throwFlag)
@@ -1221,7 +1222,7 @@ void ESArrayObject::setLength(unsigned newLength)
                     continue;
                 }
                 m_length = index + 1;
-                if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode()) {
+                if (globalObject()->instance()->currentExecutionContext()->isStrictMode()) {
                     ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete array property while setting array length")));
                 }
                 return;
@@ -1305,14 +1306,6 @@ inline ESString* escapeSlashInPattern(ESString* patternStr)
         else
             return retval;
     }
-}
-
-bool ESArrayObject::isFastmode()
-{
-    if (ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
-        convertToSlowMode();
-    }
-    return m_flags.m_isFastMode;
 }
 
 ESRegExpObject* ESRegExpObject::create(const ESValue patternValue, const ESValue optionValue)

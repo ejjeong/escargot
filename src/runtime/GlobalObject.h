@@ -11,6 +11,11 @@ public:
     friend class ESVMInstance;
     GlobalObject();
 
+    ALWAYS_INLINE escargot::ESVMInstance* instance()
+    {
+        return m_instance;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* object()
     {
         return m_object;
@@ -369,6 +374,8 @@ protected:
     void installTypedArray();
     template <typename T>
     escargot::ESFunctionObject* installTypedArray(escargot::ESString*);
+
+    escargot::ESVMInstance* m_instance;
 
     escargot::ESFunctionObject* m_object;
     escargot::ESObject* m_objectPrototype;

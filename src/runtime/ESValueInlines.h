@@ -1997,6 +1997,14 @@ ALWAYS_INLINE void ESObject::sort(const Comp& c)
     }
 }
 
+inline bool ESArrayObject::isFastmode()
+{
+    if (globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
+        convertToSlowMode();
+    }
+    return m_flags.m_isFastMode;
+}
+
 template<>
 inline ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype, ESPointer::Type type)
     : ESTypedArrayObjectWrapper(arraytype,
