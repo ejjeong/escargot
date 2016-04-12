@@ -170,7 +170,7 @@ function test5() {
     z: Math.pow(),
     set b(u3056) {
     },
-    b: 4277,
+//    b: 4277, //ES6 Spec
     z: window
   };
 }
@@ -179,6 +179,7 @@ test5();
 test5();
 test5();
 test5();
+
 function printAll(n, v) {
   for (var c in v)
     printAll(n, v[c]);

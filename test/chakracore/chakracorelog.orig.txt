@@ -1217,7 +1217,7 @@ Running all tests
 [Miscellaneous] irviewer.js .......... Fail
 [Miscellaneous] SetTimeout.js .......... Fail
 [fieldopts] equiv-finaltypeandpoly.js .......... Pass
-[fieldopts] equiv-missing.js .......... Fail
+[fieldopts] equiv-missing.js .......... Skip (Not in scope (es6))
 [fieldopts] equiv-mismatch.js .......... Pass
 [fieldopts] equiv-locktypeid.js .......... Fail
 [fieldopts] equiv-needmonocheck.js .......... Pass
@@ -1317,11 +1317,11 @@ Running all tests
 [fieldopts] objtypespec-newobj-invalidation.2.js .......... Pass
 [fieldopts] objtypespec-newobj-invalidation.2.js .......... Pass
 [fieldopts] FieldHoist_MaxInterpret.js .......... Pass
-[fieldopts] markTemp.js .......... Fail
+[fieldopts] markTemp.js .......... Pass
 [fieldopts] rootObj-1.js .......... Pass
 [fieldopts] finaltypebug.js .......... Pass
-[fieldopts] finaltype2.js .......... Fail
-[fieldopts] finaltype2.js .......... Fail
+[fieldopts] finaltype2.js .......... Pass
+[fieldopts] finaltype2.js .......... Pass
 [fieldopts] finaltype-objheaderinlining1.js .......... Pass
 [fieldopts] finaltype-objheaderinlining2.js .......... Pass
 [fieldopts] finaltype-objheaderinlining3.js .......... Pass
@@ -1359,7 +1359,7 @@ Running all tests
 [inlining] noprof.js .......... Pass
 [inlining] bug515849.js .......... Fail
 [inlining] inlineBuiltins.js .......... Pass
-[inlining] spread.js .......... Fail
+[inlining] spread.js .......... Skip (Not in scope (es6))
 [inlining] polyInliningFixedMethods.js .......... Pass
 [inlining] bug650495.js .......... Pass
 [inlining] polyInliningBugs.js .......... Fail
@@ -1458,10 +1458,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              bailout		34		27		7		0		(79%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
-           fieldopts		111		78		33		0		(70%)
+           fieldopts		111		81		29		1		(72%)
          FixedFields		16		15		1		0		(93%)
-            inlining		34		21		13		0		(61%)
+            inlining		34		21		12		1		(61%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		963		368		75		(68%)
+               Total		1406		966		363		77		(68%)

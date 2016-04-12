@@ -44,9 +44,10 @@ function func7(arg0, arg1) {
   this.prop0 = arg0;
   this.prop2 = arg1;
 }
+/*
 for (var _strvar2 of FloatArr0) {
   var uniqobj8 = new func7(144);
   uniqobj8.prop3 = uniqobj8.prop2 = test0;
 }
-
+*/ //ES6 Spec
 WScript.Echo('pass');

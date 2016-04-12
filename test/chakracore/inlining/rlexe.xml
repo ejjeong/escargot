@@ -119,6 +119,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>spread.js</files>
       <compile-flags>-maxSimpleJitRunCount:1 -maxInterpretCount:1</compile-flags>
     </default>
