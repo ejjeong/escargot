@@ -1922,7 +1922,7 @@ public:
     }
 
     ALWAYS_INLINE void set(const ESValue& key, const ESValue& val, bool throwExeption, ESValue* receiver = nullptr);
-    inline bool setSlowPath(const ESValue& key, const ESValue& val, ESValue* receiver = nullptr);
+    NEVER_INLINE bool setSlowPath(const ESValue& key, const ESValue& val, ESValue* receiver = nullptr);
 
     ALWAYS_INLINE uint32_t length();
     ALWAYS_INLINE void eraseValues(uint32_t, int);
@@ -1955,7 +1955,7 @@ public:
         m_objectRareData->m_propertyCallback = readIndex;
     }
 
-    bool hasPropertyInterceptor()
+    ALWAYS_INLINE bool hasPropertyInterceptor()
     {
         return !isESArrayObject() && m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
     }
@@ -2369,7 +2369,7 @@ public:
         return false;
     }
 
-    inline void convertToSlowMode()
+    ALWAYS_INLINE void convertToSlowMode()
     {
         // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
         if (!m_flags.m_isFastMode)
@@ -2401,7 +2401,7 @@ public:
 
     void setLength(unsigned newLength);
 
-    inline bool isFastmode();
+    ALWAYS_INLINE bool isFastmode();
 
     const uint32_t& length()
     {
@@ -2414,8 +2414,8 @@ public:
     static int64_t nextIndexForward(ESObject* obj, const int64_t cur, const int64_t len, const bool skipUndefined);
     static int64_t nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined);
 
-    inline GlobalObject* globalObject() { return m_globalObjectForESArrayObject; }
-    inline void setGlobalObject(GlobalObject* globalObject) { m_globalObjectForESArrayObject = globalObject; }
+    ALWAYS_INLINE GlobalObject* globalObject() { return m_globalObjectForESArrayObject; }
+    ALWAYS_INLINE void setGlobalObject(GlobalObject* globalObject) { m_globalObjectForESArrayObject = globalObject; }
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }

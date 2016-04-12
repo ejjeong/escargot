@@ -1640,77 +1640,6 @@ ALWAYS_INLINE uint32_t ESObject::length()
         return get(strings->length.string()).toUint32();
 }
 
-inline bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
-{
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return false;
-    }
-
-    escargot::ESString* keyString = key.toString();
-    size_t idx = m_hiddenClass->findProperty(keyString);
-
-    if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
-    }
-    if (idx == SIZE_MAX) {
-        ESValue target = __proto__();
-        bool foundInPrototype = false; // for GetObjectPreComputedCase vector mode cache
-        while (true) {
-            if (!target.isObject()) {
-                break;
-            }
-            ESObject* targetObj = target.asESPointer()->asESObject();
-            size_t t = targetObj->hiddenClass()->findProperty(keyString);
-            if (t != SIZE_MAX) {
-                foundInPrototype = true;
-                // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
-                // If IsAccessorDescriptor(desc) is true, then
-                // Let setter be desc.[[Set]] which cannot be undefined.
-                // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
-                if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
-                    ESPropertyAccessorData* data = targetObj->accessorData(t);
-                    ESValue receiverVal(this);
-                    if (receiver)
-                        receiverVal = *receiver;
-                    if (data->isAccessorDescriptor()) {
-                        if (data->getJSSetter()) {
-                            ESValue args[] = {val};
-                            ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
-                            return true;
-                        }
-                        return false;
-                    }
-                }
-
-                if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
-                    return false;
-            } else if (targetObj->isESStringObject()) {
-                uint32_t idx = key.toIndex();
-                if (idx != ESValue::ESInvalidIndexValue)
-                    if (idx < targetObj->asESStringObject()->length())
-                        return false;
-            }
-            target = targetObj->__proto__();
-        }
-        if (UNLIKELY(!isExtensible()))
-            return false;
-        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, true, true, true, foundInPrototype);
-        m_hiddenClassData.push_back(val);
-
-        if (UNLIKELY(m_flags.m_isGlobalObject))
-            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
-        if (UNLIKELY(isESArrayObject())) {
-            uint32_t index = key.toIndex();
-            uint32_t oldLen = asESArrayObject()->length();
-            if (index != ESValue::ESInvalidIndexValue && index >= oldLen)
-                asESArrayObject()->setLength(index+1);
-        }
-        return true;
-    } else {
-        return m_hiddenClass->write(this, this, keyString, idx, val);
-    }
-}
-
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
 inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
@@ -1997,9 +1926,9 @@ ALWAYS_INLINE void ESObject::sort(const Comp& c)
     }
 }
 
-inline bool ESArrayObject::isFastmode()
+ALWAYS_INLINE bool ESArrayObject::isFastmode()
 {
-    if (globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
+    if (UNLIKELY(globalObject()->didSomePrototypeObjectDefineIndexedProperty())) {
         convertToSlowMode();
     }
     return m_flags.m_isFastMode;

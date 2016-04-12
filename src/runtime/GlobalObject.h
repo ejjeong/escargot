@@ -345,7 +345,7 @@ public:
         return ESBindingSlot(&target->m_hiddenClassData[ret], info.m_flags.m_isDataProperty, info.m_flags.m_isDataProperty ? info.m_flags.m_isWritable : true, info.m_flags.m_isConfigurable, true);
     }
 
-    bool didSomePrototypeObjectDefineIndexedProperty()
+    ALWAYS_INLINE bool didSomePrototypeObjectDefineIndexedProperty()
     {
         return m_didSomePrototypeObjectDefineIndexedProperty;
     }
