@@ -485,7 +485,7 @@ Running all tests
 [ControlFlow] enumeration_adddelete.js .......... Pass
 [ControlFlow] forInArrayAdd.js .......... Pass
 [ControlFlow] forInObjectWithPrototype.js .......... Pass
-[ControlFlow] DoWhile.js .......... Fail
+[ControlFlow] DoWhile.js .......... Skip (Not in scope (wtih))
 [Math] abs.js .......... Pass
 [Math] acos.js .......... Pass
 [Math] asin.js .......... Pass
@@ -823,7 +823,7 @@ Running all tests
 [Object] constructor1.js .......... Pass
 [Object] expandos.js .......... Pass
 [Object] hasOwnProperty.js .......... Pass
-[Object] isEnumerable.js .......... Fail
+[Object] isEnumerable.js .......... Pass
 [Object] isPrototypeOf.js .......... Pass
 [Object] Object.js .......... Fail
 [Object] null.js .......... Fail
@@ -1435,13 +1435,13 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                Error		23		4		18		1		(17%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
-         ControlFlow		17		14		3		0		(82%)
+         ControlFlow		17		14		2		1		(82%)
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		180		24		2		(87%)
             Function		61		22		33		6		(36%)
-              Object		58		32		21		5		(55%)
+              Object		58		33		20		5		(56%)
                Regex		33		18		15		0		(54%)
           Prototypes		7		5		2		0		(71%)
      GlobalFunctions		13		7		6		0		(53%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		976		353		77		(69%)
+               Total		1406		977		351		78		(69%)

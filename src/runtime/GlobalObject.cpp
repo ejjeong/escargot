@@ -1558,8 +1558,9 @@ void GlobalObject::installObject()
         if (!O->hasOwnProperty(key))
             return ESValue(false);
         if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject()) {
+            if (*key != *strings->length.string())
             // In fast mode, it was already checked in O->hasOwnProperty.
-            return ESValue(true);
+                return ESValue(true);
         }
         size_t t = O->hiddenClass()->findProperty(key);
         if (O->isESStringObject() && t == SIZE_MAX) { // index value
