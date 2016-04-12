@@ -118,16 +118,16 @@ Running all tests
 [Basics] equal_object.js .......... Pass
 [Basics] label1.js .......... Fail
 [Basics] label1.js .......... Fail
-[Basics] label2.js .......... Fail
-[Basics] label2.js .......... Fail
-[Basics] label3.js .......... Fail
-[Basics] label3.js .......... Fail
+[Basics] label2.js .......... Pass
+[Basics] label2.js .......... Pass
+[Basics] label3.js .......... Pass
+[Basics] label3.js .......... Pass
 [Basics] label4.js .......... Fail
 [Basics] label4.js .......... Fail
-[Basics] label5.js .......... Fail
-[Basics] label5.js .......... Fail
-[Basics] label6.js .......... Fail
-[Basics] label6.js .......... Fail
+[Basics] label5.js .......... Pass
+[Basics] label5.js .......... Pass
+[Basics] label6.js .......... Pass
+[Basics] label6.js .......... Pass
 [Basics] Length.js .......... Pass
 [Basics] Logical.js .......... Pass
 [Basics] ParameterOrder.js .......... Pass
@@ -1424,7 +1424,7 @@ Running all tests
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		66		30		10		(62%)
-              Basics		56		28		20		8		(50%)
+              Basics		56		36		12		8		(64%)
                  es5		56		32		24		0		(57%)
                   EH		17		10		5		2		(58%)
         InlineCaches		21		18		2		1		(85%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		968		361		77		(68%)
+               Total		1406		976		353		77		(69%)

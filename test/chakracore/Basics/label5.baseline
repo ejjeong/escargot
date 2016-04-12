@@ -1,2 +1,1 @@
-SyntaxError: Expected ';'
-	at code (label5.js:8:9)
+Uncaught SyntaxError: Unexpected Punctuator ':'. Expected ';'
