@@ -107,6 +107,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>bug_OS_2299723.js</files>
       <baseline>bug_OS_2299723.baseline</baseline>
       <compile-flags>-force:cachedscope</compile-flags>

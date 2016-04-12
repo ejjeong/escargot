@@ -268,4 +268,4 @@ ReferenceError: Assignment to const
 const glo_t19_p
 function glo_t19_q() { }
 var glo_t19_q
-ReferenceError: Invalid left-hand side in assignment
+ReferenceError: Invalid assignment.

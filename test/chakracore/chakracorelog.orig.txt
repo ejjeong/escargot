@@ -173,7 +173,7 @@ Running all tests
 [es5] array_reduceright.js .......... Pass
 [es5] DateGetSet9.js .......... Fail
 [es5] jx2.js .......... Fail
-[es5] SemiCollonAfterBlockEs5.js .......... Fail
+[es5] SemiCollonAfterBlockEs5.js .......... Pass
 [es5] exceptions.js .......... Fail
 [es5] ObjLitGetSet.js .......... Fail
 [es5] ObjLitGetSetParseOnly.js .......... Fail
@@ -255,7 +255,7 @@ Running all tests
 [InlineCaches] MissingPropertyCache2.js .......... Pass
 [InlineCaches] MissingPropertyCache3.js .......... Pass
 [InlineCaches] instanceOfCacheCrossRegistration.js .......... Pass
-[InlineCaches] bug_vso_os_1206083.js .......... Fail
+[InlineCaches] bug_vso_os_1206083.js .......... Pass
 [LetConst] Skipping whole directory (Not in scope)
 [Generated] mul.js .......... Pass
 [Generated] mul0.js .......... Pass
@@ -382,7 +382,7 @@ Running all tests
 [Closures] invalcachedscope.js .......... Pass
 [Closures] invalcachedscope.js .......... Pass
 [Closures] invalcachedscope.js .......... Pass
-[Closures] bug_OS_2299723.js .......... Fail
+[Closures] bug_OS_2299723.js .......... Skip (Not in scope (es6))
 [Closures] bug_OS_2671095.js .......... Pass
 [Closures] bug_OS_2903083.js .......... Pass
 [Strings] charAt.js .......... Pass
@@ -438,7 +438,7 @@ Running all tests
 [Error] NativeErrors.js .......... Fail
 [Error] outofmem.js .......... Fail
 [Error] stack.js .......... Fail
-[Error] stack2.js .......... Fail
+[Error] stack2.js .......... Pass
 [Error] errorCtor.js .......... Fail
 [Error] errorNum.js .......... Fail
 [Error] CallNonFunction.js .......... Fail
@@ -700,7 +700,7 @@ Running all tests
 [Optimizer] test130.js .......... Pass
 [Optimizer] test131.js .......... Pass
 [Optimizer] test132.js .......... Pass
-[Optimizer] test133.js .......... Fail
+[Optimizer] test133.js .......... Pass
 [Optimizer] test134.js .......... Pass
 [Optimizer] test135.js .......... Fail
 [Optimizer] test136.js .......... Pass
@@ -735,7 +735,7 @@ Running all tests
 [Optimizer] copyprop.js .......... Pass
 [Optimizer] copyprop.js .......... Pass
 [Optimizer] dead.js .......... Pass
-[Optimizer] UnreachableCode.js .......... Fail
+[Optimizer] UnreachableCode.js .......... Pass
 [Optimizer] PrePassValues.js .......... Pass
 [Optimizer] missing_len.js .......... Pass
 [Optimizer] ArrayCheckHoist.js .......... Pass
@@ -1425,21 +1425,21 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		66		30		10		(62%)
               Basics		56		36		12		8		(64%)
-                 es5		56		32		24		0		(57%)
+                 es5		56		33		23		0		(58%)
                   EH		17		10		5		2		(58%)
-        InlineCaches		21		18		2		1		(85%)
+        InlineCaches		21		19		1		1		(90%)
            Generated		110		108		2		0		(98%)
-            Closures		18		12		4		2		(66%)
+            Closures		18		12		3		3		(66%)
              Strings		36		29		7		0		(80%)
                 Date		12		3		9		0		(25%)
-               Error		23		4		18		1		(17%)
+               Error		23		5		17		1		(21%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
          ControlFlow		17		14		2		1		(82%)
                 Math		21		18		3		0		(85%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		180		24		2		(87%)
+           Optimizer		206		182		22		2		(88%)
             Function		61		22		33		6		(36%)
               Object		58		33		20		5		(56%)
                Regex		33		18		15		0		(54%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		977		351		78		(69%)
+               Total		1406		982		345		79		(69%)
