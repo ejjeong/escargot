@@ -425,7 +425,7 @@ Running all tests
 [Date] DateGetSet.js .......... Fail
 [Date] DateParse.js .......... Fail
 [Date] DateParse2.js .......... Fail
-[Date] toISO_3.js .......... Fail
+[Date] toISO_3.js .......... Pass
 [Date] parseISO.js .......... Fail
 [Date] dateutc.js .......... Fail
 [Date] MillisecondTruncationCheckAfterCopyConstructor.js .......... Pass
@@ -1431,7 +1431,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            Generated		110		108		2		0		(98%)
             Closures		18		12		6		0		(66%)
              Strings		36		27		9		0		(75%)
-                Date		12		2		10		0		(16%)
+                Date		12		3		9		0		(25%)
                Error		23		4		18		1		(17%)
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		961		375		70		(68%)
+               Total		1406		962		374		70		(68%)

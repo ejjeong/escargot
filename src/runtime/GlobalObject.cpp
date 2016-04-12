@@ -4355,9 +4355,15 @@ void GlobalObject::installDate()
 
             char buffer[512];
             if (!isnan(thisDateObject->timeValueAsDouble())) {
-                snprintf(buffer, 512, "%d-%02d-%02dT%02d:%02d:%02d.%03dZ"
-                    , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
-                    , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+                if (thisDateObject->getUTCFullYear() >= 0 && thisDateObject->getUTCFullYear() <= 9999) {
+                    snprintf(buffer, 512, "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ"
+                        , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
+                        , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+                } else {
+                    snprintf(buffer, 512, "%+07d-%02d-%02dT%02d:%02d:%02d.%03dZ"
+                        , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
+                        , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+                }
                 return ESString::create(buffer);
             } else {
                 instance->throwError(ESValue(RangeError::create()));
