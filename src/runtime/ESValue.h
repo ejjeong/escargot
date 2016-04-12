@@ -844,7 +844,7 @@ public:
 
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
-    static constexpr size_t maxLength() { return 1 << 30 | 1; }
+    static constexpr size_t maxLength() { return options::MaximumStringLength; }
 
     ALWAYS_INLINE friend bool operator == (const ESString& a, const char* b);
     ALWAYS_INLINE friend bool operator != (const ESString& a, const char* b);

@@ -390,6 +390,7 @@ namespace options {
 
 static const size_t KB = 1024;
 static const size_t MB = 1024 * KB;
+static const size_t GB = 1024 * MB;
 
 // TODO these should be changed on various devices
 static const size_t CodeCacheThreshold = 1 * KB;
@@ -398,6 +399,7 @@ static const size_t MaxStackDepth = 4 * MB;
 static const size_t AllocaOnHeapThreshold = 32 * MB;
 static const size_t NativeHeapUsageThreshold = 300 * MB;
 static const size_t MaximumArgumentCount = 65535;
+static const size_t MaximumStringLength = (1 * GB) | 1;
 
 }
 
