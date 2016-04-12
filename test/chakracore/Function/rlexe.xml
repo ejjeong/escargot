@@ -131,12 +131,14 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>defernested.js</files>
       <baseline>defernested.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>defernested.js</files>
       <compile-flags>-Force:Deferparse -DeferNested</compile-flags>
       <baseline>defernested.baseline</baseline>
@@ -192,6 +194,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>deferredWith.js</files>
       <compile-flags>-Force:Deferparse</compile-flags>
       <baseline>deferredWith.v4.baseline</baseline>
@@ -200,6 +203,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>deferredWith2.js</files>
       <compile-flags>-Force:Deferparse</compile-flags>
       <baseline>deferredWith2.baseline</baseline>

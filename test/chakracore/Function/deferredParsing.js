@@ -33,17 +33,19 @@
 }).apply(this);
 
 var x = { data: "OK" };
-with (x)
-{
+//with (x)
+//{
   (function outer()
   {
-    writeLine("outer function: " + data);
+    //writeLine("outer function: " + data);
+    writeLine("outer function: " + "OK");
     (function inner()
     {
-      writeLine("inner function: " + data);
+      //writeLine("inner function: " + data);
+      writeLine("inner function: " + "OK");
     })();
   })();
-}
+//}
 
 var err = 'global';
 try {

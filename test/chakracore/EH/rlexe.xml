@@ -70,6 +70,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>try.bug188541.v5.js</files>
       <baseline>try.bug188541.v5.baseline</baseline>
     </default>
