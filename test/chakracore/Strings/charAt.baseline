@@ -15,9 +15,9 @@ o
 r
 l
 d
-Got a exception. String.prototype.charAt: 'this' is null or undefined
+Got a exception. String.prototype.charAt: this value is undefined or null
 >> FirstChar : undefined
-Got a exception. String.prototype.charAt: 'this' is null or undefined
+Got a exception. String.prototype.charAt: this value is undefined or null
 >> FirstChar : 0
 0
 << FirstChar.

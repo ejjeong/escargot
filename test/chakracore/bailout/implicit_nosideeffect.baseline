@@ -1,6 +1,6 @@
 TypeError: Number.prototype.toString: 'this' is not a Number object
 TypeError: RegExp.prototype.toString: 'this' is not a RegExp object
-TypeError: Function.prototype.toString: 'this' is not a Function object
+TypeError: Function.prototype.toString: this value is not a Function object
 ReferenceError: Invalid left-hand side in assignment
 ReferenceError: Invalid left-hand side in assignment
 TypeError: Boolean.prototype.toString: 'this' is not a Boolean object

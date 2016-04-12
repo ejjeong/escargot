@@ -15,9 +15,9 @@ AllChars : HelloWorld. Length : 10
 114
 108
 100
-Got a exception. String.prototype.charCodeAt: 'this' is null or undefined
+Got a exception. String.prototype.charCodeAt: this value is undefined or null
 >> FirstChar : undefined
-Got a exception. String.prototype.charCodeAt: 'this' is null or undefined
+Got a exception. String.prototype.charCodeAt: this value is undefined or null
 >> FirstChar : 0
 48
 << FirstChar.

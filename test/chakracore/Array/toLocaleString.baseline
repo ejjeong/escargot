@@ -2,8 +2,8 @@
 1 --> 
 NaN --> 
 true --> 
-TypeError : Array.prototype.toLocaleString: 'this' is null or undefined
-TypeError : Array.prototype.toLocaleString: 'this' is null or undefined
+TypeError : Array.prototype.toLocaleString: this value is undefined or null
+TypeError : Array.prototype.toLocaleString: this value is undefined or null
 
 
 1. Object, length not uint32
