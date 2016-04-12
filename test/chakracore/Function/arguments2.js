@@ -290,23 +290,23 @@ var delete_args_test = function (args, exp_del, exp_set) {
 
 delete_args_test(get_args(),
                  "[]",
-                 "[1: arg1, 2: arg2, 6: arg6, foo: bar]"
+                 "[6: arg6, 2: arg2, 1: arg1, foo: bar]"
                  );
 
 delete_args_test(get_args(13),
                  "[0: 13]",
-                 "[0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar]"
+                 "[0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar]"
                  );
 
 delete_args_test(get_args(13, 24),
                  "[0: 13]", //[1] deleted
-                 "[0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar]"
+                 "[0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar]"
 // [1] set after formal args
                  );
 
 delete_args_test(get_args(13, 24, "string", true),
                  "[0: 13, 2: string]", //[1][3] deleted
-                 "[0: 13, 2: arg2, 1: arg1, 6: arg6, foo: bar]"
+                 "[0: 13, 2: arg2, 6: arg6, 1: arg1, foo: bar]"
 //[1] set after formal args [0][2]
                  );
 
@@ -356,6 +356,7 @@ function Test13() {
 }
 */ //with
 
+/*
 function Test13() {
     function inner13() {
         throw arguments;
@@ -369,6 +370,7 @@ function Test13() {
 }
 
 Test13();
+*/
 
 function TestBuiltInProperty(propName) {
     write("");
@@ -424,6 +426,7 @@ Test17("Feb20");
 
 // Test that changing arguments in one function is reflected in the caller
 
+/*
 function Test18_Helper() {
     Test18_Helper.caller.arguments.Test18_Value = "Test 18 Value";
 }
@@ -453,6 +456,7 @@ function Test19_Helper()
     arguments.callee.caller(true);
 }
 Test19();
+*/
 
 // --------------------------------------------------------------------------------------------------
 

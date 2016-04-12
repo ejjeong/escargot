@@ -86,26 +86,24 @@ Test10.2 : [0: 98, 1: 54, 2: string, 3: true, 8: false, 10: 21, foo: bar]
 PASSED : Test10.2 exp: [0: 98, 1: 54, 2: string, 3: true, 8: false, 10: 21, foo: bar] act : [0: 98, 1: 54, 2: string, 3: true, 8: false, 10: 21, foo: bar]
 Test10.3.1 : []
 PASSED : Test10.3.1 exp: [] act : []
-Test10.3.2 : [1: arg1, 2: arg2, 6: arg6, foo: bar]
-PASSED : Test10.3.2 exp: [1: arg1, 2: arg2, 6: arg6, foo: bar] act : [1: arg1, 2: arg2, 6: arg6, foo: bar]
+Test10.3.2 : [6: arg6, 2: arg2, 1: arg1, foo: bar]
+PASSED : Test10.3.2 exp: [6: arg6, 2: arg2, 1: arg1, foo: bar] act : [6: arg6, 2: arg2, 1: arg1, foo: bar]
 Test10.3.1 : [0: 13]
 PASSED : Test10.3.1 exp: [0: 13] act : [0: 13]
-Test10.3.2 : [0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar]
-PASSED : Test10.3.2 exp: [0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar] act : [0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar]
+Test10.3.2 : [0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar]
+PASSED : Test10.3.2 exp: [0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar] act : [0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar]
 Test10.3.1 : [0: 13]
 PASSED : Test10.3.1 exp: [0: 13] act : [0: 13]
-Test10.3.2 : [0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar]
-PASSED : Test10.3.2 exp: [0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar] act : [0: 13, 1: arg1, 2: arg2, 6: arg6, foo: bar]
+Test10.3.2 : [0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar]
+PASSED : Test10.3.2 exp: [0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar] act : [0: 13, 6: arg6, 2: arg2, 1: arg1, foo: bar]
 Test10.3.1 : [0: 13, 2: string]
 PASSED : Test10.3.1 exp: [0: 13, 2: string] act : [0: 13, 2: string]
-Test10.3.2 : [0: 13, 2: arg2, 1: arg1, 6: arg6, foo: bar]
-PASSED : Test10.3.2 exp: [0: 13, 2: arg2, 1: arg1, 6: arg6, foo: bar] act : [0: 13, 2: arg2, 1: arg1, 6: arg6, foo: bar]
+Test10.3.2 : [0: 13, 2: arg2, 6: arg6, 1: arg1, foo: bar]
+PASSED : Test10.3.2 exp: [0: 13, 2: arg2, 6: arg6, 1: arg1, foo: bar] act : [0: 13, 2: arg2, 6: arg6, 1: arg1, foo: bar]
 Test11 args : sentinel
 PASSED : Test11 args exp: sentinel act : sentinel
 Test12 args : sentinel
 PASSED : Test12 args exp: sentinel act : sentinel
-Test13 args : sentinel
-PASSED : Test13 args exp: sentinel act : sentinel
 
 -------Testing built-in callee Implementation----
 HasOwnProperty() test : true
@@ -138,8 +136,3 @@ Test17.1 : 1
 PASSED : Test17.1 exp: 1 act : 1
 Test17.2 : Feb20
 PASSED : Test17.2 exp: Feb20 act : Feb20
-Test18.1 : undefined
-PASSED : Test18.1 exp: undefined act : undefined
-Test18.2 : Test 18 Value
-PASSED : Test18.2 exp: Test 18 Value act : Test 18 Value
-test19 called

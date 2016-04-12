@@ -1096,7 +1096,7 @@ void GlobalObject::installFunction()
                 }
             }
         } else {
-            instance->throwError(ESValue(TypeError::create(ESString::create("argArray is not object in Function.prototype.apply"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Function.prototype.apply: argument is not an Object"))));
         }
 
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
