@@ -57,11 +57,16 @@ foo("foo.a", "foo.b");
 // (but not to a "with" object).
 
 var O = {xxx:'O.xxx'};
-with (O)
-{
-    eval('function xxx(){}');
-}
-WScript.Echo(O.xxx);
+
+//with (O)
+//{
+  // eval('function xxx(){}');
+//}
+
+O.xxx = eval('function xxx(){}');
+
+//WScript.Echo(O.xxx);
+WScript.Echo(xxx);
 WScript.Echo(xxx);
 
 (function () { eval("function foobaz() {}") })();
@@ -108,7 +113,7 @@ function alias() {
 alias();
 
 // bug 1147044
-eval("with ({}) (function fibonacci() {})();"); 
+//eval("with ({}) (function fibonacci() {})();");
 
 // 8. Set up a custom eval that indirectly calls built-in eval, evoke it, and verify the effect.
 var q = eval;

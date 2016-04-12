@@ -242,6 +242,7 @@ write("Test case #18");
 })();
 
 write("Test case #19");
+/*
 (function(){
   function test0(){
   //Code Snippet: NegativeArgumentBug.ecs (Blue15423)
@@ -250,7 +251,7 @@ write("Test case #19");
   };
   test0(); 
 })();
-
+*/ //ES6 Spec
 
 write("Test case #20");
 (function(){

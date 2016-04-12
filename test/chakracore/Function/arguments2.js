@@ -339,6 +339,22 @@ function Test12() {
 }
 
 Test12();
+/*
+function Test13() {
+    var _t13;
+
+    function inner13() {
+        arguments.capture = function() { _t13 = this }
+
+        with(arguments)
+            capture();
+        throw arguments;
+    }
+
+    inner13("sentinel");
+    verify("Test13 args", _t13[0], "sentinel");
+}
+*/ //with
 
 function Test13() {
     function inner13() {

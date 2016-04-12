@@ -394,6 +394,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>caller_replaced_proto.js</files>
     </default>
   </test>

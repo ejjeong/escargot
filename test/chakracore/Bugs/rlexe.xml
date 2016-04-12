@@ -14,6 +14,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>withnonativeApplyOptimizationBug3433559.js</files>
       <compile-flags>-nonative</compile-flags>
       <tags>BugFix</tags>
@@ -62,33 +63,39 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>blue_532460.js</files>
       <compile-flags>-MaxinterpretCount:1 -MaxSimpleJITRunCount:0 -loopinterpretcount:1 -force:deferparse</compile-flags>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug56026.js</files>
       <tags>Slow</tags>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug56026_minimal.js</files>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug56026_minimalWithProperties.js</files>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug56026_nested.js</files>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>bug56026_trycatch.js</files>
     </default>
   </test>
@@ -180,6 +187,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>blue_1096569.js</files>
       <compile-flags>-MaxinterpretCount:2 -off:simplejit -force:Inline -off:insertnops</compile-flags>
       <baseline>blue_1096569.baseline</baseline>

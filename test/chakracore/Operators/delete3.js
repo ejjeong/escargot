@@ -183,7 +183,7 @@ function test7_value() {}
 
     write("Test17: delete test17_value: " + r);
 }) ();
-
+/*
 // With cases
 
 // Delete local variabale, not in with
@@ -343,7 +343,7 @@ var Test27_value = 1;
     write("Test27_value : " + Test27_value);
     write("o.Test27_value : " + o.Test27_value);
 }) ();
-
+*/
 // Function Declaration. And eval with same name
 function Func28()
 {

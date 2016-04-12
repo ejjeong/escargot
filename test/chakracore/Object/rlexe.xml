@@ -387,6 +387,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>ObjectHeaderInlining_NewPropSharedInlineCache.js</files>
       <baseline />
       <compile-flags>-mic:1 -forcejitloopbody -off:interpreterautoprofile</compile-flags>

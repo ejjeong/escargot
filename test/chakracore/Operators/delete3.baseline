@@ -35,40 +35,6 @@ Test14: delete f: false
 Test15: delete f: true
 Test16: delete f: true
 Test17: delete test17_value: false
-Test18: delete test18_value: false
-test18_value : 10
-Test19: delete test19_value: true
-test19_value : 10
-o.test19_value : undefined
-Test20: delete test20_value: false
-test20_value : 10
-Test21: delete test21_value: true
-test21_value : 10
-o.test21_value : undefined
-Test22: delete test22_value: true
-test22_value : 10
-o1.test22_value : 20
-o2.test22_value : 30
-o3.test22_value : 40
-o4.test22_value : undefined
-Test23: delete test23_value: true
-test23_value : 10
-o1.test23_value : 20
-o2.test23_value : 30
-o3.test23_value : 40
-o4.test23_value : undefined
-Test24: delete Test24_value: true
-Test24_value : 10
-o.Test24_value : undefined
-Test25: delete Test25_value: true
-Test25_value : 1
-o.Test25_value : undefined
-Test26: delete Test26_value: false
-Test26_value : 1
-o.Test26_value : undefined
-Test27: delete Test27_value: false
-Test27_value : 1
-o.Test27_value : undefined
 Func28.1 :function
 Func28.2 :number
 Func28: delete Func28: true

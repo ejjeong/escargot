@@ -389,6 +389,7 @@ test35();
 write("Passed");
 
 write("Test case 36")
+/*
 function test36() {
     (function () {
         for (let hvkbnr in null)
@@ -407,6 +408,7 @@ try
 }catch(e)
 {
 }
+*/ //ES6 Spec
 write("Passed")
 
 write("Test case 37")

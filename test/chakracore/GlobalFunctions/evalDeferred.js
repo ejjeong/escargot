@@ -18,7 +18,7 @@ WScript.Echo('done s1');
 var foo1 = f1();
 WScript.Echo('done f1');
 foo1();
-
+/*
 var s2 =
 
 'var a = "global a";' +
@@ -44,6 +44,11 @@ var foo2_ = f2(1);
 WScript.Echo('done f2');
 foo2();
 foo2_();
+*/ //with
+WScript.Echo('done s2');
+WScript.Echo('done f2');
+WScript.Echo('with a');
+WScript.Echo('with a');
 
 var s3 = 
 

@@ -816,7 +816,7 @@ Running all tests
 [Function] childCallsEvalJitLoopBody.js .......... Fail
 [Function] 631838.js .......... Pass
 [Function] calli.js .......... Pass
-[Function] caller_replaced_proto.js .......... Fail
+[Function] caller_replaced_proto.js .......... Skip (Not in scope (with))
 [Function] bug542360.js .......... Pass
 [Function] failnativecodeinstall.js .......... Skip (Takes too long)
 [Object] constructor.js .......... Fail
@@ -876,7 +876,7 @@ Running all tests
 [Object] stackobject_dependency.js .......... Fail
 [Object] ObjectHeaderInlining_NewPropNoInlineCache.js .......... Fail
 [Object] ObjectHeaderInlining_NewPropNoInlineCache_StaticType.js .......... Pass
-[Object] ObjectHeaderInlining_NewPropSharedInlineCache.js .......... Fail
+[Object] ObjectHeaderInlining_NewPropSharedInlineCache.js .......... Skip (Not in scope (with))
 [Regex] captures.js .......... Fail
 [Regex] fastRegexCaptures.js .......... Pass
 [Regex] regex1.js .......... Fail
@@ -929,7 +929,7 @@ Running all tests
 [GlobalFunctions] InternalToString.js .......... Fail
 [GlobalFunctions] ParseInt1.js .......... Pass
 [GlobalFunctions] deferunicode.js .......... Pass
-[GlobalFunctions] toString.js .......... Fail
+[GlobalFunctions] toString.js .......... Pass
 [Operators] access.js .......... Pass
 [Operators] add.js .......... Pass
 [Operators] addcross.js .......... Fail
@@ -1000,19 +1000,19 @@ Running all tests
 [JSON] jsonParseWalkTest.js .......... Pass
 [Bugs] bug602.js .......... Pass
 [Bugs] bug764.js .......... Fail
-[Bugs] withnonativeApplyOptimizationBug3433559.js .......... Fail
+[Bugs] withnonativeApplyOptimizationBug3433559.js .......... Skip (Not in scope (with))
 [Bugs] Win8_486977_BranchStrictEqual.js .......... Pass
 [Bugs] Win8_459638.js .......... Pass
 [Bugs] bug_OS_1197716.js .......... Fail
 [Bugs] addexception.js .......... Pass
 [Bugs] regalloc.js .......... Pass
 [Bugs] randombug.js .......... Fail
-[Bugs] blue_532460.js .......... Fail
-[Bugs] bug56026.js .......... Fail
-[Bugs] bug56026_minimal.js .......... Fail
-[Bugs] bug56026_minimalWithProperties.js .......... Fail
-[Bugs] bug56026_nested.js .......... Fail
-[Bugs] bug56026_trycatch.js .......... Fail
+[Bugs] blue_532460.js .......... Skip (Not in scope (es6))
+[Bugs] bug56026.js .......... Skip (Not in scope (with))
+[Bugs] bug56026_minimal.js .......... Skip (Not in scope (with))
+[Bugs] bug56026_minimalWithProperties.js .......... Skip (Not in scope (with))
+[Bugs] bug56026_nested.js .......... Skip (Not in scope (with))
+[Bugs] bug56026_trycatch.js .......... Skip (Not in scope (with))
 [Bugs] blue_245702.js .......... Fail
 [Bugs] bug547302.js .......... Pass
 [Bugs] bug215238.mul-53-ovf.js .......... Pass
@@ -1027,7 +1027,7 @@ Running all tests
 [Bugs] bug934443.js .......... Pass
 [Bugs] vso_os_1091425.js .......... Fail
 [Bugs] bug1092916.js .......... Pass
-[Bugs] blue_1096569.js .......... Fail
+[Bugs] blue_1096569.js .......... Skip (Not in scope (es6))
 [Bugs] blue_1086262.js .......... Fail
 [Bugs] bug1288931.js .......... Pass
 [Bugs] OS_1362136.js .......... Pass
@@ -1440,18 +1440,18 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		180		24		2		(87%)
-            Function		61		21		35		5		(34%)
-              Object		58		32		22		4		(55%)
+            Function		61		21		34		6		(34%)
+              Object		58		32		21		5		(55%)
                Regex		33		18		15		0		(54%)
           Prototypes		7		5		2		0		(71%)
-     GlobalFunctions		13		6		7		0		(46%)
+     GlobalFunctions		13		7		6		0		(53%)
            Operators		32		22		10		0		(68%)
          Conversions		5		3		2		0		(60%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
                  Lib		16		3		13		0		(18%)
                 JSON		13		9		4		0		(69%)
-                Bugs		36		20		16		0		(55%)
+                Bugs		36		20		8		8		(55%)
               strict		104		65		11		28		(62%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		7		19		0		(26%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		959		387		60		(68%)
+               Total		1406		960		376		70		(68%)

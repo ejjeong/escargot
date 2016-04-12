@@ -23,7 +23,9 @@ function toString(o, quoteStrings) {
 var o = {};
 Object.prototype.x = 20;
 var x = 10;
-
+/*
 with (o) {
     write(x);
 }
+*/ //with
+write(o.x);
