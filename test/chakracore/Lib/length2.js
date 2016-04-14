@@ -108,7 +108,7 @@ var stringList = [
 
     // not in ECMA spec
 
-    ["anchor",1],
+/*    ["anchor",1],
     ["big",0],
     ["blink",0],
     ["bold",0],
@@ -121,7 +121,7 @@ var stringList = [
     ["strike",0],
     ["sub",0],
     ["sup",0],
-    ["substr",2]
+    ["substr",2] */
 ]
 
 var stringList2 = [
