@@ -505,7 +505,7 @@ Running all tests
 [Math] sin.js .......... Pass
 [Math] sqrt.js .......... Pass
 [Math] tan.js .......... Pass
-[Math] constants.js .......... Fail
+[Math] constants.js .......... Pass
 [Math] clz32.js .......... Fail
 [TaggedIntegers] remBailout.js .......... Fail
 [TaggedIntegers] comparison.js .......... Pass
@@ -1436,7 +1436,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              Boolean		5		4		1		0		(80%)
               Number		8		6		1		1		(75%)
          ControlFlow		17		14		2		1		(82%)
-                Math		21		19		2		0		(90%)
+                Math		21		20		1		0		(95%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		184		20		2		(89%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1025		296		85		(72%)
+               Total		1406		1026		295		85		(72%)
