@@ -2908,7 +2908,9 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
         auto iter = ctx->m_labelSet.rbegin();
         bool find = false;
         while (iter != ctx->m_labelSet.rend()) {
-            if (*(*iter) == *key) {
+            if (*(iter->first) == *key) {
+                if (!iter->second)
+                    throw u"Cannot continue to the label as it is not targeting a loop.";
                 find = true;
                 break;
             }
@@ -2980,7 +2982,7 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/)
         auto iter = ctx->m_labelSet.rbegin();
         bool find = false;
         while (iter != ctx->m_labelSet.rend()) {
-            if (*(*iter) == *key) {
+            if (*(iter->first) == *key) {
                 find = true;
                 break;
             }
@@ -3322,21 +3324,45 @@ escargot::Node* parseStatement(ParseContext* ctx)
 
     // ECMA-262 12.12 Labelled Statements
     if ((expr->type() == escargot::NodeType::Identifier) && match(ctx, Colon)) {
-        lex(ctx);
+        std::vector<escargot::ESString*> labels;
+        do {
+            lex(ctx); // consume semicolon
 
-        escargot::ESString* key = ((escargot::IdentifierNode *)expr)->nonAtomicName();
-        auto iter = ctx->m_labelSet.begin();
-        while (iter != ctx->m_labelSet.end()) {
-            if (*(*iter) == *key) {
-                throw u"throwError(Messages.Redeclaration, 'Label', expr.name);";
+            escargot::ESString* key = ((escargot::IdentifierNode *)expr)->nonAtomicName();
+            auto iter = ctx->m_labelSet.begin();
+            while (iter != ctx->m_labelSet.end()) {
+                if (*(iter->first) == *key) {
+                    throw u"throwError(Messages.Redeclaration, 'Label', expr.name);";
+                }
+                iter++;
             }
-            iter++;
+
+            labels.push_back(key);
+
+            if (ctx->m_lookahead->m_type == Token::IdentifierToken && ctx->m_sourceString->charAt(ctx->m_index) == ':') {
+                expr = parseExpression(ctx);
+                ASSERT(expr->isIdentifier());
+            } else {
+                break;
+            }
+
+        } while (true);
+
+        bool labelTargetsLoop = ctx->m_lookahead->m_type == Token::KeywordToken
+            && ((ctx->m_lookahead->m_keywordKind == KeywordKind::For)
+            || (ctx->m_lookahead->m_keywordKind == KeywordKind::Do)
+            || (ctx->m_lookahead->m_keywordKind == KeywordKind::While));
+
+        for (auto label : labels) {
+            ctx->m_labelSet.push_back(std::make_pair(label, labelTargetsLoop));
+        }
+        escargot::Node* labeledBody = parseStatement(ctx);
+        escargot::LabeledStatementNode* nd = (escargot::LabeledStatementNode*)labeledBody;
+        for (auto label : labels) {
+            nd = new escargot::LabeledStatementNode((escargot::StatementNode*)nd, label);
+            ctx->m_labelSet.pop_back();
         }
 
-        ctx->m_labelSet.push_back(key);
-        escargot::Node* labeledBody = parseStatement(ctx);
-        ctx->m_labelSet.pop_back();
-        escargot::LabeledStatementNode* nd = new escargot::LabeledStatementNode((escargot::StatementNode *)labeledBody, key);
         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         return nd;
     }
@@ -3420,7 +3446,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
         */
     }
 
-    std::vector<escargot::ESString *, gc_allocator<escargot::ESString *>> oldLabelSet = ctx->m_labelSet;
+    std::vector<std::pair<escargot::ESString *, bool> > oldLabelSet = ctx->m_labelSet;
     bool oldInIteration = ctx->m_inIteration;
     bool oldInSwitch = ctx->m_inSwitch;
     bool oldInFunctionBody = ctx->m_inFunctionBody;

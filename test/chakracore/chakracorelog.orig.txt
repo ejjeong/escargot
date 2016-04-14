@@ -767,14 +767,14 @@ Running all tests
 [Function] arguments4.js .......... Pass
 [Function] argumentsMisc.js .......... Pass
 [Function] arguments.es5.js .......... Pass
-[Function] argumentsResolution.js .......... Fail
+[Function] argumentsResolution.js .......... Pass
 [Function] argumentsLimits.js .......... Pass
 [Function] someMoreArguments.js .......... Fail
 [Function] bind.js .......... Pass
-[Function] call1.js .......... Fail
+[Function] call1.js .......... Pass
 [Function] call2.js .......... Pass
-[Function] CallerArgs.js .......... Fail
-[Function] callsideeffects.js .......... Fail
+[Function] CallerArgs.js .......... Skip (Deprecated)
+[Function] callsideeffects.js .......... Pass
 [Function] catchsymbolvar.js .......... Pass
 [Function] newsideeffect.js .......... Pass
 [Function] newsideeffect.js .......... Pass
@@ -785,8 +785,8 @@ Running all tests
 [Function] deferredParsing.js .......... Fail
 [Function] deferredParsing.js .......... Fail
 [Function] deferredGetterSetter.js .......... Pass
-[Function] deferredBadContinue.js .......... Fail
-[Function] deferredBadContinue.js .......... Fail
+[Function] deferredBadContinue.js .......... Pass
+[Function] deferredBadContinue.js .......... Pass
 [Function] deferredWith.js .......... Skip (Not in scope (with))
 [Function] deferredWith2.js .......... Skip (Not in scope (with))
 [Function] newFunction.js .......... Pass
@@ -800,7 +800,7 @@ Running all tests
 [Function] someMoreFuncExpr.js .......... Fail
 [Function] constructor.js .......... Pass
 [Function] ctrFlags.js .......... Pass
-[Function] typeErrorAccessor.js .......... Fail
+[Function] typeErrorAccessor.js .......... Skip (Deprecated)
 [Function] FuncBody.js .......... Fail
 [Function] FuncBody.bug133933.js .......... Fail
 [Function] FuncBody.bug227901.js .......... Pass
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		184		20		2		(89%)
-            Function		61		36		18		7		(59%)
+            Function		61		41		11		9		(67%)
               Object		58		34		19		5		(58%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1036		282		88		(73%)
+               Total		1406		1041		275		90		(74%)

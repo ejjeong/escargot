@@ -552,7 +552,7 @@ struct ParseContext {
     size_t m_length;
     bool m_allowIn;
     bool m_allowYield;
-    std::vector<escargot::ESString *, gc_allocator<escargot::ESString *>> m_labelSet;
+    std::vector<std::pair<escargot::ESString *, bool> > m_labelSet;
     bool m_inFunctionBody;
     bool m_inIteration;
     bool m_inSwitch;

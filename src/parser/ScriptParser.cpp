@@ -147,7 +147,7 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, Par
                 newIdentifierVector->push_back(InnerIdentifierInfo(vec[i], InnerIdentifierInfo::Origin::Parameter));
             }
             // If it has own name, should bind function name
-            if (((FunctionExpressionNode *)currentNode)->id().string()->length()) {
+            if (((FunctionExpressionNode *)currentNode)->id().string()->length() && ((FunctionExpressionNode *)currentNode)->id() != strings->arguments) {
 
                 auto name = ((FunctionExpressionNode *)currentNode)->id();
 

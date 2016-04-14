@@ -134,7 +134,7 @@ var evalExpr = '' +
 // Verify that we assign regs properly in a compound assignment to function call result.
 // Note: this will cease to be a valid test when early reference errors are thrown by default.
 function test5921858() {
-    function eval([]){}
+    function eval(/*[]*/){}
     function shapeyConstructor(fujzty){
         Object.defineProperty(this, "a", 
                               ({value: ((eval("true", window)) ^= z), writable: true, configurable: false}));
