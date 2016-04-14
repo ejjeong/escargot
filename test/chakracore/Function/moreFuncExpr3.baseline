@@ -7,7 +7,4 @@ Test3 factorial : 6
 Second declaration of Test4
 Second declaration of Test4
 Test5 factorial : -3
-function Test6()
-{
-    write(Test6)
-}
+function Test6() {}

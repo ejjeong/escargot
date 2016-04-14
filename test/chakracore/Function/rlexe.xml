@@ -230,6 +230,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (Function.prototype.toString)</escargot-skip>
       <files>toString.js</files>
       <baseline>toString.baseline</baseline>
       <tags>fail_mutators</tags>

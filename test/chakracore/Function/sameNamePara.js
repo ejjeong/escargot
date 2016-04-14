@@ -44,9 +44,11 @@ for (var i = 1; i < 5; i++) {
 }
 
 
+/*
 function w1(x, x) {
     with ({})
         write("w1 : " + arguments[0] + " " + arguments[1]);
 }
 
 w1(50, 60);
+*/

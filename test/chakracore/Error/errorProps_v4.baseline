@@ -144,8 +144,8 @@ Runtime TypeError()
   ToString = ReferenceError: boo is not defined
   Properties = 
     name	  isOwn = false	 value = ReferenceError
-    message	  isOwn = true	 value = 'boo' is undefined
+    message	  isOwn = true	 value = boo is not defined
     stack	  isOwn = true	 value = ReferenceError: boo is not defined
 	at Global code (errorprops.js:111:5)
     number	  isOwn = true	 value = -2146823279
-    description	  isOwn = true	 value = 'boo' is undefined
+    description	  isOwn = true	 value = boo is not defined
