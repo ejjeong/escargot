@@ -207,7 +207,7 @@ var tests = {
         }
         // Note that we expect [1].enumerable = true because this was omitted in defineProperty above
         // which is acually re-define property that previously already had enumerable = true.
-        assert.areEqual("1: " + passedValue1 + ";" + "3: " + passedValue2 + ";", accumulator, "accumulator");
+        assert.areEqual("3: " + passedValue2 + ";" + "1: " + passedValue1 + ";", accumulator, "accumulator");
       }
       f(1, passedValue1, 3, passedValue2);
     }
@@ -366,7 +366,7 @@ var tests = {
         for (i in arguments) {
           accumulator += i.toString() + ": " + arguments[i] + ";";
         }
-        assert.areEqual("0: " + newValue1 + ";" + "1: " + passedValue2 + ";", accumulator, "accumulator 1");
+        assert.areEqual("1: " + passedValue2 + ";" + "0: " + newValue1 + ";", accumulator, "accumulator 1");
 
         // Scenario 2: delete after converting to ES5 version.
         Object.defineProperty(arguments, 0, { configurable: true, enumerable: true, writable: true, value: newValue1 }); // Bring back [0] by defineProperty. Now args is ES5.
@@ -376,7 +376,7 @@ var tests = {
         for (i in arguments) {
           accumulator += i.toString() + ": " + arguments[i] + ";";
         }
-        assert.areEqual("0: " + newValue2 + ";" + "1: " + passedValue2 + ";", accumulator, "accumulator 2");
+        assert.areEqual("1: " + passedValue2 + ";" + "0: " + newValue2 + ";", accumulator, "accumulator 2");
       }
       f(passedValue1, passedValue2);
     }
@@ -401,7 +401,7 @@ var tests = {
           accumulator += i.toString() + ": " + arguments[i] + ";";
         }
         assert.areEqual(
-          "0: " + newValue + ";" + "1: " + passedValue2 + ";" + "2: " + passedValue3 + ";" + "3: " + passedValue4 + ";",
+          "1: " + passedValue2 + ";" + "2: " + passedValue3 + ";" + "3: " + passedValue4 + ";" + "0: " + newValue + ";",
           accumulator,
           "accumulator");
       }
@@ -416,7 +416,7 @@ var tests = {
         Object.defineProperty(arguments, 0, { enumerable: false });
         // Note: Object.getOwnPropertyNames returns all properties, even non-enumerable.
         var actual = Object.getOwnPropertyNames(arguments);
-        var expected = { 0: "0", 1: "1", 2: "length", 3: "callee" };
+        var expected = { 3: "0", 1: "1", 0: "length", 2: "callee" };
         assert.areEqual(expected, actual, "wrong property names");
       }
       f(101, 102);

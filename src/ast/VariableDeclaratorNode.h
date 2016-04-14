@@ -11,11 +11,13 @@ namespace escargot {
 class VariableDeclaratorNode : public Node {
 public:
     friend class ScriptParser;
-    VariableDeclaratorNode(Node* id, ExpressionNode* init = NULL)
+    VariableDeclaratorNode(Node* id, ExpressionNode* init = NULL, bool isForFunctionDeclaration = false)
         : Node(NodeType::VariableDeclarator)
     {
         m_id = id;
         m_init = init;
+        m_flags.m_isGlobalScope = false;
+        m_flags.m_isForFunctionDeclaration = isForFunctionDeclaration;
     }
 
     virtual NodeType type() { return NodeType::VariableDeclarator; }
@@ -24,8 +26,14 @@ public:
     {
         ASSERT(m_id->isIdentifier());
         ASSERT(m_init == NULL);
-        if (!((IdentifierNode *)m_id)->canUseFastAccess())
-            codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name()), context, this);
+        IdentifierNode* id = (IdentifierNode*)m_id;
+        if (!id->canUseFastAccess()) {
+            if (UNLIKELY(id->name() == strings->arguments && !m_flags.m_isGlobalScope && !m_flags.m_isForFunctionDeclaration)) {
+                // do not create dynamic binding
+            } else {
+                codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name()), context, this);
+            }
+        }
     }
 
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
@@ -45,9 +53,29 @@ public:
         return true;
     }
 
+    void setIsGlobalScope(bool isGlobalScope)
+    {
+        m_flags.m_isGlobalScope = isGlobalScope;
+    }
+
+    bool isGlobalScope()
+    {
+        return m_flags.m_isGlobalScope;
+    }
+
+    bool isForFunctionDeclaration()
+    {
+        return m_flags.m_isForFunctionDeclaration;
+    }
+
+
 protected:
     Node* m_id; // id: Pattern;
     ExpressionNode* m_init; // init: Expression | null;
+    struct {
+        bool m_isGlobalScope:1;
+        bool m_isForFunctionDeclaration:1;
+    } m_flags;
 };
 
 

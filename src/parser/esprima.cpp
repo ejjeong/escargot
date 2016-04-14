@@ -3716,7 +3716,9 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     escargot::IdentifierNode* idNode = new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name());
     idNode->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     escargot::VariableDeclaratorNode* v = new escargot::VariableDeclaratorNode(
-        idNode
+        idNode,
+        nullptr,
+        true
     );
 
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), v);

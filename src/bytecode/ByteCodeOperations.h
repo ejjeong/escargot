@@ -41,7 +41,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
                 return &instance->m_temporaryAccessorBindingValueHolder;
             }
         } else {
-            if (code->m_name == strings->arguments)
+            if (UNLIKELY(code->m_name == strings->arguments))
                 if (ESValue* ret = ec->resolveArgumentsObjectBinding())
                     return ret;
             throwUndefinedReferenceError(code->m_name.string());

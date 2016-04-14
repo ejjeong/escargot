@@ -965,8 +965,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
             }
         }
         if (UNLIKELY(O->isESArgumentsObject() && !propertyInfo.m_flags.m_isDataProperty)) { // ES6.0 $9.4.4.2
-            O->set(P, desc.value());
-            shouldRemoveOriginalNativeGetterSetter = true;
+            if (desc.hasValue())
+                O->set(P, desc.value());
+            if ((descHasWritable && !desc.writable()) || (descHasEnumerable && !desc.enumerable()) || (descHasConfigurable && !desc.configurable()))
+                shouldRemoveOriginalNativeGetterSetter = true;
         }
     } else {
         ASSERT(!propertyInfo.m_flags.m_isDataProperty && desc.isAccessorDescriptor());

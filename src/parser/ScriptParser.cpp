@@ -105,6 +105,7 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, Par
                 // global
                 if (isForGlobalScope) {
                     knownGlobalNames.insert(std::make_pair(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name(), knownGlobalNames.size()));
+                    ((VariableDeclaratorNode *)currentNode)->setIsGlobalScope(true);
                 }
             }
         } else if (type == NodeType::FunctionDeclaration) {

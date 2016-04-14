@@ -51,6 +51,12 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
             throwObjectWriteError();
         }
     } else {
+        if (UNLIKELY(code->m_name == strings->arguments)) {
+            if (ESValue* ret = ec->resolveArgumentsObjectBinding()) {
+                *ret = *value;
+                return;
+            }
+        }
         if (!ec->isStrictMode()) {
             globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
         } else {
