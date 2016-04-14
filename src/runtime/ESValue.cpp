@@ -759,7 +759,6 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
             ESObject* targetObj = target.asESPointer()->asESObject();
             size_t t = targetObj->hiddenClass()->findProperty(keyString);
             if (t != SIZE_MAX) {
-                foundInPrototype = true;
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
                 // If IsAccessorDescriptor(desc) is true, then
                 // Let setter be desc.[[Set]] which cannot be undefined.
@@ -769,18 +768,30 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
                     ESValue receiverVal(this);
                     if (receiver)
                         receiverVal = *receiver;
-                    if (data->isAccessorDescriptor()) {
-                        if (data->getJSSetter()) {
-                            ESValue args[] = {val};
-                            ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
-                            return true;
+                    if (!foundInPrototype) {
+                        if (data->isAccessorDescriptor()) {
+                            if (data->getJSSetter()) {
+                                ESValue args[] = {val};
+                                ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
+                                return true;
+                            }
+                            return false;
                         }
+                        if (data->getNativeSetter()) {
+                            if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable) {
+                                return false;
+                            }
+                            foundInPrototype = true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable) {
                         return false;
                     }
+                    foundInPrototype = true;
                 }
-
-                if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
-                    return false;
             } else if (targetObj->isESStringObject()) {
                 uint32_t idx = key.toIndex();
                 if (idx != ESValue::ESInvalidIndexValue)

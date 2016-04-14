@@ -321,6 +321,13 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
     setObjectOperationSlowCase(willBeObject, property, value);
 }
 
+ALWAYS_INLINE void invalidateCache(ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
+{
+    *cachedHiddenClassIndex = SIZE_MAX;
+    *hiddenClassWillBe = NULL;
+    cachedHiddenClassChain->clear();
+}
+
 // d = {}. d.foo = 1
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value);
 NEVER_INLINE void setObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* keyString, const ESValue& value
@@ -367,9 +374,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
             }
 
             // cache miss
-            *cachedHiddenClassIndex = SIZE_MAX;
-            *hiddenClassWillBe = NULL;
-            cachedHiddenClassChain->clear();
+            invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
 
             obj = willBeObject->asESPointer()->asESObject();
             if (UNLIKELY(obj->hasPropertyInterceptor())) {
@@ -395,40 +400,48 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
 
                     size_t idx = obj->hiddenClass()->findProperty(keyString);
                     if (idx != SIZE_MAX) {
-                        foundInPrototype = true;
                         // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
                         // If IsAccessorDescriptor(desc) is true, then
                         // Let setter be desc.[[Set]] which cannot be undefined.
                         // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
                         if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty) {
                             ESPropertyAccessorData* data = obj->accessorData(idx);
-                            if (data->isAccessorDescriptor()) {
-                                *cachedHiddenClassIndex = SIZE_MAX;
-                                *hiddenClassWillBe = NULL;
-                                cachedHiddenClassChain->clear();
-                                if (data->getJSSetter()) {
-                                    ESValue args[] = {value};
-                                    ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), willBeObject->asESPointer()->asESObject(), args, 1, false);
+                            if (!foundInPrototype) {
+                                if (data->isAccessorDescriptor()) {
+                                    invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
+                                    if (data->getJSSetter()) {
+                                        ESValue args[] = {value};
+                                        ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), willBeObject->asESPointer()->asESObject(), args, 1, false);
+                                    } else {
+                                        throwObjectWriteError();
+                                    }
                                     return;
+                                }
+                                if (data->getNativeSetter()) {
+                                    if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                                        invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
+                                        throwObjectWriteError();
+                                        return;
+                                    }
+                                    foundInPrototype = true;
                                 } else {
                                     throwObjectWriteError();
                                     return;
                                 }
                             }
-                            ASSERT(data->getNativeSetter());
-                        }
-
-                        if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
-                            *cachedHiddenClassIndex = SIZE_MAX;
-                            *hiddenClassWillBe = NULL;
-                            cachedHiddenClassChain->clear();
-                            throwObjectWriteError();
-                            return;
+                        } else {
+                            if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                                invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
+                                throwObjectWriteError();
+                                return;
+                            }
+                            foundInPrototype = true;
                         }
                     }
                     proto = obj->__proto__();
                 }
-
+                if (!willBeObject->asESPointer()->asESObject()->isExtensible())
+                    throwObjectWriteError();
                 ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
                 bool res = willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value, false, foundInPrototype);
                 if (!res)

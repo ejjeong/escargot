@@ -26,7 +26,7 @@ Running all tests
 [Array] bug612012.js .......... Pass
 [Array] SegmentMapFlagResetInJSArrayConstructor.js .......... Pass
 [Array] LastUsedSegmentHasNULLElement.js .......... Skip (Not in scope (es6))
-[Array] array_length.js .......... Fail
+[Array] array_length.js .......... Pass
 [Array] join2.js .......... Pass
 [Array] missing.js .......... Pass
 [Array] pop1.js .......... Pass
@@ -999,7 +999,7 @@ Running all tests
 [JSON] json_parse_Blue_548957.js .......... Pass
 [JSON] jsonParseWalkTest.js .......... Pass
 [Bugs] bug602.js .......... Pass
-[Bugs] bug764.js .......... Fail
+[Bugs] bug764.js .......... Pass
 [Bugs] withnonativeApplyOptimizationBug3433559.js .......... Skip (Not in scope (with))
 [Bugs] Win8_486977_BranchStrictEqual.js .......... Pass
 [Bugs] Win8_459638.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		70		25		11		(66%)
+               Array		106		71		24		11		(66%)
               Basics		56		38		5		13		(67%)
                  es5		56		36		20		0		(64%)
                   EH		17		11		4		2		(64%)
@@ -1451,7 +1451,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              VT_DATE		1		0		1		0		(0%)
                  Lib		16		4		12		0		(25%)
                 JSON		13		9		4		0		(69%)
-                Bugs		36		20		8		8		(55%)
+                Bugs		36		21		7		8		(58%)
               strict		104		66		10		28		(63%)
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		22		4		0		(84%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1097		214		95		(77%)
+               Total		1406		1099		212		95		(78%)

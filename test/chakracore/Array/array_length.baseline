@@ -5,9 +5,9 @@ invalid array length
 invalid array length
 1
 1
-Function expected
+Callee is not a function object
 prop = 3
-Function expected
+Callee is not a function object
 10
 10
 0

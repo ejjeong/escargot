@@ -12,7 +12,7 @@
 var x = new Object(); x.ff() throws;;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support property or method 'ff'
 var x = function f(){return "inner";}();   -expected: es3, es5 R3eferenceError ::: ReferenceError: ff is not defined
 call to undefined fg() throws;   -expected: es3 - TypeError, es5-ReferenceError ::: ReferenceError: fg is not defined
- call to an non function object ooj();;;   -expected: es3, es5 TypeError ::: TypeError: Function expected
+ call to an non function object ooj();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
  o_undef();;;   -expected: es3, es5 TypeError ::: TypeError: Object expected
  o_null();;;   -expected: es3, es5 TypeError ::: TypeError: Object expected
 undefined.toString();   -expected: es3, es5 TypeError ::: TypeError: Unable to get property 'toString' of undefined or null reference
