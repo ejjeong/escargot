@@ -1140,7 +1140,7 @@ Running all tests
 [strict] OS_1362136.js .......... Pass
 [utf8] invalidutf8.js .......... Fail
 [utf8] unicode_digit_as_identifier_should_work.js .......... Fail
-[utf8] surrogatepair.js .......... Fail
+[utf8] surrogatepair.js .......... Skip (function print format differs)
 [UnifiedRegex] acid.js .......... Fail
 [UnifiedRegex] assertion.js .......... Fail
 [UnifiedRegex] bugFixRegression.js .......... Fail
@@ -1453,7 +1453,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 JSON		13		9		4		0		(69%)
                 Bugs		36		20		8		8		(55%)
               strict		104		66		10		28		(63%)
-                utf8		3		0		3		0		(0%)
+                utf8		3		0		2		1		(0%)
         UnifiedRegex		26		7		19		0		(26%)
              bailout		34		28		6		0		(82%)
                 loop		6		4		2		0		(66%)
