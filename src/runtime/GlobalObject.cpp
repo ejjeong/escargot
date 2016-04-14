@@ -1531,8 +1531,10 @@ void GlobalObject::installObject()
 
     // $19.1.3.7 Object.prototype.valueOf ( )
     m_objectPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        // Return ToObject(this value).
-        return instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue ret = instance->currentExecutionContext()->resolveThisBinding();
+        if (ret.isUndefinedOrNull())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, true, strings->valueOf, builtinErrorMessageThisUndefinedOrNull);
+        return ret.toObject();
     }, strings->valueOf));
 
     // $19.1.3.3 Object.prototype.isPrototypeOf ( V )

@@ -24,3 +24,4 @@
     }
   }
 })();
+WScript.Echo("Pass");

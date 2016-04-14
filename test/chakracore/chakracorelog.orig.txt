@@ -196,7 +196,7 @@ Running all tests
 [es5] EnumeratingWithES5.js .......... Fail
 [es5] InsufficientArguments.js .......... Fail
 [es5] recursivesetter.js .......... Pass
-[es5] valueof.js .......... Fail
+[es5] valueof.js .......... Pass
 [es5] tostring_override.js .......... Pass
 [es5] valueof_override.js .......... Pass
 [es5] tostring_override.js .......... Pass
@@ -810,10 +810,10 @@ Running all tests
 [Function] bug_258259.js .......... Fail
 [Function] sameNamePara.js .......... Fail
 [Function] closure.js .......... Pass
-[Function] undefThis.js .......... Fail
+[Function] undefThis.js .......... Pass
 [Function] stackargs.js .......... Fail
 [Function] StackArgs_MaxInterpret.js .......... Pass
-[Function] childCallsEvalJitLoopBody.js .......... Fail
+[Function] childCallsEvalJitLoopBody.js .......... Pass
 [Function] 631838.js .......... Pass
 [Function] calli.js .......... Pass
 [Function] caller_replaced_proto.js .......... Skip (Not in scope (with))
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		66		30		10		(62%)
               Basics		56		36		12		8		(64%)
-                 es5		56		33		23		0		(58%)
+                 es5		56		34		22		0		(60%)
                   EH		17		10		5		2		(58%)
         InlineCaches		21		19		1		1		(90%)
            Generated		110		108		2		0		(98%)
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		184		20		2		(89%)
-            Function		61		26		29		6		(42%)
+            Function		61		28		27		6		(45%)
               Object		58		33		20		5		(56%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1002		325		79		(71%)
+               Total		1406		1005		322		79		(71%)
