@@ -27,4 +27,4 @@ finally
 
 f();
 
-
+WScript.Echo("pass");

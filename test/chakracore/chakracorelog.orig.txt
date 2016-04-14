@@ -233,7 +233,7 @@ Running all tests
 [EH] so.js .......... Pass
 [EH] newso.js .......... Pass
 [EH] trylabel.js .......... Pass
-[EH] alignment.js .......... Fail
+[EH] alignment.js .......... Pass
 [EH] 101832.js .......... Fail
 [InlineCaches] t0.js .......... Pass
 [InlineCaches] t1.js .......... Pass
@@ -1426,7 +1426,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                Array		106		66		29		11		(62%)
               Basics		56		37		7		12		(66%)
                  es5		56		34		22		0		(60%)
-                  EH		17		10		5		2		(58%)
+                  EH		17		11		4		2		(64%)
         InlineCaches		21		19		1		1		(90%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		3		3		(66%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1022		299		85		(72%)
+               Total		1406		1023		298		85		(72%)
