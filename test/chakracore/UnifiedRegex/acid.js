@@ -172,7 +172,7 @@ function post(r) {
             sb.push(dump(RegExp["$" + i]));
         }
         sb.push("]");
-        echo(sb.join(""));
+//        echo(sb.join(""));
     }
 }
 

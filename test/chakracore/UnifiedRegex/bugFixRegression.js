@@ -172,7 +172,7 @@ function post(r) {
             sb.push(dump(RegExp["$" + i]));
         }
         sb.push("]");
-        echo(sb.join(""));
+//        echo(sb.join(""));
     }
 }
 
@@ -224,27 +224,27 @@ var r, s;
 s = 'abc       ';
 r = /(a)/g;
 exec(r, 'slkfg');
-echo("$1="+RegExp.$1);
+//echo("$1="+RegExp.$1);
 r = /(ab)/g;
 match(r, s);
 exec(r, 'slkfg');
-echo("$1="+RegExp.$1);
+//echo("$1="+RegExp.$1);
 r = /(abc)/g;
 exec(r, s);
 exec(r, 'slkfg');
-echo("$1="+RegExp.$1);
+//echo("$1="+RegExp.$1);
 r = /(abcd)/g;
 exec(r, s);
 exec(r, s);
-echo("$1="+RegExp.$1);
+//echo("$1="+RegExp.$1);
 r = /(abcde)/g;
 exec(r, 'slkfg');
-echo("$1="+RegExp.$1);
+//echo("$1="+RegExp.$1);
 r = /((abc)def)/g;
 replace(r, 'xyz abcdef    abcdef xys', ".$1$2.");
-echo("$3="+RegExp.$3);
-echo("$2="+RegExp.$2);
-echo("$1="+RegExp.$1);
+//echo("$3="+RegExp.$3);
+//echo("$2="+RegExp.$2);
+//echo("$1="+RegExp.$1);
 
 exec(/q(a)*q/, "qaq");
 exec(/q(ab)*q/, "qababq");

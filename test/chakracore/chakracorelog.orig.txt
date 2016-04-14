@@ -1141,26 +1141,26 @@ Running all tests
 [utf8] invalidutf8.js .......... Fail
 [utf8] unicode_digit_as_identifier_should_work.js .......... Fail
 [utf8] surrogatepair.js .......... Skip (function print format differs)
-[UnifiedRegex] acid.js .......... Fail
-[UnifiedRegex] assertion.js .......... Fail
+[UnifiedRegex] acid.js .......... Pass
+[UnifiedRegex] assertion.js .......... Pass
 [UnifiedRegex] bugFixRegression.js .......... Fail
 [UnifiedRegex] bugFixRegression.js .......... Fail
-[UnifiedRegex] captures.js .......... Fail
-[UnifiedRegex] class-case.js .......... Fail
-[UnifiedRegex] crazy.js .......... Fail
-[UnifiedRegex] es5SpecExamples.js .......... Fail
+[UnifiedRegex] captures.js .......... Pass
+[UnifiedRegex] class-case.js .......... Pass
+[UnifiedRegex] crazy.js .......... Pass
+[UnifiedRegex] es5SpecExamples.js .......... Pass
 [UnifiedRegex] escapes.js .......... Fail
-[UnifiedRegex] fastRegexCaptures.js .......... Fail
-[UnifiedRegex] lastIndex.js .......... Fail
+[UnifiedRegex] fastRegexCaptures.js .......... Pass
+[UnifiedRegex] lastIndex.js .......... Pass
 [UnifiedRegex] lazyVsEagerLastIndex.js .......... Pass
-[UnifiedRegex] match_global.js .......... Fail
-[UnifiedRegex] multiline.js .......... Fail
-[UnifiedRegex] NoBacktrackingChomp.js .......... Fail
+[UnifiedRegex] match_global.js .......... Pass
+[UnifiedRegex] multiline.js .......... Pass
+[UnifiedRegex] NoBacktrackingChomp.js .......... Pass
 [UnifiedRegex] nul_character.js .......... Pass
-[UnifiedRegex] prioritizedalternatives.js .......... Fail
-[UnifiedRegex] quantifiableAssertions.js .......... Fail
-[UnifiedRegex] sets.js .......... Fail
-[UnifiedRegex] split.js .......... Fail
+[UnifiedRegex] prioritizedalternatives.js .......... Pass
+[UnifiedRegex] quantifiableAssertions.js .......... Pass
+[UnifiedRegex] sets.js .......... Pass
+[UnifiedRegex] split.js .......... Pass
 [UnifiedRegex] WOOB1138949.js .......... Pass
 [UnifiedRegex] propertyString.js .......... Pass
 [UnifiedRegex] propertyString.js .......... Pass
@@ -1454,7 +1454,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Bugs		36		20		8		8		(55%)
               strict		104		66		10		28		(63%)
                 utf8		3		0		2		1		(0%)
-        UnifiedRegex		26		7		19		0		(26%)
+        UnifiedRegex		26		22		4		0		(84%)
              bailout		34		28		6		0		(82%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1007		315		84		(71%)
+               Total		1406		1022		299		85		(72%)
