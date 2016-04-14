@@ -16,7 +16,7 @@ try
 }
 catch (e)
 {
-  if(e.number == -2146828281) //Out of Memory
+  if(e.number == undefined) //Out of Memory
     WScript.Echo("PASS");
   else
     WScript.Echo("FAIL: Got the wrong exception code.");

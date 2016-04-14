@@ -390,7 +390,7 @@ Running all tests
 [Strings] charCodeAt.js .......... Pass
 [Strings] concat1.js .......... Pass
 [Strings] concat2.js .......... Pass
-[Strings] concat3.js .......... Fail
+[Strings] concat3.js .......... Pass
 [Strings] concat4.js .......... Pass
 [Strings] concat5.js .......... Pass
 [Strings] concat6.js .......... Pass
@@ -1430,7 +1430,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         InlineCaches		21		19		1		1		(90%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		3		3		(66%)
-             Strings		36		29		7		0		(80%)
+             Strings		36		30		6		0		(83%)
                 Date		12		3		9		0		(25%)
                Error		23		5		17		1		(21%)
              Boolean		5		4		1		0		(80%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1023		298		85		(72%)
+               Total		1406		1024		297		85		(72%)
