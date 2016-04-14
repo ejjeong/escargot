@@ -72,12 +72,14 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scopre (non standard)</escargot-skip>
       <files>label1.js</files>
       <compile-flags>-Intl-</compile-flags>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scopre (non standard)</escargot-skip>
       <files>label1.js</files>
       <compile-flags>-Force:Deferparse -Intl-</compile-flags>
       <tags>exclude_ship</tags>
@@ -117,6 +119,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scopre (non standard)</escargot-skip>
       <files>label4.js</files>
       <baseline>label4.baseline</baseline>
       <tags>exclude_dynapogo</tags>
@@ -125,6 +128,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scopre (non standard)</escargot-skip>
       <files>label4.js</files>
       <baseline>label4.baseline</baseline>
       <compile-flags>-Force:Deferparse -Intl-</compile-flags>
