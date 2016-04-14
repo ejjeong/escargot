@@ -422,7 +422,7 @@ void GlobalObject::initGlobalObject()
 
         NullableUTF8String u8Str = s->substring(p, len)->toNullableUTF8String();
         double number = atof(u8Str.m_buffer);
-        if (number == 0.0 && !isdigit(ch) && !(len - p >= 1 && ch == '.' && isdigit(s->charAt(p + 1))))
+        if (number == 0.0 && !std::signbit(number) && !isdigit(ch) && !(len - p >= 1 && ch == '.' && isdigit(s->charAt(p + 1))))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         if (number == std::numeric_limits<double>::infinity())
             return ESValue(std::numeric_limits<double>::quiet_NaN());
