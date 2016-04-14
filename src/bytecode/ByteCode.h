@@ -2530,7 +2530,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #else
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESValueVector* heapStorage = NULL);
 #endif
-CodeBlock* generateByteCode(ProgramNode* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly = true);
+CodeBlock* generateByteCode(Node* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly = true);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }

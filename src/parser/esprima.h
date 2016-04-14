@@ -600,11 +600,8 @@ ALWAYS_INLINE bool isLineTerminator(char16_t ch)
     return (ch == 0x0A) || (ch == 0x0D) || (ch == 0x2028) || (ch == 0x2029);
 }
 
-escargot::Node* parse(escargot::ESString* source, bool strict);
-void peek(ParseContext* ctx);
-escargot::InternalAtomicStringVector parseParams(ParseContext* ctx);
-escargot::Node* parseFunctionSourceElements(ParseContext* ctx);
-escargot::StatementNodeVector makeAnonymousFunctionNoeVector(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, escargot::Node* body);
+escargot::ProgramNode* parse(escargot::ESString* source, bool strict);
+escargot::ProgramNode* parseSingleFunction(escargot::ESString* argSource, escargot::ESString* bodySource);
 }
 
 typedef escargot::ESErrorObject::Code ErrorCode;

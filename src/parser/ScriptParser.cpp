@@ -7,62 +7,10 @@
 
 #include "esprima.h"
 
-#ifdef ESCARGOT_PROFILE
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <unistd.h>
-#include <stdio.h>
-#endif
-
 namespace escargot {
 
-#ifdef ESCARGOT_PROFILE
-void ScriptParser::dumpStats()
+void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode)
 {
-    unsigned stat;
-    auto stream = stderr;
-
-    stat = GC_get_heap_size();
-    fwprintf(stream, L"[BOEHM] heap_size: %d\n", stat);
-    stat = GC_get_unmapped_bytes();
-    fwprintf(stream, L"[BOEHM] unmapped_bytes: %d\n", stat);
-    stat = GC_get_total_bytes();
-    fwprintf(stream, L"[BOEHM] total_bytes: %d\n", stat);
-    stat = GC_get_memory_use();
-    fwprintf(stream, L"[BOEHM] memory_use: %d\n", stat);
-    stat = GC_get_gc_no();
-    fwprintf(stream, L"[BOEHM] gc_no: %d\n", stat);
-
-    struct rusage ru;
-    getrusage(RUSAGE_SELF, &ru);
-    stat = ru.ru_maxrss;
-    fwprintf(stream, L"[LINUX] rss: %d\n", stat);
-
-#if 0
-    if (stat > 10000) {
-        while (true) { }
-    }
-#endif
-}
-#endif
-
-ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode)
-{
-    bool strictFromOutside = parserContextInformation.m_strictFromOutside;
-    try {
-        // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-        if (programNode == nullptr) {
-            programNode = (ProgramNode *)esprima::parse(source, strictFromOutside);
-        }
-        // unsigned long end = ESVMInstance::currentInstance()->tickCount();
-        // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
-        // printf("esprima takes %lfms\n", (end-start)/1000.0);
-    } catch(const EsprimaError& error) {
-        char temp[512];
-        sprintf(temp, "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
-        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
-    }
-
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode)
     {
         FunctionNode* node = nearFunctionNode;
@@ -733,13 +681,12 @@ ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESStrin
     };
 
     postAnalysisFunctionForCalcID(programNode, NULL);
-
-    return programNode;
 }
 
 CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, ParserContextInformation& parserContextInformation)
 {
     bool strictFromOutside = parserContextInformation.m_strictFromOutside;
+
 #ifdef ENABLE_CODECACHE
     if (source->length() < options::CodeCacheThreshold) {
         if (isForGlobalScope) {
@@ -757,11 +704,29 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
 #endif
 
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-    ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope, parserContextInformation);
-    ASSERT(node->type() == Program);
-    CodeBlock* cb = generateByteCode(node, type, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
+
+    ProgramNode* programNode;
+    try {
+        programNode = esprima::parse(source, strictFromOutside);
+
+        // unsigned long end = ESVMInstance::currentInstance()->tickCount();
+        // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
+        // printf("esprima takes %lfms\n", (end-start)/1000.0);
+    } catch(const EsprimaError& error) {
+        char temp[512];
+        sprintf(temp, "%s", error.m_message->utf8Data());
+        if (type != CodeBlock::ExecutableType::EvalCode)
+            sprintf(temp, "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
+        else
+            sprintf(temp, "%s", error.m_message->utf8Data());
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
+    }
+
+    analyzeAST(instance, isForGlobalScope, parserContextInformation, programNode);
+    CodeBlock* cb = generateByteCode(programNode, type, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
+
 #ifdef ENABLE_CODECACHE
     if (source->length() < options::CodeCacheThreshold) {
         if (isForGlobalScope) {
@@ -773,7 +738,38 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
         }
     }
 #endif
+
     return cb;
+}
+
+CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, ParserContextInformation& parserContextInformation)
+{
+    // unsigned long start = ESVMInstance::currentInstance()->tickCount();
+
+    ProgramNode* programNode;
+
+    try {
+        programNode = esprima::parseSingleFunction(argSource, bodySource);
+        ASSERT(programNode->body()[1]->type() == escargot::NodeType::FunctionDeclaration);
+    } catch(const EsprimaError& error) {
+        char temp[512];
+        sprintf(temp, "%s", error.m_message->utf8Data());
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
+    }
+
+    analyzeAST(instance, false, parserContextInformation, programNode);
+
+    CodeBlock* codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
+    FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
+    ByteCodeGenerateContext context(codeBlock, false);
+    functionDeclAST->initializeCodeBlock(codeBlock, false);
+    functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
+    codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
+
+    // unsigned long end = ESVMInstance::currentInstance()->tickCount();
+    // printf("parseScript takes %lfms\n", (end-start)/1000.0);
+    return codeBlock;
+
 }
 
 }

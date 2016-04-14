@@ -18,11 +18,8 @@ public:
         bool m_shouldWorkAroundIdentifier:1;
     };
 
-    ProgramNode* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode = nullptr);
     CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, ParserContextInformation& parserContextInformation);
-#ifdef ESCARGOT_PROFILE
-    static void dumpStats();
-#endif
+    CodeBlock* parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, ParserContextInformation& parserContextInformation);
 
 private:
     struct CodeCacheHash {
@@ -41,6 +38,8 @@ private:
             return *x.first == *y.first && x.second == y.second;
         }
     };
+
+    void analyzeAST(ESVMInstance* instance, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode = nullptr);
 
     std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , CodeCacheHash, CodeCacheEqual,
     gc_allocator<std::pair<std::pair<ESString*, bool>, CodeBlock *> > > m_nonGlobalCodeCache;

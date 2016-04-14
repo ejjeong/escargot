@@ -1,1 +1,1 @@
-Uncaught SyntaxError: Cannot use a variable named 'eval' in strict mode.
+Uncaught SyntaxError: Cannot use a variable named 'eval' in strict mode. (Parse Error 8 line)

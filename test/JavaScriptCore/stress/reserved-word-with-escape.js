@@ -134,9 +134,9 @@ testSyntaxError("try { } catch(var) { }", "SyntaxError: Cannot use the keyword '
 testSyntaxError("try { } catch(v\u0061r) { }", "SyntaxError: Cannot use the keyword 'v\u0061r' as a catch variable name.");
 testSyntaxError("try { } catch(v\u{0061}r) { }", "SyntaxError: Cannot use the keyword 'v\u{0061}r' as a catch variable name.");
 
-testSyntaxError("class var { }", "SyntaxError: ES2015 class feature is not supported (Parse Error 1 line)");
-testSyntaxError("class v\u0061r { }", "SyntaxError: ES2015 class feature is not supported (Parse Error 1 line)");
-testSyntaxError("class v\u{0061}r { }", "SyntaxError: ES2015 class feature is not supported (Parse Error 1 line)");
+testSyntaxError("class var { }", "SyntaxError: ES2015 class feature is not supported");
+testSyntaxError("class v\u0061r { }", "SyntaxError: ES2015 class feature is not supported");
+testSyntaxError("class v\u{0061}r { }", "SyntaxError: ES2015 class feature is not supported");
 
 // Allowed in non-keyword aware context.
 testSyntax("({ v\u0061r: 'Cocoa' })");

@@ -339,17 +339,6 @@ bool isPSMallocInited = false;
 ParseStatus* psPool[PS_POOL_SIZE];
 size_t psPoolUsage = 0;
 
-void throwEsprimaException(const char16_t* msg = u"", ParseContext* ctx = nullptr, ErrorCode code = ErrorCode::SyntaxError);
-void throwEsprimaException(escargot::UTF16String msg, ParseContext* ctx = nullptr, ErrorCode code = ErrorCode::SyntaxError);
-
-ParserStackChecker::ParserStackChecker(ParseContext* ctx)
-    : m_ctx(ctx)
-{
-    m_ctx->m_stackCounter++;
-    if (UNLIKELY(m_ctx->m_stackCounter == 2048))
-        throwEsprimaException(u"Maximum call stack size exceeded.", ctx, ErrorCode::RangeError);
-}
-
 ALWAYS_INLINE ParseStatus* psMalloc()
 {
     if (psPoolUsage == 0) {
@@ -378,8 +367,6 @@ void ParseStatus::operator delete(void* p)
     return psFree(p);
 }
 
-#define PARSER_STACK_CHECK ParserStackChecker __checker(ctx)
-
 // VariableDeclaratorNode
 void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclarationNode* node)
 {
@@ -403,6 +390,11 @@ void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclaratorNode
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), new escargot::VariableDeclaratorNode(new escargot::IdentifierNode(((escargot::IdentifierNode *)node->id())->name()), NULL));
 }
 
+void throwEsprimaException()
+{
+    throw u"";
+}
+
 void throwEsprimaException(RefPtr<ParseStatus> message/*token, message*/)
 {
     throw message->m_value.toESString();
@@ -413,20 +405,15 @@ void throwEsprimaException(escargot::ESString* message)
     throw message;
 }
 
-void throwEsprimaException(escargot::UTF16String message, ParseContext* ctx, ErrorCode code)
+void throwEsprimaException(escargot::UTF16String message)
 {
-    if (ctx != nullptr) {
-        throw EsprimaError(ctx->m_lineNumber, escargot::ESString::create(message), code);
-    }
-    escargot::ESVMInstance::currentInstance()->throwError(escargot::ESErrorObject::create(escargot::ESString::create(message), code));
+    throw escargot::ESString::create(message);
 }
 
 void throwEsprimaException(const char16_t* message, ParseContext* ctx, escargot::ESErrorObject::Code code)
 {
-    if (ctx != nullptr) {
-        throw EsprimaError(ctx->m_lineNumber, escargot::ESString::create(message), code);
-    }
-    escargot::ESVMInstance::currentInstance()->throwError(escargot::ESErrorObject::create(escargot::ESString::create(message), code));
+    ASSERT(ctx);
+    throw EsprimaError(ctx->m_lineNumber, escargot::ESString::create(message), code);
 }
 
 escargot::UTF16String tokenToString(RefPtr<ParseStatus> token)
@@ -2143,6 +2130,16 @@ void consumeSemicolon(ParseContext* ctx)
     }
 }
 
+#define PARSER_STACK_CHECK ParserStackChecker __checker(ctx)
+
+ParserStackChecker::ParserStackChecker(ParseContext* ctx)
+    : m_ctx(ctx)
+{
+    m_ctx->m_stackCounter++;
+    if (UNLIKELY(m_ctx->m_stackCounter == 2048))
+        throwEsprimaException(u"Maximum call stack size exceeded.", ctx, ErrorCode::RangeError);
+}
+
 ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
 {
     PARSER_STACK_CHECK;
@@ -3688,7 +3685,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
             }
         }
     } else {
-        throwEsprimaException(u"Unnamed function declaration is forbidden", ctx);
+        throwEsprimaException(u"Unnamed function declaration is forbidden");
     }
 
     ctx->m_allowYield = !isGenerator;
@@ -3729,7 +3726,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     return NULL;
 }
 
-escargot::StatementNodeVector makeAnonymousFunctionNoeVector(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, escargot::Node* body)
+escargot::StatementNodeVector makeAnonymousFunctionNodeVector(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, escargot::Node* body)
 {
     escargot::StatementNodeVector stmtNodeVec;
     RefPtr<ParseStatus> firstRestricted;
@@ -5823,7 +5820,7 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
     return body;
 }
 
-escargot::Node* parseProgram(ParseContext* ctx)
+escargot::ProgramNode* parseProgram(ParseContext* ctx)
 {
     /*
     var body, node;
@@ -5841,7 +5838,37 @@ escargot::Node* parseProgram(ParseContext* ctx)
     return node;
 }
 
-escargot::Node* parse(escargot::ESString* source, bool strict)
+escargot::ProgramNode* parseSingleFunction(escargot::ESString* argSource, escargot::ESString* bodySource)
+{
+    ParseContext bodyCtx(bodySource, false);
+    try {
+        ParseContext argCtx(argSource, false);
+        peek(&argCtx);
+        escargot::InternalAtomicStringVector argVec = parseParams(&argCtx);
+        if (argCtx.m_lookahead->m_type != Token::EOFToken)
+            throw EsprimaError(argCtx.m_lineNumber, escargot::ESString::create("Invalid Function(...) argument source code"));
+
+        peek(&bodyCtx);
+        escargot::Node* bodyNode = parseFunctionSourceElements(&bodyCtx);
+        if (bodyCtx.m_lookahead->m_type != Token::EOFToken)
+            throw EsprimaError(bodyCtx.m_lineNumber, escargot::ESString::create("Invalid Function(...) body source code"));
+
+        escargot::ProgramNode* programNode = new escargot::ProgramNode(makeAnonymousFunctionNodeVector(&bodyCtx, argVec, bodyNode), bodyCtx.m_strict);
+        ASSERT(programNode->body()[1]->type() == escargot::NodeType::FunctionDeclaration);
+        return programNode;
+    } catch(const char16_t* msg) {
+        throw EsprimaError(bodyCtx.m_lineNumber, escargot::ESString::create(msg));
+    } catch(escargot::ESString* msg) {
+        throw EsprimaError(bodyCtx.m_lineNumber, msg);
+    } catch(EsprimaError& err) {
+        throw err;
+    } catch(...) {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+escargot::ProgramNode* parse(escargot::ESString* source, bool strict)
 {
     ASSERT_STATIC((sizeof(PuncuatorsTokens) / sizeof(char16_t*)) == PunctuatorsKind::PunctuatorsKindEnd,
         "Sizeof punctuators names array should be equal to sizeof punctuators enum");
@@ -5850,8 +5877,7 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
 
     ParseContext ctx(source, strict);
     try {
-        escargot::Node* node = parseProgram(&ctx);
-        return node;
+        return parseProgram(&ctx);
     } catch(const char16_t* msg) {
         throw EsprimaError(ctx.m_lineNumber, escargot::ESString::create(msg));
     } catch(escargot::ESString* msg) {
@@ -5861,7 +5887,7 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
     } catch(...) {
         RELEASE_ASSERT_NOT_REACHED();
     }
-    return NULL;
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 }

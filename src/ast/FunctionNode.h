@@ -104,6 +104,40 @@ public:
         m_nonAtomicId = id.string();
     }
 
+    void initializeCodeBlock(CodeBlock* cb, bool isFunctionExpression)
+    {
+        cb->m_stackAllocatedIdentifiersCount = m_stackAllocatedIdentifiersCount;
+        cb->m_heapAllocatedIdentifiers = std::move(m_heapAllocatedIdentifiers);
+        cb->m_paramsInformation = std::move(m_paramsInformation);
+        cb->m_needsHeapAllocatedExecutionContext = m_needsHeapAllocatedExecutionContext;
+        cb->m_needsToPrepareGenerateArgumentsObject = m_needsToPrepareGenerateArgumentsObject;
+        cb->m_needsComplexParameterCopy = m_needsComplexParameterCopy;
+        // cb->m_params = std::move(m_params);
+        // FIXME copy params if needs future
+        cb->m_isStrict = m_isStrict;
+        cb->m_isFunctionExpression = isFunctionExpression;
+        cb->m_argumentCount = m_params.size();
+        cb->m_hasCode = true;
+        cb->m_needsActivation = m_needsActivation;
+        if (isFunctionExpression) {
+            cb->m_functionExpressionNameIndex = m_functionIdIndex;
+            cb->m_isFunctionExpressionNameHeapAllocated = m_functionIdIndexNeedsHeapAllocation;
+        }
+#ifndef NDEBUG
+        cb->m_id = m_id;
+        cb->m_nonAtomicId = m_nonAtomicId;
+#endif
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
+            char* code = cb->m_code.data();
+            ByteCode* currentCode = (ByteCode *)(&code[0]);
+            if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                dumpUnsupported(cb);
+            }
+        }
+#endif
+    }
+
 protected:
     InternalAtomicString m_id; // id: Identifier;
     ESString* m_nonAtomicId; // id: Identifier;

@@ -316,7 +316,7 @@ void ByteCode::assignOpcodeInAddress()
 }
 
 
-CodeBlock* generateByteCode(ProgramNode* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly)
+CodeBlock* generateByteCode(Node* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly)
 {
     // size_t dummy;
     // node->computeRoughCodeBlockSizeInWordSize(dummy);

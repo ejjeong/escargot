@@ -3,6 +3,13 @@
 #include "runtime/ESValue.h"
 #include "ast/AST.h"
 
+#ifdef ESCARGOT_PROFILE
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+#include <stdio.h>
+#endif
+
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
 #include "lirasm.cpp"
 #endif
@@ -16,6 +23,37 @@ void __attribute__((optimize("O0"))) fillStack(size_t siz)
     }
 }
 #endif
+
+#ifdef ESCARGOT_PROFILE
+void dumpStats()
+{
+    unsigned stat;
+    auto stream = stderr;
+
+    stat = GC_get_heap_size();
+    fwprintf(stream, L"[BOEHM] heap_size: %d\n", stat);
+    stat = GC_get_unmapped_bytes();
+    fwprintf(stream, L"[BOEHM] unmapped_bytes: %d\n", stat);
+    stat = GC_get_total_bytes();
+    fwprintf(stream, L"[BOEHM] total_bytes: %d\n", stat);
+    stat = GC_get_memory_use();
+    fwprintf(stream, L"[BOEHM] memory_use: %d\n", stat);
+    stat = GC_get_gc_no();
+    fwprintf(stream, L"[BOEHM] gc_no: %d\n", stat);
+
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+    stat = ru.ru_maxrss;
+    fwprintf(stream, L"[LINUX] rss: %d\n", stat);
+
+#if 0
+    if (stat > 10000) {
+        while (true) { }
+    }
+#endif
+}
+#endif
+
 /*
 #include <malloc.h>
 
@@ -391,7 +429,7 @@ int main(int argc, char* argv[])
         }
     }
 #ifdef ESCARGOT_PROFILE
-    escargot::ESScriptParser::dumpStats();
+    dumpStats();
 #endif
     ES->exit();
     // delete ES;

@@ -983,78 +983,36 @@ void GlobalObject::installFunction()
     // $19.2.1 Function Constructor
     m_function = ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
-        CodeBlock* codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
+        CodeBlock* codeBlock;
         if (len == 0) {
+            codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
             ByteCodeGenerateContext context(codeBlock, false);
             codeBlock->pushCode(ReturnFunction(), context, NULL);
             codeBlock->pushCode(End(), context, NULL);
             codeBlock->m_hasCode = true;
         } else {
-            ProgramNode* programNode;
-            escargot::ScriptParser::ParserContextInformation parserContextInformation;
-            bool strict = parserContextInformation.m_strictFromOutside;
-            try {
-                ESStringBuilder argBuilder, bodyBuilder;
-                argBuilder.appendString(strings->asciiTable[(size_t)'('].string());
-                for (int i = 0; i < len-1; i++) {
-                    argBuilder.appendString(instance->currentExecutionContext()->arguments()[i].toString());
-                    if (i != len-2) {
-                        argBuilder.appendString(strings->asciiTable[(size_t)','].string());
-                    }
-                }
-                argBuilder.appendString(strings->asciiTable[(size_t)'\n'].string());
-                argBuilder.appendString(strings->asciiTable[(size_t)')'].string());
-                escargot::ESString* args = argBuilder.finalize();
-                esprima::ParseContext argCtx(args, strict);
-                esprima::peek(&argCtx);
-                InternalAtomicStringVector argVec = esprima::parseParams(&argCtx);
-                if (argCtx.m_lookahead->m_type != esprima::Token::EOFToken) {
-                    throwBuiltinError(instance, ErrorCode::SyntaxError, strings->Function, false, strings->emptyString, "Invalid Function(...) argument source code");
-                }
+            ESStringBuilder argBuilder, bodyBuilder;
 
-                bodyBuilder.appendString(strings->asciiTable[(size_t)'{'].string());
-                escargot::ESString* rawBody = instance->currentExecutionContext()->arguments()[len-1].toString();
-                bodyBuilder.appendString(rawBody);
-                bodyBuilder.appendString(strings->asciiTable[(size_t)'\n'].string());
-                bodyBuilder.appendString(strings->asciiTable[(size_t)'}'].string());
-                escargot::ESString* body = bodyBuilder.finalize();
-                esprima::ParseContext bodyCtx(body, strict);
-                esprima::peek(&bodyCtx);
-                Node* bodyNode = esprima::parseFunctionSourceElements(&bodyCtx);
-                if (bodyCtx.m_lookahead->m_type != esprima::Token::EOFToken) {
-                    throwBuiltinError(instance, ErrorCode::SyntaxError, strings->Function, false, strings->emptyString, "Invalid Function(...) body source code");
+            argBuilder.appendString(strings->asciiTable[(size_t)'('].string());
+            for (int i = 0; i < len-1; i++) {
+                argBuilder.appendString(instance->currentExecutionContext()->arguments()[i].toString());
+                if (i != len-2) {
+                    argBuilder.appendString(strings->asciiTable[(size_t)','].string());
                 }
-                programNode = new ProgramNode(esprima::makeAnonymousFunctionNoeVector(&bodyCtx, argVec, bodyNode), strict);
-            } catch(const char16_t* msg) {
-                throwBuiltinError(instance, ErrorCode::SyntaxError, strings->Function, false, strings->emptyString, ESValue(msg).toString()->utf8Data());
-            } catch(escargot::ESString* msg) {
-                throwBuiltinError(instance, ErrorCode::SyntaxError, strings->Function, false, strings->emptyString, msg->utf8Data());
-            } catch(EsprimaError& err) {
-                throw err;
-            } catch(...) {
-                RELEASE_ASSERT_NOT_REACHED();
             }
-            // printf("new Function('%s\n')\n", src->utf8Data());
+            argBuilder.appendString(strings->asciiTable[(size_t)'\n'].string());
+            argBuilder.appendString(strings->asciiTable[(size_t)')'].string());
+            escargot::ESString* argSource = argBuilder.finalize();
 
-            programNode = instance->scriptParser()->generateAST(instance, nullptr, true, parserContextInformation, programNode);
-            FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
-            ByteCodeGenerateContext context(codeBlock, false);
+            bodyBuilder.appendString(strings->asciiTable[(size_t)'{'].string());
+            escargot::ESString* rawBody = instance->currentExecutionContext()->arguments()[len-1].toString();
+            bodyBuilder.appendString(rawBody);
+            bodyBuilder.appendString(strings->asciiTable[(size_t)'\n'].string());
+            bodyBuilder.appendString(strings->asciiTable[(size_t)'}'].string());
+            escargot::ESString* bodySource = bodyBuilder.finalize();
 
-            codeBlock->m_stackAllocatedIdentifiersCount = functionDeclAST->stackAllocatedIdentifiersCount();
-            codeBlock->m_heapAllocatedIdentifiers = std::move(functionDeclAST->heapAllocatedIdentifiers());
-            codeBlock->m_paramsInformation = std::move(functionDeclAST->paramsInformation());
-            codeBlock->m_needsActivation = functionDeclAST->needsActivation();
-            codeBlock->m_needsHeapAllocatedExecutionContext = functionDeclAST->needsHeapAllocatedExecutionContext();
-            codeBlock->m_needsToPrepareGenerateArgumentsObject = functionDeclAST->needsToPrepareGenerateArgumentsObject();
-            codeBlock->m_needsComplexParameterCopy = functionDeclAST->needsComplexParameterCopy();
-            // FIXME copy params if needs future
-            // codeBlock->m_params = std::move(functionDeclAST->params());
-            codeBlock->m_isStrict = functionDeclAST->isStrict();
-            codeBlock->m_argumentCount = functionDeclAST->argumentCount();
-            codeBlock->m_hasCode = true;
-
-            functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
-            codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
+            ScriptParser::ParserContextInformation parserContextInformation;
+            codeBlock = instance->scriptParser()->parseSingleFunction(instance, argSource, bodySource, parserContextInformation);
         }
         escargot::ESFunctionObject* function;
         LexicalEnvironment* scope = instance->globalExecutionContext()->environment();
