@@ -35,7 +35,7 @@ test0();
 catch(e)
 {
   WScript.Echo("Caught expected exception. Type of exception: " + e);
-  if (e == "Error: Out of stack space") {
+  if (e == "RangeError: Maximum call stack size exceeded.") {
     testOutcome = true;
   }
 }

@@ -1,5 +1,5 @@
 Error.stackTraceLimit: Infinity
-Error: Out of stack space
+RangeError: Maximum call stack size exceeded.
    ...
 	at bar (stacktracelimitoos.js:82:9)
 	at foo (stacktracelimitoos.js:79:9)

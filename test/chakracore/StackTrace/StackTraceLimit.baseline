@@ -263,7 +263,7 @@ Error: this is my error
 My error in custom stackTraceLimit getter
 
 --Throw new Error() in getter
-Error: Out of stack space
+RangeError: Maximum call stack size exceeded.
 
 --Throw new Error() in getter for a number of times
 Error: My error in custom stackTraceLimit getter
