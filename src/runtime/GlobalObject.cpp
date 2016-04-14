@@ -1125,7 +1125,7 @@ void GlobalObject::installFunction()
                 }
             } else {
                 escargot::ESObject* obj = argArray.asESPointer()->asESObject();
-                arrlen = obj->get(strings->length.string()).toInteger();
+                arrlen = obj->get(strings->length.string()).toUint32();
                 instance->argumentCountCheck(arrlen);
                 ALLOCA_WRAPPER(instance, arguments, ESValue*, sizeof(ESValue) * arrlen, false);
                 for (size_t i = 0; i < arrlen; i++) {

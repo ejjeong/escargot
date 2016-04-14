@@ -759,7 +759,7 @@ Running all tests
 [Optimizer] trycatch_functional.js .......... Pass
 [Optimizer] trycatch_assert.js .......... Fail
 [Function] apply.js .......... Pass
-[Function] apply3.js .......... Fail
+[Function] apply3.js .......... Pass
 [Function] applyArgs.js .......... Pass
 [Function] arguments1.js .......... Pass
 [Function] arguments2.js .......... Pass
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		184		20		2		(89%)
-            Function		61		28		27		6		(45%)
+            Function		61		29		26		6		(47%)
               Object		58		33		20		5		(56%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1005		322		79		(71%)
+               Total		1406		1006		321		79		(71%)

@@ -19,8 +19,8 @@ Called with this: object[[object Object]], args: []
 Called with this: object[[object Object]], args: []
 Called with this: object[[object Object]], args: []
 Called with this: object[[object Object]], args: []
-Exception: RangeError : Maximum number of arguments exceeded.
 Called with this: object[[object Object]], args: []
+Exception: RangeError : Maximum number of arguments exceeded.
 
 --- f.apply(x, arr), arr.length is huge ---
 Exception: RangeError : Maximum number of arguments exceeded.
