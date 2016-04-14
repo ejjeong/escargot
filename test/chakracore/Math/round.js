@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------------------
+i//-------------------------------------------------------------------------------------------------------
 // Copyright (C) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
 //-------------------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ check(-Infinity, Math.round(-Infinity), "Math.round(-Infinity)");
 check(-0, Math.round(-0), "Math.round(-0)");
 
 // check various values between 0 and 0.5
-check(1, Math.round(4.9999999999999994000e-001), "round largest value < 0.5"); // for ES5 the result is 0
+check(0, Math.round(4.9999999999999994000e-001), "round largest value < 0.5"); // for ES5 the result is 0
 check(0, Math.round(4.9999999999999989000e-001), "round 2nd largest value < 0.5");
 check(0, Math.round(4.9406564584124654000e-324), "round smallest value > 0");
 check(0, Math.round(9.8813129168249309000e-324), "round 2nd smallest value > 0");
