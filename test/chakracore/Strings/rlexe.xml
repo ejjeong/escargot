@@ -141,7 +141,8 @@
     </default>
   </test>
   <test>
-    <default>
+      <default>
+      <escargot-skip>Not in scopre (non standard)</escargot>
       <files>HTMLHelpers.js</files>
       <baseline>HTMLHelpers.baseline</baseline>
       <compile-flags>-Intl- -ES6StringPrototypeFixes</compile-flags>

@@ -21,7 +21,7 @@ Math.LN10 : 2.302585092994046
 Math.LN2 = overwrite : hello
 Math.LN2 : 0.6931471805599453
 Math.LOG2E = overwrite : hello
-Math.LOG2E : 1.4426950408889633
+Math.LOG2E : 1.4426950408889634
 Math.LOG10E = overwrite : hello
 Math.LOG10E : 0.4342944819032518
 Math.SQRT1_2 = overwrite : hello
@@ -37,7 +37,7 @@ Math.LN10 : 2.302585092994046
 delete Math.LN2 : false
 Math.LN2 : 0.6931471805599453
 delete Math.LOG2E : false
-Math.LOG2E : 1.4426950408889633
+Math.LOG2E : 1.4426950408889634
 delete Math.LOG10E : false
 Math.LOG10E : 0.4342944819032518
 delete Math.SQRT1_2 : false

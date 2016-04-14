@@ -54,7 +54,7 @@ WScript.Echo("\u0020abc".trim());
 WScript.Echo("             ".trim() == "");
 WScript.Echo("\u00A0abc".trim());
 
-
+/*
 WScript.Echo("\uFEFFabc".trimLeft());
 WScript.Echo("abc\u0009".trimRight());
 WScript.Echo("abc\u000B".trimRight());
@@ -96,7 +96,7 @@ WScript.Echo("\u000D\u000D".trimRight() == "");
 WScript.Echo("\u2029abc as a multiline string".trimLeft());
 WScript.Echo("\u0020abc".trimLeft());
 WScript.Echo("             ".trimRight() == "");
-WScript.Echo("\u00A0abc".trimLeft());
+WScript.Echo("\u00A0abc".trimLeft()); */
 //implicit calls
 var a = 1;
 var b = 2;

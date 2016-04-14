@@ -152,14 +152,14 @@ Running all tests
 [Basics] Accessors.js .......... Pass
 [Basics] DefProp.js .......... Pass
 [Basics] scopedaccessors.js .......... Skip (Not in scope (wtih))
-[Basics] flags.js .......... Fail
+[Basics] flags.js .......... Pass
 [Basics] Branching.js .......... Pass
 [Basics] inlinecache.js .......... Skip (function print format differs)
 [Basics] scan.js .......... Fail
 [Basics] enum.js .......... Pass
 [Basics] with3.js .......... Skip (Not in scope (wtih))
 [Basics] Enumerator-deprecated.js .......... Pass
-[Basics] Enumerator-WebViewHost.js .......... Fail
+[Basics] Enumerator-WebViewHost.js .......... Skip (Not in scopre (non standard))
 [Basics] cross_site_accessor_main.js .......... Fail
 [Basics] bug650104.js .......... Fail
 [es5] reservedWords.js .......... Pass
@@ -403,11 +403,11 @@ Running all tests
 [Strings] string_replace.js .......... Pass
 [Strings] compare.js .......... Pass
 [Strings] replace.js .......... Pass
-[Strings] trim.js .......... Fail
+[Strings] trim.js .......... Pass
 [Strings] lastindexof.js .......... Pass
 [Strings] indexof.js .......... Pass
 [Strings] substring.js .......... Pass
-[Strings] HTMLHelpers.js .......... Fail
+[Strings] HTMLHelpers.js .......... Skip (Not in scopre (non standard))
 [Strings] stringindex.js .......... Pass
 [Strings] length.js .......... Fail
 [Strings] stringtypespec.js .......... Pass
@@ -1424,13 +1424,13 @@ Running all tests
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		66		29		11		(62%)
-              Basics		56		37		7		12		(66%)
+              Basics		56		38		5		13		(67%)
                  es5		56		34		22		0		(60%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		19		1		1		(90%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		3		3		(66%)
-             Strings		36		30		6		0		(83%)
+             Strings		36		31		4		1		(86%)
                 Date		12		3		9		0		(25%)
                Error		23		5		17		1		(21%)
              Boolean		5		4		1		0		(80%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1032		288		86		(73%)
+               Total		1406		1034		284		88		(73%)

@@ -2869,7 +2869,7 @@ long ESDateObject::yearFromTime(long long t)
         estimate--;
     }
 
-    while (makeDay(estimate + 1, 0, 1) * msPerDay < t) {
+    while (makeDay(estimate + 1, 0, 1) * msPerDay <= t) {
         estimate++;
     }
 

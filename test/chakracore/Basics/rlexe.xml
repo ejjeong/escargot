@@ -388,6 +388,7 @@
 
   <test>
     <default>
+      <escargot-skip>Not in scopre (non standard)</escargot-skip>
       <compile-flags>-hostType:3</compile-flags>
       <files>Enumerator-WebViewHost.js</files>
       <baseline>Enumerator-WebViewHost.baseline</baseline>
