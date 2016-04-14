@@ -845,7 +845,7 @@ Running all tests
 [Object] Slow.js .......... Skip (Takes too long)
 [Object] bigES5Array.js .......... Pass
 [Object] NumericPropertyIsEnumerable.js .......... Pass
-[Object] defineProperty.js .......... Fail
+[Object] defineProperty.js .......... Pass
 [Object] getOwnPropertyDescriptor.js .......... Pass
 [Object] objectCreationOptimizations.js .......... Pass
 [Object] multivardecl.js .......... Pass
@@ -1441,7 +1441,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		184		20		2		(89%)
             Function		61		31		23		7		(50%)
-              Object		58		33		20		5		(56%)
+              Object		58		34		19		5		(58%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		8		5		0		(61%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1028		292		86		(73%)
+               Total		1406		1029		291		86		(73%)
