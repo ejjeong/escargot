@@ -105,7 +105,7 @@ Running all tests
 [Array] memop_field.js .......... Skip (Not in scope (es6))
 [Array] memop_slot.js .......... Skip (Not in scope (es6))
 [Array] memop_bounds_check.js .......... Skip (Not in scope (es6))
-[Array] bug4587739.js .......... Fail
+[Array] bug4587739.js .......... Skip (Not in scope (es6))
 [Basics] Array.js .......... Pass
 [Basics] ie12ScriptFunctionToStrings.js .......... Fail
 [Basics] DomProperties.js .......... Pass
@@ -116,14 +116,14 @@ Running all tests
 [Basics] DirectCall.js .......... Pass
 [Basics] equal.js .......... Pass
 [Basics] equal_object.js .......... Pass
-[Basics] label1.js .......... Fail
-[Basics] label1.js .......... Fail
+[Basics] label1.js .......... Skip (Not in scopre (non standard))
+[Basics] label1.js .......... Skip (Not in scopre (non standard))
 [Basics] label2.js .......... Pass
 [Basics] label2.js .......... Pass
 [Basics] label3.js .......... Pass
 [Basics] label3.js .......... Pass
-[Basics] label4.js .......... Fail
-[Basics] label4.js .......... Fail
+[Basics] label4.js .......... Skip (Not in scopre (non standard))
+[Basics] label4.js .......... Skip (Not in scopre (non standard))
 [Basics] label5.js .......... Pass
 [Basics] label5.js .......... Pass
 [Basics] label6.js .......... Pass
@@ -148,7 +148,7 @@ Running all tests
 [Basics] With2.js .......... Skip (Not in scope (wtih))
 [Basics] witheval.js .......... Skip (Not in scope (wtih))
 [Basics] TernaryOperator.js .......... Pass
-[Basics] DeleteProperty1.js .......... Fail
+[Basics] DeleteProperty1.js .......... Pass
 [Basics] Accessors.js .......... Pass
 [Basics] DefProp.js .......... Pass
 [Basics] scopedaccessors.js .......... Skip (Not in scope (wtih))
@@ -1423,8 +1423,8 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		66		30		10		(62%)
-              Basics		56		36		12		8		(64%)
+               Array		106		66		29		11		(62%)
+              Basics		56		37		7		12		(66%)
                  es5		56		34		22		0		(60%)
                   EH		17		10		5		2		(58%)
         InlineCaches		21		19		1		1		(90%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1006		321		79		(71%)
+               Total		1406		1007		315		84		(71%)
