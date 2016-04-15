@@ -237,7 +237,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
     bool strictFromOutside = m_currentExecutionContext->isStrictMode() && isDirectCall;
     bool shouldWorkAroundIdentifier = !isInCatchClause();
     ScriptParser::ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier);
-    CodeBlock* block = m_scriptParser->parseScript(this, source, false, CodeBlock::ExecutableType::EvalCode, parserContextInformation);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, !isDirectCall, CodeBlock::ExecutableType::EvalCode, parserContextInformation);
     bool isStrictCode = block->shouldUseStrictMode();
     if (!m_currentExecutionContext || !isDirectCall) {
         // $ES5 10.4.2.1. Use global execution context

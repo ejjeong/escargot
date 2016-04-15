@@ -723,8 +723,11 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
         ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
     }
 
-    analyzeAST(instance, isForGlobalScope, parserContextInformation, programNode);
-    CodeBlock* cb = generateByteCode(programNode, type, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
+    bool isForGlobalScopeAfterParsing = isForGlobalScope;
+    if (type == CodeBlock::ExecutableType::EvalCode && isForGlobalScope && programNode->isStrict())
+        isForGlobalScopeAfterParsing = false;
+    analyzeAST(instance, isForGlobalScopeAfterParsing, parserContextInformation, programNode);
+    CodeBlock* cb = generateByteCode(nullptr, programNode, type, isForGlobalScopeAfterParsing, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
 
@@ -759,13 +762,8 @@ CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::E
     }
 
     analyzeAST(instance, false, parserContextInformation, programNode);
-
-    CodeBlock* codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
     FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
-    ByteCodeGenerateContext context(codeBlock, false);
-    functionDeclAST->initializeCodeBlock(codeBlock, false);
-    functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
-    codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
+    CodeBlock* codeBlock = generateByteCode(nullptr, functionDeclAST, CodeBlock::ExecutableType::FunctionCode, false, true);
 
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);

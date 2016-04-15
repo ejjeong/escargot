@@ -2079,43 +2079,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         CodeBlock* const cb = fn->codeBlock();
-
-        if (UNLIKELY(!cb->m_hasCode)) {
-            FunctionNode* node = (FunctionNode *)cb->m_ast;
-            cb->m_stackAllocatedIdentifiersCount = node->m_stackAllocatedIdentifiersCount;
-            cb->m_heapAllocatedIdentifiers = std::move(node->m_heapAllocatedIdentifiers);
-            cb->m_paramsInformation = std::move(node->m_paramsInformation);
-            cb->m_needsHeapAllocatedExecutionContext = node->m_needsHeapAllocatedExecutionContext;
-            cb->m_needsToPrepareGenerateArgumentsObject = node->m_needsToPrepareGenerateArgumentsObject;
-            cb->m_needsComplexParameterCopy = node->m_needsComplexParameterCopy;
-            // cb->m_params = std::move(m_params);
-            // FIXME copy params if needs future
-            cb->m_isStrict = node->m_isStrict;
-            cb->m_isFunctionExpression = node->isExpression();
-            cb->m_argumentCount = node->m_params.size();
-            cb->m_hasCode = true;
-            cb->m_functionExpressionNameIndex = node->m_functionIdIndex;
-            cb->m_isFunctionExpressionNameHeapAllocated = node->m_functionIdIndexNeedsHeapAllocation;
-            cb->m_needsActivation = node->m_needsActivation;
-
-            ByteCodeGenerateContext newContext(cb, false);
-            node->body()->generateStatementByteCode(cb, newContext);
-
-            cb->pushCode(ReturnFunction(), newContext, node);
-            cb->m_ast = NULL;
-
-#ifndef NDEBUG
-            cb->m_id = node->m_id;
-            cb->m_nonAtomicId = node->m_nonAtomicId;
-            if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
-                char* code = cb->m_code.data();
-                ByteCode* currentCode = (ByteCode *)(&code[0]);
-                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-                    dumpUnsupported(cb);
-                }
-            }
-#endif
-        }
+        if (UNLIKELY(!cb->m_hasCode))
+            generateByteCode(cb, nullptr, CodeBlock::ExecutableType::FunctionCode, false, true);
 
         ESValue* stackStorage;
         ALLOCA_WRAPPER(instance, stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);

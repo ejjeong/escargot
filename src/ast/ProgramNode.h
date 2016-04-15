@@ -53,6 +53,11 @@ public:
         }
     }
 
+    bool isStrict()
+    {
+        return m_isStrict;
+    }
+
 protected:
     StatementNodeVector m_body; // body: [ Statement ];
     bool m_isStrict;

@@ -316,17 +316,40 @@ void ByteCode::assignOpcodeInAddress()
 }
 
 
-CodeBlock* generateByteCode(Node* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly)
+CodeBlock* generateByteCode(CodeBlock* block, Node* node, CodeBlock::ExecutableType type, bool isForGlobalScope, bool shouldGenerateByteCodeInstantly)
 {
     // size_t dummy;
     // node->computeRoughCodeBlockSizeInWordSize(dummy);
     // CodeBlock* block = CodeBlock::create(node->roughCodeblockSizeInWordSize());
-    CodeBlock* block = CodeBlock::create(type, 0);
+    if (!block) {
+        block = CodeBlock::create(type);
+    } else {
+        ASSERT(!node);
+        ASSERT(block->m_ast);
+        node = block->m_ast;
+    }
 
-    ByteCodeGenerateContext context(block, true);
-    context.m_shouldGenereateByteCodeInstantly = shouldGenereateBytecodeInstantly;
+    ByteCodeGenerateContext context(block, isForGlobalScope);
+    context.m_shouldGenerateByteCodeInstantly = shouldGenerateByteCodeInstantly;
     // unsigned long start = ESVMInstance::tickCount();
-    node->generateStatementByteCode(block, context);
+    switch (type) {
+    case CodeBlock::ExecutableType::GlobalCode:
+    case CodeBlock::ExecutableType::EvalCode:
+        node->generateStatementByteCode(block, context);
+        break;
+    case CodeBlock::ExecutableType::FunctionCode:
+        if (shouldGenerateByteCodeInstantly) {
+            ((FunctionNode*)node)->initializeCodeBlock(block);
+            ((FunctionNode*)node)->body()->generateStatementByteCode(block, context);
+            block->pushCode(ReturnFunction(), context, node);
+            block->m_ast = nullptr;
+            block->m_hasCode = true;
+        } else {
+            block->m_ast = node;
+            block->m_hasCode = false;
+        }
+        break;
+    }
     // printf("codeBlock %d\n", (int)block->m_code.size());
     // unsigned long end = ESVMInstance::tickCount();
     // printf("generate code takes %lfms\n", (end-start)/1000.0);

@@ -104,7 +104,7 @@ public:
         m_nonAtomicId = id.string();
     }
 
-    void initializeCodeBlock(CodeBlock* cb, bool isFunctionExpression)
+    void initializeCodeBlock(CodeBlock* cb)
     {
         cb->m_stackAllocatedIdentifiersCount = m_stackAllocatedIdentifiersCount;
         cb->m_heapAllocatedIdentifiers = std::move(m_heapAllocatedIdentifiers);
@@ -115,11 +115,11 @@ public:
         // cb->m_params = std::move(m_params);
         // FIXME copy params if needs future
         cb->m_isStrict = m_isStrict;
-        cb->m_isFunctionExpression = isFunctionExpression;
+        cb->m_isFunctionExpression = isExpression();
         cb->m_argumentCount = m_params.size();
         cb->m_hasCode = true;
         cb->m_needsActivation = m_needsActivation;
-        if (isFunctionExpression) {
+        if (isExpression()) {
             cb->m_functionExpressionNameIndex = m_functionIdIndex;
             cb->m_isFunctionExpressionNameHeapAllocated = m_functionIdIndexNeedsHeapAllocation;
         }

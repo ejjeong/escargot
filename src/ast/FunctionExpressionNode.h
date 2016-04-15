@@ -23,17 +23,8 @@ public:
         // m_body->computeRoughCodeBlockSizeInWordSize(myResult);
 
         // CodeBlock* cb = CodeBlock::create(myResult);
-        CodeBlock* cb = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode, 0);
-        if (context.m_shouldGenereateByteCodeInstantly) {
-            initializeCodeBlock(cb, true);
-            ByteCodeGenerateContext newContext(cb, false);
-            m_body->generateStatementByteCode(cb, newContext);
-            cb->pushCode(ReturnFunction(), newContext, this);
-            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false, -1, false), context, this);
-        } else {
-            cb->m_ast = this;
-            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false, -1, false), context, this);
-        }
+        CodeBlock* cb = generateByteCode(nullptr, this, CodeBlock::ExecutableType::FunctionCode, false, context.m_shouldGenerateByteCodeInstantly);
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false, -1, false), context, this);
     }
 
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)

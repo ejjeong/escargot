@@ -193,7 +193,7 @@ struct ByteCodeGenerateContext {
     {
         m_inCallingExpressionScope = false;
         m_isHeadOfMemberExpression = false;
-        m_shouldGenereateByteCodeInstantly = true;
+        m_shouldGenerateByteCodeInstantly = true;
 #ifndef ENABLE_ESJIT
         (void)codeBlock;
 #endif
@@ -204,7 +204,7 @@ struct ByteCodeGenerateContext {
         , m_codeBlock(contextBefore.m_codeBlock)
         , m_isGlobalScope(contextBefore.m_isGlobalScope)
         , m_isOutermostContext(false)
-        , m_shouldGenereateByteCodeInstantly(contextBefore.m_shouldGenereateByteCodeInstantly)
+        , m_shouldGenerateByteCodeInstantly(contextBefore.m_shouldGenerateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(contextBefore.m_offsetToBasePointer)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
@@ -307,7 +307,7 @@ struct ByteCodeGenerateContext {
     bool m_isGlobalScope;
     bool m_isOutermostContext;
 
-    bool m_shouldGenereateByteCodeInstantly;
+    bool m_shouldGenerateByteCodeInstantly;
     bool m_inCallingExpressionScope;
     bool m_isHeadOfMemberExpression;
 
@@ -2530,7 +2530,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #else
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESValueVector* heapStorage = NULL);
 #endif
-CodeBlock* generateByteCode(Node* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly = true);
+CodeBlock* generateByteCode(CodeBlock* codeBlock, Node* node, CodeBlock::ExecutableType type, bool isForGlobalScope, bool shouldGenerateByteCodeInstantly);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }
