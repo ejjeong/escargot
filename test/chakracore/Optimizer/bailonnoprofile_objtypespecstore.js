@@ -40,3 +40,5 @@ catch(e)
 
 cond = false;
 test({});
+
+ WScript.Echo("passed");

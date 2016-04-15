@@ -15,3 +15,5 @@
     }
   })();
 })();
+
+WScript.Echo("passed");

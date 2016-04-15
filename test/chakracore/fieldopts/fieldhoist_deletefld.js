@@ -10,3 +10,5 @@ function test(){
     }
 }
 test()
+
+WScript.Echo("passed");

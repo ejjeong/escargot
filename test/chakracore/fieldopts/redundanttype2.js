@@ -9,3 +9,5 @@
     obj1 = 1;
   }
 })();
+
+WScript.Echo("passed");

@@ -21,7 +21,6 @@ function test0(){
 test0();
 test0();
 test0();
-WScript.Echo("PASSED\n");
 
 function test1(){
   var obj0 = {};
@@ -43,7 +42,6 @@ function test1(){
 test1();
 test1();
 test1();
-WScript.Echo("PASSED\n");
 
 function test2(){
   function bar0 (){
@@ -71,4 +69,4 @@ function test2(){
 test2();
 test2();
 test2();
-WScript.Echo("PASSED\n");
+WScript.Echo("PASSED");

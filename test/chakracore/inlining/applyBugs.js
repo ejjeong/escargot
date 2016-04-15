@@ -47,8 +47,6 @@ try
 }
 catch(e){}
 
-WScript.Echo("PASSED\n");
-
 // BLUE 608045
 function baz() {
     this.initialize.apply(this.x, arguments);
@@ -68,7 +66,6 @@ function foo()
 foo();
 foo();
 foo();
-WScript.Echo("PASSED\n");
 
 function test1(){
     var arrObj0 = {};
@@ -104,7 +101,6 @@ function test1(){
 };
 test1();
 test1();
-WScript.Echo("PASSED\n");
 
 // OS 101439
 function test2() {
@@ -142,7 +138,6 @@ function test2() {
 }
 test2();
 test2();
-WScript.Echo("PASSED\n");
 
 // OS 265192
 var obj1 = {};

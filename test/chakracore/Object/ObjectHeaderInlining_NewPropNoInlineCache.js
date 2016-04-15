@@ -17,3 +17,5 @@ function func5(arg1) {
     uniqobj10.prop2 = uniqobj10.prop2;
   }
 })();
+
+WScript.Echo("passed");

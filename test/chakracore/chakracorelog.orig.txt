@@ -750,7 +750,7 @@ Running all tests
 [Optimizer] StrengthReduction.js .......... Pass
 [Optimizer] directglofield_dictionarytypehandler.js .......... Pass
 [Optimizer] IntDivTypeSpec.js .......... Pass
-[Optimizer] bailonnoprofile_objtypespecstore.js .......... Fail
+[Optimizer] bailonnoprofile_objtypespecstore.js .......... Pass
 [Optimizer] Non32bitOverflow.js .......... Pass
 [Optimizer] implicit_upwardexposed.js .......... Pass
 [Optimizer] bug1288834.js .......... Pass
@@ -840,7 +840,7 @@ Running all tests
 [Object] toString2.js .......... Pass
 [Object] newobj.js .......... Pass
 [Object] regex.js .......... Pass
-[Object] var.js .......... Fail
+[Object] var.js .......... Pass
 [Object] moreProperties-enumeration.js .......... Pass
 [Object] Slow.js .......... Skip (Takes too long)
 [Object] bigES5Array.js .......... Pass
@@ -861,7 +861,7 @@ Running all tests
 [Object] stackobject.js .......... Pass
 [Object] stackobject_escape.js .......... Pass
 [Object] LargeAuxArray.js .......... Pass
-[Object] stackobject_dependency.js .......... Fail
+[Object] stackobject_dependency.js .......... Pass
 [Object] objectCreateNull.js .......... Fail
 [Object] ObjectHeaderInlining_otherInstrs.js .......... Pass
 [Object] ObjectHeaderInlining.js .......... Pass
@@ -872,9 +872,9 @@ Running all tests
 [Object] ObjectHeaderInlining_prototypeTypeChange.js .......... Pass
 [Object] ObjectHeaderInlining_objArrayFastPath.js .......... Pass
 [Object] ObjectHeaderInlining_StFldOpt.js .......... Pass
-[Object] stackobject_dependency.js .......... Fail
-[Object] stackobject_dependency.js .......... Fail
-[Object] ObjectHeaderInlining_NewPropNoInlineCache.js .......... Fail
+[Object] stackobject_dependency.js .......... Pass
+[Object] stackobject_dependency.js .......... Pass
+[Object] ObjectHeaderInlining_NewPropNoInlineCache.js .......... Pass
 [Object] ObjectHeaderInlining_NewPropNoInlineCache_StaticType.js .......... Pass
 [Object] ObjectHeaderInlining_NewPropSharedInlineCache.js .......... Skip (Not in scope (with))
 [Regex] captures.js .......... Pass
@@ -1139,7 +1139,7 @@ Running all tests
 [strict] bug212755.js .......... Skip (Not in scope (with))
 [strict] OS_1362136.js .......... Pass
 [utf8] invalidutf8.js .......... Fail
-[utf8] unicode_digit_as_identifier_should_work.js .......... Fail
+[utf8] unicode_digit_as_identifier_should_work.js .......... Pass
 [utf8] surrogatepair.js .......... Skip (function print format differs)
 [UnifiedRegex] acid.js .......... Pass
 [UnifiedRegex] assertion.js .......... Pass
@@ -1191,7 +1191,7 @@ Running all tests
 [bailout] bailout-copyProp1.js .......... Pass
 [bailout] bailout-strict-exception.js .......... Fail
 [bailout] AggressiveIntTypeSpecWithFloatPref.js .......... Pass
-[bailout] bailout-inlined.js .......... Fail
+[bailout] bailout-inlined.js .......... Pass
 [bailout] bug10.js .......... Pass
 [bailout] flags.js .......... Fail
 [bailout] initlocals.js .......... Pass
@@ -1199,7 +1199,7 @@ Running all tests
 [bailout] inlineBuiltIns.js .......... Pass
 [bailout] inlineBuiltIns.js .......... Pass
 [bailout] bailout-branch.js .......... Pass
-[bailout] bailout-checkthis.js .......... Fail
+[bailout] bailout-checkthis.js .......... Pass
 [bailout] inline_call_bailout.js .......... Pass
 [bailout] spill.js .......... Pass
 [loop] loop.js .......... Fail
@@ -1254,18 +1254,18 @@ Running all tests
 [fieldopts] fieldhoist_join.js .......... Pass
 [fieldopts] fieldhoist_slots.js .......... Pass
 [fieldopts] fieldhoist_slots2.js .......... Pass
-[fieldopts] fieldhoist_objptrcopyprop.js .......... Fail
+[fieldopts] fieldhoist_objptrcopyprop.js .......... Pass
 [fieldopts] fieldhoist_objptrcopyprop2.js .......... Pass
 [fieldopts] fieldhoist_kills.js .......... Pass
-[fieldopts] fieldhoist_stripbailouts.js .......... Fail
-[fieldopts] redundanttype2.js .......... Fail
+[fieldopts] fieldhoist_stripbailouts.js .......... Pass
+[fieldopts] redundanttype2.js .......... Pass
 [fieldopts] CheckThis.js .......... Fail
 [fieldopts] objptrcopyprop_bug.js .......... Pass
 [fieldopts] objptrcopyprop_typescript.js .......... Pass
 [fieldopts] fieldcopyprop_typespec.js .......... Pass
-[fieldopts] fieldhoist_deletefld.js .......... Fail
+[fieldopts] fieldhoist_deletefld.js .......... Pass
 [fieldopts] forcefixdataprops.js .......... Pass
-[fieldopts] PropObjectPointerCopyProp.js .......... Fail
+[fieldopts] PropObjectPointerCopyProp.js .......... Pass
 [fieldopts] redundanttype_kills.js .......... Pass
 [fieldopts] fieldhoist_copypropdep.js .......... Pass
 [fieldopts] fieldhoist_number.js .......... Pass
@@ -1344,16 +1344,16 @@ Running all tests
 [FixedFields] fixedmethods_polyInlining.js .......... Pass
 [FixedFields] bugVSO_OS_1015467.js .......... Fail
 [inlining] arg.js .......... Pass
-[inlining] linenumber1.js .......... Fail
-[inlining] linenumber2.js .......... Fail
+[inlining] linenumber1.js .......... Pass
+[inlining] linenumber2.js .......... Pass
 [inlining] linenumber3.js .......... Fail
 [inlining] InlineConstructors.js .......... Fail
 [inlining] InlinedConstructorBailout.js .......... Pass
 [inlining] inliningWithArguments.js .......... Pass
 [inlining] inliningApplyTarget.js .......... Pass
-[inlining] applyBugs.js .......... Fail
+[inlining] applyBugs.js .......... Pass
 [inlining] applyBailout.js .......... Pass
-[inlining] bugs.js .......... Fail
+[inlining] bugs.js .......... Pass
 [inlining] linenumber4.js .......... Fail
 [inlining] Miscellaneous_MaxInterpret.js .......... Pass
 [inlining] noprof.js .......... Pass
@@ -1362,9 +1362,9 @@ Running all tests
 [inlining] spread.js .......... Skip (Not in scope (es6))
 [inlining] polyInliningFixedMethods.js .......... Pass
 [inlining] bug650495.js .......... Pass
-[inlining] polyInliningBugs.js .......... Fail
+[inlining] polyInliningBugs.js .......... Pass
 [inlining] polyInliningUninitializedRetVal.js .......... Pass
-[inlining] callTarget.js .......... Fail
+[inlining] callTarget.js .......... Pass
 [inlining] bug594138.js .......... Pass
 [inlining] inlineeArgoutCount.js .......... Pass
 [inlining] markTempArgOut.js .......... Pass
@@ -1439,9 +1439,9 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Math		21		20		1		0		(95%)
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		184		20		2		(89%)
+           Optimizer		206		185		19		2		(89%)
             Function		61		42		10		9		(68%)
-              Object		58		34		19		5		(58%)
+              Object		58		39		14		5		(67%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		8		5		0		(61%)
@@ -1453,15 +1453,15 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 JSON		13		9		4		0		(69%)
                 Bugs		36		20		8		8		(55%)
               strict		104		66		10		28		(63%)
-                utf8		3		0		2		1		(0%)
+                utf8		3		1		1		1		(33%)
         UnifiedRegex		26		22		4		0		(84%)
-             bailout		34		28		6		0		(82%)
+             bailout		34		30		4		0		(88%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
-           fieldopts		111		88		22		1		(79%)
+           fieldopts		111		93		17		1		(83%)
          FixedFields		16		15		1		0		(93%)
-            inlining		34		21		12		1		(61%)
+            inlining		34		27		6		1		(79%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1046		269		91		(74%)
+               Total		1406		1066		249		91		(75%)

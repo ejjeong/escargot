@@ -23,3 +23,5 @@ function test()
 
 test({});
 test({});
+
+WScript.Echo("passed");

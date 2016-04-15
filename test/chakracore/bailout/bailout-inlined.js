@@ -8,3 +8,4 @@
   c = (1.1 !== (true)) ? a : a;
 })(1);
 
+WScript.Echo("passed");

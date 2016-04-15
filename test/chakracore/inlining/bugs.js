@@ -20,4 +20,4 @@ function test16(){
 test16();
 test16();
 
-WScript.Echo("PASSED\n");
+WScript.Echo("PASSED");

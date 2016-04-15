@@ -14,3 +14,5 @@
         a = 1;
     }
 })();
+
+WScript.Echo("passed");
