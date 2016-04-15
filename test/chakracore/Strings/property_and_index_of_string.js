@@ -26,7 +26,7 @@ var tests =
         body: function ()
         {
             var str = "x";
-            assert.throws(function() { "use strict"; str.a = 1; }, TypeError, "Assigning to a property of a number should throw a TypeError.", "Assignment to read-only properties is not allowed in strict mode");
+            assert.throws(function() { "use strict"; str.a = 1; }, TypeError, "Assigning to a property of a number should throw a TypeError.", "Attempted to assign to readonly property.");
         }
     },
     {
@@ -43,7 +43,7 @@ var tests =
         body: function ()
         {
             var str = "x";
-            assert.throws(function() { "use strict"; str['a'] = 1; }, TypeError, "Assigning to a property of a number should throw a TypeError.", "Assignment to read-only properties is not allowed in strict mode");
+            assert.throws(function() { "use strict"; str['a'] = 1; }, TypeError, "Assigning to a property of a number should throw a TypeError.", "Attempted to assign to readonly property.");
         }
     },
     {
@@ -60,7 +60,7 @@ var tests =
         body: function ()
         {
             var str = "x";
-            assert.throws(function() { "use strict"; str[66] = 1; }, TypeError, "Assigning to a property of a number should throw a TypeError.", "Assignment to read-only properties is not allowed in strict mode");
+            assert.throws(function() { "use strict"; str[66] = 1; }, TypeError, "Assigning to a property of a number should throw a TypeError.", "Attempted to assign to readonly property.");
         }
     },
 ];

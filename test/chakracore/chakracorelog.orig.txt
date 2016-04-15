@@ -409,7 +409,7 @@ Running all tests
 [Strings] substring.js .......... Pass
 [Strings] HTMLHelpers.js .......... Skip (Not in scopre (non standard))
 [Strings] stringindex.js .......... Pass
-[Strings] length.js .......... Fail
+[Strings] length.js .......... Pass
 [Strings] stringtypespec.js .......... Pass
 [Strings] CompoundString.js .......... Pass
 [Strings] concatmulti.js .......... Pass
@@ -417,10 +417,10 @@ Running all tests
 [Strings] concatmulti_large.js .......... Pass
 [Strings] concatmulti_loop.js .......... Pass
 [Strings] long_concatstr.js .......... Pass
-[Strings] StringTagFunctions.js .......... Fail
+[Strings] StringTagFunctions.js .......... Skip (Not in scope (es6))
 [Strings] string_object_indices_589140.js .......... Pass
-[Strings] property_and_index_of_string.js .......... Fail
-[Strings] bug_OS_3080673.js .......... Fail
+[Strings] property_and_index_of_string.js .......... Pass
+[Strings] bug_OS_3080673.js .......... Pass
 [Date] DateCtr.js .......... Fail
 [Date] DateGetSet.js .......... Fail
 [Date] DateParse.js .......... Fail
@@ -1430,7 +1430,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         InlineCaches		21		19		1		1		(90%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		3		3		(66%)
-             Strings		36		31		4		1		(86%)
+             Strings		36		34		0		2		(94%)
                 Date		12		3		9		0		(25%)
                Error		23		5		17		1		(21%)
              Boolean		5		4		1		0		(80%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1041		275		90		(74%)
+               Total		1406		1044		271		91		(74%)

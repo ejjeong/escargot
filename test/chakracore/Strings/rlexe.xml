@@ -208,6 +208,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>StringTagFunctions.js</files>
       <baseline>StringTagFunctions.baseline</baseline>
       <compile-flags>-ES6StringPrototypeFixes</compile-flags>
@@ -228,6 +229,7 @@
   <test>
     <default>
       <files>bug_OS_3080673.js</files>
+      <baseline>bug_OS_3080673.baseline</baseline>
       <tags>BugFix</tags>
     </default>
   </test>
