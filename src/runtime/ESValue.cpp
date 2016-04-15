@@ -1669,7 +1669,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
     : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn)
 {
-    m_codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode, 0, true);
+    m_codeBlock = CodeBlock::create(ExecutableType::FunctionCode, 0, true);
     m_codeBlock->m_hasCode = true;
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));
 #ifndef NDEBUG
@@ -2079,8 +2079,10 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         CodeBlock* const cb = fn->codeBlock();
-        if (UNLIKELY(!cb->m_hasCode))
-            generateByteCode(cb, nullptr, CodeBlock::ExecutableType::FunctionCode, false, true);
+        if (UNLIKELY(!cb->m_hasCode)) {
+            ParserContextInformation parserContextInformation;
+            generateByteCode(cb, nullptr, ExecutableType::FunctionCode, parserContextInformation, true);
+        }
 
         ESValue* stackStorage;
         ALLOCA_WRAPPER(instance, stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);

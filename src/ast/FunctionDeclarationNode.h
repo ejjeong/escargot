@@ -21,7 +21,8 @@ public:
         // size_t myResult = 0;
         // m_body->computeRoughCodeBlockSizeInWordSize(myResult);
         // CodeBlock* cb = CodeBlock::create(myResult);
-        CodeBlock* cb = generateByteCode(nullptr, this, CodeBlock::ExecutableType::FunctionCode, false, context.m_shouldGenerateByteCodeInstantly);
+        ParserContextInformation parserContextInformation;
+        CodeBlock* cb = generateByteCode(nullptr, this, ExecutableType::FunctionCode, parserContextInformation, context.m_shouldGenerateByteCodeInstantly);
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex, m_functionIdIndexNeedsHeapAllocation), context, this);
     }
 

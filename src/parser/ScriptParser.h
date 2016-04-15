@@ -7,24 +7,31 @@ class ESVMInstance;
 class CodeBlock;
 class ProgramNode;
 
+struct ParserContextInformation {
+    ParserContextInformation(bool strictFromOutside = false, bool shouldWorkAroundIdentifier = true, bool hasArgumentsBinding = false, bool isForGlobalScope = false)
+        : m_strictFromOutside(strictFromOutside)
+        , m_shouldWorkAroundIdentifier(shouldWorkAroundIdentifier)
+        , m_hasArgumentsBinding(hasArgumentsBinding)
+        , m_isForGlobalScope(isForGlobalScope)
+    {
+    }
+
+    bool m_strictFromOutside:1;
+    bool m_shouldWorkAroundIdentifier:1;
+    bool m_hasArgumentsBinding:1;
+    bool m_isForGlobalScope:1;
+
+    size_t hash() const
+    {
+        // we separate global / non-global code cache
+        return m_strictFromOutside | m_shouldWorkAroundIdentifier << 1 | m_hasArgumentsBinding << 2;
+    }
+};
+
 class ScriptParser {
 public:
-    struct ParserContextInformation {
-        ParserContextInformation(bool strictFromOutside = false, bool shouldWorkAroundIdentifier = true)
-            : m_strictFromOutside(strictFromOutside)
-            , m_shouldWorkAroundIdentifier(shouldWorkAroundIdentifier) { }
-
-        bool m_strictFromOutside:1;
-        bool m_shouldWorkAroundIdentifier:1;
-
-        size_t hash() const
-        {
-            return m_strictFromOutside | m_shouldWorkAroundIdentifier << 1;
-        }
-    };
-
-    CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, const ParserContextInformation& parserContextInformation);
-    CodeBlock* parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, const ParserContextInformation& parserContextInformation);
+    CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, ExecutableType type, ParserContextInformation& parserContextInformation);
+    CodeBlock* parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, ParserContextInformation& parserContextInformation);
 
 private:
     struct CodeCacheHash {
@@ -44,7 +51,7 @@ private:
         }
     };
 
-    void analyzeAST(ESVMInstance* instance, bool isForGlobalScope, const ParserContextInformation& parserContextInformation, ProgramNode* programNode = nullptr);
+    void analyzeAST(ESVMInstance* instance, ParserContextInformation& parserContextInformation, ProgramNode* programNode = nullptr);
 
     std::unordered_map<std::pair<ESString*, size_t>, CodeBlock* , CodeCacheHash, CodeCacheEqual,
     gc_allocator<std::pair<std::pair<ESString*, size_t>, CodeBlock *> > > m_nonGlobalCodeCache;

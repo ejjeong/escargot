@@ -9,7 +9,7 @@
 
 namespace escargot {
 
-void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, const ParserContextInformation& parserContextInformation, ProgramNode* programNode)
+void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& parserContextInformation, ProgramNode* programNode)
 {
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode)
     {
@@ -33,6 +33,7 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, con
     };
 
     bool shouldWorkAroundIdentifier = parserContextInformation.m_shouldWorkAroundIdentifier;
+    bool isForGlobalScope = parserContextInformation.m_isForGlobalScope;
     std::unordered_map<InternalAtomicString, unsigned, std::hash<InternalAtomicString>, std::equal_to<InternalAtomicString> > knownGlobalNames;
 
     // fill GlobalData
@@ -129,6 +130,8 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, con
             InternalAtomicStringVector& vec = ((FunctionDeclarationNode *)currentNode)->m_params;
             for (unsigned i = 0; i < vec.size() ; i ++) {
                 newIdentifierVector->push_back(InnerIdentifierInfo(vec[i], InnerIdentifierInfo::Origin::Parameter));
+                if (vec[i] == strings->arguments)
+                    ((FunctionDeclarationNode *)currentNode)->setHasArgumentsBinding();
             }
             ((FunctionDeclarationNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(newIdentifierVector);
@@ -145,6 +148,8 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, con
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for (unsigned i = 0; i < vec.size(); i ++) {
                 newIdentifierVector->push_back(InnerIdentifierInfo(vec[i], InnerIdentifierInfo::Origin::Parameter));
+                if (vec[i] == strings->arguments)
+                    ((FunctionDeclarationNode *)currentNode)->setHasArgumentsBinding();
             }
             // If it has own name, should bind function name
             if (((FunctionExpressionNode *)currentNode)->id().string()->length() && ((FunctionExpressionNode *)currentNode)->id() != strings->arguments) {
@@ -201,6 +206,9 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, con
 
                         return;
                     }
+                } else {
+                    if (nearFunctionNode)
+                        nearFunctionNode->setHasArgumentsBinding();
                 }
             }
 
@@ -684,13 +692,11 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, con
     postAnalysisFunctionForCalcID(programNode, NULL);
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, const ParserContextInformation& parserContextInformation)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, ExecutableType type, ParserContextInformation& parserContextInformation)
 {
-    bool strictFromOutside = parserContextInformation.m_strictFromOutside;
-
 #ifdef ENABLE_CODECACHE
     if (source->length() < options::CodeCacheThreshold) {
-        if (isForGlobalScope) {
+        if (parserContextInformation.m_isForGlobalScope) {
             auto iter = m_globalCodeCache.find(std::make_pair(source, parserContextInformation.hash()));
             if (iter != m_globalCodeCache.end()) {
                 return iter->second;
@@ -703,12 +709,11 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
         }
     }
 #endif
-
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
 
     ProgramNode* programNode;
     try {
-        programNode = esprima::parse(source, strictFromOutside);
+        programNode = esprima::parse(source, parserContextInformation.m_strictFromOutside);
 
         // unsigned long end = ESVMInstance::currentInstance()->tickCount();
         // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
@@ -716,24 +721,24 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     } catch(const EsprimaError& error) {
         char temp[512];
         sprintf(temp, "%s", error.m_message->utf8Data());
-        if (type != CodeBlock::ExecutableType::EvalCode)
+        if (type != ExecutableType::EvalCode)
             sprintf(temp, "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
         else
             sprintf(temp, "%s", error.m_message->utf8Data());
         ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
     }
 
-    bool isForGlobalScopeAfterParsing = isForGlobalScope;
-    if (type == CodeBlock::ExecutableType::EvalCode && isForGlobalScope && programNode->isStrict())
-        isForGlobalScopeAfterParsing = false;
-    analyzeAST(instance, isForGlobalScopeAfterParsing, parserContextInformation, programNode);
-    CodeBlock* cb = generateByteCode(nullptr, programNode, type, isForGlobalScopeAfterParsing, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
+    if (type == ExecutableType::EvalCode && programNode->isStrict()) {
+        parserContextInformation.m_isForGlobalScope = false;
+    }
+    analyzeAST(instance, parserContextInformation, programNode);
+    CodeBlock* cb = generateByteCode(nullptr, programNode, type, parserContextInformation, source->length() > options::LazyByteCodeGenerationThreshold ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
 
 #ifdef ENABLE_CODECACHE
     if (source->length() < options::CodeCacheThreshold) {
-        if (isForGlobalScope) {
+        if (parserContextInformation.m_isForGlobalScope) {
             cb->m_isCached = true;
             m_globalCodeCache.insert(std::make_pair(std::make_pair(source, parserContextInformation.hash()), cb));
         } else {
@@ -746,7 +751,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     return cb;
 }
 
-CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, const ParserContextInformation& parserContextInformation)
+CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, ParserContextInformation& parserContextInformation)
 {
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
 
@@ -761,9 +766,9 @@ CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::E
         ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
     }
 
-    analyzeAST(instance, false, parserContextInformation, programNode);
+    analyzeAST(instance, parserContextInformation, programNode);
     FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
-    CodeBlock* codeBlock = generateByteCode(nullptr, functionDeclAST, CodeBlock::ExecutableType::FunctionCode, false, true);
+    CodeBlock* codeBlock = generateByteCode(nullptr, functionDeclAST, ExecutableType::FunctionCode, parserContextInformation, true);
 
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);

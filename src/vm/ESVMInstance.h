@@ -52,7 +52,7 @@ public:
     ESVMInstance();
     ~ESVMInstance();
     ESValue evaluate(ESString* source);
-    ESValue evaluateEval(ESString* source, bool isDirectCall);
+    ESValue evaluateEval(ESString* source, bool isDirectCall, CodeBlock* outerCodeBlock);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
     ALWAYS_INLINE ExecutionContext* globalExecutionContext() { return m_globalExecutionContext; }

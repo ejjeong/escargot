@@ -2429,6 +2429,8 @@ protected:
     static const unsigned MAX_FASTMODE_SIZE = 65536 * 2;
 };
 
+enum ExecutableType { GlobalCode, FunctionCode, EvalCode };
+
 class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {

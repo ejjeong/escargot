@@ -24,6 +24,7 @@ public:
         m_needsActivation = false;
         m_needsHeapAllocatedExecutionContext = false;
         m_needsToPrepareGenerateArgumentsObject = false;
+        m_hasArgumentsBinding = false;
         m_needsComplexParameterCopy = false;
         m_outerFunctionNode = NULL;
         m_isStrict = isStrict;
@@ -48,6 +49,8 @@ public:
     ALWAYS_INLINE void setNeedsHeapAllocatedExecutionContext() { m_needsHeapAllocatedExecutionContext = true; }
     ALWAYS_INLINE bool needsToPrepareGenerateArgumentsObject() { return m_needsToPrepareGenerateArgumentsObject; }
     ALWAYS_INLINE void setNeedsToPrepareGenerateArgumentsObject() { m_needsToPrepareGenerateArgumentsObject = true; }
+    ALWAYS_INLINE bool hasArgumentsBinding() { return m_hasArgumentsBinding; }
+    ALWAYS_INLINE void setHasArgumentsBinding() { m_hasArgumentsBinding = true; }
     ALWAYS_INLINE bool needsComplexParameterCopy() { return m_needsComplexParameterCopy; }
     ALWAYS_INLINE void setUsesEval() { m_usesEval = true; }
     ALWAYS_INLINE bool usesEval() { return m_usesEval; }
@@ -111,6 +114,7 @@ public:
         cb->m_paramsInformation = std::move(m_paramsInformation);
         cb->m_needsHeapAllocatedExecutionContext = m_needsHeapAllocatedExecutionContext;
         cb->m_needsToPrepareGenerateArgumentsObject = m_needsToPrepareGenerateArgumentsObject;
+        cb->m_hasArgumentsBinding = m_hasArgumentsBinding;
         cb->m_needsComplexParameterCopy = m_needsComplexParameterCopy;
         // cb->m_params = std::move(m_params);
         // FIXME copy params if needs future
@@ -158,6 +162,7 @@ protected:
     bool m_needsHeapAllocatedExecutionContext;
     bool m_needsComplexParameterCopy; // parameters are captured
     bool m_needsToPrepareGenerateArgumentsObject;
+    bool m_hasArgumentsBinding;
     bool m_usesEval;
     FunctionNode* m_outerFunctionNode;
 

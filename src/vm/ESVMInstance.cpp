@@ -210,8 +210,8 @@ ESValue ESVMInstance::evaluate(ESString* source)
     m_currentExecutionContext = m_globalExecutionContext;
     bool oldContextIsStrictMode = oldContext->isStrictMode();
 
-    ScriptParser::ParserContextInformation parserContextInformation;
-    CodeBlock* block = m_scriptParser->parseScript(this, source, true, CodeBlock::ExecutableType::GlobalCode, parserContextInformation);
+    ParserContextInformation parserContextInformation(false, true, false, true);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, ExecutableType::GlobalCode, parserContextInformation);
     if (block->shouldUseStrictMode())
         m_currentExecutionContext->setStrictMode(true);
 
@@ -228,7 +228,7 @@ ESValue ESVMInstance::evaluate(ESString* source)
     return m_lastExpressionStatementValue;
 }
 
-ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
+ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall, CodeBlock* outerCodeBlock)
 {
     ExecutionContext* oldContext = m_currentExecutionContext;
     bool oldContextIsStrictMode = oldContext->isStrictMode();
@@ -236,8 +236,10 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
 
     bool strictFromOutside = m_currentExecutionContext->isStrictMode() && isDirectCall;
     bool shouldWorkAroundIdentifier = !isInCatchClause();
-    ScriptParser::ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier);
-    CodeBlock* block = m_scriptParser->parseScript(this, source, !isDirectCall, CodeBlock::ExecutableType::EvalCode, parserContextInformation);
+    bool hasArgumentsBinding = outerCodeBlock ? outerCodeBlock->m_hasArgumentsBinding : false;
+    bool isForGlobalScope = !isDirectCall;
+    ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier, hasArgumentsBinding, isForGlobalScope);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, ExecutableType::EvalCode, parserContextInformation);
     bool isStrictCode = block->shouldUseStrictMode();
     if (!m_currentExecutionContext || !isDirectCall) {
         // $ES5 10.4.2.1. Use global execution context

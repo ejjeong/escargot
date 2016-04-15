@@ -24,6 +24,7 @@ CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, b
     m_needsHeapAllocatedExecutionContext = false;
     m_needsComplexParameterCopy = false;
     m_needsToPrepareGenerateArgumentsObject = false;
+    m_hasArgumentsBinding = false;
     m_isFunctionExpressionNameHeapAllocated = false;
     m_needsActivation = false;
     m_functionExpressionNameIndex = SIZE_MAX;
@@ -316,7 +317,7 @@ void ByteCode::assignOpcodeInAddress()
 }
 
 
-CodeBlock* generateByteCode(CodeBlock* block, Node* node, CodeBlock::ExecutableType type, bool isForGlobalScope, bool shouldGenerateByteCodeInstantly)
+CodeBlock* generateByteCode(CodeBlock* block, Node* node, ExecutableType type, ParserContextInformation& parserContextInformation, bool shouldGenerateByteCodeInstantly)
 {
     // size_t dummy;
     // node->computeRoughCodeBlockSizeInWordSize(dummy);
@@ -329,15 +330,15 @@ CodeBlock* generateByteCode(CodeBlock* block, Node* node, CodeBlock::ExecutableT
         node = block->m_ast;
     }
 
-    ByteCodeGenerateContext context(block, isForGlobalScope);
+    ByteCodeGenerateContext context(block, parserContextInformation);
     context.m_shouldGenerateByteCodeInstantly = shouldGenerateByteCodeInstantly;
     // unsigned long start = ESVMInstance::tickCount();
     switch (type) {
-    case CodeBlock::ExecutableType::GlobalCode:
-    case CodeBlock::ExecutableType::EvalCode:
+    case ExecutableType::GlobalCode:
+    case ExecutableType::EvalCode:
         node->generateStatementByteCode(block, context);
         break;
-    case CodeBlock::ExecutableType::FunctionCode:
+    case ExecutableType::FunctionCode:
         if (shouldGenerateByteCodeInstantly) {
             ((FunctionNode*)node)->initializeCodeBlock(block);
             ((FunctionNode*)node)->body()->generateStatementByteCode(block, context);
@@ -424,9 +425,9 @@ void dumpBytecode(CodeBlock* codeBlock)
 {
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
     printf("function %s (codeBlock %p)\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)", codeBlock);
-    printf("isStrict %d needs (Activation %d HeapAllocatedEC %d ComplexParameterCopy %d PrepareGenerateArgumentsObject %d)\n",
+    printf("isStrict %d needs (Activation %d HeapAllocatedEC %d ComplexParameterCopy %d PrepareGenerateArgumentsObject %d HasArgumentsBinding %d)\n",
         codeBlock->m_isStrict, codeBlock->m_needsActivation, codeBlock->m_needsHeapAllocatedExecutionContext,
-        codeBlock->m_needsComplexParameterCopy, codeBlock->m_needsToPrepareGenerateArgumentsObject);
+        codeBlock->m_needsComplexParameterCopy, codeBlock->m_needsToPrepareGenerateArgumentsObject, codeBlock->m_hasArgumentsBinding);
     size_t idx = 0;
     size_t bytecodeCounter = 0;
     char* code = codeBlock->m_code.data();

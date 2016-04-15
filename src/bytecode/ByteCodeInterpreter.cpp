@@ -298,7 +298,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateBindingOpcodeLbl:
         {
             CreateBinding* code = (CreateBinding*)currentCode;
-            ec->environment()->record()->createMutableBindingForAST(code->m_name, codeBlock->m_type == CodeBlock::ExecutableType::EvalCode);
+            ec->environment()->record()->createMutableBindingForAST(code->m_name, codeBlock->m_type == ExecutableType::EvalCode);
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
             executeNextCode<CreateBinding>(programCounter);
             NEXT_INSTRUCTION();
@@ -1215,7 +1215,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 ESValue ret;
                 if (argc > 0) {
                     if (arguments[0].isESString())
-                        ret = instance->evaluateEval((arguments[0].asESString()), true);
+                        ret = instance->evaluateEval((arguments[0].asESString()), true, codeBlock);
                     else
                         ret = arguments[0];
                 }

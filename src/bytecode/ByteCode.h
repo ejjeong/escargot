@@ -5,6 +5,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "parser/ScriptParser.h"
 #ifdef ENABLE_ESJIT
 #include "jit/ESIRType.h"
 #endif
@@ -179,11 +180,12 @@ inline const char* getByteCodeName(Opcode opcode)
 #endif
 
 struct ByteCodeGenerateContext {
-    ByteCodeGenerateContext(CodeBlock* codeBlock, bool isGlobalScope)
+    ByteCodeGenerateContext(CodeBlock* codeBlock, ParserContextInformation& parserContextInformation)
         : m_baseRegisterCount(0)
         , m_codeBlock(codeBlock)
-        , m_isGlobalScope(isGlobalScope)
+        , m_isGlobalScope(parserContextInformation.m_isForGlobalScope)
         , m_isOutermostContext(true)
+        , m_hasArgumentsBinding(parserContextInformation.m_hasArgumentsBinding)
         , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
         , m_tryStatementScopeCount(0)
@@ -206,6 +208,7 @@ struct ByteCodeGenerateContext {
         , m_isOutermostContext(false)
         , m_shouldGenerateByteCodeInstantly(contextBefore.m_shouldGenerateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
+        , m_hasArgumentsBinding(contextBefore.m_hasArgumentsBinding)
         , m_offsetToBasePointer(contextBefore.m_offsetToBasePointer)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
 #ifdef ENABLE_ESJIT
@@ -310,6 +313,7 @@ struct ByteCodeGenerateContext {
     bool m_shouldGenerateByteCodeInstantly;
     bool m_inCallingExpressionScope;
     bool m_isHeadOfMemberExpression;
+    bool m_hasArgumentsBinding;
 
     std::vector<size_t> m_breakStatementPositions;
     std::vector<size_t> m_continueStatementPositions;
@@ -2274,7 +2278,6 @@ public:
 
 class CodeBlock : public gc {
 public:
-    enum ExecutableType { GlobalCode, FunctionCode, EvalCode };
     static CodeBlock* create(ExecutableType type, size_t roughCodeBlockSizeInWordSize = 0, bool isBuiltInFunction = false)
     {
         return new CodeBlock(type, roughCodeBlockSizeInWordSize, isBuiltInFunction);
@@ -2350,6 +2353,7 @@ public:
     bool m_needsHeapAllocatedExecutionContext;
     bool m_needsComplexParameterCopy; // parameters are captured
     bool m_needsToPrepareGenerateArgumentsObject;
+    bool m_hasArgumentsBinding;
     bool m_isBuiltInFunction;
     bool m_isCached;
 
@@ -2531,7 +2535,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #else
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESValueVector* heapStorage = NULL);
 #endif
-CodeBlock* generateByteCode(CodeBlock* codeBlock, Node* node, CodeBlock::ExecutableType type, bool isForGlobalScope, bool shouldGenerateByteCodeInstantly);
+CodeBlock* generateByteCode(CodeBlock* codeBlock, Node* node, ExecutableType type, ParserContextInformation& parserContextInformation, bool shouldGenerateByteCodeInstantly);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }

@@ -327,7 +327,7 @@ void GlobalObject::initGlobalObject()
         if (!argument.isESString()) {
             return argument;
         }
-        return instance->evaluateEval(argument.asESString(), false);
+        return instance->evaluateEval(argument.asESString(), false, nullptr);
     }, strings->eval.string(), 1);
     defineDataProperty(strings->eval, true, false, true, m_eval);
 
@@ -985,8 +985,9 @@ void GlobalObject::installFunction()
         int len = instance->currentExecutionContext()->argumentCount();
         CodeBlock* codeBlock;
         if (len == 0) {
-            codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
-            ByteCodeGenerateContext context(codeBlock, false);
+            codeBlock = CodeBlock::create(ExecutableType::FunctionCode);
+            ParserContextInformation parserContextInformation;
+            ByteCodeGenerateContext context(codeBlock, parserContextInformation);
             codeBlock->pushCode(ReturnFunction(), context, NULL);
             codeBlock->pushCode(End(), context, NULL);
             codeBlock->m_hasCode = true;
@@ -1011,7 +1012,7 @@ void GlobalObject::installFunction()
             bodyBuilder.appendString(strings->asciiTable[(size_t)'}'].string());
             escargot::ESString* bodySource = bodyBuilder.finalize();
 
-            ScriptParser::ParserContextInformation parserContextInformation;
+            ParserContextInformation parserContextInformation;
             codeBlock = instance->scriptParser()->parseSingleFunction(instance, argSource, bodySource, parserContextInformation);
         }
         escargot::ESFunctionObject* function;
@@ -1103,8 +1104,9 @@ void GlobalObject::installFunction()
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->bind, builtinErrorMessageThisNotFunctionObject);
         }
-        CodeBlock* cb = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
-        ByteCodeGenerateContext context(cb, false);
+        CodeBlock* cb = CodeBlock::create(ExecutableType::FunctionCode);
+        ParserContextInformation parserContextInformation;
+        ByteCodeGenerateContext context(cb, parserContextInformation);
         CallBoundFunction code;
         code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
         code.m_boundThis = instance->currentExecutionContext()->readArgument(0);
