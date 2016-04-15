@@ -9,7 +9,7 @@
 
 namespace escargot {
 
-void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, ParserContextInformation& parserContextInformation, ProgramNode* programNode)
+void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, const ParserContextInformation& parserContextInformation, ProgramNode* programNode)
 {
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode)
     {
@@ -684,19 +684,19 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, bool isForGlobalScope, Par
     postAnalysisFunctionForCalcID(programNode, NULL);
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, ParserContextInformation& parserContextInformation)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, const ParserContextInformation& parserContextInformation)
 {
     bool strictFromOutside = parserContextInformation.m_strictFromOutside;
 
 #ifdef ENABLE_CODECACHE
     if (source->length() < options::CodeCacheThreshold) {
         if (isForGlobalScope) {
-            auto iter = m_globalCodeCache.find(std::make_pair(source, strictFromOutside));
+            auto iter = m_globalCodeCache.find(std::make_pair(source, parserContextInformation.hash()));
             if (iter != m_globalCodeCache.end()) {
                 return iter->second;
             }
         } else {
-            auto iter = m_nonGlobalCodeCache.find(std::make_pair(source, strictFromOutside));
+            auto iter = m_nonGlobalCodeCache.find(std::make_pair(source, parserContextInformation.hash()));
             if (iter != m_nonGlobalCodeCache.end()) {
                 return iter->second;
             }
@@ -735,10 +735,10 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     if (source->length() < options::CodeCacheThreshold) {
         if (isForGlobalScope) {
             cb->m_isCached = true;
-            m_globalCodeCache.insert(std::make_pair(std::make_pair(source, strictFromOutside), cb));
+            m_globalCodeCache.insert(std::make_pair(std::make_pair(source, parserContextInformation.hash()), cb));
         } else {
             cb->m_isCached = true;
-            m_nonGlobalCodeCache.insert(std::make_pair(std::make_pair(source, strictFromOutside), cb));
+            m_nonGlobalCodeCache.insert(std::make_pair(std::make_pair(source, parserContextInformation.hash()), cb));
         }
     }
 #endif
@@ -746,7 +746,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     return cb;
 }
 
-CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, ParserContextInformation& parserContextInformation)
+CodeBlock* ScriptParser::parseSingleFunction(ESVMInstance* instance, escargot::ESString* argSource, escargot::ESString* bodySource, const ParserContextInformation& parserContextInformation)
 {
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
 
