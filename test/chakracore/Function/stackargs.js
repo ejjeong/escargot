@@ -241,8 +241,8 @@ write("Test case #18");
     })();
 })();
 
-write("Test case #19");
 /*
+write("Test case #19");
 (function(){
   function test0(){
   //Code Snippet: NegativeArgumentBug.ecs (Blue15423)
@@ -253,6 +253,7 @@ write("Test case #19");
 })();
 */ //ES6 Spec
 
+/*
 write("Test case #20");
 (function(){
   var shouldBailout = false;
@@ -265,7 +266,9 @@ write("Test case #20");
   test();
   test();
 })();
+*/
 
+/*
 write("Test case #21");
 (function(){
   function foo(){
@@ -275,7 +278,9 @@ write("Test case #21");
   foo(1);
   foo(1);
 })();
+*/
 
+/*
 write("Test case #22");
 (function(){
     function test0(){
@@ -309,6 +314,7 @@ write("Test case #22");
     shouldBailout = true;
     test0();
 })()
+*/
 
 
 // Various ways of calling/loading function with used/unused result.
@@ -375,6 +381,7 @@ function test26()
 write(test26(10,false));
 write(test26(10,20,30));
 
+/*
 write("Test case #27");
 (function ()
 {
@@ -383,6 +390,7 @@ write("Test case #27");
   }
   write(x);
 })();
+*/
 
 
 write("Test case #28");

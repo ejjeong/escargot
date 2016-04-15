@@ -790,19 +790,19 @@ Running all tests
 [Function] deferredWith.js .......... Skip (Not in scope (with))
 [Function] deferredWith2.js .......... Skip (Not in scope (with))
 [Function] newFunction.js .......... Pass
-[Function] prototype.js .......... Fail
+[Function] prototype.js .......... Pass
 [Function] TApply1.js .......... Pass
 [Function] toString.js .......... Skip (Not in scope (Function.prototype.toString))
 [Function] funcExpr.js .......... Fail
 [Function] moreFuncExpr.js .......... Pass
 [Function] moreFuncExpr.js .......... Pass
 [Function] evenMoreFuncExpr3.js .......... Pass
-[Function] someMoreFuncExpr.js .......... Fail
+[Function] someMoreFuncExpr.js .......... Pass
 [Function] constructor.js .......... Pass
 [Function] ctrFlags.js .......... Pass
 [Function] typeErrorAccessor.js .......... Skip (Deprecated)
-[Function] FuncBody.js .......... Fail
-[Function] FuncBody.bug133933.js .......... Fail
+[Function] FuncBody.js .......... Pass
+[Function] FuncBody.bug133933.js .......... Pass
 [Function] FuncBody.bug227901.js .......... Pass
 [Function] FuncBody.bug232281.js .......... Pass
 [Function] FuncBody.bug236810.js .......... Pass
@@ -811,7 +811,7 @@ Running all tests
 [Function] sameNamePara.js .......... Pass
 [Function] closure.js .......... Pass
 [Function] undefThis.js .......... Pass
-[Function] stackargs.js .......... Fail
+[Function] stackargs.js .......... Pass
 [Function] StackArgs_MaxInterpret.js .......... Pass
 [Function] childCallsEvalJitLoopBody.js .......... Pass
 [Function] 631838.js .......... Pass
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		191		11		4		(92%)
-            Function		61		43		9		9		(70%)
+            Function		61		48		4		9		(78%)
               Object		58		41		12		5		(70%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1078		233		95		(76%)
+               Total		1406		1083		228		95		(77%)

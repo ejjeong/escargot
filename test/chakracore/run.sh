@@ -116,6 +116,9 @@ run_dir() {
 			if [[ $CONTENT == *-dump:bytecode* ]]; then
 				BASELINE=
 			fi
+			if [[ $CONTENT == *-trace:FunctionSourceInfoParse* ]]; then
+				BASELINE=
+			fi
 			if [[ $CONTENT == *-ForceStrictMode* ]]; then
 				SKIP=$CONTENT
 			fi

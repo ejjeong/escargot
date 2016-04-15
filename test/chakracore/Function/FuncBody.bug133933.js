@@ -23,3 +23,4 @@ function run() {
 }
 
 run();
+WScript.Echo("Passed");

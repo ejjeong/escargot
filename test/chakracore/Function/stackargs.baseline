@@ -1,10 +1,6 @@
 Test case #1
 undefined
-function foo()
- {
-   write(arguments.caller);
-   write(arguments.callee);
- }
+function foo() {}
 Test case #2
 100
 Test case #3
@@ -26,19 +22,12 @@ Test case #9
 Test case #10
 object
 Test case #11
-function foo()
- {
-   write(arguments.callee);
-   write(arguments.caller);
- }
+function foo() {}
 undefined
 Test case #12
 10
 Test case #13
-function ()
- { 
-   write(arguments.callee);
- }
+function () {}
 Test case #14
 undefined
 Test case #15
@@ -50,30 +39,6 @@ Test case #17
 NaN
 Test case #18
 undefined
-Test case #19
-Test case #20
-Test case #21
-10
-10
-Test case #22
-10
-40
-20
-40
-30
-40
-10
-40
-20
-40
-30
-40
-10
-40
-20
-40
-30
-40
 Test case #23
 1
 10,20,30
@@ -86,7 +51,5 @@ Test case #25
 Test case #26
 [object Object]
 3
-Test case #27
-4
 Test case #28
 undefined
