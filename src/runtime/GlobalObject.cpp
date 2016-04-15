@@ -3584,8 +3584,8 @@ void GlobalObject::installDate()
         if ((int) year >= 0 && (int) year <= 99) {
             year += 1900;
         }
-        if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
-            return ESString::create("Invalid Date");
+        if (arg_size < 2 || isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
         }
         ESObject* tmp = ESDateObject::create();
         double t = ESDateObject::timeClip(tmp->asESDateObject()->ymdhmsToSeconds((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second) * 1000 + millisecond);
@@ -4405,9 +4405,21 @@ void GlobalObject::installDate()
     // $20.3.4.43 Date.prototype.toUTCString()
     m_datePrototype->defineDataProperty(strings->toUTCString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue e = instance->currentExecutionContext()->resolveThisBinding();
-        if (e.isESPointer() && e.asESPointer()->isESDateObject())
-            return e.asESPointer()->asESDateObject()->toFullString();
-        else
+        if (e.isESPointer() && e.asESPointer()->isESDateObject()) {
+            static char days[7][4] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+            static char months[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+            escargot::ESDateObject* thisDateObject = e.asESPointer()->asESDateObject();
+            char buffer[512];
+            if (!isnan(thisDateObject->timeValueAsDouble())) {
+                snprintf(buffer, 512, "%s, %02d %s %d %02d:%02d:%02d GMT"
+                    , days[thisDateObject->getUTCDay()], thisDateObject->getUTCDate(), months[thisDateObject->getUTCMonth()], thisDateObject->getUTCFullYear()
+                    , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds());
+                return ESString::create(buffer);
+            } else {
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, "Invalid Date");
+            }
+        } else
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toUTCString, builtinErrorMessageThisNotDateObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toUTCString, 0));
