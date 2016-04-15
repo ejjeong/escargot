@@ -39,6 +39,6 @@ for (var i = 0; i < 2000; i++)
 foo(-2, 2);
 
 if (NotNegZero != 4000 || NegZero != 2)
-    WScript.Echo("FAILED\n");
+    WScript.Echo("FAILED");
 else
-    WScript.Echo("Passed\n");
+    WScript.Echo("Passed");

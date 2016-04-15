@@ -47,6 +47,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>errorNum.js</files>
       <baseline>errorNum.baseline</baseline>
     </default>

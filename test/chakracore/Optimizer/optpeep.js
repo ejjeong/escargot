@@ -27,11 +27,11 @@ test0();
 
 if (Count != 1)
 {
-    WScript.Echo("FAILED\n");
+    WScript.Echo("FAILED");
 }
 else
 {
-    WScript.Echo("Passed\n");
+    WScript.Echo("Passed");
 }
 
 // Windows Blue Bug 416975

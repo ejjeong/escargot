@@ -784,6 +784,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>test115.js</files>
       <compile-flags>-args bailout -endArgs</compile-flags>
       <tags>exclude_dynapogo,exclude_ship</tags>
@@ -929,6 +930,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (with)</escargot-skip>
       <files>test135.js</files>
     </default>
   </test>

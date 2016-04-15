@@ -46,4 +46,4 @@ test0();
 // run JITted code
 runningJITtedCode = true;
 test0();
-WScript.Echo("PASSED\n");
+WScript.Echo("PASSED");

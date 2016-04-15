@@ -21,6 +21,6 @@ a = 0;
 foo(100 * a);
 
 if (Failed)
-    WScript.Echo("FAILED\n");
+    WScript.Echo("FAILED");
 else
-    WScript.Echo("Passed\n");
+    WScript.Echo("Passed");
