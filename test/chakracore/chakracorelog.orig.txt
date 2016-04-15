@@ -808,7 +808,7 @@ Running all tests
 [Function] FuncBody.bug236810.js .......... Pass
 [Function] FuncBody.bug231397.js .......... Pass
 [Function] bug_258259.js .......... Fail
-[Function] sameNamePara.js .......... Fail
+[Function] sameNamePara.js .......... Pass
 [Function] closure.js .......... Pass
 [Function] undefThis.js .......... Pass
 [Function] stackargs.js .......... Fail
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		43		1		0		(97%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		184		20		2		(89%)
-            Function		61		41		11		9		(67%)
+            Function		61		42		10		9		(68%)
               Object		58		34		19		5		(58%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1044		271		91		(74%)
+               Total		1406		1045		270		91		(74%)

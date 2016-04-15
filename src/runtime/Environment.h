@@ -267,7 +267,11 @@ public:
     {
         if (!m_needsActivation)
             return NULL;
-        for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
+
+        // Searching from bottom to top can introduce small performance regression.
+        // FIXME If same-named parameter issue get fixed in other way later,
+        // this searching can start from the top again
+        for (int i = m_innerIdentifiers->size() - 1; i >= 0; i--) {
             if ((*m_innerIdentifiers)[i] == atomicName) {
                 bool isBindingMutable = (i != m_mutableIndex);
                 bool isBindingConfigurable = (i >= m_numVariableDeclarations);
