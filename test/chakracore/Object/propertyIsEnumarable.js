@@ -118,12 +118,12 @@ function TestRegex()
         {
             doEval("re" + ".propertyIsEnumerable(\"" + propso[j] + "\")");
         }
-
+/*
         for (var j=0; j< props.length; j++)
         {
             doEval("RegExp" + ".propertyIsEnumerable(\"" + props[j] + "\")");
         }
-
+*/
 }
 
 

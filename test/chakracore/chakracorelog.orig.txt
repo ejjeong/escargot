@@ -819,13 +819,13 @@ Running all tests
 [Function] caller_replaced_proto.js .......... Skip (Not in scope (with))
 [Function] bug542360.js .......... Pass
 [Function] failnativecodeinstall.js .......... Skip (Takes too long)
-[Object] constructor.js .......... Fail
+[Object] constructor.js .......... Pass
 [Object] constructor1.js .......... Pass
 [Object] expandos.js .......... Pass
 [Object] hasOwnProperty.js .......... Pass
 [Object] isEnumerable.js .......... Pass
 [Object] isPrototypeOf.js .......... Pass
-[Object] Object.js .......... Fail
+[Object] Object.js .......... Pass
 [Object] null.js .......... Fail
 [Object] propertyIsEnumarable.js .......... Fail
 [Object] toLocaleString2.js .......... Fail
@@ -1441,7 +1441,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		191		11		4		(92%)
             Function		61		42		10		9		(68%)
-              Object		58		39		14		5		(67%)
+              Object		58		41		12		5		(70%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		8		5		0		(61%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1074		237		95		(76%)
+               Total		1406		1076		235		95		(76%)

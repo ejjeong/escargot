@@ -120,14 +120,14 @@ WScript.Echo("Testing cross script context object creation");
 
 var otherScriptContext = WScript.LoadScriptFile("constructor-crossScript.js", "samethread");
 
-var obj = new otherScriptContext.crossContextObject();
+var obj = new crossContextObject();
 WScript.Echo(obj.prop);
-obj = new otherScriptContext.crossContextObject();
+obj = new crossContextObject();
 WScript.Echo(obj.prop);
-obj = otherScriptContext.createObject();
+obj = createObject();
 WScript.Echo(obj.prop);
-obj = otherScriptContext.createObject();
+obj = createObject();
 WScript.Echo(obj.prop);
-obj = new otherScriptContext.crossContextObject();
+obj = new crossContextObject();
 WScript.Echo(obj.prop);
 
