@@ -2358,6 +2358,7 @@ public:
 #ifndef NDEBUG
     InternalAtomicString m_id;
     ESString* m_nonAtomicId;
+    InnerIdentifierInfoVector m_innerIdentifiers;
 #endif
 
 #ifdef ENABLE_ESJIT

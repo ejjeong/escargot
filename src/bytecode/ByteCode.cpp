@@ -476,6 +476,11 @@ void dumpBytecode(CodeBlock* codeBlock)
             break;
         };
     }
+    for (size_t i = 0; i < codeBlock->m_innerIdentifiers.size(); i++) {
+        auto ident = codeBlock->m_innerIdentifiers[i];
+        printf("[Identifier %zu] name %20s heap(%d) immutable(%d) origin(%d)\n", i, ident.m_name.string()->utf8Data(),
+            ident.m_flags.m_isHeapAllocated, ident.m_flags.m_bindingIsImmutable, (int)ident.m_flags.m_origin);
+    }
     printf("dumpBytecode...<<<<<<<<<<<<<<<<<<<<<<\n");
 }
 

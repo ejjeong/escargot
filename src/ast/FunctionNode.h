@@ -126,6 +126,7 @@ public:
 #ifndef NDEBUG
         cb->m_id = m_id;
         cb->m_nonAtomicId = m_nonAtomicId;
+        cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
 #endif
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
