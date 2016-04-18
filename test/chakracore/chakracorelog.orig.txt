@@ -37,7 +37,7 @@ Running all tests
 [Array] push3.js .......... Pass
 [Array] reverse1.js .......... Pass
 [Array] reverse2.js .......... Pass
-[Array] shift_unshift.js .......... Fail
+[Array] shift_unshift.js .......... Pass
 [Array] toString.js .......... Fail
 [Array] toString.js .......... Fail
 [Array] toLocaleString.js .......... Fail
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		74		20		12		(69%)
+               Array		106		75		19		12		(70%)
               Basics		56		38		5		13		(67%)
                  es5		56		38		17		1		(67%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1120		181		105		(79%)
+               Total		1406		1121		180		105		(79%)

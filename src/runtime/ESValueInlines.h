@@ -1722,7 +1722,7 @@ inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t
 
     unsigned cur = start;
     std::vector<unsigned> deletableIndexes;
-    while (cur < end) {
+    while (cur < end || deletableIndexes.size() > 0) {
         bool isKFromDeletableIndexes = false;
         while (deletableIndexes.size() > 0) {
             if (deletableIndexes[0] < cur) {
@@ -1736,6 +1736,11 @@ inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t
                 break;
             }
         }
+
+        if (cur >= end) {
+            break;
+        }
+
         ESValue from = ESValue(cur);
         ESValue to = ESValue(cur + offset);
         bool fromPresent = hasProperty(from);
@@ -1766,7 +1771,7 @@ inline void ESObject::relocateIndexesBackward(int64_t start, int64_t end, int64_
 
     int64_t cur = start;
     std::vector<unsigned> deletableIndexes;
-    while (cur > end) {
+    while (cur > end || deletableIndexes.size() > 0) {
         bool isKFromDeletableIndexes = false;
         while (deletableIndexes.size() > 0) {
             if (deletableIndexes[0] > cur) {
@@ -1780,6 +1785,11 @@ inline void ESObject::relocateIndexesBackward(int64_t start, int64_t end, int64_
                 break;
             }
         }
+
+        if (cur <= end) {
+            break;
+        }
+
         ESValue from = ESValue(cur);
         ESValue to = ESValue(cur + offset);
         bool fromPresent = hasProperty(from);

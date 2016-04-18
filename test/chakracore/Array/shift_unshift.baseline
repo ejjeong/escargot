@@ -32,13 +32,13 @@ undefined
 3
 100,101,102
 --- unshift 1
-RangeError : invalid array length
+RangeError : Array.prototype.unshift: invalid range
 length: 4294967295
+  4294967294: 100
   0: 200
   1: 201
   2: 202
   3: 203
-  4294967294: 100
   4294967295: 101
   4294967296: 102
   4294967298: 104
