@@ -921,7 +921,7 @@ Running all tests
 [GlobalFunctions] eval1.js .......... Pass
 [GlobalFunctions] evalNullsNewlines.js .......... Pass
 [GlobalFunctions] evalreturns.js .......... Fail
-[GlobalFunctions] evalDeferred.js .......... Fail
+[GlobalFunctions] evalDeferred.js .......... Pass
 [GlobalFunctions] eval-strict-delete.js .......... Pass
 [GlobalFunctions] parseFloat.js .......... Pass
 [GlobalFunctions] parseInt.js .......... Pass
@@ -1444,7 +1444,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               Object		58		41		12		5		(70%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
-     GlobalFunctions		13		10		3		0		(76%)
+     GlobalFunctions		13		11		2		0		(84%)
            Operators		32		22		10		0		(68%)
          Conversions		5		3		2		0		(60%)
                  RWC		1		1		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1099		212		95		(78%)
+               Total		1406		1100		211		95		(78%)

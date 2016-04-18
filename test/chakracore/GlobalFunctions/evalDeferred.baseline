@@ -8,4 +8,4 @@ with a
 done s3
 done f3
 catch
-catch
+f3 a
