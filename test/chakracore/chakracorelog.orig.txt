@@ -793,7 +793,7 @@ Running all tests
 [Function] prototype.js .......... Pass
 [Function] TApply1.js .......... Pass
 [Function] toString.js .......... Skip (Not in scope (Function.prototype.toString))
-[Function] funcExpr.js .......... Fail
+[Function] funcExpr.js .......... Pass
 [Function] moreFuncExpr.js .......... Pass
 [Function] moreFuncExpr.js .......... Pass
 [Function] evenMoreFuncExpr3.js .......... Pass
@@ -807,7 +807,7 @@ Running all tests
 [Function] FuncBody.bug232281.js .......... Pass
 [Function] FuncBody.bug236810.js .......... Pass
 [Function] FuncBody.bug231397.js .......... Pass
-[Function] bug_258259.js .......... Fail
+[Function] bug_258259.js .......... Pass
 [Function] sameNamePara.js .......... Pass
 [Function] closure.js .......... Pass
 [Function] undefThis.js .......... Pass
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		191		11		4		(92%)
-            Function		61		50		2		9		(81%)
+            Function		61		52		0		9		(85%)
               Object		58		41		12		5		(70%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1085		226		95		(77%)
+               Total		1406		1087		224		95		(77%)
