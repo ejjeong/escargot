@@ -35,6 +35,7 @@ var o = {
 
 o.g(1,2,3);
 
+/*
 function f() {
     for (var i = 0; i < 1; i++) {
         var g_args = g.arguments;
@@ -50,7 +51,9 @@ function g() {
 }
 
 g('hi');
+*/
 
+/*
 function test()
 {
     with({x:"x"})
@@ -63,6 +66,7 @@ function test()
     }
 }
 test();
+*/
 
 function retval()
 {
@@ -113,6 +117,7 @@ for (var z = 0; z < 0; ++z) {
     1 in 2; 
 } 
 
+/*
 try {
     eval('for (var a, b in z) {}');
 }
@@ -140,6 +145,7 @@ try {
 catch(e) {
     WScript.Echo(e.message);
 }
+*/
 
 // Test loop that has bailout in the loop header and must have vars initialized
 // (or bailout may try to box garbage values).

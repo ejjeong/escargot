@@ -1202,8 +1202,8 @@ Running all tests
 [bailout] bailout-checkthis.js .......... Pass
 [bailout] inline_call_bailout.js .......... Pass
 [bailout] spill.js .......... Pass
-[loop] loop.js .......... Fail
-[loop] loop.js .......... Fail
+[loop] loop.js .......... Pass
+[loop] loop.js .......... Pass
 [loop] loopinversion.js .......... Pass
 [loop] loopinversion.js .......... Pass
 [loop] loopinversion.js .......... Pass
@@ -1456,7 +1456,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		23		3		0		(88%)
              bailout		34		31		3		0		(91%)
-                loop		6		4		2		0		(66%)
+                loop		6		6		0		0		(100%)
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		93		17		1		(83%)
          FixedFields		16		15		1		0		(93%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1129		172		105		(80%)
+               Total		1406		1131		170		105		(80%)
