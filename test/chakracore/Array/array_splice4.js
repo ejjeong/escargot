@@ -15,8 +15,8 @@ function func()
     e="div".match(func2());
 echo("e = " + e + " ; e.length = " + e.length);
     e.length=58;
-echo("e = " + e + " ; e.length = " + e.length);
-    e.splice(1);//es.splice(1,17); is OK too
+//echo("e = " + e + " ; e.length = " + e.length);
+//    e.splice(1);//es.splice(1,17); is OK too // ES6 Spec
 echo("e = " + e + " ; e.length = " + e.length);
 }
 
