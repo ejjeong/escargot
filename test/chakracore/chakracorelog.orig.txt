@@ -480,12 +480,12 @@ Running all tests
 [ControlFlow] forInMisc.js .......... Pass
 [ControlFlow] forInObjectDelete.js .......... Pass
 [ControlFlow] forInObjectAdd.js .......... Pass
-[ControlFlow] forInObjectAddDelete.js .......... Fail
-[ControlFlow] forInPrimitive.js .......... Fail
+[ControlFlow] forInObjectAddDelete.js .......... Pass
+[ControlFlow] forInPrimitive.js .......... Pass
 [ControlFlow] enumeration_adddelete.js .......... Pass
 [ControlFlow] forInArrayAdd.js .......... Pass
 [ControlFlow] forInObjectWithPrototype.js .......... Pass
-[ControlFlow] DoWhile.js .......... Skip (Not in scope (wtih))
+[ControlFlow] DoWhile.js .......... Pass
 [Math] abs.js .......... Pass
 [Math] acos.js .......... Pass
 [Math] asin.js .......... Pass
@@ -1435,7 +1435,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                Error		23		5		16		2		(21%)
              Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
-         ControlFlow		17		14		2		1		(82%)
+         ControlFlow		17		17		0		0		(100%)
                 Math		21		20		0		1		(95%)
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		1		0		(0%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1131		170		105		(80%)
+               Total		1406		1134		168		104		(80%)

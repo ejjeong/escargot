@@ -1763,6 +1763,7 @@ struct EnumerateObjectData : public gc {
     ESObject* m_object;
     unsigned m_idx;
     std::vector<ESValue, gc_allocator<ESValue> > m_keys;
+    bool m_hasNonIntKey;
 };
 
 class CreateFunction : public ByteCode {

@@ -641,6 +641,7 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
                 data->m_keys.push_back(key);
             } else {
                 nonIntKeys.push_back(key);
+                data->m_hasNonIntKey = true;
             }
         });
         data->m_hiddenClassChain.push_back(target->hiddenClass());
@@ -652,6 +653,38 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     });*/
     data->m_keys.insert(data->m_keys.end(), nonIntKeys.begin(), nonIntKeys.end());
 
+    return data;
+}
+
+NEVER_INLINE EnumerateObjectData* updateEnumerateObjectData(EnumerateObjectData* data)
+{
+    EnumerateObjectData* newData = executeEnumerateObject(data->m_object);
+    std::vector<ESValue, gc_allocator<ESValue> > differenceKeys;
+    if (!data->m_hasNonIntKey) {
+        for (ESValue& key : newData->m_keys) {
+            if (std::find(data->m_keys.begin(), data->m_keys.begin() + data->m_idx, key) == data->m_keys.begin() + data->m_idx) {
+                // If a property that has not yet been visited during enumeration is deleted, then it will not be visited.
+                if (std::find(data->m_keys.begin() + data->m_idx, data->m_keys.end(), key) != data->m_keys.end()) {
+                    // If new properties are added to the object being enumerated during enumeration,
+                    // the newly added properties are not guaranteed to be visited in the active enumeration.
+                    differenceKeys.push_back(key);
+                }
+            }
+        }
+    } else {
+        for (ESValue& keyValue : newData->m_keys) {
+            ESString* key = keyValue.toString();
+            for (size_t i = data->m_idx; i < data->m_keys.size(); i++) {
+                ESString* oldKey = data->m_keys[i].toString();
+                if (*key == *oldKey) {
+                    differenceKeys.push_back(key);
+                    break;
+                }
+            }
+        }
+    }
+    data = newData;
+    data->m_keys = std::move(differenceKeys);
     return data;
 }
 

@@ -1168,20 +1168,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
             if (shouldUpdateEnumerateObjectData) {
                 POP(stack, bp);
-                EnumerateObjectData* newData = executeEnumerateObject(data->m_object);
-                std::vector<ESValue, gc_allocator<ESValue> > differenceKeys;
-                for (ESValue& key : newData->m_keys) {
-                    if (std::find(data->m_keys.begin(), data->m_keys.begin() + data->m_idx, key) == data->m_keys.begin() + data->m_idx) {
-                        // If a property that has not yet been visited during enumeration is deleted, then it will not be visited.
-                        if (std::find(data->m_keys.begin() + data->m_idx, data->m_keys.end(), key) != data->m_keys.end()) {
-                            // If new properties are added to the object being enumerated during enumeration,
-                            // the newly added properties are not guaranteed to be visited in the active enumeration.
-                            differenceKeys.push_back(key);
-                        }
-                    }
-                }
-                data = newData;
-                data->m_keys = std::move(differenceKeys);
+                data = updateEnumerateObjectData(data);
                 PUSH(stack, topOfStack, ESValue((ESPointer *)data));
             }
 

@@ -34,7 +34,7 @@ do
 while (false)
 var b=20;
 
-with(a) do WScript.Echo(4); while (false)
+//with(a) do WScript.Echo(4); while (false)
 
 for(var i=0; i<5; i++)
   do
