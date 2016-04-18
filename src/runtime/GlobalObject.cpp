@@ -5816,7 +5816,7 @@ void GlobalObject::installRegExp()
     // 21.2.5.2 RegExp.prototype.exec( string )
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
     m_regexpPrototype->defineDataProperty(strings->exec, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
             throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->exec, builtinErrorMessageThisNotRegExpObject);
         escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
