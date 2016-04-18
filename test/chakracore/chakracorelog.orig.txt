@@ -202,7 +202,7 @@ Running all tests
 [es5] tostring_override.js .......... Pass
 [es5] valueof_override.js .......... Pass
 [es5] TypeConversions.js .......... Pass
-[es5] RegExpStrictDelete.js .......... Fail
+[es5] RegExpStrictDelete.js .......... Skip (Chakracore-only)
 [es5] settersArguments.js .......... Fail
 [es5] settersArguments.js .......... Fail
 [es5] augmentPrimitive.js .......... Fail
@@ -827,7 +827,7 @@ Running all tests
 [Object] isPrototypeOf.js .......... Pass
 [Object] Object.js .......... Pass
 [Object] null.js .......... Fail
-[Object] propertyIsEnumarable.js .......... Fail
+[Object] propertyIsEnumarable.js .......... Pass
 [Object] toLocaleString2.js .......... Fail
 [Object] toLocaleString.js .......... Fail
 [Object] toLocaleString.js .......... Fail
@@ -851,7 +851,7 @@ Running all tests
 [Object] multivardecl.js .......... Pass
 [Object] propertyStrings.js .......... Pass
 [Object] forinenumcache.js .......... Fail
-[Object] forinnonenumerableshadowing.js .......... Fail
+[Object] forinnonenumerableshadowing.js .......... Pass
 [Object] forinfastpath.js .......... Pass
 [Object] forIn.error.js .......... Fail
 [Object] HashTable.js .......... Pass
@@ -882,8 +882,8 @@ Running all tests
 [Regex] regex1.js .......... Fail
 [Regex] regexSplitOptimization.js .......... Fail
 [Regex] match_global.js .......... Pass
-[Regex] configurableTest.js .......... Fail
-[Regex] rx1.js .......... Fail
+[Regex] configurableTest.js .......... Pass
+[Regex] rx1.js .......... Skip (Not in scope (es6))
 [Regex] regex_replacefn.js .......... Pass
 [Regex] regex_replacefn_this.js .......... Pass
 [Regex] class-case.js .......... Pass
@@ -894,19 +894,19 @@ Running all tests
 [Regex] undefined_option.js .......... Pass
 [Regex] toString.js .......... Fail
 [Regex] trigram.js .......... Pass
-[Regex] nul_character.js .......... Fail
-[Regex] replace.js .......... Fail
+[Regex] nul_character.js .......... Pass
+[Regex] replace.js .......... Skip (Not in scope (es6))
 [Regex] BolEol.js .......... Pass
+[Regex] crossContext.js .......... Skip (Chakracore-only)
 [Regex] crossContext.js .......... Fail
-[Regex] crossContext.js .......... Fail
-[Regex] properties.js .......... Fail
+[Regex] properties.js .......... Skip (Not in scope (RegExp.options))
 [Regex] NotBOILiteral2.js .......... Pass
-[Regex] BoiHardFail.js .......... Fail
-[Regex] BoiHardFail.js .......... Fail
+[Regex] BoiHardFail.js .......... Skip (Chakracore-only)
+[Regex] BoiHardFail.js .......... Skip (Chakracore-only)
 [Regex] leadtrail.js .......... Pass
 [Regex] Bug517864.js .......... Pass
 [Regex] stackregex_box.js .......... Pass
-[Regex] blue_102584_1.js .......... Fail
+[Regex] blue_102584_1.js .......... Pass
 [Regex] blue_102584_2.js .......... Pass
 [Regex] Bug737451.js .......... Pass
 [Regex] Bug1153694.js .......... Fail
@@ -1149,7 +1149,7 @@ Running all tests
 [UnifiedRegex] class-case.js .......... Pass
 [UnifiedRegex] crazy.js .......... Pass
 [UnifiedRegex] es5SpecExamples.js .......... Pass
-[UnifiedRegex] escapes.js .......... Fail
+[UnifiedRegex] escapes.js .......... Pass
 [UnifiedRegex] fastRegexCaptures.js .......... Pass
 [UnifiedRegex] lastIndex.js .......... Pass
 [UnifiedRegex] lazyVsEagerLastIndex.js .......... Pass
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		74		20		12		(69%)
               Basics		56		38		5		13		(67%)
-                 es5		56		36		20		0		(64%)
+                 es5		56		36		19		1		(64%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		2		0		(98%)
@@ -1441,8 +1441,8 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		191		11		4		(92%)
             Function		61		52		0		9		(85%)
-              Object		58		41		12		5		(70%)
-               Regex		33		19		14		0		(57%)
+              Object		58		43		10		5		(74%)
+               Regex		33		22		5		6		(66%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		12		1		0		(92%)
            Operators		32		22		10		0		(68%)
@@ -1454,7 +1454,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Bugs		36		21		7		8		(58%)
               strict		104		66		10		28		(63%)
                 utf8		3		1		1		1		(33%)
-        UnifiedRegex		26		22		4		0		(84%)
+        UnifiedRegex		26		23		3		0		(88%)
              bailout		34		31		3		0		(91%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1104		206		96		(78%)
+               Total		1406		1110		193		103		(78%)

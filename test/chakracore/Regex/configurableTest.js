@@ -10,12 +10,11 @@ Object.defineProperty(RegExp, "fakeProp", {
     configurable: true
 });
 
-var propertyConstructorArray = ["fakeProp","$_","$*","$&","$+","$`","$'","input",
-                                "lastMatch","lastParen","leftContext","rightContext",
-                                "index","length","prototype","constructor"
+var propertyConstructorArray = ["fakeProp",
+                                "length","prototype","constructor"
                                ];
 
-var propertyInstanceArray = ["global","ignoreCase","lastIndex","multiline","source","sticky"];
+var propertyInstanceArray = ["global","ignoreCase","lastIndex","multiline","source"];
 
 function RegexTests(i,propertyArray)
 {

@@ -357,7 +357,7 @@ private:
             
             // Not a backreference, and not octal.
             if (peek() >= '8') {
-                delegate.atomPatternCharacter('\\');
+                // delegate.atomPatternCharacter('\\');
                 break;
             }
 
@@ -781,8 +781,11 @@ private:
         ASSERT(WTF::isASCIIOctalDigit(peek()));
 
         unsigned n = consumeDigit();
-        while (n < 32 && !atEndOfPattern() && WTF::isASCIIOctalDigit(peek()))
+        int i = 0;
+        while (i < 2 && n < 32 && !atEndOfPattern() && WTF::isASCIIOctalDigit(peek())) {
             n = n * 8 + consumeDigit();
+            i++;
+        }
         return n;
     }
 

@@ -39,6 +39,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>rx1.js</files>
       <baseline>rx1.baseline</baseline>
     </default>
@@ -111,6 +112,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>replace.js</files>
       <baseline>replace.baseline</baseline>
     </default>
@@ -123,6 +125,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>crossContext.js</files>
       <baseline>crossContext.baseline</baseline>
       <tags>exclude_native</tags>
@@ -137,6 +140,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (RegExp.options)</escargot-skip>
       <files>properties.js</files>
       <baseline>properties.baseline</baseline>
       <compile-flags>-ES6RegExPrototypeProperties-</compile-flags>
@@ -150,6 +154,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>BoiHardFail.js</files>
       <baseline>BoiHardFail.baseline</baseline>
       <compile-flags>-regexDebug</compile-flags>
@@ -158,6 +163,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>BoiHardFail.js</files>
       <baseline>BoiHardFail.amd64.baseline</baseline>
       <compile-flags>-regexDebug</compile-flags>

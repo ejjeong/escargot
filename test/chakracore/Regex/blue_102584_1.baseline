@@ -38,12 +38,12 @@ expected : String.prototype.replace: this value is undefined or null
 expected : String.prototype.replace: this value is undefined or null
 a
 a
-expected : RegExp.prototype.exec: 'this' is not a RegExp object
-expected : RegExp.prototype.exec: 'this' is not a RegExp object
+expected : cannot convert null into object
+expected : cannot convert null into object
 expected : Function.prototype.apply: argument is not an Object
 expected : Function.prototype.apply: argument is not an Object
-expected : RegExp.prototype.exec: 'this' is not a RegExp object
-expected : RegExp.prototype.exec: 'this' is not a RegExp object
+expected : RegExp.prototype.exec: this value is not a RegExp object
+expected : RegExp.prototype.exec: this value is not a RegExp object
 -1
 true
 

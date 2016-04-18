@@ -5884,8 +5884,8 @@ Test2 d.propertyIsEnumerable(z): true
 Test2 d.hasOwnProperty(x): false
 Test2 d.hasOwnProperty(y): true
 Test2 d.hasOwnProperty(z): true
-Exception: TypeError: Object.prototype.propertyIsEnumerable: this value is undefined or null Object.prototype.propertyIsEnumerable: this value is undefined or null
-Exception: TypeError: Object.prototype.propertyIsEnumerable: this value is undefined or null Object.prototype.propertyIsEnumerable: this value is undefined or null
+Exception: TypeError: cannot convert undefined into object cannot convert undefined into object
+Exception: TypeError: cannot convert null into object cannot convert null into object
 re.propertyIsEnumerable("lastIndex") : false
 re.propertyIsEnumerable("source") : false
 re.propertyIsEnumerable("global") : false
@@ -5905,10 +5905,3 @@ re.propertyIsEnumerable("undefined") : false
 re.propertyIsEnumerable("undefined") : false
 re.propertyIsEnumerable("undefined") : false
 re.propertyIsEnumerable("undefined") : false
-RegExp.propertyIsEnumerable("$_") : false
-RegExp.propertyIsEnumerable("index") : false
-RegExp.propertyIsEnumerable("lastIndex") : false
-RegExp.propertyIsEnumerable("$&") : false
-RegExp.propertyIsEnumerable("$+") : false
-RegExp.propertyIsEnumerable("$`") : false
-RegExp.propertyIsEnumerable("$'") : false

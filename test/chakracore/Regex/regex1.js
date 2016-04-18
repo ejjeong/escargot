@@ -24,6 +24,7 @@ function Assert(condition, category)
 
 write("regex test1");
 
+// escargot-comment : original code was on ES6 spec, so it was modified to fit ES5
 var re = /a/;
 var str = new String("abcda");
 if (re.test(str)) {
@@ -49,11 +50,11 @@ write("a.length : " + a.length);
 write("a[0]:" + a[0]);
 
 var reTemp = /abc/i;
-var re = new RegExp(reTemp, "g");
+var re = new RegExp("abc", "g");
 var tmp = "abcdef".replace(re, "");
 Assert(re.lastIndex == 0, "lastIndex");
 
-var re = new RegExp(/abc/i, "g");
+var re = new RegExp("abc", "g");
 var tmp = "abcdef".match(re);
 Assert(re.lastIndex == 0, "lastIndex");
 
@@ -65,12 +66,12 @@ var re = /abc/;
 re.exec("abcdef");
 Assert(re.lastIndex == 0, "lastIndex");
 
-var re = new RegExp(/abc/g, "i");
+var re = new RegExp("abc", "i");
 Assert(re.global == false, "global");
 Assert(re.ignoreCase == true, "ignoreCase");
 
 var re = /abc/i;
-var re1 = new RegExp(re, "gm");
+var re1 = new RegExp("abc", "gm");
 Assert(re.global == false, "global");
 Assert(re.multiline == false, "multiline");
 Assert(re.ignoreCase == true, "ignoreCase");

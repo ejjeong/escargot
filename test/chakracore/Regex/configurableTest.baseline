@@ -6,7 +6,7 @@ can you delete the property:  true did it actually delete? true
 Pass Delete Test
 
 
-starting Property[ 1 ]:  $_
+starting Property[ 1 ]:  length
 Does Property exist:  true
 Is the Property configurable:  false
 PASS, Not Configurable and will not allow redefinition
@@ -15,11 +15,7 @@ can you delete the property:  false did it actually delete? false
 Pass Delete Test
 
 
-starting Property[ 2 ]:  $*
-Does Property exist:  false
-
-
-starting Property[ 3 ]:  $&
+starting Property[ 2 ]:  prototype
 Does Property exist:  true
 Is the Property configurable:  false
 PASS, Not Configurable and will not allow redefinition
@@ -28,106 +24,7 @@ can you delete the property:  false did it actually delete? false
 Pass Delete Test
 
 
-starting Property[ 4 ]:  $+
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 5 ]:  $`
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 6 ]:  $'
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 7 ]:  input
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 8 ]:  lastMatch
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 9 ]:  lastParen
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 10 ]:  leftContext
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 11 ]:  rightContext
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 12 ]:  index
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 13 ]:  length
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 14 ]:  prototype
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 15 ]:  constructor
+starting Property[ 3 ]:  constructor
 Does Property exist:  false
 
 
@@ -148,10 +45,6 @@ Does Property exist:  false
 
 
 starting Property[ 4 ]:  source
-Does Property exist:  false
-
-
-starting Property[ 5 ]:  sticky
 Does Property exist:  false
 
 
@@ -192,15 +85,6 @@ Pass Delete Test
 
 
 starting Property[ 4 ]:  source
-Does Property exist:  true
-Is the Property configurable:  false
-PASS, Not Configurable and will not allow redefinition
-PASS
-can you delete the property:  false did it actually delete? false
-Pass Delete Test
-
-
-starting Property[ 5 ]:  sticky
 Does Property exist:  true
 Is the Property configurable:  false
 PASS, Not Configurable and will not allow redefinition

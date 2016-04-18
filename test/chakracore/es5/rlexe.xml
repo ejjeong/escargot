@@ -254,6 +254,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>RegExpStrictDelete.js</files>
       <baseline>RegExpStrictDelete.baseline</baseline>
     </default>

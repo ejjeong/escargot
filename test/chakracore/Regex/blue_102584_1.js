@@ -5,7 +5,7 @@
 
 
 function test1() { WScript.Echo(/A/.exec({})); };
-function test2() { WScript.Echo("".match({})); };
+//function test2() { WScript.Echo("".match({})); };
 function test2() { WScript.Echo("".indexOf({})); };
 function test3() { WScript.Echo("".match()); }; 
 function test4() { WScript.Echo("a".match(/a/g)); }; 
