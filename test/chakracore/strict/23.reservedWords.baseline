@@ -1,75 +1,75 @@
 (function(){var break;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'break' as a variable name.
 (function(){var case;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'case' as a variable name.
 (function(){var catch;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'catch' as a variable name.
 (function(){var continue;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'continue' as a variable name.
 (function(){var debugger;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'debugger' as a variable name.
 (function(){var default;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'default' as a variable name.
 (function(){var delete;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'delete' as a variable name.
 (function(){var do;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'do' as a variable name.
 (function(){var else;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'else' as a variable name.
 (function(){var finally;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'finally' as a variable name.
 (function(){var for;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'for' as a variable name.
 (function(){var function;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'function' as a variable name.
 (function(){var if;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'if' as a variable name.
 (function(){var in;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'in' as a variable name.
 (function(){var instanceof;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'instanceof' as a variable name.
 (function(){var new;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'new' as a variable name.
 (function(){var return;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'return' as a variable name.
 (function(){var switch;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'switch' as a variable name.
 (function(){var this;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'this' as a variable name.
 (function(){var throw;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'throw' as a variable name.
 (function(){var try;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'try' as a variable name.
 (function(){var typeof;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'typeof' as a variable name.
 (function(){var var;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'var' as a variable name.
 (function(){var void;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'void' as a variable name.
 (function(){var while;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'while' as a variable name.
 (function(){var with;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'with' as a variable name.
 (function(){var null;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'null' as a variable name.
 (function(){var false;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'false' as a variable name.
 (function(){var true;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'true' as a variable name.
 (function(){var class;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'class' as a variable name.
 (function(){var const;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'const' as a variable name.
 (function(){var enum;})();
-SyntaxError: The use of a future reserved word for an identifier is invalid
+SyntaxError: Cannot use the keyword 'enum' as a variable name.
 (function(){var export;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'export' as a variable name.
 (function(){var extends;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'extends' as a variable name.
 (function(){var import;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'import' as a variable name.
 (function(){var super;})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'super' as a variable name.
 (function(){var implements;})();
 (function(){var interface;})();
 (function(){var let;})();
@@ -81,79 +81,79 @@ SyntaxError: The use of a keyword for an identifier is invalid
 (function(){var yield;})();
 (function(){var foo;})();
 (function(){var <;})();
-SyntaxError: Expected identifier
+SyntaxError: Cannot use the keyword '<' as a variable name.
 (function(){function break(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'break' as a function name.
 (function(){function case(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'case' as a function name.
 (function(){function catch(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'catch' as a function name.
 (function(){function continue(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'continue' as a function name.
 (function(){function debugger(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'debugger' as a function name.
 (function(){function default(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'default' as a function name.
 (function(){function delete(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'delete' as a function name.
 (function(){function do(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'do' as a function name.
 (function(){function else(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'else' as a function name.
 (function(){function finally(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'finally' as a function name.
 (function(){function for(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'for' as a function name.
 (function(){function function(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'function' as a function name.
 (function(){function if(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'if' as a function name.
 (function(){function in(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'in' as a function name.
 (function(){function instanceof(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'instanceof' as a function name.
 (function(){function new(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'new' as a function name.
 (function(){function return(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'return' as a function name.
 (function(){function switch(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'switch' as a function name.
 (function(){function this(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'this' as a function name.
 (function(){function throw(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'throw' as a function name.
 (function(){function try(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'try' as a function name.
 (function(){function typeof(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'typeof' as a function name.
 (function(){function var(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'var' as a function name.
 (function(){function void(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'void' as a function name.
 (function(){function while(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'while' as a function name.
 (function(){function with(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'with' as a function name.
 (function(){function null(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'null' as a function name.
 (function(){function false(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'false' as a function name.
 (function(){function true(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'true' as a function name.
 (function(){function class(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'class' as a function name.
 (function(){function const(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'const' as a function name.
 (function(){function enum(){}})();
-SyntaxError: The use of a future reserved word for an identifier is invalid
+SyntaxError: Cannot use the keyword 'enum' as a function name.
 (function(){function export(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'export' as a function name.
 (function(){function extends(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'extends' as a function name.
 (function(){function import(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'import' as a function name.
 (function(){function super(){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'super' as a function name.
 (function(){function implements(){}})();
 (function(){function interface(){}})();
 (function(){function let(){}})();
@@ -165,79 +165,79 @@ SyntaxError: The use of a keyword for an identifier is invalid
 (function(){function yield(){}})();
 (function(){function foo(){}})();
 (function(){function <(){}})();
-SyntaxError: Expected identifier
+SyntaxError: Cannot use the keyword '<' as a function name.
 (function(){(function break(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'break' as a function name.
 (function(){(function case(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'case' as a function name.
 (function(){(function catch(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'catch' as a function name.
 (function(){(function continue(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'continue' as a function name.
 (function(){(function debugger(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'debugger' as a function name.
 (function(){(function default(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'default' as a function name.
 (function(){(function delete(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'delete' as a function name.
 (function(){(function do(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'do' as a function name.
 (function(){(function else(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'else' as a function name.
 (function(){(function finally(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'finally' as a function name.
 (function(){(function for(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'for' as a function name.
 (function(){(function function(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'function' as a function name.
 (function(){(function if(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'if' as a function name.
 (function(){(function in(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'in' as a function name.
 (function(){(function instanceof(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'instanceof' as a function name.
 (function(){(function new(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'new' as a function name.
 (function(){(function return(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'return' as a function name.
 (function(){(function switch(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'switch' as a function name.
 (function(){(function this(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'this' as a function name.
 (function(){(function throw(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'throw' as a function name.
 (function(){(function try(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'try' as a function name.
 (function(){(function typeof(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'typeof' as a function name.
 (function(){(function var(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'var' as a function name.
 (function(){(function void(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'void' as a function name.
 (function(){(function while(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'while' as a function name.
 (function(){(function with(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'with' as a function name.
 (function(){(function null(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'null' as a function name.
 (function(){(function false(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'false' as a function name.
 (function(){(function true(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'true' as a function name.
 (function(){(function class(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'class' as a function name.
 (function(){(function const(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'const' as a function name.
 (function(){(function enum(){})})();
-SyntaxError: The use of a future reserved word for an identifier is invalid
+SyntaxError: Cannot use the keyword 'enum' as a function name.
 (function(){(function export(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'export' as a function name.
 (function(){(function extends(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'extends' as a function name.
 (function(){(function import(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'import' as a function name.
 (function(){(function super(){})})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'super' as a function name.
 (function(){(function implements(){})})();
 (function(){(function interface(){})})();
 (function(){(function let(){})})();
@@ -249,79 +249,79 @@ SyntaxError: The use of a keyword for an identifier is invalid
 (function(){(function yield(){})})();
 (function(){(function foo(){})})();
 (function(){(function <(){})})();
-SyntaxError: Expected '('
+SyntaxError: Cannot use the keyword '<' as a function name.
 (function(){(function(break){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'break' as a variable name.
 (function(){(function(case){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'case' as a variable name.
 (function(){(function(catch){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'catch' as a variable name.
 (function(){(function(continue){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'continue' as a variable name.
 (function(){(function(debugger){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'debugger' as a variable name.
 (function(){(function(default){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'default' as a variable name.
 (function(){(function(delete){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'delete' as a variable name.
 (function(){(function(do){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'do' as a variable name.
 (function(){(function(else){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'else' as a variable name.
 (function(){(function(finally){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'finally' as a variable name.
 (function(){(function(for){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'for' as a variable name.
 (function(){(function(function){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'function' as a variable name.
 (function(){(function(if){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'if' as a variable name.
 (function(){(function(in){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'in' as a variable name.
 (function(){(function(instanceof){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'instanceof' as a variable name.
 (function(){(function(new){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'new' as a variable name.
 (function(){(function(return){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'return' as a variable name.
 (function(){(function(switch){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'switch' as a variable name.
 (function(){(function(this){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'this' as a variable name.
 (function(){(function(throw){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'throw' as a variable name.
 (function(){(function(try){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'try' as a variable name.
 (function(){(function(typeof){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'typeof' as a variable name.
 (function(){(function(var){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'var' as a variable name.
 (function(){(function(void){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'void' as a variable name.
 (function(){(function(while){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'while' as a variable name.
 (function(){(function(with){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'with' as a variable name.
 (function(){(function(null){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'null' as a variable name.
 (function(){(function(false){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'false' as a variable name.
 (function(){(function(true){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'true' as a variable name.
 (function(){(function(class){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'class' as a variable name.
 (function(){(function(const){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'const' as a variable name.
 (function(){(function(enum){});})();
-SyntaxError: The use of a future reserved word for an identifier is invalid
+SyntaxError: Cannot use the keyword 'enum' as a variable name.
 (function(){(function(export){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'export' as a variable name.
 (function(){(function(extends){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'extends' as a variable name.
 (function(){(function(import){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'import' as a variable name.
 (function(){(function(super){});})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'super' as a variable name.
 (function(){(function(implements){});})();
 (function(){(function(interface){});})();
 (function(){(function(let){});})();
@@ -333,79 +333,79 @@ SyntaxError: The use of a keyword for an identifier is invalid
 (function(){(function(yield){});})();
 (function(){(function(foo){});})();
 (function(){(function(<){});})();
-SyntaxError: Expected identifier
+SyntaxError: Cannot use the keyword '<' as a variable name.
 (function(){try{} catch(break){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'break' as a catch variable name.
 (function(){try{} catch(case){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'case' as a catch variable name.
 (function(){try{} catch(catch){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'catch' as a catch variable name.
 (function(){try{} catch(continue){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'continue' as a catch variable name.
 (function(){try{} catch(debugger){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'debugger' as a catch variable name.
 (function(){try{} catch(default){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'default' as a catch variable name.
 (function(){try{} catch(delete){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'delete' as a catch variable name.
 (function(){try{} catch(do){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'do' as a catch variable name.
 (function(){try{} catch(else){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'else' as a catch variable name.
 (function(){try{} catch(finally){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'finally' as a catch variable name.
 (function(){try{} catch(for){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'for' as a catch variable name.
 (function(){try{} catch(function){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'function' as a catch variable name.
 (function(){try{} catch(if){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'if' as a catch variable name.
 (function(){try{} catch(in){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'in' as a catch variable name.
 (function(){try{} catch(instanceof){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'instanceof' as a catch variable name.
 (function(){try{} catch(new){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'new' as a catch variable name.
 (function(){try{} catch(return){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'return' as a catch variable name.
 (function(){try{} catch(switch){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'switch' as a catch variable name.
 (function(){try{} catch(this){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'this' as a catch variable name.
 (function(){try{} catch(throw){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'throw' as a catch variable name.
 (function(){try{} catch(try){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'try' as a catch variable name.
 (function(){try{} catch(typeof){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'typeof' as a catch variable name.
 (function(){try{} catch(var){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'var' as a catch variable name.
 (function(){try{} catch(void){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'void' as a catch variable name.
 (function(){try{} catch(while){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'while' as a catch variable name.
 (function(){try{} catch(with){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'with' as a catch variable name.
 (function(){try{} catch(null){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'null' as a catch variable name.
 (function(){try{} catch(false){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'false' as a catch variable name.
 (function(){try{} catch(true){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'true' as a catch variable name.
 (function(){try{} catch(class){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'class' as a catch variable name.
 (function(){try{} catch(const){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'const' as a catch variable name.
 (function(){try{} catch(enum){}})();
-SyntaxError: The use of a future reserved word for an identifier is invalid
+SyntaxError: Cannot use the keyword 'enum' as a catch variable name.
 (function(){try{} catch(export){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'export' as a catch variable name.
 (function(){try{} catch(extends){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'extends' as a catch variable name.
 (function(){try{} catch(import){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'import' as a catch variable name.
 (function(){try{} catch(super){}})();
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use the keyword 'super' as a catch variable name.
 (function(){try{} catch(implements){}})();
 (function(){try{} catch(interface){}})();
 (function(){try{} catch(let){}})();
@@ -417,7 +417,7 @@ SyntaxError: The use of a keyword for an identifier is invalid
 (function(){try{} catch(yield){}})();
 (function(){try{} catch(foo){}})();
 (function(){try{} catch(<){}})();
-SyntaxError: Expected identifier
+SyntaxError: Cannot use the keyword '<' as a catch variable name.
 (function(){({break: 0});})();
 (function(){({case: 0});})();
 (function(){({catch: 0});})();
@@ -465,7 +465,7 @@ SyntaxError: Expected identifier
 (function(){({yield: 0});})();
 (function(){({foo: 0});})();
 (function(){({<: 0});})();
-SyntaxError: Expected identifier, string or number
+SyntaxError: Unexpected Punctuator '<'. Expected a property name
 (function(){var o = {}; o.break = 0;})();
 (function(){var o = {}; o.case = 0;})();
 (function(){var o = {}; o.catch = 0;})();
@@ -513,7 +513,7 @@ SyntaxError: Expected identifier, string or number
 (function(){var o = {}; o.yield = 0;})();
 (function(){var o = {}; o.foo = 0;})();
 (function(){var o = {}; o.< = 0;})();
-SyntaxError: Expected identifier
+SyntaxError: Unexpected Punctuator '<'. Expected a property name
 (function(){var o = {}; o["break"] = 0;})();
 (function(){var o = {}; o["case"] = 0;})();
 (function(){var o = {}; o["catch"] = 0;})();

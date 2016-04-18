@@ -1,4 +1,4 @@
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Unexpected Identifier 'yield'. Future reserved word cannot used as Identifier in strict mode
 No error
-SyntaxError: The use of a keyword for an identifier is invalid
+SyntaxError: Cannot use a variable named 'yield' in strict mode.
 No error

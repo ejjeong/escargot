@@ -3302,7 +3302,7 @@ escargot::Node* parseStatement(ParseContext* ctx)
         } else if (ctx->m_lookahead->m_keywordKind == For) {
             return parseForStatement(ctx);
         } else if (ctx->m_lookahead->m_keywordKind == Function) {
-            throwEsprimaException(u"Function declaration inside block is not supported");
+            throwEsprimaException(u"Function declaration cannot be used as statement");
         } else if (ctx->m_lookahead->m_keywordKind == If) {
             return parseIfStatement(ctx);
         } else if (ctx->m_lookahead->m_keywordKind == Return) {
@@ -3410,17 +3410,6 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
         } else {
             strict = false;
         }
-        if (strict) {
-            ctx->m_strict = true;
-            if (firstRestricted) {
-                // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
-                throwOctalLiteralUsedError();
-            }
-        } else {
-            if (!firstRestricted && token->m_octal) {
-                firstRestricted = token;
-            }
-        }
 
         escargot::Node* statement = parseStatementListItem(ctx);
         if (statement)
@@ -3429,7 +3418,20 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
         if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
             // this is not directive
             break;
+        } else {
+            if (strict) {
+                ctx->m_strict = true;
+                if (firstRestricted) {
+                    // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
+                    throwOctalLiteralUsedError();
+                }
+            } else {
+                if (!firstRestricted && token->m_octal) {
+                    firstRestricted = token;
+                }
+            }
         }
+
         // directive = source.slice(token.start + 1, token.end - 1);
         /*
         escargot::UTF16String directive = ctx->m_source.substr(token->m_start + 1,
@@ -4032,7 +4034,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     default:
         break;
     };
-    throwEsprimaException();
+    throwUnexpectedToken(token, u"Expected a property name");
     RELEASE_ASSERT_NOT_REACHED();
 }
 
@@ -4878,6 +4880,8 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         tolerateUnexpectedToken(lookahead);
         }*/
         auto ll = lex(ctx);
+        if (ctx->m_strict && isStrictModeReservedWord(ll->m_value))
+            throwUnexpectedToken(ll);
         expr = new escargot::IdentifierNode(ll->m_value.toInternalAtomicString());
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // expr = node.finishIdentifier(lex().value);
@@ -4985,7 +4989,7 @@ escargot::Node* parseNonComputedProperty(ParseContext* ctx)
     RefPtr<ParseStatus> token = lex(ctx);
 
     if (!isIdentifierName(token.get())) {
-        throwEsprimaException();
+        throwUnexpectedToken(token, u"Expected a property name");
     }
 
     // return node.finishIdentifier(token.value);
@@ -5796,17 +5800,6 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         } else {
             strict = false;
         }
-        if (strict) {
-            ctx->m_strict = true;
-            if (firstRestricted) {
-                // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
-                throwOctalLiteralUsedError();
-            }
-        } else {
-            if (!firstRestricted && token->m_octal) {
-                firstRestricted = token;
-            }
-        }
 
         escargot::Node* statement = parseStatementListItem(ctx);
         if (statement)
@@ -5815,6 +5808,18 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
             // this is not directive
             break;
+        } else {
+            if (strict) {
+                ctx->m_strict = true;
+                if (firstRestricted) {
+                    // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
+                    throwOctalLiteralUsedError();
+                }
+            } else {
+                if (!firstRestricted && token->m_octal) {
+                    firstRestricted = token;
+                }
+            }
         }
 
         /*

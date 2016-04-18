@@ -1118,21 +1118,21 @@ Running all tests
 [strict] 20.function.js .......... Pass
 [strict] 20.function.js .......... Skip (-ForceStrictMode)
 [strict] 20.function_sm.js .......... Pass
-[strict] 21.functionDeclaration.js .......... Fail
+[strict] 21.functionDeclaration.js .......... Pass
 [strict] 21.functionDeclaration.js .......... Skip (-ForceStrictMode)
-[strict] 21.functionDeclaration_sm.js .......... Fail
-[strict] 22.callerCalleeArguments.js .......... Fail
-[strict] 22.callerCalleeArguments_sm.js .......... Fail
-[strict] 23.reservedWords.js .......... Fail
-[strict] 23.reservedWords_sm.js .......... Fail
+[strict] 21.functionDeclaration_sm.js .......... Pass
+[strict] 22.callerCalleeArguments.js .......... Skip (Deprecated)
+[strict] 22.callerCalleeArguments_sm.js .......... Skip (Deprecated)
+[strict] 23.reservedWords.js .......... Pass
+[strict] 23.reservedWords_sm.js .......... Pass
 [strict] 24.properties.js .......... Pass
 [strict] 24.properties.js .......... Skip (-ForceStrictMode)
 [strict] 24.properties_sm.js .......... Pass
-[strict] strictkwd.js .......... Fail
-[strict] strictkwd.js .......... Fail
+[strict] strictkwd.js .......... Pass
+[strict] strictkwd.js .......... Pass
 [strict] strictkwd-deferred.js .......... Pass
-[strict] comma_bug219390.js .......... Fail
-[strict] comma_bug219390.js .......... Fail
+[strict] comma_bug219390.js .......... Pass
+[strict] comma_bug219390.js .......... Pass
 [strict] nestedfnnameargs.js .......... Pass
 [strict] nestedfnnameargs.js .......... Pass
 [strict] bug212755.js .......... Skip (Not in scope (with))
@@ -1452,7 +1452,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                  Lib		16		4		12		0		(25%)
                 JSON		13		9		4		0		(69%)
                 Bugs		36		21		7		8		(58%)
-              strict		104		66		10		28		(63%)
+              strict		104		74		0		30		(71%)
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		23		3		0		(88%)
              bailout		34		31		3		0		(91%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1110		193		103		(78%)
+               Total		1406		1118		183		105		(79%)
