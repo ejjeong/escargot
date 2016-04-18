@@ -38,10 +38,10 @@ function test_concat(size) {
 }
 
 echo("-------concat Small-------------");
-test_concat(2147483648);
+test_concat(1073741824);
 
 echo("-------concat Large-------------");
-test_concat(4294967294);
+test_concat(2147483642);
 
 echo("-------test prototype lookup-------------");
 for (var i = 0; i < 10; i++) {

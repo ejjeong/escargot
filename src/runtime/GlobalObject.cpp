@@ -1831,6 +1831,9 @@ void GlobalObject::installArray()
 
                 while (curIndex < len) {
                     if (arr->hasProperty(ESValue(curIndex))) {
+                        if (n > ESValue::ESInvalidIndexValue - curIndex) {
+                            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, builtinErrorMessageRangeError);
+                        }
                         ret->defineDataProperty(ESValue(n + curIndex), true, true, true, arr->get(curIndex));
                         curIndex++;
                     } else {
@@ -1838,7 +1841,6 @@ void GlobalObject::installArray()
                     }
                 }
 
-                // array object range is from 0 to 2^32-1
                 if (n > ESValue::ESInvalidIndexValue - len) {
                     throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, builtinErrorMessageRangeError);
                 }
@@ -1846,6 +1848,10 @@ void GlobalObject::installArray()
                 n += len;
                 ret->setLength(n);
             } else {
+                if (n > ESValue::ESInvalidIndexValue - 1) {
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, builtinErrorMessageRangeError);
+                }
+
                 ret->defineDataProperty(ESValue(n++), true, true, true, argi);
             }
         }

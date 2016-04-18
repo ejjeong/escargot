@@ -19,7 +19,7 @@ Running all tests
 [Array] array_ctr.js .......... Pass
 [Array] arr_bailout.js .......... Pass
 [Array] concat1.js .......... Pass
-[Array] concat2.js .......... Fail
+[Array] concat2.js .......... Pass
 [Array] delete.js .......... Pass
 [Array] es5array_push.js .......... Pass
 [Array] ldindex.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		71		24		11		(66%)
+               Array		106		72		23		11		(67%)
               Basics		56		38		5		13		(67%)
                  es5		56		36		20		0		(64%)
                   EH		17		11		4		2		(64%)
