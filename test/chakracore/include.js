@@ -1,4 +1,5 @@
 var nativePrint = print;
+var nativeGlobal = this;
 var WScript = {
     Echo : function() {
         var length = arguments.length;
@@ -20,6 +21,7 @@ var WScript = {
         } catch (e) {
             load("test\\chakracore\\UnitTestFramework\\" + path);
         }
+        return nativeGlobal;
     },
     Arguments : ["summary"]
 };

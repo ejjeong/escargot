@@ -210,10 +210,10 @@ Running all tests
 [es5] es5array_objproto.js .......... Pass
 [es5] es5array_arrayproto.js .......... Pass
 [es5] es5array_arrayproto_opt.js .......... Pass
-[es5] es5array_arrayproto_crosssite.js .......... Fail
+[es5] es5array_arrayproto_crosssite.js .......... Pass
 [es5] es5array_protoarr.js .......... Pass
 [es5] es5array_protoobj.js .......... Pass
-[es5] es5array_protoobj_crosssite.js .......... Fail
+[es5] es5array_protoobj_crosssite.js .......... Pass
 [es5] es5array_replaceprotoarr.js .......... Pass
 [es5] es5array_replaceprotoobj.js .......... Pass
 [es5] resetproperty.js .......... Pass
@@ -242,7 +242,7 @@ Running all tests
 [InlineCaches] t4.js .......... Pass
 [InlineCaches] t5.js .......... Pass
 [InlineCaches] test6.js .......... Skip (Not in scope (wtih))
-[InlineCaches] TypePropertyCache_CrossContext.js .......... Fail
+[InlineCaches] TypePropertyCache_CrossContext.js .......... Pass
 [InlineCaches] getter_sideeffect.js .......... Pass
 [InlineCaches] prototypeChainModifications.js .......... Pass
 [InlineCaches] inlnieLocalCacheWithoutProperty.js .......... Pass
@@ -1425,9 +1425,9 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		67		28		11		(63%)
               Basics		56		38		5		13		(67%)
-                 es5		56		34		22		0		(60%)
+                 es5		56		36		20		0		(64%)
                   EH		17		11		4		2		(64%)
-        InlineCaches		21		19		1		1		(90%)
+        InlineCaches		21		20		0		1		(95%)
            Generated		110		108		2		0		(98%)
             Closures		18		12		3		3		(66%)
              Strings		36		34		0		2		(94%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1087		224		95		(77%)
+               Total		1406		1090		221		95		(77%)
