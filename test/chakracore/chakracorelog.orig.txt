@@ -15,8 +15,8 @@ Running all tests
 [Array] ArrayElementMissingValueSetToZero.js .......... Pass
 [Array] TryGrowHeadSegmentBug.js .......... Pass
 [Array] array_init2.js .......... Pass
-[Array] array_ctr.js .......... Fail
-[Array] array_ctr.js .......... Fail
+[Array] array_ctr.js .......... Pass
+[Array] array_ctr.js .......... Pass
 [Array] arr_bailout.js .......... Pass
 [Array] concat1.js .......... Pass
 [Array] concat2.js .......... Fail
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		67		28		11		(63%)
+               Array		106		69		26		11		(65%)
               Basics		56		38		5		13		(67%)
                  es5		56		36		20		0		(64%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1090		221		95		(77%)
+               Total		1406		1092		219		95		(77%)

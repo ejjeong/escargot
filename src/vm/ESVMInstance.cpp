@@ -138,7 +138,7 @@ ESVMInstance::ESVMInstance()
     m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) {
         uint32_t newlen = value.toUint32();
         if (value.toNumber() != newlen)
-            ESVMInstance::currentInstance()->throwError((RangeError::create()));
+            ESVMInstance::currentInstance()->throwError((RangeError::create(ESString::create(u"invalid array length"))));
         self->asESArrayObject()->setLength(newlen);
     });
 
