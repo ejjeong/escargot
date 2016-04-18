@@ -34,7 +34,7 @@ Running all tests
 [Array] pop3.js .......... Pass
 [Array] push1.js .......... Pass
 [Array] push2.js .......... Fail
-[Array] push3.js .......... Fail
+[Array] push3.js .......... Pass
 [Array] reverse1.js .......... Pass
 [Array] reverse2.js .......... Pass
 [Array] shift_unshift.js .......... Fail
@@ -460,7 +460,7 @@ Running all tests
 [Boolean] simple2.js .......... Pass
 [Boolean] wrappedobj.js .......... Pass
 [Boolean] Equals.js .......... Pass
-[Boolean] property_and_index_of_boolean.js .......... Fail
+[Boolean] property_and_index_of_boolean.js .......... Pass
 [Number] toString.js .......... Skip (Takes too long)
 [Number] floatcmp.js .......... Pass
 [Number] NaN.js .......... Pass
@@ -1189,7 +1189,7 @@ Running all tests
 [bailout] bailout-floatpref.js .......... Pass
 [bailout] bailout-floatpref.js .......... Pass
 [bailout] bailout-copyProp1.js .......... Pass
-[bailout] bailout-strict-exception.js .......... Fail
+[bailout] bailout-strict-exception.js .......... Pass
 [bailout] AggressiveIntTypeSpecWithFloatPref.js .......... Pass
 [bailout] bailout-inlined.js .......... Pass
 [bailout] bug10.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		69		26		11		(65%)
+               Array		106		70		25		11		(66%)
               Basics		56		38		5		13		(67%)
                  es5		56		36		20		0		(64%)
                   EH		17		11		4		2		(64%)
@@ -1433,7 +1433,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
                Error		23		5		16		2		(21%)
-             Boolean		5		4		1		0		(80%)
+             Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
          ControlFlow		17		14		2		1		(82%)
                 Math		21		20		0		1		(95%)
@@ -1455,7 +1455,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               strict		104		66		10		28		(63%)
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		22		4		0		(84%)
-             bailout		34		30		4		0		(88%)
+             bailout		34		31		3		0		(91%)
                 loop		6		4		2		0		(66%)
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		93		17		1		(83%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1092		219		95		(77%)
+               Total		1406		1095		216		95		(77%)
