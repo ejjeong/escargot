@@ -203,8 +203,8 @@ Running all tests
 [es5] valueof_override.js .......... Pass
 [es5] TypeConversions.js .......... Pass
 [es5] RegExpStrictDelete.js .......... Skip (Chakracore-only)
-[es5] settersArguments.js .......... Fail
-[es5] settersArguments.js .......... Fail
+[es5] settersArguments.js .......... Pass
+[es5] settersArguments.js .......... Pass
 [es5] augmentPrimitive.js .......... Fail
 [es5] setget.js .......... Pass
 [es5] es5array_objproto.js .......... Pass
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		74		20		12		(69%)
               Basics		56		38		5		13		(67%)
-                 es5		56		36		19		1		(64%)
+                 es5		56		38		17		1		(67%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		2		0		(98%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1118		183		105		(79%)
+               Total		1406		1120		181		105		(79%)

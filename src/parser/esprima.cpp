@@ -4387,11 +4387,11 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
             computed = match(ctx, LeftSquareBracket);
             key = parseObjectPropertyKey(ctx);
             // methodNode = new Node();
-            expect(ctx, LeftParenthesis);
-            expect(ctx, RightParenthesis);
 
             ctx->m_allowYield = false;
-            escargot::InternalAtomicStringVector vec;
+            escargot::InternalAtomicStringVector vec = parseParams(ctx);
+            if (vec.size() != 0)
+                throwEsprimaException(u"Getter functions must have zero argument");
             escargot::Node* value = parsePropertyFunction(ctx, vec, key
                 /*
                 {
@@ -4413,7 +4413,6 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
             computed = match(ctx, LeftSquareBracket);
             key = parseObjectPropertyKey(ctx);
             // methodNode = new Node();
-            expect(ctx, LeftParenthesis);
             /*
             options = {
                 params: [],
@@ -4423,22 +4422,9 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
                 paramSet: {}
             };
             */
-            escargot::InternalAtomicStringVector vec;
-            if (match(ctx, RightParenthesis)) {
-                // tolerateUnexpectedToken();
-                throwUnexpectedToken(lex(ctx), IdentifierToken);
-            } else {
-                ctx->m_allowYield = false;
-                parseParam(ctx, vec);
-                // parseParam(options);
-                ctx->m_allowYield = previousAllowYield;
-                /*
-                if (options.defaultCount === 0) {
-                    options.defaults = [];
-                }
-                */
-            }
-            expect(ctx, RightParenthesis);
+            escargot::InternalAtomicStringVector vec = parseParams(ctx);
+            if (vec.size() != 1)
+                throwEsprimaException(u"Setter functions must have one argument");
 
             ctx->m_allowYield = false;
             escargot::Node* value = parsePropertyFunction(ctx, vec, key/*methodNode, options, false*/);
