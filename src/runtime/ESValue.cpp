@@ -910,6 +910,8 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
 
     // 6
     idx = O->hiddenClass()->findProperty(P.toString());
+    if (idx == SIZE_MAX)
+        return true;
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
     if ((!descHasEnumerable || desc.enumerable() == propertyInfo.m_flags.m_isEnumerable)
         && (!descHasWritable || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && (desc.writable() == propertyInfo.m_flags.m_isWritable)))

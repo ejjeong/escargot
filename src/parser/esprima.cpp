@@ -4139,6 +4139,8 @@ ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
     ASSERT(ch == '/');
     str = ctx->m_sourceString->charAt(ctx->m_index++);
 
+    const char16_t* unterminatedRegExp = u"unterminated regular expression";
+
     bool classMarker = false;
     bool terminated = false;
     while (ctx->m_index < ctx->m_length) {
@@ -4149,12 +4151,12 @@ ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
             // ECMA-262 7.8.5
             if (isLineTerminator(ch)) {
                 // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
-                throwEsprimaException();
+                throwEsprimaException(unterminatedRegExp);
             }
             str += ch;
         } else if (isLineTerminator(ch)) {
             // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
-            throwEsprimaException();
+            throwEsprimaException(unterminatedRegExp);
         } else if (classMarker) {
             if (ch == ']') {
                 classMarker = false;
@@ -4171,7 +4173,7 @@ ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
 
     if (!terminated) {
         // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
-        throwEsprimaException();
+        throwEsprimaException(unterminatedRegExp);
     }
 
     // Exclude leading and trailing slash.

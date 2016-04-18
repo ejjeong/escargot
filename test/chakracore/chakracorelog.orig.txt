@@ -163,7 +163,7 @@ Running all tests
 [Basics] cross_site_accessor_main.js .......... Fail
 [Basics] bug650104.js .......... Fail
 [es5] reservedWords.js .......... Pass
-[es5] Lex_u3.js .......... Fail
+[es5] Lex_u3.js .......... Pass
 [es5] array_every.js .......... Pass
 [es5] array_some.js .......... Pass
 [es5] array_forEach.js .......... Pass
@@ -171,13 +171,13 @@ Running all tests
 [es5] array_filter.js .......... Pass
 [es5] array_reduce.js .......... Pass
 [es5] array_reduceright.js .......... Pass
-[es5] DateGetSet9.js .......... Fail
+[es5] DateGetSet9.js .......... Pass
 [es5] jx2.js .......... Fail
 [es5] SemiCollonAfterBlockEs5.js .......... Pass
 [es5] exceptions.js .......... Fail
-[es5] ObjLitGetSet.js .......... Fail
-[es5] ObjLitGetSetParseOnly.js .......... Fail
-[es5] ObjLitGetSetParseOnly.js .......... Fail
+[es5] ObjLitGetSet.js .......... Pass
+[es5] ObjLitGetSetParseOnly.js .......... Pass
+[es5] ObjLitGetSetParseOnly.js .......... Pass
 [es5] ObjLitInitFld.js .......... Pass
 [es5] seal.js .......... Pass
 [es5] freeze.js .......... Pass
@@ -190,7 +190,7 @@ Running all tests
 [es5] defineProperty.js .......... Pass
 [es5] defineIndexProperty.js .......... Fail
 [es5] defineIndexProperty.js .......... Fail
-[es5] enumerable.js .......... Fail
+[es5] enumerable.js .......... Pass
 [es5] hasItem.js .......... Fail
 [es5] regexSpace.js .......... Pass
 [es5] EnumeratingWithES5.js .......... Fail
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		76		18		12		(71%)
               Basics		56		38		5		13		(67%)
-                 es5		56		38		17		1		(67%)
+                 es5		56		44		11		1		(78%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		2		0		(98%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1122		179		105		(79%)
+               Total		1406		1128		173		105		(80%)

@@ -72,6 +72,7 @@ function Test1(args)
    // duplicate property
    // This causes error only in the case when strict code mode is enabled. Strict mode is not implemented yet.
    var isOk = true;
+   return isOk; // es5 spec
    try
    {
      eval("function f() { var o = { foo: 1, foo: 2 }; }");

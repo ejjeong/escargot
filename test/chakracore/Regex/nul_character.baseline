@@ -1,23 +1,23 @@
 --- 1 ---
 5
-SyntaxError
-SyntaxError
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
 --- 2 ---
 4
-SyntaxError
-SyntaxError
-SyntaxError
-SyntaxError
-SyntaxError
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
 4
 5
 --- 3 ---
-SyntaxError
-SyntaxError
-SyntaxError
-SyntaxError
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
+SyntaxError: unterminated regular expression
 5
-SyntaxError
+SyntaxError: unterminated regular expression
 SyntaxError: RegExp has invalid source
 --- 4 ---
 4

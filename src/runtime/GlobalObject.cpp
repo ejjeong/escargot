@@ -4374,7 +4374,7 @@ void GlobalObject::installDate()
 
         ESValue func = thisObject->get(strings->toISOString.string());
         if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toJSON, "toJSON is not callable");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toJSON, "toISOString is not callable");
         return ESFunctionObject::call(instance, func, thisObject, NULL, 0, false);
     }, strings->toJSON, 1));
 
