@@ -27,6 +27,7 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
             if (i == m_mutableIndex) {
                 m_mutableIndex = 0;
                 m_mutableIndex -= 1;
+                m_heapAllocatedData[i] = ESValue();
             }
             return;
         }
