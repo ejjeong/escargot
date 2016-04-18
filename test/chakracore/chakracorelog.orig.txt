@@ -181,7 +181,7 @@ Running all tests
 [es5] ObjLitInitFld.js .......... Pass
 [es5] seal.js .......... Pass
 [es5] freeze.js .......... Pass
-[es5] extensible.js .......... Fail
+[es5] extensible.js .......... Pass
 [es5] array_length.js .......... Fail
 [es5] array_length.js .......... Fail
 [es5] ES5ArrayIndexList.js .......... Pass
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		76		18		12		(71%)
               Basics		56		38		5		13		(67%)
-                 es5		56		44		11		1		(78%)
+                 es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		2		0		(98%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1128		173		105		(80%)
+               Total		1406		1129		172		105		(80%)

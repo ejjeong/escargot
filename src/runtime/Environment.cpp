@@ -89,9 +89,13 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
     ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name.string());
     bool extensible = globalObj->isExtensible();
-    if (!hasProperty && extensible) {
-        m_objectRecord->createMutableBinding(name, canDelete);
-        m_objectRecord->initializeBinding(name, ESValue());
+    if (!hasProperty) {
+        if (extensible) {
+            m_objectRecord->createMutableBinding(name, canDelete);
+            m_objectRecord->initializeBinding(name, ESValue());
+        } else {
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("Cannot create binding, object is not extensible")));
+        }
     }
     // if (std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end())
     //     m_varNames.push_back(name);
