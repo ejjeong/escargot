@@ -53,7 +53,7 @@ Scenario 16
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,123
 --- splice overflow 1
-RangeError : Array length must be assigned a finite positive integer
+RangeError : invalid array length
 length: 4294967295
   4294967290: 100
   4294967291: 200
@@ -62,7 +62,7 @@ length: 4294967295
   4294967294: 203
   4294967295: 204
 --- splice overflow 2
-RangeError : Array length must be assigned a finite positive integer
+RangeError : invalid array length
 length: 4294967295
   4294967290: 200
   4294967291: 201
@@ -77,7 +77,7 @@ length: 4294967295
   4294967300: 103
   4294967301: 104
 --- splice overflow 3
-RangeError : Array length must be assigned a finite positive integer
+RangeError : invalid array length
 length: 4294967295
   4294967290: 200
   4294967291: 201

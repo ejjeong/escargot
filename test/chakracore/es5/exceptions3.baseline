@@ -20,7 +20,7 @@ undefined.toString();   -expected: es3, es5 TypeError ::: TypeError: Unable to g
  NaN.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support property or method 'anchor'
  true.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support property or method 'anchor'
 new Array(12.4) - RangeError exception:  expected in es3 and es5::: RangeError: Array length must be a finite positive integer
-new Array(12.4); x.length = 12.5; - RangeError exception: es5-expected, ES3-not expected  ::: RangeError: Array length must be assigned a finite positive integer
+new Array(12.4); x.length = 12.5; - RangeError exception: es5-expected, ES3-not expected  ::: RangeError: invalid array length
 (123.45).toFixed(25); - RangeError exception : expected es3, es5::: RangeError: The number of fractional digits is out of range
 (123.45).toExponential(-25); - RangeError exception : expected es3, es5 ::: RangeError: The number of fractional digits is out of range
 eval("blah."); -expected es3-EvalError exception : expected es5-SyntaxException ::: SyntaxError: Expected identifier

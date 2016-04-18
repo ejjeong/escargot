@@ -35,13 +35,13 @@ TypeError : Cannot redefine non-configurable property 'length'
 
 
 8. [[Value]] invalid 1
-RangeError : Array length must be assigned a finite positive integer
+RangeError : invalid array length
   length: 3 writable
   0,1,2
 
 
 9. [[Value]] invalid 2
-RangeError : Array length must be assigned a finite positive integer
+RangeError : invalid array length
   length: 3 writable
   0,1,2
 
