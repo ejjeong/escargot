@@ -24,7 +24,12 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        m_body->generateStatementByteCode(codeBlock, context);
+        if (!m_body->size()) {
+            codeBlock->pushCode(Push(ESValue()), context, this);
+            codeBlock->pushCode(PopExpressionStatement(), context, this);
+        } else {
+            m_body->generateStatementByteCode(codeBlock, context);
+        }
     }
 
     IdentifierNode* param()

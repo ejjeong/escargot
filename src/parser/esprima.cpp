@@ -1250,6 +1250,9 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
             ctx->m_index += 1;
         }
         break;
+    default:
+        throwEsprimaException(u"Invalid character");
+        break;
     }
 
     if (ctx->m_index == token->m_start) {

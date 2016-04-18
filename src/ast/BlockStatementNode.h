@@ -32,6 +32,8 @@ public:
         }
     }
 
+    size_t size() { return m_body.size(); }
+
 protected:
     StatementNodeVector m_body; // body: [ Statement ];
 };

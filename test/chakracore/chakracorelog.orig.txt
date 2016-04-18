@@ -918,8 +918,8 @@ Running all tests
 [Prototypes] shadow.js .......... Pass
 [Prototypes] shadow2.js .......... Pass
 [GlobalFunctions] GlobalFunctions.js .......... Pass
-[GlobalFunctions] eval1.js .......... Fail
-[GlobalFunctions] evalNullsNewlines.js .......... Fail
+[GlobalFunctions] eval1.js .......... Pass
+[GlobalFunctions] evalNullsNewlines.js .......... Pass
 [GlobalFunctions] evalreturns.js .......... Fail
 [GlobalFunctions] evalDeferred.js .......... Fail
 [GlobalFunctions] eval-strict-delete.js .......... Pass
@@ -1444,7 +1444,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               Object		58		41		12		5		(70%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
-     GlobalFunctions		13		8		5		0		(61%)
+     GlobalFunctions		13		10		3		0		(76%)
            Operators		32		22		10		0		(68%)
          Conversions		5		3		2		0		(60%)
                  RWC		1		1		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1095		216		95		(77%)
+               Total		1406		1097		214		95		(77%)
