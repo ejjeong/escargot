@@ -33,7 +33,7 @@ Running all tests
 [Array] pop2.js .......... Pass
 [Array] pop3.js .......... Pass
 [Array] push1.js .......... Pass
-[Array] push2.js .......... Fail
+[Array] push2.js .......... Pass
 [Array] push3.js .......... Pass
 [Array] reverse1.js .......... Pass
 [Array] reverse2.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		73		21		12		(68%)
+               Array		106		74		20		12		(69%)
               Basics		56		38		5		13		(67%)
                  es5		56		36		20		0		(64%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1103		207		96		(78%)
+               Total		1406		1104		206		96		(78%)

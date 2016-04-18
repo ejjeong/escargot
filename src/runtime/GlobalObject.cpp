@@ -1831,9 +1831,6 @@ void GlobalObject::installArray()
 
                 while (curIndex < len) {
                     if (arr->hasProperty(ESValue(curIndex))) {
-                        if (n > ESValue::ESInvalidIndexValue - curIndex) {
-                            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, builtinErrorMessageRangeError);
-                        }
                         ret->defineDataProperty(ESValue(n + curIndex), true, true, true, arr->get(curIndex));
                         curIndex++;
                     } else {
@@ -2246,6 +2243,9 @@ void GlobalObject::installArray()
             thisBinded->set(ESValue((double(len) + i)), val, true);
         }
 
+        if (thisBinded->isESArrayObject() && len > ESValue::ESInvalidIndexValue - argc) {
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->push, builtinErrorMessageRangeError);
+        }
         ESValue newLen = ESValue(double(len) + argc);
         thisBinded->set(strings->length.string(), newLen, true);
         return newLen;
@@ -2600,7 +2600,11 @@ void GlobalObject::installArray()
                 k++;
             }
         }
-        thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
+
+        if (thisBinded->isESArrayObject() && arrlen - deleteCnt > ESValue::ESInvalidIndexValue - insertCnt) {
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->splice, builtinErrorMessageRangeError);
+        }
+        thisBinded->set(strings->length, ESValue(double(arrlen) - deleteCnt + insertCnt), true);
         return ret;
     }, strings->splice, 2));
 
@@ -2672,8 +2676,11 @@ void GlobalObject::installArray()
             O->set(ESValue(j), *(items+j), true);
         }
 
-        O->set(strings->length.string(), ESValue(len + argCount), true);
-        return ESValue(len + argCount);
+        if (O->isESArrayObject() && len > ESValue::ESInvalidIndexValue - argCount) {
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->unshift, builtinErrorMessageRangeError);
+        }
+        O->set(strings->length.string(), ESValue(double(len) + argCount), true);
+        return ESValue(double(len) + argCount);
     }, strings->unshift.string(), 1));
 
     m_arrayPrototype->ESObject::set(strings->length, ESValue(0));
