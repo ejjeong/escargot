@@ -782,8 +782,8 @@ Running all tests
 [Function] defernested.js .......... Skip (Not in scope (with))
 [Function] defernested.js .......... Skip (Not in scope (with))
 [Function] jitLoopBody.js .......... Pass
-[Function] deferredParsing.js .......... Fail
-[Function] deferredParsing.js .......... Fail
+[Function] deferredParsing.js .......... Pass
+[Function] deferredParsing.js .......... Pass
 [Function] deferredGetterSetter.js .......... Pass
 [Function] deferredBadContinue.js .......... Pass
 [Function] deferredBadContinue.js .......... Pass
@@ -1440,7 +1440,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		1		0		(0%)
            Optimizer		206		191		11		4		(92%)
-            Function		61		48		4		9		(78%)
+            Function		61		50		2		9		(81%)
               Object		58		41		12		5		(70%)
                Regex		33		19		14		0		(57%)
           Prototypes		7		7		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1083		228		95		(77%)
+               Total		1406		1085		226		95		(77%)

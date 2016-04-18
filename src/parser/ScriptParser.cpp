@@ -160,8 +160,7 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
                 for (unsigned i = 0; i < vec.size(); i ++) {
                     if ((*newIdentifierVector)[i].m_name == name) {
                         hasAlready = true;
-                        ((FunctionExpressionNode *)currentNode)->m_functionIdIndex = i;
-                        (*newIdentifierVector)[i].m_flags.m_bindingIsImmutable = true;
+                        ((FunctionExpressionNode *)currentNode)->m_functionIdIndex = SIZE_MAX;
                         break;
                     }
                 }
