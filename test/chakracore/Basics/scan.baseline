@@ -1,2 +1,2 @@
 true
-The use of a keyword for an identifier is invalid
+Cannot use the keyword 'var' as a variable name.

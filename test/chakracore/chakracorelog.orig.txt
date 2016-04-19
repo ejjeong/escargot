@@ -111,7 +111,7 @@ Running all tests
 [Basics] DomProperties.js .......... Pass
 [Basics] ArrayConcat.js .......... Pass
 [Basics] arrayinit.js .......... Pass
-[Basics] IdsWithEscapes.js .......... Fail
+[Basics] IdsWithEscapes.js .......... Skip (Not in scope (Keyword must not contain escaped characters only in ES6))
 [Basics] ArrayResize.js .......... Pass
 [Basics] DirectCall.js .......... Pass
 [Basics] equal.js .......... Pass
@@ -155,13 +155,13 @@ Running all tests
 [Basics] flags.js .......... Pass
 [Basics] Branching.js .......... Pass
 [Basics] inlinecache.js .......... Skip (function print format differs)
-[Basics] scan.js .......... Fail
+[Basics] scan.js .......... Pass
 [Basics] enum.js .......... Pass
 [Basics] with3.js .......... Skip (Not in scope (wtih))
 [Basics] Enumerator-deprecated.js .......... Pass
 [Basics] Enumerator-WebViewHost.js .......... Skip (Not in scopre (non standard))
-[Basics] cross_site_accessor_main.js .......... Fail
-[Basics] bug650104.js .......... Fail
+[Basics] cross_site_accessor_main.js .......... Pass
+[Basics] bug650104.js .......... Pass
 [es5] reservedWords.js .......... Pass
 [es5] Lex_u3.js .......... Pass
 [es5] array_every.js .......... Pass
@@ -263,8 +263,8 @@ Running all tests
 [Generated] mul2.js .......... Pass
 [Generated] mul3.js .......... Pass
 [Generated] div.js .......... Pass
-[Generated] div0.js .......... Fail
-[Generated] div1.js .......... Fail
+[Generated] div0.js .......... Skip (Due to floating point approximation)
+[Generated] div1.js .......... Skip (Due to floating point approximation)
 [Generated] div2.js .......... Pass
 [Generated] div3.js .......... Pass
 [Generated] mod.js .......... Pass
@@ -376,7 +376,7 @@ Running all tests
 [Closures] closure_binding.js .......... Pass
 [Closures] closure_binding_2.js .......... Pass
 [Closures] closure-funcexpr-eval.js .......... Skip (function print format differs)
-[Closures] closure-qmark.js .......... Fail
+[Closures] closure-qmark.js .......... Pass
 [Closures] initcachedscope.js .......... Fail
 [Closures] initcachedscope.js .......... Fail
 [Closures] invalcachedscope.js .......... Pass
@@ -1424,12 +1424,12 @@ Running all tests
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		90		3		13		(84%)
-              Basics		56		38		5		13		(67%)
+              Basics		56		41		1		14		(73%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
-           Generated		110		108		2		0		(98%)
-            Closures		18		12		3		3		(66%)
+           Generated		110		108		0		2		(98%)
+            Closures		18		13		2		3		(72%)
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
                Error		23		5		16		2		(21%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1148		153		105		(81%)
+               Total		1406		1152		146		108		(81%)

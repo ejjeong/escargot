@@ -364,7 +364,7 @@ NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObjec
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
 {
     if (!(rval->isESPointer() && rval->asESPointer()->isESFunctionObject()) || !rval->isObject())
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(strings->emptyString)));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Invalid operand to 'instanceof': Callee is not a function object"))));
     if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
         ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
         while (C->isBoundFunc())

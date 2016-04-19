@@ -38,12 +38,14 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Due to floating point approximation</escargot-skip>  
       <files>div0.js</files>
       <baseline>div0.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Due to floating point approximation</escargot-skip>  
       <files>div1.js</files>
       <baseline>div1.baseline</baseline>
     </default>

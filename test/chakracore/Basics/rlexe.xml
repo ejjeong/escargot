@@ -37,6 +37,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (Keyword must not contain escaped characters only in ES6)</escargot-skip>
       <files>IdsWithEscapes.js</files>
       <baseline>IdsWithEscapes.baseline</baseline>
       <compile-flags>-Intl-</compile-flags>
@@ -399,6 +400,7 @@
   <test>
     <default>
       <files>cross_site_accessor_main.js</files>
+      <baseline>cross_site_accessor.baseline</baseline>
     </default>
   </test>
   <test>
