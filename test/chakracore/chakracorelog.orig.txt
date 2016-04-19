@@ -551,12 +551,12 @@ Running all tests
 [TaggedIntegers] loops.js .......... Pass
 [TaggedIntegers] predecrement.js .......... Pass
 [TaggedIntegers] preincrement.js .......... Pass
-[TaggedFloats] test.js .......... Fail
+[TaggedFloats] test.js .......... Skip (Due to floating point approximation)
 [Optimizer] bug318.js .......... Pass
 [Optimizer] bug70.js .......... Pass
 [Optimizer] bug713.js .......... Pass
 [Optimizer] bug1788761.js .......... Pass
-[Optimizer] bug1868543.js .......... Fail
+[Optimizer] bug1868543.js .......... Skip (Not in scope (es6))
 [Optimizer] bug469.js .......... Skip (Not in scope (es6))
 [Optimizer] bug3831075.js .......... Pass
 [Optimizer] conv_bool.js .......... Pass
@@ -673,7 +673,7 @@ Running all tests
 [Optimizer] test102.js .......... Pass
 [Optimizer] test103.js .......... Pass
 [Optimizer] test104.js .......... Pass
-[Optimizer] test105.js .......... Fail
+[Optimizer] test105.js .......... Skip (Due to floating point approximation)
 [Optimizer] test106.js .......... Pass
 [Optimizer] test107.js .......... Pass
 [Optimizer] test108.js .......... Pass
@@ -711,14 +711,14 @@ Running all tests
 [Optimizer] test140.js .......... Pass
 [Optimizer] test141.js .......... Pass
 [Optimizer] test142.js .......... Pass
-[Optimizer] test143.js .......... Pass
+[Optimizer] test143.js .......... Skip (Chakracore-only)
 [Optimizer] test144.js .......... Pass
 [Optimizer] test145.js .......... Pass
 [Optimizer] deadstore_field.js .......... Pass
 [Optimizer] deadstore_oneblockloop.js .......... Pass
 [Optimizer] marktemp.js .......... Pass
 [Optimizer] marktemp2.js .......... Pass
-[Optimizer] marktempnumberontempobjects.js .......... Fail
+[Optimizer] marktempnumberontempobjects.js .......... Skip (Due to floating point approximation)
 [Optimizer] mul.js .......... Fail
 [Optimizer] NegativeZero.js .......... Pass
 [Optimizer] Overflow.js .......... Pass
@@ -742,7 +742,7 @@ Running all tests
 [Optimizer] ArrayCheckHoist_Bailout.js .......... Pass
 [Optimizer] ArrayCheckHoist_Bailout.js .......... Pass
 [Optimizer] ArrayCheckHoist_Bailout.js .......... Pass
-[Optimizer] BoundCheckElimination.js .......... Fail
+[Optimizer] BoundCheckElimination.js .......... Skip (Chakracore-only)
 [Optimizer] Miscellaneous_MaxInterpret.js .......... Fail
 [Optimizer] Miscellaneous_LoopInterpret.js .......... Pass
 [Optimizer] Miscellaneous_ForceJitLoopBody.js .......... Pass
@@ -757,7 +757,7 @@ Running all tests
 [Optimizer] opttagchecks1.js .......... Pass
 [Optimizer] opttagchecks2.js .......... Skip (Not in scope (es6))
 [Optimizer] trycatch_functional.js .......... Pass
-[Optimizer] trycatch_assert.js .......... Fail
+[Optimizer] trycatch_assert.js .......... Pass
 [Function] apply.js .......... Pass
 [Function] apply3.js .......... Pass
 [Function] applyArgs.js .......... Pass
@@ -1438,8 +1438,8 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          ControlFlow		17		17		0		0		(100%)
                 Math		21		20		0		1		(95%)
       TaggedIntegers		44		44		0		0		(100%)
-        TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		195		7		4		(94%)
+        TaggedFloats		1		0		0		1		(0%)
+           Optimizer		206		195		2		9		(94%)
             Function		61		52		0		9		(85%)
               Object		58		43		10		5		(74%)
                Regex		33		22		5		6		(66%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1161		132		113		(82%)
+               Total		1406		1161		126		119		(82%)

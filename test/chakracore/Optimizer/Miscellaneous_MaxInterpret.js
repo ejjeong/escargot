@@ -108,7 +108,7 @@ function test5() {
                     __loopvar6++;
                     obj0.prop0 = (1, obj1.prop1, obj1.prop1);
                     a = obj1;
-                    let a;
+                    var a;
                 }
             }
             else {
@@ -684,13 +684,13 @@ WScript.Echo("test37: " + test37());
         var z1;
         var u3056;
         (function() {
-            with(u3056 += [z1]) x;
+            (u3056 += [z1]); x;
         })();
         (function() {
             for(qmsdtp = 0; qmsdtp < 16 && undefined && (y %= null) ; ++qmsdtp) {
                 if(qmsdtp % 7 == 5) {
                 } else {
-                    with(1 ^ (/x/g.prototype.prototype)) { }
+                    (1 ^ (/x/g.prototype.prototype)); { }
                 }
             };;
         })();

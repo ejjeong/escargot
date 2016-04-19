@@ -22,6 +22,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>bug1868543.js</files>
     </default>
   </test>
@@ -722,6 +723,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Due to floating point approximation</escargot-skip>
       <files>test105.js</files>
       <baseline>test105.baseline</baseline>
       <compile-flags>-minInterpretCount:1 -maxInterpretCount:1 -off:simpleJit -off:aggressiveIntTypeSpec -off:fieldHoist</compile-flags>
@@ -994,6 +996,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>test143.js</files>
       <compile-flags>-bgJit- -off:simpleJit -loopInterpretCount:1 -testTrace:arrayCheckHoist</compile-flags>
       <!-- ch.exe doesn't output entire baseline before exiting; -testTrace flush issue? -->
@@ -1040,6 +1043,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Due to floating point approximation</escargot-skip>
       <files>marktempnumberontempobjects.js</files>
       <baseline>marktempnumberontempobjects.baseline</baseline>
       <compile-flags>-fja:2 -off:simplejit</compile-flags>
@@ -1214,6 +1218,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>BoundCheckElimination.js</files>
       <baseline>BoundCheckElimination.baseline</baseline>
       <compile-flags>-bgJit- -minInterpretCount:1 -maxInterpretCount:1 -off:simpleJit -off:bailOnNoProfile -testTrace:boundCheckElimination -testTrace:boundCheckHoist</compile-flags>

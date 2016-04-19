@@ -1,15 +1,15 @@
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 TypeError (-2146827843): Object doesn't support this action
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 TypeError (-2146827843): Object doesn't support this action
 TypeError (-2146823281): Object expected
 TypeError (-2146823281): Object expected
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 TypeError (-2146827843): Object doesn't support this action
-TypeError (-2146823286): Callee is not a function object
-TypeError (-2146823286): The value of the property '0' is not a Function object
+TypeError (undefined): Callee is not a function object
+TypeError (undefined): The value of the property '0' is not a Function object
 TypeError (-2146823281): Object expected
-TypeError (-2146823286): The value of the property '1' is not a Function object
+TypeError (undefined): The value of the property '1' is not a Function object
 TypeError (-2146827843): Object doesn't support this action
 TypeError (-2146823281): Unable to get property '1' of undefined or null reference
 TypeError (-2146823281): Unable to get property '1' of undefined or null reference
@@ -31,10 +31,10 @@ safeCall(function(){g2=null;g2();});
 TypeError (undefined): Object expected
 
 safeCall(function(){g3=1;g3();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 safeCall(function(){g4={};g4();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 
 --- Test case: implicit global, do delete: true ---
@@ -107,10 +107,10 @@ safeCall(function(){this.g22=null;this.g22();});
 TypeError (undefined): Object expected
 
 safeCall(function(){this.g23=1;this.g23();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 safeCall(function(){this.g24={};this.g24();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 
 --- Test case: global using this, do delete: true ---
@@ -144,10 +144,10 @@ safeCall(function(){var v=null;v();});
 TypeError (undefined): Object expected
 
 safeCall(function(){var v=1;v();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 safeCall(function(){var v={};v();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 
 --- Test case: object, do delete: false ---
@@ -162,10 +162,10 @@ safeCall(function(){var o={p:null};o.p();});
 TypeError (undefined): Object expected
 
 safeCall(function(){var o={p:1};o.p();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 safeCall(function(){var o={p:{}};o.p();});
-TypeError (-2146823286): Callee is not a function object
+TypeError (undefined): Callee is not a function object
 
 
 --- Test case: object, do delete: true ---

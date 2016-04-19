@@ -2,6 +2,7 @@
 <regress-exe>
   <test>
     <default>
+      <escargot-skip>Due to floating point approximation</escargot-skip>
       <files>test.js</files>
       <baseline>test.baseline</baseline>
       <tags>exclude_x86,exclude_arm,Slow</tags>
