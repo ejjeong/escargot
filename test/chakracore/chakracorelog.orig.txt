@@ -40,8 +40,8 @@ Running all tests
 [Array] shift_unshift.js .......... Pass
 [Array] toString.js .......... Pass
 [Array] toString.js .......... Pass
-[Array] toLocaleString.js .......... Fail
-[Array] toLocaleString.js .......... Fail
+[Array] toLocaleString.js .......... Pass
+[Array] toLocaleString.js .......... Pass
 [Array] array_slice.js .......... Pass
 [Array] array_slice2.js .......... Skip (Takes too long)
 [Array] array_sort.js .......... Fail
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		78		16		12		(73%)
+               Array		106		80		14		12		(75%)
               Basics		56		38		5		13		(67%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1136		166		104		(80%)
+               Total		1406		1138		164		104		(80%)
