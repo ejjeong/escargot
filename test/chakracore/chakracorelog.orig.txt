@@ -95,7 +95,7 @@ Running all tests
 [Array] newfromargs.js .......... Pass
 [Array] bug945376SizeBoundStartSeg.js .......... Pass
 [Array] CopyOnAccessArray_bugs.js .......... Pass
-[Array] CopyOnAccessArray_cache_index_overflow.js .......... Fail
+[Array] CopyOnAccessArray_cache_index_overflow.js .......... Pass
 [Array] memop_lifetime_bug.js .......... Pass
 [Array] memset.js .......... Skip (Not in scope (es6))
 [Array] memset_invariant.js .......... Skip (Not in scope (es6))
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		90		3		13		(84%)
+               Array		106		91		2		13		(85%)
               Basics		56		41		1		14		(73%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1152		146		108		(81%)
+               Total		1406		1153		145		108		(82%)

@@ -614,7 +614,6 @@
       <files>CopyOnAccessArray_cache_index_overflow.js</files>
       <tags>BugFix,require_backend</tags>
       <compile-flags>-force:copyonaccessarray -testtrace:CopyOnAccessArray</compile-flags>
-      <baseline>CopyOnAccessArray_cache_index_overflow.baseline</baseline>
     </default>
   </test>
   <test>
