@@ -2138,18 +2138,15 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->lastIndexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisBinded, Array, lastIndexOf);
         uint32_t len = thisBinded->length();
-        double ret = 0;
-        if (len == 0)
-            ret = -1;
-        else {
+        if (len == 0) {
+            return ESValue(-1);
+        } else {
             double n = 0;
             int64_t k = 0;
-
+            ESValue searchElement = instance->currentExecutionContext()->readArgument(0);
             if (instance->currentExecutionContext()->argumentCount() >= 2) {
-                const ESValue& fromIndex = instance->currentExecutionContext()->arguments()[1];
-                if (!fromIndex.isUndefined()) {
-                    n = fromIndex.toInteger();
-                }
+                ESValue fromIndex = instance->currentExecutionContext()->readArgument(1);
+                n = fromIndex.toInteger();
             } else {
                 n = len - 1;
             }
@@ -2161,23 +2158,19 @@ void GlobalObject::installArray()
                 k -= (-1) * n;
             }
 
-            if (ret != -1) {
-                ret = -1;
-                ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
-                while (k >= 0) {
-                    bool kPresent = thisBinded->hasProperty(ESValue(k));
-                    if (kPresent) {
-                        ESValue elementK = thisBinded->get(ESValue(k));
-                        if (searchElement.equalsTo(elementK)) {
-                            ret = k;
-                            break;
-                        }
+            while (k >= 0) {
+                bool kPresent = thisBinded->hasProperty(ESValue(k));
+                if (kPresent) {
+                    ESValue elementK = thisBinded->get(ESValue(k));
+                    if (searchElement.equalsTo(elementK)) {
+                        return ESValue(k);
                     }
-                    k--;
                 }
+                k--;
             }
+
+            return ESValue(-1);
         }
-        return ESValue(ret);
     }, strings->lastIndexOf.string(), 1));
 
     // $22.1.3.15 Array.prototype.map(callbackfn[, thisArg])

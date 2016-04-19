@@ -57,7 +57,7 @@ Running all tests
 [Array] array_splice3.js .......... Skip (Not in scope (es6))
 [Array] array_splice4.js .......... Pass
 [Array] sparsearray.js .......... Pass
-[Array] array_lastindexof.js .......... Fail
+[Array] array_lastindexof.js .......... Pass
 [Array] array_indexOf.js .......... Fail
 [Array] array_indexOf.js .......... Fail
 [Array] array_indexOfSparse.js .......... Pass
@@ -88,7 +88,7 @@ Running all tests
 [Array] nativeIntPop.js .......... Pass
 [Array] nativeFloatPop.js .......... Pass
 [Array] popImplicitCall.js .......... Pass
-[Array] array_splice_515632.js .......... Fail
+[Array] array_splice_515632.js .......... Pass
 [Array] InlineArrayPopWithIntConstSrc.js .......... Pass
 [Array] FailToSetLength.js .......... Fail
 [Array] foreach_nativearray_change.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		85		8		13		(80%)
+               Array		106		87		6		13		(82%)
               Basics		56		38		5		13		(67%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1143		158		105		(81%)
+               Total		1406		1145		156		105		(81%)
