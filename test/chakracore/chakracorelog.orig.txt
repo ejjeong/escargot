@@ -90,7 +90,7 @@ Running all tests
 [Array] popImplicitCall.js .......... Pass
 [Array] array_splice_515632.js .......... Pass
 [Array] InlineArrayPopWithIntConstSrc.js .......... Pass
-[Array] FailToSetLength.js .......... Fail
+[Array] FailToSetLength.js .......... Pass
 [Array] foreach_nativearray_change.js .......... Pass
 [Array] newfromargs.js .......... Pass
 [Array] bug945376SizeBoundStartSeg.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		91		2		13		(85%)
+               Array		106		92		1		13		(86%)
               Basics		56		41		1		14		(73%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1153		145		108		(82%)
+               Total		1406		1154		144		108		(82%)

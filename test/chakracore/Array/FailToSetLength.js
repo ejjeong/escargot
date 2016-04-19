@@ -43,11 +43,11 @@ var tests = [
             var obj = { 0: 0, 1: 1 };
             Object.defineProperty(obj, "length", { value: 2, writable: false, configurable: false });
 
-            assert.throws(function() { Array.prototype.pop.call(obj); }, TypeError, "Array.prototype.pop throws when obj has a length property which is not writable and not configurable", "Object doesn't support this action");
-            assert.throws(function() { Array.prototype.push.call(obj, 2); }, TypeError, "Array.prototype.push throws when obj has a length property which is not writable and not configurable", "Object doesn't support this action");
-            assert.throws(function() { Array.prototype.shift.call(obj); }, TypeError, "Array.prototype.shift throws when obj has a length property which is not writable and not configurable", "Object doesn't support this action");
-            assert.throws(function() { Array.prototype.unshift.call(obj, 2); }, TypeError, "Array.prototype.unshift throws when obj has a length property which is not writable and not configurable", "Object doesn't support this action");
-            assert.throws(function() { Array.prototype.splice.call(obj, 0, 1); }, TypeError, "Array.prototype.splice throws when obj has a length property which is not writable and not configurable", "Object doesn't support this action");
+            assert.throws(function() { Array.prototype.pop.call(obj); }, TypeError, "Array.prototype.pop throws when obj has a length property which is not writable and not configurable", "Attempted to assign to readonly property.");
+            assert.throws(function() { Array.prototype.push.call(obj, 2); }, TypeError, "Array.prototype.push throws when obj has a length property which is not writable and not configurable", "Attempted to assign to readonly property.");
+            assert.throws(function() { Array.prototype.shift.call(obj); }, TypeError, "Array.prototype.shift throws when obj has a length property which is not writable and not configurable", "Attempted to assign to readonly property.");
+            assert.throws(function() { Array.prototype.unshift.call(obj, 2); }, TypeError, "Array.prototype.unshift throws when obj has a length property which is not writable and not configurable", "Attempted to assign to readonly property.");
+            assert.throws(function() { Array.prototype.splice.call(obj, 0, 1); }, TypeError, "Array.prototype.splice throws when obj has a length property which is not writable and not configurable", "Attempted to assign to readonly property.");
         }
     },
     {
