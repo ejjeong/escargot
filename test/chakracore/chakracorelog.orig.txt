@@ -188,8 +188,8 @@ Running all tests
 [es5] createdp.js .......... Pass
 [es5] defineProperty.js .......... Pass
 [es5] defineProperty.js .......... Pass
-[es5] defineIndexProperty.js .......... Fail
-[es5] defineIndexProperty.js .......... Fail
+[es5] defineIndexProperty.js .......... Pass
+[es5] defineIndexProperty.js .......... Pass
 [es5] enumerable.js .......... Pass
 [es5] hasItem.js .......... Fail
 [es5] regexSpace.js .......... Pass
@@ -450,7 +450,7 @@ Running all tests
 [Error] sourceInfo_13.js .......... Fail
 [Error] sourceInfo_20.js .......... Fail
 [Error] variousErrors.js .......... Pass
-[Error] RuntimeCompileStackOverflow.js .......... Pass
+[Error] RuntimeCompileStackOverflow.js .......... Fail
 [Error] encodeoverflow.js .......... Skip (Takes too long)
 [Error] bug560940.js .......... Pass
 [Error] stackoverflow.js .......... Pass
@@ -711,7 +711,7 @@ Running all tests
 [Optimizer] test140.js .......... Pass
 [Optimizer] test141.js .......... Pass
 [Optimizer] test142.js .......... Pass
-[Optimizer] test143.js .......... Fail
+[Optimizer] test143.js .......... Pass
 [Optimizer] test144.js .......... Pass
 [Optimizer] test145.js .......... Pass
 [Optimizer] deadstore_field.js .......... Pass
@@ -1425,21 +1425,21 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		92		1		13		(86%)
               Basics		56		41		1		14		(73%)
-                 es5		56		45		10		1		(80%)
+                 es5		56		47		8		1		(83%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		0		2		(98%)
             Closures		18		13		2		3		(72%)
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
-               Error		23		6		10		7		(26%)
+               Error		23		5		11		7		(21%)
              Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
          ControlFlow		17		17		0		0		(100%)
                 Math		21		20		0		1		(95%)
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		194		8		4		(94%)
+           Optimizer		206		195		7		4		(94%)
             Function		61		52		0		9		(85%)
               Object		58		43		10		5		(74%)
                Regex		33		22		5		6		(66%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1158		135		113		(82%)
+               Total		1406		1160		133		113		(82%)

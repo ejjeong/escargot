@@ -23,3 +23,5 @@ function test0() {
   function test0a() { o2; };
 }
 test0();
+
+WScript.Echo("Passed");

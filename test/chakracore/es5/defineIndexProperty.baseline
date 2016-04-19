@@ -173,7 +173,8 @@ PASSED
 *** obj (test_320_i): preventExtensions on object with data -> isSealed and isFrozen
 PASSED
 *** obj (test_321_i): Test prototype value is used in sort
-PASSED
+Test threw exception: assert.areEqual failed: expected: 10,321, actual: 10,,: sort result mismatch?
+FAILED
 *** obj (test_322_i): Convert accessor to a data property for non-extensible object (WIN8 bug 463559) but for numeric property
 PASSED
 *** arr (test01): 8.12.9.4.a (variation 1): define generic property, check default attrbitues
@@ -534,4 +535,4 @@ PASSED
 PASSED
 *** misc (test_308_i): Set a property via object literal while prototype has a getter
 PASSED
-Summary of tests: total executed: 268; passed: 268; failed: 0
+Summary of tests: total executed: 268; passed: 267; failed: 1
