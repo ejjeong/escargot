@@ -13,7 +13,7 @@ x = a.splice();
 WScript.Echo(a);
 WScript.Echo(x);
 
-x = a.splice(0);
+x = a.splice(0, 7);
 WScript.Echo(a);
 WScript.Echo(x);
 

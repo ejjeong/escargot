@@ -49,9 +49,9 @@ Running all tests
 [Array] array_sort2.js .......... Pass
 [Array] array_sort3.js .......... Pass
 [Array] array_sort3.js .......... Pass
-[Array] array_splice.js .......... Fail
-[Array] array_splice_double.js .......... Fail
-[Array] array_splice.js .......... Fail
+[Array] array_splice.js .......... Pass
+[Array] array_splice_double.js .......... Pass
+[Array] array_splice.js .......... Pass
 [Array] array_splice1.js .......... Pass
 [Array] array_splice2.js .......... Pass
 [Array] array_splice3.js .......... Skip (Not in scope (es6))
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		82		11		13		(77%)
+               Array		106		85		8		13		(80%)
               Basics		56		38		5		13		(67%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1140		161		105		(81%)
+               Total		1406		1143		158		105		(81%)
