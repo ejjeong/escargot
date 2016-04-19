@@ -58,8 +58,8 @@ Running all tests
 [Array] array_splice4.js .......... Pass
 [Array] sparsearray.js .......... Pass
 [Array] array_lastindexof.js .......... Pass
-[Array] array_indexOf.js .......... Fail
-[Array] array_indexOf.js .......... Fail
+[Array] array_indexOf.js .......... Pass
+[Array] array_indexOf.js .......... Pass
 [Array] array_indexOfSparse.js .......... Pass
 [Array] negindex.js .......... Pass
 [Array] array_forin.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		88		5		13		(83%)
+               Array		106		90		3		13		(84%)
               Basics		56		38		5		13		(67%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1146		155		105		(81%)
+               Total		1406		1148		153		105		(81%)
