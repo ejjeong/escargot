@@ -293,6 +293,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>array_includes.js</files>
       <compile-flags>-args summary -endargs -es7builtins</compile-flags>
     </default>
