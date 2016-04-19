@@ -1188,7 +1188,7 @@
   </test>
   <test>
     <default>
-      <files>ArrayCheckHoist.js</files>
+      <files>ArrayCheckHoist_Bailout.js</files>
       <baseline>ArrayCheckHoist_Bailout.baseline</baseline>
       <compile-flags>-off:arrayCheckHoist -args bailout -endArgs -dynamicprofileinput:profile.dpl.ArrayCheckHoist.js</compile-flags>
       <tags>exclude_interpreted,exclude_ship,exclude_serialized,Slow</tags>
@@ -1197,7 +1197,7 @@
   </test>
   <test>
     <default>
-      <files>ArrayCheckHoist.js</files>
+      <files>ArrayCheckHoist_Bailout.js</files>
       <baseline>ArrayCheckHoist_Bailout.baseline</baseline>
       <compile-flags>-args bailout -endArgs -off:fieldHoist -off:fieldCopyProp -off:objTypeSpec -dynamicprofileinput:profile.dpl.ArrayCheckHoist.js</compile-flags>
       <tags>exclude_interpreted,exclude_ship,exclude_serialized,Slow</tags>
@@ -1206,7 +1206,7 @@
   </test>
   <test>
     <default>
-      <files>ArrayCheckHoist.js</files>
+      <files>ArrayCheckHoist_Bailout.js</files>
       <baseline>ArrayCheckHoist_Bailout.baseline</baseline>
       <compile-flags>-args bailout -endArgs -dynamicprofileinput:profile.dpl.ArrayCheckHoist.js</compile-flags>
       <tags>exclude_interpreted,exclude_ship,exclude_serialized,Slow</tags>

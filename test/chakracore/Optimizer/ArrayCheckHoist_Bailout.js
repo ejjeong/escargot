@@ -6,7 +6,7 @@
 // The tests in this file are GENERATED. Don't add tests to this file manually; instead, modify
 // ArrayCheckHoist_Generate.js and regenerate this file, or use a different file for the new test.
 
-var bailout = false; // !this.WScript || this.WScript.Arguments[0] === "bailout";
+var bailout = true; //!this.WScript || this.WScript.Arguments[0] === "bailout";
 
 function test0() {
     var o = {
