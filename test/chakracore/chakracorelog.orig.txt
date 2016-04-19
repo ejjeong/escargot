@@ -450,7 +450,7 @@ Running all tests
 [Error] sourceInfo_13.js .......... Fail
 [Error] sourceInfo_20.js .......... Fail
 [Error] variousErrors.js .......... Pass
-[Error] RuntimeCompileStackOverflow.js .......... Fail
+[Error] RuntimeCompileStackOverflow.js .......... Pass
 [Error] encodeoverflow.js .......... Skip (Takes too long)
 [Error] bug560940.js .......... Pass
 [Error] stackoverflow.js .......... Pass
@@ -1432,7 +1432,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
             Closures		18		13		2		3		(72%)
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
-               Error		23		5		11		7		(21%)
+               Error		23		6		10		7		(26%)
              Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
          ControlFlow		17		17		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1160		133		113		(82%)
+               Total		1406		1161		132		113		(82%)
