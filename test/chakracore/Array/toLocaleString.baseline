@@ -2,8 +2,8 @@
 1 -->
 NaN -->
 true -->
-TypeError : cannot convert null into object
-TypeError : cannot convert undefined into object
+TypeError : Array.prototype.toLocaleString: this value is undefined or null
+TypeError : Array.prototype.toLocaleString: this value is undefined or null
 
 
 1. Object, length not uint32

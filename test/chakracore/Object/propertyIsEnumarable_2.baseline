@@ -5884,8 +5884,8 @@ Test2 d.propertyIsEnumerable(z): true
 Test2 d.hasOwnProperty(x): false
 Test2 d.hasOwnProperty(y): true
 Test2 d.hasOwnProperty(z): true
-Exception: TypeError: cannot convert undefined into object cannot convert undefined into object
-Exception: TypeError: cannot convert null into object cannot convert null into object
+Exception: TypeError: Object.prototype.propertyIsEnumerable: this value is undefined or null Object.prototype.propertyIsEnumerable: this value is undefined or null
+Exception: TypeError: Object.prototype.propertyIsEnumerable: this value is undefined or null Object.prototype.propertyIsEnumerable: this value is undefined or null
 re.propertyIsEnumerable("lastIndex") : false
 re.propertyIsEnumerable("source") : false
 re.propertyIsEnumerable("global") : false

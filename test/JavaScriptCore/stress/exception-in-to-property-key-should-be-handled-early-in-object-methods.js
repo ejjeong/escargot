@@ -30,7 +30,7 @@ shouldThrow(function () {
 
 shouldThrow(function () {
     Object.prototype.hasOwnProperty.call(null, 'ok');
-}, "TypeError: cannot convert null into object");
+}, "TypeError: Object.prototype.hasOwnProperty: this value is undefined or null");
 
 shouldThrow(function () {
     object.propertyIsEnumerable(propertyKey);
@@ -44,7 +44,7 @@ shouldThrow(function () {
 shouldThrow(function () {
     // ToPropertyKey is first, ToObject is following.
     Object.prototype.propertyIsEnumerable.call(null, 'ok');
-}, "TypeError: cannot convert null into object");
+}, "TypeError: Object.prototype.propertyIsEnumerable: this value is undefined or null");
 
 shouldThrow(function () {
     object.__defineGetter__(propertyKey, function () {
