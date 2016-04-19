@@ -75,7 +75,7 @@ Running all tests
 [Array] nativearray_gen7.js .......... Pass
 [Array] nativearray_gen8.js .......... Pass
 [Array] arrlit.js .......... Pass
-[Array] protoLookup.js .......... Fail
+[Array] protoLookup.js .......... Pass
 [Array] protoLookup_native.js .......... Pass
 [Array] protoLookupWithGetters.js .......... Fail
 [Array] array_apply.js .......... Pass
@@ -1423,7 +1423,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		81		12		13		(76%)
+               Array		106		82		11		13		(77%)
               Basics		56		38		5		13		(67%)
                  es5		56		45		10		1		(80%)
                   EH		17		11		4		2		(64%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1139		162		105		(81%)
+               Total		1406		1140		161		105		(81%)
