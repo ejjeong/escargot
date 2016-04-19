@@ -3,6 +3,7 @@ HOST=linux
 
 BIN=escargot
 LIB=libescargot.so
+STATIC=libescargot.a
 
 #######################################################
 # Environments
@@ -14,7 +15,7 @@ MODE=#debug,release
 NPROCS:=1
 OS:=$(shell uname -s)
 SHELL:=/bin/bash
-OUTPUT:=bin
+OUTPUT=
 ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
   SHELL:=/bin/bash
@@ -59,6 +60,10 @@ endif
 
 ifneq (,$(findstring shared,$(MAKECMDGOALS)))
   OUTPUT=lib
+else ifneq (,$(findstring static,$(MAKECMDGOALS)))
+  OUTPUT=static
+else
+  OUTPUT=bin
 endif
 
 
@@ -69,6 +74,7 @@ $(info host... $(HOST))
 $(info arch... $(ARCH))
 $(info type... $(TYPE))
 $(info mode... $(MODE))
+$(info output... $(OUTPUT))
 $(info build dir... $(OUTDIR))
 
 
@@ -119,7 +125,12 @@ ifeq ($(OUTPUT), lib)
   CXXFLAGS += -fPIC
   CFLAGS += -fPIC
 else
-  CXXFLAGS += $(BIN_CXXFLAGS)
+  ifeq ($(OUTPUT), static)
+    CXXFLAGS += -fPIC
+    CFLAGS += -fPIC
+  else
+    CXXFLAGS += $(BIN_CXXFLAGS)
+  endif
 endif
 
 LDFLAGS += -lpthread
@@ -299,6 +310,10 @@ x64.interpreter.debug.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
 x64.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
+x64.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
+x64.interpreter.release.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
 #tizen_arm.jit.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
 #tizen_arm.jit.release: $(OUTDIR)/$(BIN)
@@ -317,7 +332,11 @@ tizen_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
 	cp -f $< .
 tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
+tizen_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
 tizen_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(LIB)
+	cp -f $< .
+tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC)
 	cp -f $< .
 
 $(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
@@ -327,6 +346,10 @@ $(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 $(OUTDIR)/$(LIB): $(OBJS) $(THIRD_PARTY_LIBS)
 	@echo "[LINK] $@"
 	$(CXX) -shared -Wl,-soname,$(LIB) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
+
+$(OUTDIR)/$(STATIC): $(OBJS) $(THIRD_PARTY_LIBS)
+	@echo "[LINK] $@"
+	$(AR) rc $@ $(OBJS)
 
 $(OUTDIR)/%.o: %.cpp Makefile
 	@echo "[CXX] $@"
