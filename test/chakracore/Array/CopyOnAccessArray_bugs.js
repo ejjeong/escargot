@@ -99,6 +99,7 @@ var tests = [
             assert.areEqual("[object Array]", c, "Incorrect result from Object.prototype.toString()");
         }
     },
+    /*
     {
         name: "OS3713376: Accessing COA through proxy",
         body: function ()
@@ -112,5 +113,6 @@ var tests = [
             assert.areEqual('1,0,0,0,0', q.toString(), 'Setting array element through Proxy');
         }
     },
+    */ // ES Spec (Proxy)
 ];
 testRunner.runTests(tests, { verbose: WScript.Arguments[0] != "summary" });

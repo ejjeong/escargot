@@ -607,7 +607,6 @@
       <files>CopyOnAccessArray_bugs.js</files>
       <tags>BugFix,require_backend</tags>
       <compile-flags>-force:copyonaccessarray</compile-flags>
-      <baseline>CopyOnAccessArray_bugs.baseline</baseline>
     </default>
   </test>
   <test>

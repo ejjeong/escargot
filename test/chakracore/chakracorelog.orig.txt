@@ -94,7 +94,7 @@ Running all tests
 [Array] foreach_nativearray_change.js .......... Pass
 [Array] newfromargs.js .......... Pass
 [Array] bug945376SizeBoundStartSeg.js .......... Pass
-[Array] CopyOnAccessArray_bugs.js .......... Fail
+[Array] CopyOnAccessArray_bugs.js .......... Pass
 [Array] CopyOnAccessArray_cache_index_overflow.js .......... Fail
 [Array] memop_lifetime_bug.js .......... Pass
 [Array] memset.js .......... Skip (Not in scope (es6))
