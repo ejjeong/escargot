@@ -433,13 +433,13 @@ Running all tests
 [Date] Conversions.js .......... Fail
 [Date] date_cache_bug.js .......... Pass
 [Date] formatting.js .......... Fail
-[Error] errorProps.js .......... Fail
+[Error] errorProps.js .......... Skip (Chakracore-only)
 [Error] ErrorCtorProps.js .......... Pass
-[Error] NativeErrors.js .......... Fail
+[Error] NativeErrors.js .......... Skip (Chakracore-only)
 [Error] outofmem.js .......... Fail
-[Error] stack.js .......... Fail
+[Error] stack.js .......... Skip (Chakracore-only)
 [Error] stack2.js .......... Pass
-[Error] errorCtor.js .......... Fail
+[Error] errorCtor.js .......... Skip (Chakracore-only)
 [Error] errorNum.js .......... Skip (Chakracore-only)
 [Error] CallNonFunction.js .......... Fail
 [Error] sourceInfo_00.js .......... Fail
@@ -450,11 +450,11 @@ Running all tests
 [Error] sourceInfo_13.js .......... Fail
 [Error] sourceInfo_20.js .......... Fail
 [Error] variousErrors.js .......... Pass
-[Error] RuntimeCompileStackOverflow.js .......... Fail
+[Error] RuntimeCompileStackOverflow.js .......... Pass
 [Error] encodeoverflow.js .......... Skip (Takes too long)
 [Error] bug560940.js .......... Pass
 [Error] stackoverflow.js .......... Pass
-[Error] inlineSameFunc.js .......... Fail
+[Error] inlineSameFunc.js .......... Skip (Chakracore-only)
 [Error] PartInitStackFrame.js .......... Fail
 [Boolean] simple1.js .......... Pass
 [Boolean] simple2.js .......... Pass
@@ -1432,7 +1432,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
             Closures		18		13		2		3		(72%)
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
-               Error		23		5		16		2		(21%)
+               Error		23		6		10		7		(26%)
              Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
          ControlFlow		17		17		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		24		4		0		(85%)
 ==========================================================
-               Total		1406		1157		141		108		(82%)
+               Total		1406		1158		135		113		(82%)

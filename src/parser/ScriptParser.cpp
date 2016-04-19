@@ -61,6 +61,7 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
     FunctionNode* nearFunctionNode) {
         if (!currentNode)
             return;
+        instance->stackCheck();
 
         NodeType type = currentNode->type();
         InnerIdentifierInfoVector& identifierInCurrentContext = *identifierStack.back();

@@ -2,6 +2,7 @@
 <regress-exe>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>errorProps.js</files>
       <baseline>errorProps_v4.baseline</baseline>
       <compile-flags>-ExtendedErrorStackForTestHost</compile-flags>
@@ -15,6 +16,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>NativeErrors.js</files>
       <baseline>NativeErrors_v4.baseline</baseline>
       <compile-flags>-ExtendedErrorStackForTestHost</compile-flags>
@@ -28,6 +30,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>Stack.js</files>
       <baseline>Stack.baseline</baseline>
     </default>
@@ -40,6 +43,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>errorCtor.js</files>
       <baseline>errorCtor_v4.baseline</baseline>
       <compile-flags>-ExtendedErrorStackForTestHost</compile-flags>
@@ -145,6 +149,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>inlineSameFunc.js</files>
       <baseline>inlineSameFunc.baseline</baseline>
       <compile-flags>-ExtendedErrorStackForTestHost -maxinterpretcount:1 -off:simpleJit</compile-flags>
