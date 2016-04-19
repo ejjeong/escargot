@@ -125,7 +125,7 @@ var tests = [
             var kill = { valueOf: function() { while(a.length > 0) { a.pop(); } return 2; } };
             var s = a.splice(5, kill);
 
-            assert.areEqual(2, s.length, "Result of splice is array of undefined values");
+            assert.areEqual(0 /*2(ES6)*/, s.length, "Result of splice is array of undefined values");
             for(var i = 0; i < 2; i++) {
                 assert.areEqual(undefined, s[i], "Splice result elements are all undefined");
             }
@@ -142,7 +142,7 @@ var tests = [
             var kill = { valueOf: function() { while(a.length > 6) { a.pop(); } return 2; } };
             var s = a.splice(5, kill);
 
-            assert.areEqual(2, s.length, "Result of splice contains an element from array and undefined (since array size was shrunk)");
+            assert.areEqual(1 /*2(ES6)*/, s.length, "Result of splice contains an element from array and undefined (since array size was shrunk)");
             assert.areEqual(5, s[0], "Splice result first element is from array");
             assert.areEqual(undefined, s[1], "Splice result remaining elements are undefined");
 
