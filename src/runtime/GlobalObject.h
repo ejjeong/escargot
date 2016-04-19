@@ -436,6 +436,7 @@ protected:
     escargot::ESObject* m_arrayBufferPrototype;
 
     escargot::ESFunctionObject* m_eval;
+    escargot::ESFunctionObject* m_objectProtoTypeToString;
 
     bool m_didSomePrototypeObjectDefineIndexedProperty;
     std::vector<CodeBlock*, pointer_free_allocator<CodeBlock*> > m_codeBlocks;

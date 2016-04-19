@@ -1195,8 +1195,7 @@ void GlobalObject::installObject()
     m_object->setProtoType(m_objectPrototype);
     m_objectPrototype->defineDataProperty(strings->constructor, true, false, true, m_object);
 
-    // Object.prototype.toString
-    m_objectPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    m_objectProtoTypeToString = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         if (thisValue.isUndefined())
             return ESString::createAtomicString("[object Undefined]");
@@ -1238,7 +1237,9 @@ void GlobalObject::installObject()
             return ESString::createAtomicString("[object global]");
         }
         return ESString::createAtomicString("[object Object]");
-    }, strings->toString, 0));
+    }, strings->toString, 0);
+    // Object.prototype.toString
+    m_objectPrototype->defineDataProperty(strings->toString, true, false, true, m_objectProtoTypeToString);
 
     // $19.1.3.2 Object.prototype.hasOwnProperty(V)
     m_objectPrototype->defineDataProperty(strings->hasOwnProperty, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2659,7 +2660,7 @@ void GlobalObject::installArray()
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         ESValue toString = thisBinded->get(strings->join.string());
         if (!toString.isESPointer() || !toString.asESPointer()->isESFunctionObject()) {
-            toString = instance->globalObject()->objectPrototype()->get(strings->toString.string());
+            toString = instance->globalObject()->m_objectProtoTypeToString;
         }
         return ESFunctionObject::call(instance, toString, thisBinded, NULL, 0, false);
     }, strings->toString, 0));
