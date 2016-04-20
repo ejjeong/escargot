@@ -101,6 +101,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>bugVSO_OS_1015467.js</files>
     </default>
   </test>

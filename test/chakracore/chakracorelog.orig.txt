@@ -1342,7 +1342,7 @@ Running all tests
 [FixedFields] bug677247.js .......... Pass
 [FixedFields] bug712503_fixedAccessors.js .......... Pass
 [FixedFields] fixedmethods_polyInlining.js .......... Pass
-[FixedFields] bugVSO_OS_1015467.js .......... Fail
+[FixedFields] bugVSO_OS_1015467.js .......... Skip (Not in scope (es6))
 [inlining] arg.js .......... Pass
 [inlining] linenumber1.js .......... Pass
 [inlining] linenumber2.js .......... Pass
@@ -1459,9 +1459,9 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 loop		6		6		0		0		(100%)
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		93		17		1		(83%)
-         FixedFields		16		15		1		0		(93%)
+         FixedFields		16		15		0		1		(93%)
             inlining		34		27		6		1		(79%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1169		118		119		(83%)
+               Total		1406		1169		117		120		(83%)
