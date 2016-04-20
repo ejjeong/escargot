@@ -57,7 +57,7 @@ ESHiddenClassPropertyInfo::ESHiddenClassPropertyInfo()
     m_attributes = Data | Deleted;
 }
 
-char ESHiddenClassPropertyInfo::flags()
+unsigned ESHiddenClassPropertyInfo::flags() const
 {
     return m_attributes & (Data | PropertyDescriptor::defaultAttributes);
 }

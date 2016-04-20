@@ -1476,6 +1476,11 @@ protected:
     ESFunctionObject* m_jsSetter;
 };
 
+inline char assembleHidenClassPropertyInfoFlags(bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
+{
+    return isData | ((int)isWritable << 1) | ((int)isEnumerable << 2) | ((int)isConfigurable << 3);
+}
+
 struct ESHiddenClassPropertyInfo {
     ESHiddenClassPropertyInfo(ESString* name, unsigned attributes)
     {
@@ -1485,7 +1490,7 @@ struct ESHiddenClassPropertyInfo {
 
     ESHiddenClassPropertyInfo();
 
-    char flags();
+    unsigned flags() const;
 
     static unsigned buildAttributes(bool data, bool writable, bool enumerable, bool configurable);
 
