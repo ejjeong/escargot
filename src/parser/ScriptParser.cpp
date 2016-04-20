@@ -40,12 +40,12 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
     if (isForGlobalScope) {
         const ESHiddenClassPropertyInfoVector& info = instance->globalObject()->hiddenClass()->propertyInfo();
         for (unsigned i = 0; i < info.size() ; i ++) {
-            if (!info[i].m_flags.m_isDeletedValue) {
+            if (!info[i].isDeleted()) {
                 InternalAtomicString as;
-                if (info[i].m_name->isASCIIString()) {
-                    as = InternalAtomicString(instance, info[i].m_name->asciiData(), info[i].m_name->length());
+                if (info[i].name()->isASCIIString()) {
+                    as = InternalAtomicString(instance, info[i].name()->asciiData(), info[i].name()->length());
                 } else {
-                    as = InternalAtomicString(instance, info[i].m_name->utf16Data(), info[i].m_name->length());
+                    as = InternalAtomicString(instance, info[i].name()->utf16Data(), info[i].name()->length());
                 }
                 knownGlobalNames.insert(std::make_pair(as, i));
             }

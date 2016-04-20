@@ -1036,11 +1036,11 @@ ALWAYS_INLINE bool ESPropertyAccessorData::setValue(::escargot::ESObject* obj, E
 inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 {
     ASSERT(idx != SIZE_MAX);
-    // ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
+    // ASSERT(m_propertyInfo[idx].configurable());
 
     if (m_flags.m_isVectorMode) {
         ESHiddenClass* ret;
-        ASSERT(*m_propertyInfo[0].m_name == *strings->__proto__.string());
+        ASSERT(*m_propertyInfo[0].name() == *strings->__proto__.string());
         unsigned i;
         if (idx == 0) {
             // Deleting __proto__
@@ -1053,8 +1053,8 @@ inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         }
         for (; i < m_propertyInfo.size(); i ++) {
             if (idx != i) {
-                ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
-                    , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
+                ret = ret->defineProperty(m_propertyInfo[i].name(), m_propertyInfo[i].isDataProperty()
+                    , m_propertyInfo[i].writable(), m_propertyInfo[i].enumerable(), m_propertyInfo[i].configurable());
             }
         }
         return ret;
@@ -1064,8 +1064,8 @@ inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
             for (unsigned i = 1; i < m_propertyInfo.size(); i ++) {
                 if (idx != i) {
-                    ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
-                        , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
+                    ret = ret->defineProperty(m_propertyInfo[i].name(), m_propertyInfo[i].isDataProperty()
+                        , m_propertyInfo[i].writable(), m_propertyInfo[i].enumerable(), m_propertyInfo[i].configurable());
                 }
             }
             return ret;
@@ -1077,9 +1077,9 @@ inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             if (i == idx)
                 continue;
             cls->m_propertyInfo.push_back(m_propertyInfo[i]);
-            cls->m_flags.m_hasReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable);
-            cls->m_flags.m_hasIndexedProperty |= m_propertyInfo[i].m_name->hasOnlyDigit();
-            cls->m_flags.m_hasIndexedReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
+            cls->m_flags.m_hasReadOnlyProperty |= (!m_propertyInfo[i].writable());
+            cls->m_flags.m_hasIndexedProperty |= m_propertyInfo[i].name()->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty |= (!m_propertyInfo[i].writable() && m_propertyInfo[i].name()->hasOnlyDigit());
         }
 
         cls->fillHashMapInfo();
@@ -1095,7 +1095,7 @@ inline ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx
     ASSERT(idx != SIZE_MAX);
     // can not delete __proto__
     ASSERT(idx != 0);
-    ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
+    ASSERT(m_propertyInfo[idx].configurable());
     ASSERT(m_flags.m_forceNonVectorMode);
     ASSERT(!m_flags.m_isVectorMode);
 
@@ -1105,14 +1105,14 @@ inline ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx
     for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
         if (i == idx) {
             cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo());
-            cls->m_propertyInfo.back().m_name = m_propertyInfo[i].m_name;
+            cls->m_propertyInfo.back().setName(m_propertyInfo[i].name());
         } else {
             cls->m_propertyInfo.push_back(m_propertyInfo[i]);
-            if (m_propertyInfo[i].m_flags.m_isDeletedValue)
+            if (m_propertyInfo[i].isDeleted())
                 continue;
-            cls->m_flags.m_hasReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable);
-            cls->m_flags.m_hasIndexedProperty |= m_propertyInfo[i].m_name->hasOnlyDigit();
-            cls->m_flags.m_hasIndexedReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
+            cls->m_flags.m_hasReadOnlyProperty |= (!m_propertyInfo[i].writable());
+            cls->m_flags.m_hasIndexedProperty |= m_propertyInfo[i].name()->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty |= (!m_propertyInfo[i].writable() && m_propertyInfo[i].name()->hasOnlyDigit());
         }
     }
 
@@ -1148,6 +1148,7 @@ inline ESHiddenClass* ESHiddenClass::forceNonVectorMode()
 inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable, bool forceNewHiddenClass)
 {
     ASSERT(findProperty(name) == SIZE_MAX);
+    unsigned attributes = ESHiddenClassPropertyInfo::buildAttributes(isData, isWritable, isEnumerable, isConfigurable);
     if (m_flags.m_isVectorMode) {
         if (m_propertyInfo.size() > ESHiddenClassVectorModeSizeLimit) {
             ESHiddenClass* cls = new ESHiddenClass;
@@ -1155,7 +1156,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
             cls->m_propertyInfo.reserve(m_propertyInfo.size() + 1);
             cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
             size_t resultIndex = cls->m_propertyInfo.size();
-            cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+            cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, attributes));
 
             ASSERT(cls->m_propertyInfo.size() - 1 == resultIndex);
 
@@ -1175,7 +1176,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
             cls = new ESHiddenClass;
             cls->m_propertyInfo.reserve(m_propertyInfo.size() + 1);
             cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
-            cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+            cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, attributes));
 
             cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
             cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
@@ -1190,7 +1191,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
                 cls = new ESHiddenClass;
                 cls->m_propertyInfo.reserve(m_propertyInfo.size() + 1);
                 cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
-                cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+                cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, attributes));
 
                 cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
                 cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
@@ -1202,7 +1203,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
         return cls;
     } else {
         ESHiddenClass* cls = (forceNewHiddenClass || m_flags.m_hasEverSetAsPrototypeObjectHiddenClass) ? new ESHiddenClass(*this) : this;
-        cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+        cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, attributes));
         cls->m_flags.m_hasReadOnlyProperty = cls->m_flags.m_hasReadOnlyProperty | (!isWritable);
         cls->m_flags.m_hasIndexedProperty = cls->m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
         cls->m_flags.m_hasIndexedReadOnlyProperty = cls->m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
@@ -1219,7 +1220,7 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESValue originalObject,
 
 ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t idx)
 {
-    if (LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
+    if (LIKELY(m_propertyInfo[idx].isDataProperty())) {
         return obj->m_hiddenClassData[idx];
     } else {
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
@@ -1234,19 +1235,84 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESValue originalObject, E
 
 ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t idx, const ESValue& val)
 {
-    if (LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
-        if (UNLIKELY(!m_propertyInfo[idx].m_flags.m_isWritable)) {
+    if (LIKELY(m_propertyInfo[idx].isDataProperty())) {
+        if (UNLIKELY(!m_propertyInfo[idx].writable())) {
             return false;
         }
         obj->m_hiddenClassData[idx] = val;
     } else {
-        if (!obj->accessorData(idx)->getJSGetter() && !obj->accessorData(idx)->getJSSetter() && !m_propertyInfo[idx].m_flags.m_isWritable)
+        if (!obj->accessorData(idx)->getJSGetter() && !obj->accessorData(idx)->getJSSetter() && !m_propertyInfo[idx].writable())
             return false;
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
         return data->setValue(obj, originalObject, propertyName, val);
     }
     return true;
 }
+
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setWritable(bool writable)
+{
+    if (writable)
+        m_attributes |= Writable;
+    else
+        m_attributes &= ~Writable;
+}
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setEnumerable(bool enumerable)
+{
+    if (enumerable)
+        m_attributes |= Enumerable;
+    else
+        m_attributes &= ~Enumerable;
+}
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setConfigurable(bool configurable)
+{
+    if (configurable)
+        m_attributes |= Configurable;
+    else
+        m_attributes &= ~Configurable;
+}
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setDeleted(bool deleted)
+{
+    if (deleted)
+        m_attributes |= Deleted;
+    else
+        m_attributes &= ~Deleted;
+}
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setDataProperty(bool data)
+{
+    if (data)
+        m_attributes |= Data;
+    else
+        m_attributes &= ~Data;
+}
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setJSAccessorProperty(bool jsAccessor)
+{
+    if (jsAccessor)
+        m_attributes |= JSAccessor;
+    else
+        m_attributes &= ~JSAccessor;
+}
+
+ALWAYS_INLINE void ESHiddenClassPropertyInfo::setNativeAccessorProperty(bool nativeAccessor)
+{
+    if (nativeAccessor)
+        m_attributes |= NativeAccessor;
+    else
+        m_attributes &= ~NativeAccessor;
+}
+
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::writable() const { return m_attributes & Writable; }
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::enumerable() const { return m_attributes & Enumerable; }
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::configurable() const { return m_attributes & Configurable; }
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::isDeleted() const { return m_attributes & Deleted; }
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::isDataProperty() const { return m_attributes & Data; }
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::isJSAccessorProperty() const { return m_attributes & JSAccessor; }
+ALWAYS_INLINE bool ESHiddenClassPropertyInfo::isNativeAccessorProperty() const { return m_attributes & NativeAccessor; }
 
 inline void ESObject::set__proto__(const ESValue& obj)
 {
@@ -1332,10 +1398,10 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         return true;
     } else {
         ASSERT(!forceNewHiddenClass);
-        if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force && !m_hiddenClassData[oldIdx].isDeleted()) {
+        if (!m_hiddenClass->m_propertyInfo[oldIdx].configurable() && !force && !m_hiddenClassData[oldIdx].isDeleted()) {
             if (oldIdx == 0) { // for __proto__
                 ESHiddenClassPropertyInfo& info = m_hiddenClass->m_propertyInfo[oldIdx];
-                if (!info.m_flags.m_isWritable || info.m_flags.m_isEnumerable)
+                if (!info.writable() || info.enumerable())
                     return false;
                 else {
                     set__proto__(initialValue);
@@ -1353,7 +1419,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         } else {
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
             m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(oldIdx);
-            m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isDeletedValue = true;
+            m_hiddenClass->m_propertyInfo[oldIdx].setDeleted(true);
             m_hiddenClassData[oldIdx] = ESValue(ESValue::ESDeletedValue);
             ESVMInstance::currentInstance()->globalObject()->propertyDeleted(oldIdx);
 
@@ -1417,7 +1483,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         }
         return true;
     } else {
-        if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force && !m_hiddenClassData[oldIdx].isDeleted()) {
+        if (!m_hiddenClass->m_propertyInfo[oldIdx].configurable() && !force && !m_hiddenClassData[oldIdx].isDeleted()) {
             if (oldIdx == 0) // for __proto__
                 return false;
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
@@ -1430,7 +1496,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         } else {
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
             m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(oldIdx);
-            m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isDeletedValue = true;
+            m_hiddenClass->m_propertyInfo[oldIdx].setDeleted(true);
             m_hiddenClassData[oldIdx] = ESValue(ESValue::ESDeletedValue);
             ESVMInstance::currentInstance()->globalObject()->propertyDeleted(oldIdx);
 
@@ -1460,13 +1526,13 @@ inline bool ESObject::deletePropertySlowPath(const ESValue& key, bool force)
     if (idx == SIZE_MAX) // if undefined, return true
         return true;
 
-    if (!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable && !force) {
+    if (!m_hiddenClass->m_propertyInfo[idx].configurable() && !force) {
         return false;
     }
     if (UNLIKELY(m_flags.m_isGlobalObject)) {
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
         m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(idx);
-        m_hiddenClass->m_propertyInfo[idx].m_flags.m_isDeletedValue = true;
+        m_hiddenClass->m_propertyInfo[idx].setDeleted(true);
         m_hiddenClassData[idx] = ESValue(ESValue::ESDeletedValue);
         ESVMInstance::currentInstance()->globalObject()->propertyDeleted(idx);
     } else {
@@ -1845,8 +1911,8 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
 
     auto iter = m_hiddenClass->m_propertyInfo.begin();
     while (iter != m_hiddenClass->m_propertyInfo.end()) {
-        if (iter->m_flags.m_isEnumerable) {
-            t(ESValue(iter->m_name));
+        if (iter->enumerable()) {
+            t(ESValue(iter->name()));
         }
         iter++;
     }
@@ -1873,24 +1939,24 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
     if (isESStringObject()) {
         for (uint32_t i = 0; i < asESStringObject()->length(); i++) {
             ESHiddenClassPropertyInfo propertyInfo;
-            propertyInfo.m_flags.m_isEnumerable = true;
-            propertyInfo.m_flags.m_isDeletedValue = false;
+            propertyInfo.setEnumerable(true);
+            propertyInfo.setDeleted(false);
             t(ESValue(i).toString(), &propertyInfo);
 
             // temporary propertyInfo should be unchaged
-            ASSERT(propertyInfo.m_flags.m_isDataProperty == true);
-            ASSERT(propertyInfo.m_flags.m_isWritable == false);
-            ASSERT(propertyInfo.m_flags.m_isEnumerable == true);
-            ASSERT(propertyInfo.m_flags.m_isConfigurable == false);
-            ASSERT(propertyInfo.m_flags.m_isDeletedValue == false);
+            ASSERT(propertyInfo.isDataProperty() == true);
+            ASSERT(propertyInfo.writable() == false);
+            ASSERT(propertyInfo.enumerable() == true);
+            ASSERT(propertyInfo.configurable() == false);
+            ASSERT(propertyInfo.isDeleted() == false);
         }
     }
 
     if (hasPropertyInterceptor()) {
         ESValueVector v = propertyEnumerationForPropertyInterceptor();
         ESHiddenClassPropertyInfo propertyInfo;
-        propertyInfo.m_flags.m_isEnumerable = true;
-        propertyInfo.m_flags.m_isDeletedValue = false;
+        propertyInfo.setEnumerable(true);
+        propertyInfo.setDeleted(false);
         for (size_t i = 0; i < v.size(); i ++) {
             t(v[i].toString(), &propertyInfo);
         }
@@ -1898,8 +1964,8 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
 
     auto iter = m_hiddenClass->m_propertyInfo.begin();
     while (iter != m_hiddenClass->m_propertyInfo.end()) {
-        if (iter->m_name != strings->__proto__)
-            t(ESValue(iter->m_name), &(*iter));
+        if (iter->name() != strings->__proto__)
+            t(ESValue(iter->name()), &(*iter));
         iter++;
     }
 }

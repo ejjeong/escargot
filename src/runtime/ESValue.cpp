@@ -50,7 +50,33 @@ NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* m
     return false;
 }
 
-ESHiddenClassPropertyInfo dummyPropertyInfo(nullptr, true, true, true, true);
+ESHiddenClassPropertyInfo dummyPropertyInfo(nullptr, Data | PropertyDescriptor::defaultAttributes);
+ESHiddenClassPropertyInfo::ESHiddenClassPropertyInfo()
+{
+    m_name = NULL;
+    m_attributes = Data | Deleted;
+}
+
+char ESHiddenClassPropertyInfo::flags()
+{
+    return m_attributes & (Data | PropertyDescriptor::defaultAttributes);
+}
+
+unsigned ESHiddenClassPropertyInfo::buildAttributes(bool data, bool writable, bool enumerable, bool configurable)
+{
+    unsigned attributes = None;
+
+    if (data)
+        attributes |= Data;
+    if (writable)
+        attributes |= Writable;
+    if (enumerable)
+        attributes |= Enumerable;
+    if (configurable)
+        attributes |= Configurable;
+
+    return attributes;
+}
 
 ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
 {
@@ -651,14 +677,14 @@ void PropertyDescriptor::setConfigurable(bool configurable)
 void PropertyDescriptor::setSetter(ESValue setter)
 {
     m_setter = setter;
-    m_attributes |= Accessor;
+    m_attributes |= JSAccessor;
     m_attributes &= ~Writable;
 }
 
 void PropertyDescriptor::setGetter(ESValue getter)
 {
     m_getter = getter;
-    m_attributes |= Accessor;
+    m_attributes |= JSAccessor;
     m_attributes &= ~Writable;
 }
 
@@ -671,9 +697,9 @@ ESValue PropertyDescriptor::fromPropertyDescriptor(ESObject* descSrc, ESString* 
     }
     const ESHiddenClassPropertyInfo& propertyInfo = descSrc->hiddenClass()->propertyInfo(idx);
     ESObject* obj = ESObject::create();
-    if (propertyInfo.m_flags.m_isDataProperty || isActualDataProperty) {
+    if (propertyInfo.isDataProperty() || isActualDataProperty) {
         obj->set(strings->value.string(), descSrc->hiddenClass()->read(descSrc, descSrc, propertyName, idx));
-        obj->set(strings->writable.string(), ESValue(propertyInfo.m_flags.m_isWritable));
+        obj->set(strings->writable.string(), ESValue(propertyInfo.writable()));
     } else if (descSrc->accessorData(idx)->getJSGetter()
         || descSrc->accessorData(idx)->getJSSetter()
         || (!descSrc->accessorData(idx)->getNativeGetter() && !descSrc->accessorData(idx)->getNativeSetter())) {
@@ -696,8 +722,8 @@ ESValue PropertyDescriptor::fromPropertyDescriptor(ESObject* descSrc, ESString* 
         obj->set(strings->value.string(), descSrc->hiddenClass()->read(descSrc, descSrc, propertyName, idx));
         descSrc->accessorData(idx)->setGetterAndSetterTo(obj, &propertyInfo);
     }
-    obj->set(strings->enumerable.string(), ESValue(propertyInfo.m_flags.m_isEnumerable));
-    obj->set(strings->configurable.string(), ESValue(propertyInfo.m_flags.m_isConfigurable));
+    obj->set(strings->enumerable.string(), ESValue(propertyInfo.enumerable()));
+    obj->set(strings->configurable.string(), ESValue(propertyInfo.configurable()));
     return obj;
 }
 
@@ -798,7 +824,7 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
                 // If IsAccessorDescriptor(desc) is true, then
                 // Let setter be desc.[[Set]] which cannot be undefined.
                 // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
-                if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
+                if (!targetObj->hiddenClass()->m_propertyInfo[t].isDataProperty()) {
                     ESPropertyAccessorData* data = targetObj->accessorData(t);
                     ESValue receiverVal(this);
                     if (receiver)
@@ -813,7 +839,7 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
                             return false;
                         }
                         if (data->getNativeSetter()) {
-                            if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable) {
+                            if (!targetObj->hiddenClass()->m_propertyInfo[t].writable()) {
                                 return false;
                             }
                             foundInPrototype = true;
@@ -822,7 +848,7 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
                         }
                     }
                 } else {
-                    if (!targetObj->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable) {
+                    if (!targetObj->hiddenClass()->m_propertyInfo[t].writable()) {
                         return false;
                     }
                     foundInPrototype = true;
@@ -875,7 +901,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     ESValue current = ESValue();
     if (idx != SIZE_MAX) {
         ESHiddenClassPropertyInfo info = O->hiddenClass()->propertyInfo(idx);
-        if (info.m_flags.m_isDataProperty) {
+        if (info.isDataProperty()) {
             current = O->hiddenClassData()[idx];
         } else {
             ESPropertyAccessorData* data = (ESPropertyAccessorData *)O->hiddenClassData()[idx].asESPointer();
@@ -945,10 +971,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     if (idx == SIZE_MAX)
         return true;
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
-    if ((!descHasEnumerable || desc.enumerable() == propertyInfo.m_flags.m_isEnumerable)
-        && (!descHasWritable || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && (desc.writable() == propertyInfo.m_flags.m_isWritable)))
-        && (!descHasConfigurable || desc.configurable() == propertyInfo.m_flags.m_isConfigurable)
-        && (!descHasValue || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && desc.value().equalsToByTheSameValueAlgorithm(current)))
+    if ((!descHasEnumerable || desc.enumerable() == propertyInfo.enumerable())
+        && (!descHasWritable || ((propertyInfo.isDataProperty() || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && (desc.writable() == propertyInfo.writable())))
+        && (!descHasConfigurable || desc.configurable() == propertyInfo.configurable())
+        && (!descHasValue || ((propertyInfo.isDataProperty() || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && desc.value().equalsToByTheSameValueAlgorithm(current)))
         && (!descHasGetter || (O->get(strings->get.string()).isESPointer() && O->get(strings->get.string()).asESPointer()->isESFunctionObject()
             && desc.getterFunction() == O->get(strings->get.string()).asESPointer()->asESFunctionObject()))
         && (!descHasSetter || (O->get(strings->set.string()).isESPointer() && O->get(strings->set.string()).asESPointer()->isESFunctionObject()
@@ -956,35 +982,35 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         return true;
 
     // 7
-    if (!propertyInfo.m_flags.m_isConfigurable) {
+    if (!propertyInfo.configurable()) {
         if (descHasConfigurable && desc.configurable()) {
             return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
         } else {
-            if (descHasEnumerable && propertyInfo.m_flags.m_isEnumerable != desc.enumerable()) {
+            if (descHasEnumerable && propertyInfo.enumerable() != desc.enumerable()) {
                 return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
             }
         }
     }
 
     // 8, 9, 10, 11
-    bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
+    bool isCurrentDataDescriptor = propertyInfo.isDataProperty() || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
     bool shouldRemoveOriginalNativeGetterSetter = false;
     if (isDescGenericDescriptor) { // 8
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
-        if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
+        if (!propertyInfo.configurable()) { // 9.a
             return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
         }
         if (isCurrentDataDescriptor) { // 9.b
             O->deleteProperty(P);
-            O->defineAccessorProperty(P, new ESPropertyAccessorData(desc.getterFunction(), desc.setterFunction()), descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, true);
+            O->defineAccessorProperty(P, new ESPropertyAccessorData(desc.getterFunction(), desc.setterFunction()), descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.enumerable(), descHasConfigurable ? desc.configurable() : propertyInfo.configurable(), true);
         } else { // 9.c
             O->deleteProperty(P);
-            O->defineDataProperty(P, descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, desc.value(), true);
+            O->defineDataProperty(P, descHasWritable ? desc.writable() : false, descHasEnumerable ? desc.enumerable() : propertyInfo.enumerable(), descHasConfigurable ? desc.configurable() : propertyInfo.configurable(), desc.value(), true);
         }
         return true;
     } else if (isCurrentDataDescriptor && isDescDataDescriptor) { // 10
-        if (!propertyInfo.m_flags.m_isConfigurable) {
-            if (!propertyInfo.m_flags.m_isWritable) {
+        if (!propertyInfo.configurable()) {
+            if (!propertyInfo.writable()) {
                 if (desc.writable()) {
                     return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
                 } else {
@@ -994,15 +1020,15 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
                 }
             }
         }
-        if (UNLIKELY(O->isESArgumentsObject() && !propertyInfo.m_flags.m_isDataProperty)) { // ES6.0 $9.4.4.2
+        if (UNLIKELY(O->isESArgumentsObject() && !propertyInfo.isDataProperty())) { // ES6.0 $9.4.4.2
             if (desc.hasValue())
                 O->set(P, desc.value());
             if ((descHasWritable && !desc.writable()) || (descHasEnumerable && !desc.enumerable()) || (descHasConfigurable && !desc.configurable()))
                 shouldRemoveOriginalNativeGetterSetter = true;
         }
     } else {
-        ASSERT(!propertyInfo.m_flags.m_isDataProperty && desc.isAccessorDescriptor());
-        if (!propertyInfo.m_flags.m_isConfigurable) {
+        ASSERT(!propertyInfo.isDataProperty() && desc.isAccessorDescriptor());
+        if (!propertyInfo.configurable()) {
             if (descHasSetter && (desc.setterFunction() != O->accessorData(idx)->getJSSetter())) {
                 return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
             }
@@ -1015,10 +1041,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     //
 
     // 12
-    if (descHasGetter || descHasSetter || (!propertyInfo.m_flags.m_isDataProperty && !O->accessorData(idx)->getNativeGetter() && !O->accessorData(idx)->getNativeSetter())) {
+    if (descHasGetter || descHasSetter || (!propertyInfo.isDataProperty() && !O->accessorData(idx)->getNativeGetter() && !O->accessorData(idx)->getNativeSetter())) {
         escargot::ESFunctionObject* getter = desc.getterFunction();
         escargot::ESFunctionObject* setter = desc.setterFunction();
-        if (!propertyInfo.m_flags.m_isDataProperty) {
+        if (!propertyInfo.isDataProperty()) {
             ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
             if (!descHasGetter && currentAccessorData->getJSGetter()) {
                 getter = currentAccessorData->getJSGetter();
@@ -1029,26 +1055,26 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         }
         O->deleteProperty(P, true);
         O->defineAccessorProperty(P, new ESPropertyAccessorData(getter, setter),
-            descHasWritable ? desc.writable() : propertyInfo.m_flags.m_isWritable,
-            descHasEnumerable ? desc.enumerable(): propertyInfo.m_flags.m_isEnumerable,
-            descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, true);
-    } else if (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && !shouldRemoveOriginalNativeGetterSetter) {
+            descHasWritable ? desc.writable() : propertyInfo.writable(),
+            descHasEnumerable ? desc.enumerable(): propertyInfo.enumerable(),
+            descHasConfigurable ? desc.configurable() : propertyInfo.configurable(), true);
+    } else if (!propertyInfo.isDataProperty() && (O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && !shouldRemoveOriginalNativeGetterSetter) {
         escargot::ESNativeGetter getter = O->accessorData(idx)->getNativeGetter();
         escargot::ESNativeSetter setter = O->accessorData(idx)->getNativeSetter();
         O->set(P, descHasValue ? desc.value() : current);
 
         O->deleteProperty(P, true);
         O->defineAccessorProperty(P, new ESPropertyAccessorData(getter, setter),
-            descHasWritable ? desc.writable() : propertyInfo.m_flags.m_isWritable,
-            descHasEnumerable ? desc.enumerable(): propertyInfo.m_flags.m_isEnumerable,
-            descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable, true);
+            descHasWritable ? desc.writable() : propertyInfo.writable(),
+            descHasEnumerable ? desc.enumerable(): propertyInfo.enumerable(),
+            descHasConfigurable ? desc.configurable() : propertyInfo.configurable(), true);
 
     } else {
         O->deleteProperty(P, true);
         O->defineDataProperty(P,
-            descHasWritable ? desc.writable() : propertyInfo.m_flags.m_isWritable,
-            descHasEnumerable ? desc.enumerable(): propertyInfo.m_flags.m_isEnumerable,
-            descHasConfigurable ? desc.configurable() : propertyInfo.m_flags.m_isConfigurable,
+            descHasWritable ? desc.writable() : propertyInfo.writable(),
+            descHasEnumerable ? desc.enumerable(): propertyInfo.enumerable(),
+            descHasConfigurable ? desc.configurable() : propertyInfo.configurable(),
             descHasValue ? desc.value() : current, true);
     }
 
@@ -1150,7 +1176,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
             return A->asESObject()->defineOwnProperty(P, newLenDesc, throwFlag);
 
         // 3.g
-        if (!oldLePropertyInfo.m_flags.m_isWritable) {
+        if (!oldLePropertyInfo.writable()) {
             return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
         }
 
@@ -1197,7 +1223,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
         // 4.a
 
         // 4.b
-        if (index >= oldLen && !oldLePropertyInfo.m_flags.m_isWritable) {
+        if (index >= oldLen && !oldLePropertyInfo.writable()) {
             return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyLengthNotWritable, P.toString());
         }
 
@@ -1589,20 +1615,20 @@ ESArrayObject* ESRegExpObject::createRegExpMatchedArray(const RegexMatchResult& 
     escargot::ESArrayObject* arr = escargot::ESArrayObject::create();
 
     arr->defineOwnProperty(strings->index.string(),
-        PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), Writable | Enumerable | Configurable }, true);
+        PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), PropertyDescriptor::defaultAttributes }, true);
     arr->defineOwnProperty(strings->input.string(),
-        PropertyDescriptor { input, Writable | Enumerable | Configurable }, true);
+        PropertyDescriptor { input, PropertyDescriptor::defaultAttributes }, true);
 
     int idx = 0;
     for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
         for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
             if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max()) {
                 arr->defineOwnProperty(ESValue(idx++),
-                    PropertyDescriptor { ESValue(ESValue::ESUndefined), Writable | Enumerable | Configurable }, true);
+                    PropertyDescriptor { ESValue(ESValue::ESUndefined), PropertyDescriptor::defaultAttributes }, true);
             } else {
                 arr->defineOwnProperty(ESValue(idx++),
                     PropertyDescriptor { input->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end),
-                    Writable | Enumerable | Configurable },  true);
+                    PropertyDescriptor::defaultAttributes },  true);
             }
         }
     }
@@ -3906,7 +3932,7 @@ void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj, const ESHiddenC
 
     if (m_nativeGetter || m_nativeSetter) {
         ASSERT(!m_jsGetter && !m_jsSetter);
-        obj->set(strings->writable.string(), ESValue(propertyInfo->m_flags.m_isWritable));
+        obj->set(strings->writable.string(), ESValue(propertyInfo->writable()));
         return;
     }
 }

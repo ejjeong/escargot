@@ -404,7 +404,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                         // If IsAccessorDescriptor(desc) is true, then
                         // Let setter be desc.[[Set]] which cannot be undefined.
                         // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
-                        if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty) {
+                        if (!obj->hiddenClass()->propertyInfo(idx).isDataProperty()) {
                             ESPropertyAccessorData* data = obj->accessorData(idx);
                             if (!foundInPrototype) {
                                 if (data->isAccessorDescriptor()) {
@@ -418,7 +418,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                     return;
                                 }
                                 if (data->getNativeSetter()) {
-                                    if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                                    if (!obj->hiddenClass()->propertyInfo(idx).writable()) {
                                         invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
                                         throwObjectWriteError();
                                         return;
@@ -430,7 +430,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                 }
                             }
                         } else {
-                            if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                            if (!obj->hiddenClass()->propertyInfo(idx).writable()) {
                                 invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
                                 throwObjectWriteError();
                                 return;

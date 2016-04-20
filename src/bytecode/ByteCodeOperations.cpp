@@ -605,7 +605,7 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     if (shouldSearchProto) {
         std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
         target->enumerationWithNonEnumerable([&data, &nonIntKeys, &keyStringSet](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            if (propertyInfo->m_flags.m_isEnumerable) {
+            if (propertyInfo->enumerable()) {
                 uint32_t index = key.toIndex();
                 if (index != ESValue::ESInvalidIndexValue) {
                     data->m_keys.push_back(key);

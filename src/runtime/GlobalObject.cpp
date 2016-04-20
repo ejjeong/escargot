@@ -1329,16 +1329,16 @@ void GlobalObject::installObject()
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > writableOrconfigurableProperties;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             ASSERT(propertyInfo != &dummyPropertyInfo);
-            if (((propertyInfo->m_flags.m_isDataProperty || !obj->accessorData(key.asESString())->isAccessorDescriptor())
-                && propertyInfo->m_flags.m_isWritable)
-                || propertyInfo->m_flags.m_isConfigurable)
+            if (((propertyInfo->isDataProperty() || !obj->accessorData(key.asESString())->isAccessorDescriptor())
+                && propertyInfo->writable())
+                || propertyInfo->configurable())
                 writableOrconfigurableProperties.push_back(std::make_pair(key, propertyInfo));
         });
         for (auto it = writableOrconfigurableProperties.begin(); it != writableOrconfigurableProperties.end(); it++) {
             bool writable = false;
-            bool enumerable = it->second->m_flags.m_isEnumerable;
+            bool enumerable = it->second->enumerable();
             bool configurable = false;
-            if (it->second->m_flags.m_isDataProperty) {
+            if (it->second->isDataProperty()) {
                 ESValue value = obj->getOwnProperty(it->first);
                 bool deleteResult = obj->deleteProperty(it->first, true);
                 ASSERT(deleteResult);
@@ -1412,10 +1412,10 @@ void GlobalObject::installObject()
         ESObject* obj = O.toObject();
         bool hasWritableConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            if (propertyInfo->m_flags.m_isDataProperty)
-                if (propertyInfo->m_flags.m_isWritable)
+            if (propertyInfo->isDataProperty())
+                if (propertyInfo->writable())
                     hasWritableConfigurableProperty = true;
-            if (propertyInfo->m_flags.m_isConfigurable)
+            if (propertyInfo->configurable())
                 hasWritableConfigurableProperty = true;
         });
         if (hasWritableConfigurableProperty)
@@ -1434,7 +1434,7 @@ void GlobalObject::installObject()
         ESObject* obj = O.toObject();
         bool hasConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            if (propertyInfo->m_flags.m_isConfigurable)
+            if (propertyInfo->configurable())
                 hasConfigurableProperty = true;
         });
         if (hasConfigurableProperty)
@@ -1480,15 +1480,15 @@ void GlobalObject::installObject()
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > configurableProperties;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             ASSERT(propertyInfo != &dummyPropertyInfo);
-            if (propertyInfo->m_flags.m_isConfigurable)
+            if (propertyInfo->configurable())
                 configurableProperties.push_back(std::make_pair(key, propertyInfo));
-                // propertyInfo->m_flags.m_isConfigurable = false;
+                // propertyInfo->setConfigurable(false);
         });
         for (auto it = configurableProperties.begin(); it != configurableProperties.end(); it++) {
-            bool writable = it->second->m_flags.m_isWritable;
-            bool enumerable = it->second->m_flags.m_isEnumerable;
+            bool writable = it->second->writable();
+            bool enumerable = it->second->enumerable();
             bool configurable = false;
-            if (it->second->m_flags.m_isDataProperty) {
+            if (it->second->isDataProperty()) {
                 ESValue value = obj->getOwnProperty(it->first);
                 bool deleteResult = obj->deleteProperty(it->first, true);
                 ASSERT(deleteResult);
@@ -1541,7 +1541,7 @@ void GlobalObject::installObject()
         if (O->isESStringObject() && t == SIZE_MAX) { // index value
             return ESValue(true);
         }
-        if (O->hiddenClass()->propertyInfo(t).m_flags.m_isEnumerable)
+        if (O->hiddenClass()->propertyInfo(t).enumerable())
             return ESValue(true);
         return ESValue(false);
     }, strings->propertyIsEnumerable, 1));
@@ -6160,7 +6160,7 @@ void GlobalObject::propertyDefined(size_t newIndex, escargot::ESString* name)
 {
     bool isRedefined = false;
     for (size_t i = 0; i < m_hiddenClass->propertyCount(); i ++) {
-        if (m_hiddenClass->propertyInfo(i).m_flags.m_isDeletedValue && *m_hiddenClass->propertyInfo(i).m_name == *name) {
+        if (m_hiddenClass->propertyInfo(i).isDeleted() && *m_hiddenClass->propertyInfo(i).name() == *name) {
             isRedefined = true;
             break;
         }

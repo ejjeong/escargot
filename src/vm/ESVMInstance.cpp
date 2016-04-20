@@ -103,7 +103,7 @@ ESVMInstance::ESVMInstance()
     //     m_strings.__proto__,
     //     0
     //     ));
-    m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), false, true, false, false));
+    m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), ESHiddenClassPropertyInfo::buildAttributes(false, true, false, false)));
 
     // $19.2.4 Function Instances
     m_initialHiddenClassForFunctionObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, true, false, false, false);

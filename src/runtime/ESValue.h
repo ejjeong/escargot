@@ -1482,41 +1482,39 @@ inline char assembleHidenClassPropertyInfoFlags(bool isData, bool isWritable, bo
 }
 
 struct ESHiddenClassPropertyInfo {
-    ESHiddenClassPropertyInfo(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
+    ESHiddenClassPropertyInfo(ESString* name, unsigned attributes)
     {
         m_name = name;
-        m_flags.m_isDataProperty = isData;
-        m_flags.m_isWritable = isWritable;
-        m_flags.m_isEnumerable = isEnumerable;
-        m_flags.m_isConfigurable = isConfigurable;
-        m_flags.m_isDeletedValue = false;
+        m_attributes = attributes;
     }
 
-    ESHiddenClassPropertyInfo()
-    {
-        m_name = NULL;
-        m_flags.m_isDataProperty = true;
-        m_flags.m_isWritable = false;
-        m_flags.m_isEnumerable = false;
-        m_flags.m_isConfigurable = false;
-        m_flags.m_isDeletedValue = true;
-    }
+    ESHiddenClassPropertyInfo();
 
-    char flags()
-    {
-        return assembleHidenClassPropertyInfoFlags(m_flags.m_isDataProperty, m_flags.m_isWritable, m_flags.m_isEnumerable, m_flags.m_isConfigurable);
-    }
+    char flags();
 
+    static unsigned buildAttributes(bool data, bool writable, bool enumerable, bool configurable);
+
+    ALWAYS_INLINE void setWritable(bool writable);
+    ALWAYS_INLINE void setEnumerable(bool enumerable);
+    ALWAYS_INLINE void setConfigurable(bool configurable);
+    ALWAYS_INLINE void setDeleted(bool deleted);
+    ALWAYS_INLINE void setDataProperty(bool data);
+    ALWAYS_INLINE void setJSAccessorProperty(bool jsAccessor);
+    ALWAYS_INLINE void setNativeAccessorProperty(bool nativeAccessor);
+    ALWAYS_INLINE void setName(ESString* name) { m_name = name; }
+
+    ALWAYS_INLINE bool writable() const;
+    ALWAYS_INLINE bool enumerable() const;
+    ALWAYS_INLINE bool configurable() const;
+    ALWAYS_INLINE bool isDeleted() const;
+    ALWAYS_INLINE bool isDataProperty() const;
+    ALWAYS_INLINE bool isJSAccessorProperty() const;
+    ALWAYS_INLINE bool isNativeAccessorProperty() const;
+    ALWAYS_INLINE ESString* name() const { return m_name; }
+
+private:
     ESString* m_name;
-
-    struct {
-        bool m_isDataProperty:1;
-        // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
-        bool m_isWritable:1;
-        bool m_isEnumerable:1;
-        bool m_isConfigurable:1;
-        bool m_isDeletedValue:1;
-    } m_flags;
+    unsigned m_attributes;
 };
 
 typedef std::unordered_map<::escargot::ESString*, size_t,
@@ -1560,7 +1558,7 @@ public:
         if (LIKELY(m_propertyIndexHashMapInfo == NULL)) {
             size_t siz = m_propertyInfo.size();
             for (size_t i = 0 ; i < siz ; i ++) {
-                if (*m_propertyInfo[i].m_name == *name)
+                if (*m_propertyInfo[i].name() == *name)
                     return i;
             }
             return SIZE_MAX;
@@ -1569,7 +1567,7 @@ public:
             auto iter = m_propertyIndexHashMapInfo->find(const_cast<ESString *>(name));
             if (iter == m_propertyIndexHashMapInfo->end())
                 return SIZE_MAX;
-            if (m_propertyInfo[iter->second].m_flags.m_isDeletedValue)
+            if (m_propertyInfo[iter->second].isDeleted())
                 return SIZE_MAX;
             return iter->second;
         }
@@ -1579,7 +1577,7 @@ public:
     {
         if (m_propertyIndexHashMapInfo) {
             size_t idx = m_propertyInfo.size() - 1;
-            m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[idx].m_name, idx));
+            m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[idx].name(), idx));
         } else {
             fillHashMapInfo(force);
         }
@@ -1595,8 +1593,8 @@ public:
             }
 
             for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
-                if (!m_propertyInfo[i].m_flags.m_isDeletedValue)
-                    m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[i].m_name, i));
+                if (!m_propertyInfo[i].isDeleted())
+                    m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[i].name(), i));
             }
 
             // ASSERT(m_propertyIndexHashMapInfo->size() == m_propertyInfo.size());
@@ -1713,7 +1711,10 @@ enum Attribute {
     Writable          = 1 << 1, // property can be only read, not written
     Enumerable        = 1 << 2, // property doesn't appear in (for .. in ..)
     Configurable      = 1 << 3, // property can't be deleted
-    Accessor          = 1 << 4, // property is a getter/setter
+    Deleted           = 1 << 4, // property is deleted
+    Data              = 1 << 5, // property is a data property
+    JSAccessor        = 1 << 6, // property is a JS getter/setter property
+    NativeAccessor    = 1 << 7, // property is a native getter/setter property
 };
 
 class PropertyDescriptor {
@@ -1754,9 +1755,11 @@ public:
     static ESValue fromPropertyDescriptor(ESObject* descSrc, ESString* propertyName, size_t idx);
     static ESValue fromPropertyDescriptorForIndexedProperties(ESObject* obj, uint32_t index);
 
+    static unsigned defaultAttributes;
+
 private:
     void checkValidity() const;
-    static unsigned defaultAttributes;
+
     enum PresentAttribute {
         WritablePresent         = 1 << 1, // property can be only read, not written
         EnumerablePresent       = 1 << 2, // property doesn't appear in (for .. in ..)
@@ -1900,7 +1903,7 @@ public:
 
     ESPropertyAccessorData* accessorData(size_t idx)
     {
-        ASSERT(!m_hiddenClass->propertyInfo(idx).m_flags.m_isDataProperty);
+        ASSERT(!m_hiddenClass->propertyInfo(idx).isDataProperty());
         return (ESPropertyAccessorData *)m_hiddenClassData[idx].asESPointer();
     }
 
