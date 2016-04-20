@@ -25,3 +25,4 @@ function doClock(firsttime)
     var hours = clock.getHours();
 }
 
+WScript.Echo("passed");
