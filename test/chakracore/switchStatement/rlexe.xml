@@ -102,12 +102,6 @@ Disabled -testtrace cases to eliminate maintenance headache
       <compile-flags>-testtrace:bailout -testtrace:rejit</compile-flags>
       <tags>exclude_dynapogo,exclude_ship</tags>
    </default>
-   <condition order="1" type="include">
-          <target>arm</target>
-          <override>
-                 <baseline>moreSwitches1_1.arm.baseline</baseline>
-          </override>
-        </condition>
 </test>
 
 <test>
@@ -117,12 +111,6 @@ Disabled -testtrace cases to eliminate maintenance headache
       <compile-flags>-testtrace:bailout -testtrace:rejit</compile-flags>
       <tags>exclude_dynapogo,exclude_ship</tags>
    </default>
-   <condition order="1" type="include">
-          <target>arm</target>
-          <override>
-                 <baseline>nonIntCases.arm.baseline</baseline>
-          </override>
-        </condition>
 </test>
 
 <test>
@@ -141,18 +129,6 @@ Disabled -testtrace cases to eliminate maintenance headache
       <compile-flags>-testtrace:bailout -testtrace:rejit</compile-flags>
       <tags>exclude_dynapogo,exclude_ship</tags>
    </default>
-   <condition order="1" type="include">
-      <target>arm</target>
-      <override>
-         <baseline>intBailOut.arm.baseline</baseline>
-      </override>
-    </condition>
-    <condition order="2" type="include">
-      <target>amd64</target>
-      <override>
-         <baseline>intBailOut.amd64.baseline</baseline>
-      </override>
-    </condition>
 </test>
 -->
   <test>

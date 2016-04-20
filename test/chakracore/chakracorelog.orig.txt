@@ -1396,7 +1396,7 @@ Running all tests
 [switchStatement] simpleSwitch.js .......... Pass
 [switchStatement] moreSwitches1_1.js .......... Fail
 [switchStatement] nonIntCases.js .......... Fail
-[switchStatement] stringBailOut.js .......... Fail
+[switchStatement] stringBailOut.js .......... Pass
 [switchStatement] intBailOut.js .......... Fail
 [switchStatement] BugFixRegression_MaxInterpret.js .......... Pass
 [switchStatement] amd64JScriptNumberRegression.js .......... Pass
@@ -1462,6 +1462,6 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          FixedFields		16		15		1		0		(93%)
             inlining		34		27		6		1		(79%)
          DynamicCode		3		3		0		0		(100%)
-     switchStatement		28		24		4		0		(85%)
+     switchStatement		28		25		3		0		(89%)
 ==========================================================
-               Total		1406		1161		126		119		(82%)
+               Total		1406		1162		125		119		(82%)
