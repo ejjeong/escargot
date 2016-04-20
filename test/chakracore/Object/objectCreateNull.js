@@ -14,7 +14,7 @@ var tests = [
       var objects = [
                      Object.create({}),
                      new Boolean(),
-                     Object.create(Promise.prototype),
+                     // Object.create(Promise.prototype), // ES6 Spec (Promise)
                      Function(""),
                      new Number(),
                      new String()
