@@ -561,7 +561,7 @@ bool PropertyDescriptor::configurable() const
 
 bool PropertyDescriptor::isDataDescriptor() const
 {
-    return m_value || (m_seenAttributes & WritablePresent);
+    return !m_value.isEmpty() || (m_seenAttributes & WritablePresent);
 }
 
 bool PropertyDescriptor::isGenericDescriptor() const
@@ -571,7 +571,7 @@ bool PropertyDescriptor::isGenericDescriptor() const
 
 bool PropertyDescriptor::isAccessorDescriptor() const
 {
-    return m_getter || m_setter;
+    return !m_getter.isEmpty() || !m_setter.isEmpty();
 }
 
 ESFunctionObject* PropertyDescriptor::getterFunction() const
