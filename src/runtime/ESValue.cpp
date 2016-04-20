@@ -1,6 +1,7 @@
 #include "Escargot.h"
 #include "ESValue.h"
 
+#include "parser/esprima.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
@@ -14,6 +15,40 @@
 #include "bignum-dtoa.h"
 
 namespace escargot {
+
+const char* errorMessageDefinePropertyDefault = "Cannot define property '%s'";
+const char* errorMessageDefinePropertyLengthNotWritable = "Cannot modify property '%s': 'length' is not writable";
+const char* errorMessageDefinePropertyNotWritable = "Cannot modify non-writable property '%s'";
+const char* errorMessageDefinePropertyRedefineNotConfigurable = "Cannot redefine non-configurable property '%s'";
+const char* errorMessageDefinePropertyNotExtensible ="Cannot define property '%s': object is not extensible";
+
+NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* message, ESString* property)
+{
+    if (throwFlag) {
+        ESString* errorMessage;
+        size_t len1 = strlen(message);
+        size_t len2 = property->length();
+        if (property->isASCIIString()) {
+            char buf[len1 + len2 + 1];
+            sprintf(buf, message, property->asciiData());
+            errorMessage = ESString::create(buf);
+        } else {
+            char16_t buf[len1 + len2 + 1];
+            for (size_t i = 0; i < len1; i++) {
+                buf[i] = message[i];
+            }
+            const char16_t* str = property->characters16();
+            for (size_t i = 0; i < property->length(); i++) {
+                buf[i + len1] = str[i];
+            }
+            errorMessage = ESString::create(buf);
+        }
+
+
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(errorMessage, code));
+    }
+    return false;
+}
 
 ESHiddenClassPropertyInfo dummyPropertyInfo(nullptr, true, true, true, true);
 
@@ -882,10 +917,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     if (!OHasCurrent) {
         // 3
         if (!extensible) {
-            if (throwFlag)
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty"))));
-            else
-                return false;
+            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotExtensible, P.toString());
         } else { // 4
 //            O->deleteProperty(P);
             if (isDescDataDescriptor || isDescGenericDescriptor) {
@@ -926,16 +958,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     // 7
     if (!propertyInfo.m_flags.m_isConfigurable) {
         if (descHasConfigurable && desc.configurable()) {
-            if (throwFlag)
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.a"))));
-            else
-                return false;
+            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
         } else {
             if (descHasEnumerable && propertyInfo.m_flags.m_isEnumerable != desc.enumerable()) {
-                if (throwFlag)
-                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.b"))));
-                else
-                    return false;
+                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
             }
         }
     }
@@ -946,10 +972,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     if (isDescGenericDescriptor) { // 8
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
-            if (throwFlag)
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Object.DefineOwnProperty 9.a"))));
-            else
-                return false;
+            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
         }
         if (isCurrentDataDescriptor) { // 9.b
             O->deleteProperty(P);
@@ -963,16 +986,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (!propertyInfo.m_flags.m_isWritable) {
                 if (desc.writable()) {
-                    if (throwFlag)
-                        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 10.a.i"))));
-                    else
-                        return false;
+                    return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
                 } else {
                     if (descHasValue && current != desc.value()) {
-                        if (throwFlag)
-                            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 10.a.ii"))));
-                        else
-                            return false;
+                        return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
                     }
                 }
             }
@@ -987,16 +1004,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         ASSERT(!propertyInfo.m_flags.m_isDataProperty && desc.isAccessorDescriptor());
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (descHasSetter && (desc.setterFunction() != O->accessorData(idx)->getJSSetter())) {
-                if (throwFlag)
-                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.i"))));
-                else
-                    return false;
+                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
             }
             if (descHasGetter && (desc.getterFunction() != O->accessorData(idx)->getJSGetter())) {
-                if (throwFlag)
-                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii"))));
-                else
-                    return false;
+                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
             }
         }
     }
@@ -1129,7 +1140,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 3.d
         if (newLen != descV.toNumber())
-            ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.d"))));
+            ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("invalid array length"))));
 
         // 3.e
         newLenDesc->set(strings->value.string(), ESValue(newLen));
@@ -1140,10 +1151,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 3.g
         if (!oldLePropertyInfo.m_flags.m_isWritable) {
-            if (throwFlag)
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.g"))));
-            else
-                return false;
+            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
         }
 
         // 3.h
@@ -1173,10 +1181,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
                 if (!newWritable)
                     newLenDesc->set(strings->writable.string(), ESValue(false));
                 A->asESObject()->defineOwnProperty(P, newLenDesc, false);
-                if (throwFlag)
-                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.l.iii"))));
-                else
-                    return false;
+                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyDefault, P.toString());
             }
         }
 
@@ -1193,10 +1198,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 4.b
         if (index >= oldLen && !oldLePropertyInfo.m_flags.m_isWritable) {
-            if (throwFlag)
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 4.b"))));
-            else
-                return false;
+            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyLengthNotWritable, P.toString());
         }
 
         // 4.c
@@ -1204,10 +1206,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 4.d
         if (!succeeded) {
-            if (throwFlag)
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 4.d"))));
-            else
-                return false;
+            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyDefault, P.toString());
         }
 
         // 4.e
