@@ -1169,7 +1169,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
         ESHiddenClass* cls;
         auto iter = m_transitionData.find(name);
         size_t pid = m_propertyInfo.size();
-        char flag = assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable);
+        char flag = ESHiddenClassPropertyInfo::buildAttributes(isData, isWritable, isEnumerable, isConfigurable);
         if (iter == m_transitionData.end()) {
             ESHiddenClass** vec = (escargot::ESHiddenClass**)GC_malloc(sizeof(ESHiddenClass*) * 16);
             memset(vec, 0, sizeof(ESHiddenClass *) * 16);
