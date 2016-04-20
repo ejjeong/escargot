@@ -15,25 +15,25 @@ var tests = [
     {
         name: "Simple error cases for Object#toLocaleString",
         body: function () {
-            assert.throws(function() { toLocaleString.call(); }, TypeError, "Object#toLocaleString throws when called with no parameters", "Object.prototype.toLocaleString: 'this' is null or undefined");
-            assert.throws(function() { toLocaleString.call(undefined); }, TypeError, "Object#toLocaleString throws when called with undefined this parameter", "Object.prototype.toLocaleString: 'this' is null or undefined");
-            assert.throws(function() { toLocaleString.call(null); }, TypeError, "Object#toLocaleString throws when called with null this parameter", "Object.prototype.toLocaleString: 'this' is null or undefined");
+            assert.throws(function() { toLocaleString.call(); }, TypeError, "Object#toLocaleString throws when called with no parameters", "Object.prototype.toLocaleString: this value is undefined or null");
+            assert.throws(function() { toLocaleString.call(undefined); }, TypeError, "Object#toLocaleString throws when called with undefined this parameter", "Object.prototype.toLocaleString: this value is undefined or null");
+            assert.throws(function() { toLocaleString.call(null); }, TypeError, "Object#toLocaleString throws when called with null this parameter", "Object.prototype.toLocaleString: this value is undefined or null");
         }
     },
     {
         name: "Corner error cases for Object#toLocaleString",
         body: function () {
             var o = { toString : 'non-object' };
-            assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object with non-object toString property", "Object.prototype.toLocaleString: argument is not a Function object");
+            assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object with non-object toString property", "Object.prototype.toLocaleString: toLocaleString is not callable");
 
             o = { get toString() { throw TypeError('get toString'); } };
             assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object with throwing accessor toString property", "get toString");
             
             o = { get toString() { return 'non-object'; } };
-            assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object with accessor toString property which returns non-function", "Object.prototype.toLocaleString: argument is not a Function object");
+            assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object with accessor toString property which returns non-function", "Object.prototype.toLocaleString: toLocaleString is not callable");
             
             o = Object.create(null); // o doesn't have Object.prototype.toString
-            assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object without toString property", "Object.prototype.toLocaleString: argument is not a Function object");
+            assert.throws(function() { toLocaleString.call(o); }, TypeError, "Object#toLocaleString tries to get the 'toString' property from the this parameter of object without toString property", "Object.prototype.toLocaleString: toLocaleString is not callable");
             
             o = { 
                 toString() { 
