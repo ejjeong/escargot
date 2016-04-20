@@ -719,7 +719,7 @@ Running all tests
 [Optimizer] marktemp.js .......... Pass
 [Optimizer] marktemp2.js .......... Pass
 [Optimizer] marktempnumberontempobjects.js .......... Skip (Due to floating point approximation)
-[Optimizer] mul.js .......... Fail
+[Optimizer] mul.js .......... Pass
 [Optimizer] NegativeZero.js .......... Pass
 [Optimizer] Overflow.js .......... Pass
 [Optimizer] Overflow_MaxInterpret.js .......... Pass
@@ -1439,7 +1439,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Math		21		20		0		1		(95%)
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		0		1		(0%)
-           Optimizer		206		195		2		9		(94%)
+           Optimizer		206		196		1		9		(95%)
             Function		61		52		0		9		(85%)
               Object		58		43		10		5		(74%)
                Regex		33		22		5		6		(66%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1165		122		119		(82%)
+               Total		1406		1166		121		119		(82%)
