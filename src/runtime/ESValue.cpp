@@ -1142,7 +1142,13 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
         ESValue descV = desc.value();
         // 3.a
         if (!descHasValue) {
-            return A->asESObject()->defineOwnProperty(P, desc, throwFlag);
+            bool ret = A->asESObject()->defineOwnProperty(P, desc, throwFlag);
+            if (ret) {
+                if (!descHasWritable || !desc.writable()) {
+                    A->convertToSlowMode();
+                }
+            }
+            return ret;
         }
         // 3.b
         ESObject* newLenDesc = ESObject::create();
@@ -1337,6 +1343,20 @@ void ESArrayObject::setLength(unsigned newLength)
                 }
                 return;
             }
+        } else {
+            size_t idx = hiddenClass()->findProperty(strings->length);
+            if (idx != SIZE_MAX) {
+                ESHiddenClassPropertyInfo propertyInfo = hiddenClass()->propertyInfo(idx);
+                if (!propertyInfo.writable()) {
+                    if (globalObject()->instance()->currentExecutionContext()->isStrictMode()) {
+                        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"length is non-writable")));
+                    }
+                    return;
+                }
+                m_length = newLength;
+                return;
+            }
+            RELEASE_ASSERT_NOT_REACHED();
         }
     }
     m_length = newLength;
