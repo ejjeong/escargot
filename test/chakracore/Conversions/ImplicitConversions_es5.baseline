@@ -1,25 +1,25 @@
 === Implicit toString ===
 Got error:
     name:     TypeError
-    message:  Object doesn't support this property or method
+    message:  Cannot convert object to primitive value
 toString called:  no
 valueOf called:   no
 === Implicit valueOf ===
 Got error:
     name:     TypeError
-    message:  Number expected
+    message:  Cannot convert object to primitive value
 toString called:  no
 valueOf called:   no
 === Implicit toString ===
 Got error:
     name:     TypeError
-    message:  Object doesn't support this property or method
+    message:  Cannot convert object to primitive value
 toString called:  no
 valueOf called:   yes
 === Implicit valueOf ===
 Got error:
     name:     TypeError
-    message:  Number expected
+    message:  Cannot convert object to primitive value
 toString called:  no
 valueOf called:   yes
 === Implicit toString ===
@@ -65,25 +65,25 @@ valueOf called:   yes
 === Implicit toString ===
 Got error:
     name:     TypeError
-    message:  Object doesn't support this property or method
+    message:  Cannot convert object to primitive value
 toString called:  yes
 valueOf called:   no
 === Implicit valueOf ===
 Got error:
     name:     TypeError
-    message:  Number expected
+    message:  Cannot convert object to primitive value
 toString called:  yes
 valueOf called:   no
 === Implicit toString ===
 Got error:
     name:     TypeError
-    message:  Object doesn't support this property or method
+    message:  Cannot convert object to primitive value
 toString called:  yes
 valueOf called:   yes
 === Implicit valueOf ===
 Got error:
     name:     TypeError
-    message:  Number expected
+    message:  Cannot convert object to primitive value
 toString called:  yes
 valueOf called:   yes
 === Implicit toString ===

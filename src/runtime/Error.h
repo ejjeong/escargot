@@ -44,6 +44,7 @@ extern const char* errorMessage_GlobalObject_NotExistNewInTypedArrayConstructor;
 extern const char* errorMessage_CallStackExceeded;
 extern const char* errorMessage_GlobalObject_RangeError;
 extern const char* errorMessage_GlobalObject_InvalidArrayLength;
+extern const char* errorMessage_NotAbleToConverToPrimitiveValue;
 
 
 }

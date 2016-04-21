@@ -21,6 +21,7 @@ const char* errorMessage_DefineProperty_LengthNotWritable = "Cannot modify prope
 const char* errorMessage_DefineProperty_NotWritable = "Cannot modify non-writable property '%s'";
 const char* errorMessage_DefineProperty_RedefineNotConfigurable = "Cannot redefine non-configurable property '%s'";
 const char* errorMessage_DefineProperty_NotExtensible ="Cannot define property '%s': object is not extensible";
+const char* errorMessage_NotAbleToConverToPrimitiveValue = "Cannot convert object to primitive value";
 
 NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* templateString, ESString* property)
 {
@@ -89,7 +90,7 @@ ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
                 return str;
         }
     }
-    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create()));
+    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(errorMessage_NotAbleToConverToPrimitiveValue))));
     RELEASE_ASSERT_NOT_REACHED();
 }
 
