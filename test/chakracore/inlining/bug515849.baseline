@@ -198,4 +198,4 @@
 
 
 
-TypeError: Object doesn't support property or method 'method0'
+TypeError: Callee is not a function object

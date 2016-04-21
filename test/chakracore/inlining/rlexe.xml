@@ -209,6 +209,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>OS_2733280.js</files>
       <compile-flags>-loopinterpretcount:1 -bgjit- -maxsimplejitruncount:1 -maxinterpretcount:1 -force:scriptfunctionwithinlinecache</compile-flags>
       <tags>BugFix</tags>
@@ -216,6 +217,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (es6)</escargot-skip>
       <files>OS_2733280.js</files>
       <compile-flags>-loopinterpretcount:1 -bgjit- -maxsimplejitruncount:1 -maxinterpretcount:1 -force:scriptfunctionwithinlinecache -off:stackargopt</compile-flags>
       <tags>BugFix</tags>

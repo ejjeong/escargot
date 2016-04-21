@@ -1,1 +1,1 @@
-linenumber3.js(14, 8) JavaScript runtime error: ary is not defined
+Uncaught ReferenceError: ary is not defined

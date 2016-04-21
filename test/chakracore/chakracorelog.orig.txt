@@ -1346,18 +1346,18 @@ Running all tests
 [inlining] arg.js .......... Pass
 [inlining] linenumber1.js .......... Pass
 [inlining] linenumber2.js .......... Pass
-[inlining] linenumber3.js .......... Fail
-[inlining] InlineConstructors.js .......... Fail
+[inlining] linenumber3.js .......... Pass
+[inlining] InlineConstructors.js .......... Pass
 [inlining] InlinedConstructorBailout.js .......... Pass
 [inlining] inliningWithArguments.js .......... Pass
 [inlining] inliningApplyTarget.js .......... Pass
 [inlining] applyBugs.js .......... Pass
 [inlining] applyBailout.js .......... Pass
 [inlining] bugs.js .......... Pass
-[inlining] linenumber4.js .......... Fail
+[inlining] linenumber4.js .......... Pass
 [inlining] Miscellaneous_MaxInterpret.js .......... Pass
 [inlining] noprof.js .......... Pass
-[inlining] bug515849.js .......... Fail
+[inlining] bug515849.js .......... Pass
 [inlining] inlineBuiltins.js .......... Pass
 [inlining] spread.js .......... Skip (Not in scope (es6))
 [inlining] polyInliningFixedMethods.js .......... Pass
@@ -1374,8 +1374,8 @@ Running all tests
 [inlining] recursive_inline2.js .......... Pass
 [inlining] bug2328551.js .......... Pass
 [inlining] bug2269097.js .......... Pass
-[inlining] OS_2733280.js .......... Fail
-[inlining] OS_2733280.js .......... Fail
+[inlining] OS_2733280.js .......... Skip (Not in scope (es6))
+[inlining] OS_2733280.js .......... Skip (Not in scope (es6))
 [inlining] builtInApplyTarget.js .......... Pass
 [DynamicCode] eval-nativecodedata.js .......... Pass
 [DynamicCode] eval-nativenumber.js .......... Pass
@@ -1460,8 +1460,8 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
        Miscellaneous		7		3		3		1		(42%)
            fieldopts		111		93		17		1		(83%)
          FixedFields		16		15		0		1		(93%)
-            inlining		34		27		6		1		(79%)
+            inlining		34		31		0		3		(91%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1169		117		120		(83%)
+               Total		1406		1173		111		122		(83%)
