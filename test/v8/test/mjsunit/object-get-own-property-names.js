@@ -97,12 +97,12 @@ try {
   Object.getOwnPropertyNames(undefined);
   assertTrue(false);
 } catch (e) {
-  assertTrue(/first argument is not object/.test(e));
+  assertTrue(/first argument is not an object/.test(e));
 }
 
 try {
   Object.getOwnPropertyNames(null);
   assertTrue(false);
 } catch (e) {
-  assertTrue(/first argument is not object/.test(e));
+  assertTrue(/first argument is not an object/.test(e));
 }

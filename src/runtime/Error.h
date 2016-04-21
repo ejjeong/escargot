@@ -1,0 +1,51 @@
+#ifndef Error_h
+#define Error_h
+
+namespace escargot {
+
+extern const char* errorMessage_DefineProperty_Default;
+extern const char* errorMessage_DefineProperty_LengthNotWritable;
+extern const char* errorMessage_DefineProperty_NotWritable;
+extern const char* errorMessage_DefineProperty_RedefineNotConfigurable;
+extern const char* errorMessage_DefineProperty_NotExtensible;
+extern const char* errorMessage_GlobalObject_ThisUndefinedOrNull;
+extern const char* errorMessage_GlobalObject_ThisNotObject;
+extern const char* errorMessage_GlobalObject_ThisNotRegExpObject;
+extern const char* errorMessage_GlobalObject_ThisNotDateObject;
+extern const char* errorMessage_GlobalObject_ThisNotFunctionObject;
+extern const char* errorMessage_GlobalObject_ThisNotBoolean;
+extern const char* errorMessage_GlobalObject_ThisNotNumber;
+extern const char* errorMessage_GlobalObject_ThisNotString;
+extern const char* errorMessage_GlobalObject_ThisNotTypedArrayObject;
+extern const char* errorMessage_GlobalObject_MalformedURI;
+extern const char* errorMessage_GlobalObject_FileNotExist;
+extern const char* errorMessage_GlobalObject_NotExecutable;
+extern const char* errorMessage_GlobalObject_FirstArgumentNotObject;
+extern const char* errorMessage_GlobalObject_SecondArgumentNotObject;
+extern const char* errorMessage_GlobalObject_ThirdArgumentNotObject;
+extern const char* errorMessage_GlobalObject_DescriptorNotObject;
+extern const char* errorMessage_GlobalObject_ToLoacleStringNotCallable;
+extern const char* errorMessage_GlobalObject_ToISOStringNotCallable;
+extern const char* errorMessage_GlobalObject_CallbackNotCallable;
+extern const char* errorMessage_GlobalObject_InvalidDate;
+extern const char* errorMessage_GlobalObject_JAError;
+extern const char* errorMessage_GlobalObject_JOError;
+extern const char* errorMessage_GlobalObject_RadixInvalidRange;
+extern const char* errorMessage_GlobalObject_NotDefineable;
+extern const char* errorMessage_GlobalObject_ArgcLessThanThree;
+extern const char* errorMessage_GlobalObject_FirstArgumentNotObjectAndNotNull;
+extern const char* errorMessage_GlobalObject_FirstArgumentNotCallable;
+extern const char* errorMessage_GlobalObject_FirstArgumentNotString;
+extern const char* errorMessage_GlobalObject_FirstArgumentInvalidLength;
+extern const char* errorMessage_GlobalObject_InvalidArrayBufferOffset;
+extern const char* errorMessage_GlobalObject_ReduceError;
+extern const char* errorMessage_GlobalObject_NotExistNewInArrayBufferConstructor;
+extern const char* errorMessage_GlobalObject_NotExistNewInTypedArrayConstructor;
+extern const char* errorMessage_CallStackExceeded;
+extern const char* errorMessage_GlobalObject_RangeError;
+extern const char* errorMessage_GlobalObject_InvalidArrayLength;
+
+
+}
+
+#endif

@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 var BUGNUMBER = 470310;
-var summary = 'Do not assert: (uint32_t)((atoms - script->atomMap.vector + ' + 
+var summary = 'Do not assert: (uint32_t)((atoms - script->atomMap.vector + ' +
   '((uintN)(((regs.pc + 0)[1] << 8) | (regs.pc + 0)[2])))) < objects_->length';
 var actual = '';
 var expect = '';
@@ -20,8 +20,8 @@ function test()
   enterFunc ('test');
   printBugNumber(BUGNUMBER);
   printStatus (summary);
- 
-  expect = 'TypeError: Array.prototype.map: callback must be a function';
+
+  expect = 'TypeError: Array.prototype.map: callback is not callable';
 
   this.__defineSetter__('m', [].map);
   function f() { for (var j = 0; j < 4; ++j) if (j == 3) m = 6; }

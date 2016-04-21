@@ -144,14 +144,14 @@
 
 4. Test String with String value
   0 a
-TypeError : Object.defineProperty: 1st argument is not object
-TypeError : Object.defineProperty: 1st argument is not object
+TypeError : Object.defineProperty: first argument is not an object
+TypeError : Object.defineProperty: first argument is not an object
   6 undefined
-TypeError : Object.defineProperty: 1st argument is not object
+TypeError : Object.defineProperty: first argument is not an object
   --- Properties ---
-TypeError : Object.getOwnPropertyNames: first argument is not object
+TypeError : Object.getOwnPropertyNames: first argument is not an object
   --- Enumerate ---
-TypeError : Object.defineProperty: 1st argument is not object
+TypeError : Object.defineProperty: first argument is not an object
 
 
 5. Test String with String object

@@ -10,9 +10,9 @@ Called with this: object[[object Object]], args: []
 Called with this: object[[object Object]], args: []
 
 --- f.apply(x, 123), f.apply(x, 'string'), f.apply(x, true) ---
-Exception: TypeError : Function.prototype.apply: argument is not an Object
-Exception: TypeError : Function.prototype.apply: argument is not an Object
-Exception: TypeError : Function.prototype.apply: argument is not an Object
+Exception: TypeError : Function.prototype.apply: second argument is not an object
+Exception: TypeError : Function.prototype.apply: second argument is not an object
+Exception: TypeError : Function.prototype.apply: second argument is not an object
 
 --- f.apply(x, obj), obj.length is null/undefined/NaN/string/OutOfRange ---
 Called with this: object[[object Object]], args: []

@@ -164,6 +164,31 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    NEVER_INLINE void throwError(ESErrorObject::Code code, const char* templateString, ESString* replacer)
+    {
+        ESString* errorMessage;
+        size_t len1 = strlen(templateString);
+        size_t len2 = replacer->length();
+        if (replacer->isASCIIString()) {
+            char buf[len1 + len2 + 1];
+            sprintf(buf, templateString, replacer->asciiData());
+            errorMessage = ESString::create(buf);
+        } else {
+            char16_t buf[len1];
+            for (size_t i = 0; i < len1; i++) {
+                buf[i] = templateString[i];
+            }
+            UTF16String str(buf);
+            size_t idx;
+            if ((idx = str.find(u"%s")) != SIZE_MAX) {
+                str.replace(str.begin() + idx, str.begin() + idx + 2, replacer->utf16Data());
+            }
+            errorMessage = ESString::create(str);
+        }
+
+        throwError(ESErrorObject::create(errorMessage, code));
+    }
+
     void throwOOMError()
     {
         // TODO execution must stop

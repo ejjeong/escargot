@@ -43,7 +43,7 @@ try {
 try {
   Object.defineProperties(null, {});
 } catch(e) {
-  assertTrue(/first argument is not object/.test(e));
+  assertTrue(/first argument is not an object/.test(e));
 }
 
 

@@ -28,8 +28,8 @@ a
 
 expected : o is not defined
 expected : o is not defined
-expected : Function.prototype.apply: argument is not an Object
-expected : Function.prototype.apply: argument is not an Object
+expected : Function.prototype.apply: second argument is not an object
+expected : Function.prototype.apply: second argument is not an object
 
 
 expected : String.prototype.replace: this value is undefined or null
@@ -40,8 +40,8 @@ a
 a
 expected : RegExp.prototype.exec: this value is not a RegExp object
 expected : RegExp.prototype.exec: this value is not a RegExp object
-expected : Function.prototype.apply: argument is not an Object
-expected : Function.prototype.apply: argument is not an Object
+expected : Function.prototype.apply: second argument is not an object
+expected : Function.prototype.apply: second argument is not an object
 expected : RegExp.prototype.exec: this value is not a RegExp object
 expected : RegExp.prototype.exec: this value is not a RegExp object
 -1

@@ -16,36 +16,16 @@
 
 namespace escargot {
 
-const char* errorMessageDefinePropertyDefault = "Cannot define property '%s'";
-const char* errorMessageDefinePropertyLengthNotWritable = "Cannot modify property '%s': 'length' is not writable";
-const char* errorMessageDefinePropertyNotWritable = "Cannot modify non-writable property '%s'";
-const char* errorMessageDefinePropertyRedefineNotConfigurable = "Cannot redefine non-configurable property '%s'";
-const char* errorMessageDefinePropertyNotExtensible ="Cannot define property '%s': object is not extensible";
+const char* errorMessage_DefineProperty_Default = "Cannot define property '%s'";
+const char* errorMessage_DefineProperty_LengthNotWritable = "Cannot modify property '%s': 'length' is not writable";
+const char* errorMessage_DefineProperty_NotWritable = "Cannot modify non-writable property '%s'";
+const char* errorMessage_DefineProperty_RedefineNotConfigurable = "Cannot redefine non-configurable property '%s'";
+const char* errorMessage_DefineProperty_NotExtensible ="Cannot define property '%s': object is not extensible";
 
-NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* message, ESString* property)
+NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* templateString, ESString* property)
 {
     if (throwFlag) {
-        ESString* errorMessage;
-        size_t len1 = strlen(message);
-        size_t len2 = property->length();
-        if (property->isASCIIString()) {
-            char buf[len1 + len2 + 1];
-            sprintf(buf, message, property->asciiData());
-            errorMessage = ESString::create(buf);
-        } else {
-            char16_t buf[len1 + len2 + 1];
-            for (size_t i = 0; i < len1; i++) {
-                buf[i] = message[i];
-            }
-            const char16_t* str = property->characters16();
-            for (size_t i = 0; i < property->length(); i++) {
-                buf[i + len1] = str[i];
-            }
-            errorMessage = ESString::create(buf);
-        }
-
-
-        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(errorMessage, code));
+        ESVMInstance::currentInstance()->throwError(code, templateString, property);
     }
     return false;
 }
@@ -941,7 +921,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     if (!OHasCurrent) {
         // 3
         if (!extensible) {
-            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotExtensible, P.toString());
+            return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_NotExtensible, P.toString());
         } else { // 4
 //            O->deleteProperty(P);
             if (isDescDataDescriptor || isDescGenericDescriptor) {
@@ -982,10 +962,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     // 7
     if (!propertyInfo.configurable()) {
         if (descHasConfigurable && desc.configurable()) {
-            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
+            return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_RedefineNotConfigurable, P.toString());
         } else {
             if (descHasEnumerable && propertyInfo.enumerable() != desc.enumerable()) {
-                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
+                return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_RedefineNotConfigurable, P.toString());
             }
         }
     }
@@ -996,7 +976,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
     if (isDescGenericDescriptor) { // 8
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.configurable()) { // 9.a
-            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
+            return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_RedefineNotConfigurable, P.toString());
         }
         if (isCurrentDataDescriptor) { // 9.b
             O->deleteProperty(P);
@@ -1010,10 +990,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         if (!propertyInfo.configurable()) {
             if (!propertyInfo.writable()) {
                 if (desc.writable()) {
-                    return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
+                    return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_NotWritable, P.toString());
                 } else {
                     if (descHasValue && current != desc.value()) {
-                        return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
+                        return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_NotWritable, P.toString());
                     }
                 }
             }
@@ -1028,10 +1008,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
         ASSERT(!propertyInfo.isDataProperty() && desc.isAccessorDescriptor());
         if (!propertyInfo.configurable()) {
             if (descHasSetter && (desc.setterFunction() != O->accessorData(idx)->getJSSetter())) {
-                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
+                return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_RedefineNotConfigurable, P.toString());
             }
             if (descHasGetter && (desc.getterFunction() != O->accessorData(idx)->getJSGetter())) {
-                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyRedefineNotConfigurable, P.toString());
+                return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_RedefineNotConfigurable, P.toString());
             }
         }
     }
@@ -1181,7 +1161,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 3.g
         if (!oldLePropertyInfo.writable()) {
-            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyNotWritable, P.toString());
+            return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_NotWritable, P.toString());
         }
 
         // 3.h
@@ -1211,7 +1191,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
                 if (!newWritable)
                     newLenDesc->set(strings->writable.string(), ESValue(false));
                 A->asESObject()->defineOwnProperty(P, newLenDesc, false);
-                return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyDefault, P.toString());
+                return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_Default, P.toString());
             }
         }
 
@@ -1228,7 +1208,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 4.b
         if (index >= oldLen && !oldLePropertyInfo.writable()) {
-            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyLengthNotWritable, P.toString());
+            return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_LengthNotWritable, P.toString());
         }
 
         // 4.c
@@ -1236,7 +1216,7 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor
 
         // 4.d
         if (!succeeded) {
-            return reject(throwFlag, ErrorCode::TypeError, errorMessageDefinePropertyDefault, P.toString());
+            return reject(throwFlag, ErrorCode::TypeError, errorMessage_DefineProperty_Default, P.toString());
         }
 
         // 4.e

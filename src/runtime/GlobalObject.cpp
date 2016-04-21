@@ -28,53 +28,74 @@ void GlobalObject::finalize()
     }
 }
 
-const char* builtinErrorMessageThisUndefinedOrNull = "this value is undefined or null";
-const char* builtinErrorMessageThisNotObject = "this value is not an object";
-const char* builtinErrorMessageThisNotRegExpObject = "this value is not a RegExp object";
-const char* builtinErrorMessageThisNotDateObject = "this value is not a Date object";
-const char* builtinErrorMessageThisNotFunctionObject = "this value is not a Function object";
-const char* builtinErrorMessageThisNotBoolean = "this value is not Boolean nor Boolean object";
-const char* builtinErrorMessageThisNotNumber = "this value is not Number nor Number object";
-const char* builtinErrorMessageThisNotString = "this value is not String nor String object";
-const char* builtinErrorMessageThisNotTypedArrayObject = "this value is not a Typed Array object";
-const char* builtinErrorMessageMalformedURI = "malformed URI";
-const char* builtinErrorMessageRangeError = "invalid range";
+const char* errorMessage_GlobalObject_ThisUndefinedOrNull = "%s: this value is undefined or null";
+const char* errorMessage_GlobalObject_ThisNotObject = "%s: this value is not an object";
+const char* errorMessage_GlobalObject_ThisNotRegExpObject = "%s: this value is not a RegExp object";
+const char* errorMessage_GlobalObject_ThisNotDateObject = "%s: this value is not a Date object";
+const char* errorMessage_GlobalObject_ThisNotFunctionObject = "%s: this value is not a Function object";
+const char* errorMessage_GlobalObject_ThisNotBoolean = "%s: this value is not Boolean nor Boolean object";
+const char* errorMessage_GlobalObject_ThisNotNumber = "%s: this value is not Number nor Number object";
+const char* errorMessage_GlobalObject_ThisNotString = "%s: this value is not String nor String object";
+const char* errorMessage_GlobalObject_ThisNotTypedArrayObject = "%s: this value is not a Typed Array object";
+const char* errorMessage_GlobalObject_MalformedURI = "%s: malformed URI";
+const char* errorMessage_GlobalObject_RangeError = "%s: invalid range";
+const char* errorMessage_GlobalObject_FileNotExist = "%s: cannot load file";
+const char* errorMessage_GlobalObject_NotExecutable = "%s: cannot run";
+const char* errorMessage_GlobalObject_FirstArgumentNotObject = "%s: first argument is not an object";
+const char* errorMessage_GlobalObject_SecondArgumentNotObject = "%s: second argument is not an object";
+const char* errorMessage_GlobalObject_ThirdArgumentNotObject = "%s: third argument is not an object";
+const char* errorMessage_GlobalObject_DescriptorNotObject = "%s: descriptor is not an object";
+const char* errorMessage_GlobalObject_ToLoacleStringNotCallable = "%s: toLocaleString is not callable";
+const char* errorMessage_GlobalObject_ToISOStringNotCallable = "%s: toISOString is not callable";
+const char* errorMessage_GlobalObject_CallbackNotCallable = "%s: callback is not callable";
+const char* errorMessage_GlobalObject_InvalidDate = "%s: Invalid Date";
+const char* errorMessage_GlobalObject_JAError = "%s: JA error";
+const char* errorMessage_GlobalObject_JOError = "%s: JO error";
+const char* errorMessage_GlobalObject_RadixInvalidRange = "%s: radix is invalid range";
+const char* errorMessage_GlobalObject_NotDefineable = "%s: cannot define property";
+const char* errorMessage_GlobalObject_ArgcLessThanThree = "%s: # of arguments < 3";
+const char* errorMessage_GlobalObject_FirstArgumentNotObjectAndNotNull = "%s: first argument is not an object and not null";
+const char* errorMessage_GlobalObject_ReduceError = "%s: reduce of empty array with no initial value";
+const char* errorMessage_GlobalObject_FirstArgumentNotCallable = "%s: first argument is not callable";
+const char* errorMessage_GlobalObject_FirstArgumentNotString = "%s: first argument is not a string";
+const char* errorMessage_GlobalObject_FirstArgumentInvalidLength = "%s: first arugment is an invalid length value";
+const char* errorMessage_GlobalObject_InvalidArrayBufferOffset = "%s: ArrayBuffer length minus the byteOffset is not a multiple of the element size";
+const char* errorMessage_GlobalObject_NotExistNewInArrayBufferConstructor = "%s: Constructor ArrayBuffer requires \'new\'";
+const char* errorMessage_GlobalObject_NotExistNewInTypedArrayConstructor = "%s: Constructor TypedArray requires \'new\'";
+const char* errorMessage_GlobalObject_InvalidArrayLength = "%s: Invalid array length";
 
 #define RESOLVE_THIS_BINDING_TO_OBJECT(NAME, OBJ, BUILT_IN_METHOD) \
     ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding(); \
     if (thisVal.isUndefinedOrNull()) { \
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->OBJ, true, strings->BUILT_IN_METHOD, builtinErrorMessageThisUndefinedOrNull); \
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->OBJ, true, strings->BUILT_IN_METHOD, errorMessage_GlobalObject_ThisUndefinedOrNull); \
     } \
     ESObject* NAME = thisVal.toObject();
 
 #define RESOLVE_THIS_BINDING_TO_STRING(NAME, OBJ, BUILT_IN_METHOD) \
     ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding(); \
     if (thisVal.isUndefinedOrNull()) { \
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->OBJ, true, strings->BUILT_IN_METHOD, builtinErrorMessageThisUndefinedOrNull); \
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->OBJ, true, strings->BUILT_IN_METHOD, errorMessage_GlobalObject_ThisUndefinedOrNull); \
     } \
     escargot::ESString* NAME = thisVal.toString();
 
 NEVER_INLINE void throwBuiltinError(ESVMInstance* instance, ESErrorObject::Code code,
-    const InternalAtomicString& objectName, bool prototoype, const InternalAtomicString& functionName, const char* message)
+    const InternalAtomicString& objectName, bool prototoype, const InternalAtomicString& functionName, const char* templateString)
 {
-    ESStringBuilder messageBuilder;
+    ESStringBuilder replacerBuilder;
     if (objectName != strings->emptyString) {
-        messageBuilder.appendString(objectName.string());
+        replacerBuilder.appendString(objectName.string());
     }
     if (prototoype) {
-        messageBuilder.appendChar('.');
-        messageBuilder.appendString(strings->prototype.string());
+        replacerBuilder.appendChar('.');
+        replacerBuilder.appendString(strings->prototype.string());
     }
     if (functionName != strings->emptyString) {
-        messageBuilder.appendChar('.');
-        messageBuilder.appendString(functionName.string());
+        replacerBuilder.appendChar('.');
+        replacerBuilder.appendString(functionName.string());
     }
-    messageBuilder.appendChar(':');
-    messageBuilder.appendChar(' ');
-    messageBuilder.appendString(message);
 
     ASSERT(instance);
-    instance->throwError(ESErrorObject::create(messageBuilder.finalize(), code));
+    instance->throwError(code, templateString, replacerBuilder.finalize());
     RELEASE_ASSERT_NOT_REACHED();
 }
 
@@ -281,7 +302,7 @@ void GlobalObject::initGlobalObject()
                 return instance->evaluate(escargot::ESString::create(std::move(str)));
             }
         }
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->load, "cannot load file");
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->load, errorMessage_GlobalObject_FileNotExist);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->load.string());
     set(strings->load.string(), loadFunction);
@@ -313,7 +334,7 @@ void GlobalObject::initGlobalObject()
                 return ESValue(timeSpent);
             }
         }
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->run, "cannot run");
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->run, errorMessage_GlobalObject_NotExecutable);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->run.string());
     set(strings->run.string(), runFunction);
@@ -556,13 +577,13 @@ void GlobalObject::initGlobalObject()
             } else {
                 int start = i;
                 if (i+2 >= strLen)
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                 char16_t next = stringValue->charAt(i+1);    
                 char16_t nextnext = stringValue->charAt(i+2);    
                 if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                 if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
 
                 // char to hex
                 unsigned char b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
@@ -598,32 +619,32 @@ void GlobalObject::initGlobalObject()
                         n++;                              
                     }
                     if (n == 1 || n == 5) {
-                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                     }
                     unsigned char octets[4];
                     octets[0] = b;
                     if (i + (3 * (n - 1)) >= strLen) {
-                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                     }
 
                     int j = 1;
                     while (j < n) {
                         i++;
                         if (stringValue->charAt(i) != '%') {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         }
                         next = stringValue->charAt(i+1);    
                         nextnext = stringValue->charAt(i+2);    
                         if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
 
                         b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
                             | ((nextnext & 0x10) ? (nextnext & 0xf) : ((nextnext & 0xf) + 9));
 
                         if ((b & 0xC0) != 0x80) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         }
     
                         i += 2;
@@ -634,20 +655,20 @@ void GlobalObject::initGlobalObject()
                     if (n == 2) {
                         v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
                         if ((octets[0] == 0xC0) || (octets[0] == 0xC1)) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI); // overlong
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI); // overlong
                         }
                     } else if (n == 3) {
                         v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
                         if (0xD800 <= v && v <= 0xDFFF) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         }
                         if ((octets[0] == 0xE0) && ((octets[1] < 0xA0) || (octets[1] > 0xBF))) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI); // overlong
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI); // overlong
                         }
                     } else if (n == 4) {
                         v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
                         if ((octets[0] == 0xF0) && ((octets[1] < 0x90) || (octets[1] > 0xBF))) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI); // overlong
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI); // overlong
                         }
                     } else {
                         RELEASE_ASSERT_NOT_REACHED();
@@ -686,13 +707,13 @@ void GlobalObject::initGlobalObject()
             } else {
                 // int start = i;
                 if (i+2 >= strLen)
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                 char16_t next = stringValue->charAt(i+1);    
                 char16_t nextnext = stringValue->charAt(i+2);    
                 if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                 if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
 
                 unsigned char b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
                     | ((nextnext & 0x10) ? (nextnext & 0xf) : ((nextnext & 0xf) + 9));
@@ -716,32 +737,32 @@ void GlobalObject::initGlobalObject()
                         n++;                              
                     }
                     if (n == 1 || n == 5) {
-                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                     }
                     unsigned char octets[4];
                     octets[0] = b;
                     if (i + (3 * (n - 1)) >= strLen) {
-                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                     }
 
                     int j = 1;
                     while (j < n) {
                         i++;
                         if (stringValue->charAt(i) != '%') {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         }
                         next = stringValue->charAt(i+1);    
                         nextnext = stringValue->charAt(i+2);    
                         if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
 
                         b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
                             | ((nextnext & 0x10) ? (nextnext & 0xf) : ((nextnext & 0xf) + 9));
 
                         if ((b & 0xC0) != 0x80) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         }
     
                         i += 2;
@@ -752,20 +773,20 @@ void GlobalObject::initGlobalObject()
                     if (n == 2) {
                         v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
                         if ((octets[0] == 0xC0) || (octets[0] == 0xC1)) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI); // overlong
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI); // overlong
                         }
                     } else if (n == 3) {
                         v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
                         if (0xD800 <= v && v <= 0xDFFF) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI);
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         }
                         if ((octets[0] == 0xE0) && ((octets[1] < 0xA0) || (octets[1] > 0xBF))) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI); // overlong
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI); // overlong
                         }
                     } else if (n == 4) {
                         v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
                         if ((octets[0] == 0xF0) && ((octets[1] < 0x90) || (octets[1] > 0xBF))) {
-                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI); // overlong
+                            throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI); // overlong
                         }
                     } else {
                         RELEASE_ASSERT_NOT_REACHED();
@@ -829,7 +850,7 @@ void GlobalObject::initGlobalObject()
                 escaped.append(char2hex(0x0080 + (t & 0x003F)));
             } else if (0xD800 <= t && t <= 0xDBFF) {
                 if (i + 1 == strLen) {
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURI, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURI, errorMessage_GlobalObject_MalformedURI);
                 } else {
                     if (0xDC00 <= stringValue->charAt(i + 1) && stringValue->charAt(i + 1) <= 0xDFFF) {
                         int index = (t - 0xD800) * 0x400 + (stringValue->charAt(i + 1) - 0xDC00) + 0x10000;
@@ -843,11 +864,11 @@ void GlobalObject::initGlobalObject()
                         escaped.append(char2hex(0x0080 + (index & 0x003F)));
                         i++;
                     } else {
-                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURI, builtinErrorMessageMalformedURI);
+                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURI, errorMessage_GlobalObject_MalformedURI);
                     }
                 }
             } else if (0xDC00 <= t && t <= 0xDFFF) {
-                throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURI, builtinErrorMessageMalformedURI);
+                throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURI, errorMessage_GlobalObject_MalformedURI);
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
@@ -894,7 +915,7 @@ void GlobalObject::initGlobalObject()
                 escaped.append(char2hex(0x0080 + (t & 0x003F)));
             } else if (0xD800 <= t && t <= 0xDBFF) {
                 if (i + 1 == strLen) {
-                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURIComponent, builtinErrorMessageMalformedURI);
+                    throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                 } else {
                     if (0xDC00 <= stringValue->charAt(i + 1) && stringValue->charAt(i + 1) <= 0xDFFF) {
                         int index = (t - 0xD800) * 0x400 + (stringValue->charAt(i + 1) - 0xDC00) + 0x10000;
@@ -908,11 +929,11 @@ void GlobalObject::initGlobalObject()
                         escaped.append(char2hex(0x0080 + (index & 0x003F)));
                         i++;
                     } else {
-                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURIComponent, builtinErrorMessageMalformedURI);
+                        throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                     }
                 }
             } else if (0xDC00 <= t && t <= 0xDFFF) {
-                throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURIComponent, builtinErrorMessageMalformedURI);
+                throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->encodeURIComponent, errorMessage_GlobalObject_MalformedURI);
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
@@ -1082,7 +1103,7 @@ void GlobalObject::installFunction()
             builder.appendString("}");
             return builder.finalize();
         }
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->toString, builtinErrorMessageThisNotFunctionObject);
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->toString, errorMessage_GlobalObject_ThisNotFunctionObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toString, 0));
 
@@ -1090,7 +1111,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(strings->apply, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisValue.isESPointer() || !thisValue.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->apply, builtinErrorMessageThisNotFunctionObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->apply, errorMessage_GlobalObject_ThisNotFunctionObject);
         auto thisVal = thisValue.asESPointer()->asESFunctionObject();
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
         ESValue argArray = instance->currentExecutionContext()->readArgument(1);
@@ -1119,7 +1140,7 @@ void GlobalObject::installFunction()
                 }
             }
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->apply, "argument is not an Object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->apply, errorMessage_GlobalObject_SecondArgumentNotObject);
         }
 
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
@@ -1129,7 +1150,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(strings->bind, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->bind, builtinErrorMessageThisNotFunctionObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->bind, errorMessage_GlobalObject_ThisNotFunctionObject);
         }
         CodeBlock* cb = CodeBlock::create(ExecutableType::FunctionCode);
         ParserContextInformation parserContextInformation;
@@ -1164,7 +1185,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(strings->call, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->call, builtinErrorMessageThisNotFunctionObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->call, errorMessage_GlobalObject_ThisNotFunctionObject);
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         size_t callArgLen = (arglen > 0) ? arglen - 1 : 0;
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
@@ -1184,7 +1205,7 @@ void GlobalObject::installFunction()
 inline ESValue objectDefineProperties(ESVMInstance* instance, ESValue object, ESValue& properties)
 {
     if (!object.isObject())
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "first argument is not object");
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_FirstArgumentNotObject);
     ESObject* props = properties.toObject();
     std::vector<std::pair<ESValue, PropertyDescriptor> > descriptors;
     props->enumeration([&](ESValue key) {
@@ -1192,7 +1213,7 @@ inline ESValue objectDefineProperties(ESVMInstance* instance, ESValue object, ES
         if (hasKey) {
             ESValue propertyDesc = props->get(key);
             if (!propertyDesc.isObject())
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "descriptor is not object");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_DescriptorNotObject);
             descriptors.push_back(std::make_pair(key, PropertyDescriptor(propertyDesc.asESPointer()->asESObject())));
         }
     });
@@ -1294,7 +1315,7 @@ void GlobalObject::installObject()
                 ESValue key = instance->currentExecutionContext()->arguments()[1].toString();
 
                 if (!instance->currentExecutionContext()->arguments()[2].isObject())
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "3rd argument is not object");
+                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_ThirdArgumentNotObject);
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
                 bool res;
                 if (obj->isESArrayObject())
@@ -1302,12 +1323,12 @@ void GlobalObject::installObject()
                 else
                     res = obj->defineOwnProperty(key, desc, true);
                 if (!res)
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "Cannot define property");
+                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_NotDefineable);
             } else {
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "1st argument is not object");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_FirstArgumentNotObject);
             }
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "# of arguments < 3");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_ArgcLessThanThree);
         }
         ASSERT(obj);
         return ESValue(obj);
@@ -1318,7 +1339,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->create, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue proto = instance->currentExecutionContext()->readArgument(0);
         if (!proto.isObject() && !proto.isNull()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->create, "first parameter is should be Object or null");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->create, errorMessage_GlobalObject_FirstArgumentNotObjectAndNotNull);
         }
         ESObject* obj = ESObject::create();
         if (proto.isNull())
@@ -1335,7 +1356,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->freeze, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->freeze, "first parameter is should be object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->freeze, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         obj->forceNonVectorHiddenClass();
         if (obj->isESArrayObject())
@@ -1375,7 +1396,7 @@ void GlobalObject::installObject()
 
         ESValue arg0 = instance->currentExecutionContext()->readArgument(0);
         if (!arg0.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getOwnPropertyDescriptor, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getOwnPropertyDescriptor, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = arg0.asESPointer()->asESObject();
 
         ESValue arg1 = instance->currentExecutionContext()->readArgument(1);
@@ -1392,7 +1413,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->getOwnPropertyNames, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getOwnPropertyNames, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getOwnPropertyNames, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         escargot::ESArrayObject* nameList = ESArrayObject::create();
         obj->enumerationWithNonEnumerable([&nameList](ESValue key, ESHiddenClassPropertyInfo*) {
@@ -1406,7 +1427,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getPrototypeOf, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getPrototypeOf, errorMessage_GlobalObject_FirstArgumentNotObject);
         return O.toObject()->__proto__();
     }, strings->getPrototypeOf, 1));
 
@@ -1414,7 +1435,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->isExtensible, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->isExtensible, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->isExtensible, errorMessage_GlobalObject_FirstArgumentNotObject);
         return ESValue(O.asESPointer()->asESObject()->isExtensible());
     }, strings->isExtensible.string(), 1));
 
@@ -1422,7 +1443,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->isFrozen, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->isFrozen, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->isFrozen, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         bool hasWritableConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -1445,7 +1466,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->isSealed, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->isSealed, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->isSealed, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         bool hasConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -1464,7 +1485,7 @@ void GlobalObject::installObject()
         // Let obj be ToObject(O).
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->keys, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->keys, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         escargot::ESArrayObject* arr = ESArrayObject::create();
         obj->enumeration([&arr](ESValue key) {
@@ -1477,7 +1498,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->preventExtensions, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->preventExtensions, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->preventExtensions, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         obj->setExtensible(false);
         return O;
@@ -1487,7 +1508,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->seal, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->seal, "first argument is not object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->seal, errorMessage_GlobalObject_FirstArgumentNotObject);
         ESObject* obj = O.toObject();
         obj->forceNonVectorHiddenClass();
         if (obj->isESArrayObject())
@@ -1566,7 +1587,7 @@ void GlobalObject::installObject()
         RESOLVE_THIS_BINDING_TO_OBJECT(thisO, Object, toLocaleString);
         ESValue func = thisO->get(strings->toString.string());
         if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, true, strings->toLocaleString, "toLocaleString is not callable");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, true, strings->toLocaleString, errorMessage_GlobalObject_ToLoacleStringNotCallable);
         return ESFunctionObject::call(instance, func, thisO, NULL, 0, false);
     }, strings->toLocaleString, 0));
 
@@ -1609,7 +1630,7 @@ void GlobalObject::installError()
     escargot::ESFunctionObject* toString = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue v = instance->currentExecutionContext()->resolveThisBinding();
         if (!v.isObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Error, true, strings->toString, builtinErrorMessageThisNotObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Error, true, strings->toString, errorMessage_GlobalObject_ThisNotObject);
 
         ESObject* o = v.toObject();
 
@@ -1802,7 +1823,7 @@ void GlobalObject::installArray()
                 if (val.equalsTo(ESValue(val.toUint32()))) {
                     size = val.toNumber();
                 } else {
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, false, strings->emptyString, "Invalid array length");
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, false, strings->emptyString, errorMessage_GlobalObject_InvalidArrayLength);
                 }
             } else {
                 size = 1;
@@ -1867,14 +1888,14 @@ void GlobalObject::installArray()
                 }
 
                 if (n > ESValue::ESInvalidIndexValue - len) {
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, builtinErrorMessageRangeError);
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, errorMessage_GlobalObject_RangeError);
                 }
 
                 n += len;
                 ret->setLength(n);
             } else {
                 if (n > ESValue::ESInvalidIndexValue - 1) {
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, builtinErrorMessageRangeError);
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->concat, errorMessage_GlobalObject_RangeError);
                 }
 
                 ret->defineDataProperty(ESValue(n++), true, true, true, argi);
@@ -1896,7 +1917,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->every, "callback must be a function");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->every, errorMessage_GlobalObject_CallbackNotCallable);
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -1950,7 +1971,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->filter, "callback must be a function");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->filter, errorMessage_GlobalObject_CallbackNotCallable);
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -2014,7 +2035,7 @@ void GlobalObject::installArray()
 
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->forEach, "first parameter of forEach should be function");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->forEach, errorMessage_GlobalObject_CallbackNotCallable);
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -2197,7 +2218,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->map, "callback must be a function");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->map, errorMessage_GlobalObject_CallbackNotCallable);
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -2261,7 +2282,7 @@ void GlobalObject::installArray()
         }
 
         if (thisBinded->isESArrayObject() && len > ESValue::ESInvalidIndexValue - argc) {
-            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->push, builtinErrorMessageRangeError);
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->push, errorMessage_GlobalObject_RangeError);
         }
         ESValue newLen = ESValue(double(len) + argc);
         thisBinded->set(strings->length.string(), newLen, true);
@@ -2281,10 +2302,10 @@ void GlobalObject::installArray()
         }
 
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, "callback is not a function object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, errorMessage_GlobalObject_CallbackNotCallable);
 
         if (len == 0 && (initialValue.isUndefined() || initialValue.isEmpty())) // 5
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, "reduce of empty array with no initial value");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, errorMessage_GlobalObject_ReduceError);
 
         size_t k = 0; // 6
         ESValue accumulator;
@@ -2300,7 +2321,7 @@ void GlobalObject::installArray()
                 k++; // 8.b.iv
             }
             if (kPresent == false)
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, "reduce of empty array with no initial value");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, errorMessage_GlobalObject_ReduceError);
         }
         while (k < len) { // 9
             ESValue Pk = ESValue(k); // 9.a
@@ -2331,10 +2352,10 @@ void GlobalObject::installArray()
             initialValue = instance->currentExecutionContext()->readArgument(1);
         }
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, "callback is not a function object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduce, errorMessage_GlobalObject_CallbackNotCallable);
 
         if (len == 0 && (initialValue.isUndefined() || initialValue.isEmpty())) // 5
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduceRight, "reduce of empty array with no initial value");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduceRight, errorMessage_GlobalObject_ReduceError);
         int k = len - 1; // 6
         ESValue accumulator;
         if (!initialValue.isEmpty()) { // 7
@@ -2349,7 +2370,7 @@ void GlobalObject::installArray()
                 k--; // 8.b.iv
             }
             if (kPresent == false)
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduceRight, "reduce of empty array with no initial value");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->reduceRight, errorMessage_GlobalObject_ReduceError);
         }
         while (k >= 0) { // 9
             ESValue Pk = ESValue(k); // 9.a
@@ -2487,7 +2508,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->some, "callback must be a function");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->some, errorMessage_GlobalObject_CallbackNotCallable);
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -2530,7 +2551,7 @@ void GlobalObject::installArray()
         ESValue cmpfn = instance->currentExecutionContext()->readArgument(0);
         if (!cmpfn.isUndefined()) {
             if (!(cmpfn.isESPointer() && cmpfn.asESPointer()->isESFunctionObject())) {
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->sort, "first argument must be a function");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->sort, errorMessage_GlobalObject_FirstArgumentNotCallable);
             }
         }
         bool defaultSort = (arglen == 0)
@@ -2624,7 +2645,7 @@ void GlobalObject::installArray()
         }
 
         if (thisBinded->isESArrayObject() && arrlen - deleteCnt > ESValue::ESInvalidIndexValue - insertCnt) {
-            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->splice, builtinErrorMessageRangeError);
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->splice, errorMessage_GlobalObject_RangeError);
         }
         thisBinded->set(strings->length, ESValue(double(arrlen) - deleteCnt + insertCnt), true);
         return ret;
@@ -2651,7 +2672,7 @@ void GlobalObject::installArray()
             ESObject* elementObj = firstElement.toObject();
             ESValue func = elementObj->get(strings->toLocaleString.string());
             if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->toLocaleString, "toLocaleString is not callable");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->toLocaleString, errorMessage_GlobalObject_ToLoacleStringNotCallable);
             R = ESFunctionObject::call(instance, func, elementObj, NULL, 0, false).toString();
         }
 
@@ -2666,7 +2687,7 @@ void GlobalObject::installArray()
                 ESObject* elementObj = nextElement.toObject();
                 ESValue func = elementObj->get(strings->toLocaleString.string());
                 if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->toLocaleString, "toLocaleString is not callable");
+                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Array, true, strings->toLocaleString, errorMessage_GlobalObject_ToLoacleStringNotCallable);
                 R = ESFunctionObject::call(instance, func, elementObj, NULL, 0, false).toString();
             }
             R = ESString::concatTwoStrings(S, R);
@@ -2699,7 +2720,7 @@ void GlobalObject::installArray()
         }
 
         if (O->isESArrayObject() && len > ESValue::ESInvalidIndexValue - argCount) {
-            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->unshift, builtinErrorMessageRangeError);
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->unshift, errorMessage_GlobalObject_RangeError);
         }
         O->set(strings->length.string(), ESValue(double(len) + argCount), true);
         return ESValue(double(len) + argCount);
@@ -2752,7 +2773,7 @@ void GlobalObject::installString()
         }
         if (instance->currentExecutionContext()->resolveThisBinding().isESString())
             return instance->currentExecutionContext()->resolveThisBinding().toString();
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->String, true, strings->toString, builtinErrorMessageThisNotString);
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->String, true, strings->toString, errorMessage_GlobalObject_ThisNotString);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toString, 0));
 
@@ -3414,7 +3435,7 @@ void GlobalObject::installString()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESStringObject()) {
             return thisValue.asESPointer()->asESStringObject()->stringData();
         }
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->String, true, strings->valueOf, builtinErrorMessageThisNotString);
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->String, true, strings->valueOf, errorMessage_GlobalObject_ThisNotString);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->valueOf, 0));
 
@@ -3518,7 +3539,7 @@ void GlobalObject::installDate()
                 return ESString::create("Invalid Date");
             }
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toString, errorMessage_GlobalObject_ThisNotDateObject);
             RELEASE_ASSERT_NOT_REACHED();
         }
     }, strings->toString, 0));
@@ -3543,7 +3564,7 @@ void GlobalObject::installDate()
         if (v.isESString()) {
             return ESValue(ESDateObject::parseStringToDate(v.asESString()));
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, false, strings->parse, "argument is not string");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, false, strings->parse, errorMessage_GlobalObject_FirstArgumentNotString);
         }
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->parse.string(), 1));
@@ -3578,7 +3599,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getDate);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getDate, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getDate, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getDate());
@@ -3591,7 +3612,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getDay, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getDay);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getDay, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getDay, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getDay());
@@ -3604,7 +3625,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getFullYear);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getFullYear, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getFullYear, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getFullYear());
@@ -3617,7 +3638,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getHours);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getHours, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getHours, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getHours());
@@ -3630,7 +3651,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getMilliseconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getMilliseconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getMilliseconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getMilliseconds());
@@ -3643,7 +3664,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getMinutes);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getMinutes, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getMinutes, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getMinutes());
@@ -3656,7 +3677,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getMonth);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getMonth, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getMonth, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getMonth());
@@ -3669,7 +3690,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getSeconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getSeconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getSeconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getSeconds());
@@ -3682,7 +3703,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getTime);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getTime, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getTime, errorMessage_GlobalObject_ThisNotDateObject);
         }
         double primitiveValue = thisObject->asESDateObject()->timeValueAsDouble();
         return ESValue(primitiveValue);
@@ -3692,7 +3713,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getTimezoneOffset, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getTimezoneOffset);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getTimezoneOffset, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getTimezoneOffset, errorMessage_GlobalObject_ThisNotDateObject);
         }
         double ret = thisObject->asESDateObject()->getTimezoneOffset() / 60.0;
         return ESValue(ret);
@@ -3702,7 +3723,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCDate);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCDate, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCDate, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCDate());
@@ -3715,7 +3736,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCDay, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCDay);
         if (!thisObject->isESDateObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCDay, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCDay, errorMessage_GlobalObject_ThisNotDateObject);
 
         if (thisObject->asESDateObject()->isValid())
             return ESValue(thisObject->asESDateObject()->getUTCDay());
@@ -3727,7 +3748,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCFullYear);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCFullYear, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCFullYear, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCFullYear());
@@ -3740,7 +3761,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCHours);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCHours, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCHours, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCHours());
@@ -3753,7 +3774,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCMilliseconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCMilliseconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCMilliseconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCMilliseconds());
@@ -3766,7 +3787,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCMinutes);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCMinutes, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCMinutes, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCMinutes());
@@ -3779,7 +3800,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCMonth);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCMonth, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCMonth, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCMonth());
@@ -3792,7 +3813,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getUTCSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getUTCSeconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCSeconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getUTCSeconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCSeconds());
@@ -3805,7 +3826,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setDate);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setDate, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setDate, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -3836,7 +3857,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setFullYear);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setFullYear, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setFullYear, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -3871,7 +3892,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setHours);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setHours, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setHours, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -3906,7 +3927,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setMilliseconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setMilliseconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setMilliseconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -3937,7 +3958,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setMinutes);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setMinutes, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setMinutes, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -3972,7 +3993,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setMonth);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setMonth, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setMonth, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4007,7 +4028,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setSeconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setSeconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setSeconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4042,7 +4063,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setTime);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setTime, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setTime, errorMessage_GlobalObject_ThisNotDateObject);
         }
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size > 0 && instance->currentExecutionContext()->arguments()[0].isNumber()) {
@@ -4060,7 +4081,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCDate);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCDate, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCDate, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4091,7 +4112,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCFullYear);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCFullYear, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCFullYear, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4126,7 +4147,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCHours);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCHours, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCHours, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4161,7 +4182,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCMilliseconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCMilliseconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCMilliseconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4192,7 +4213,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCMinutes);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCMinutes, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCMinutes, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4227,7 +4248,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCMonth);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCMonth, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCMonth, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4262,7 +4283,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setUTCSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setUTCSeconds);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCSeconds, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setUTCSeconds, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4299,7 +4320,7 @@ void GlobalObject::installDate()
         if (e.isESPointer() && e.asESPointer()->isESDateObject())
             return e.asESPointer()->asESDateObject()->toDateString();
         else
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toDateString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toDateString, errorMessage_GlobalObject_ThisNotDateObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toDateString, 0));
 
@@ -4322,10 +4343,10 @@ void GlobalObject::installDate()
                 }
                 return ESString::create(buffer);
             } else {
-                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, "Invalid Date");
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_InvalidDate);
             }
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toISOString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_ThisNotDateObject);
         }      
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toISOString, 0));
@@ -4341,7 +4362,7 @@ void GlobalObject::installDate()
 
         ESValue func = thisObject->get(strings->toISOString.string());
         if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toJSON, "toISOString is not callable");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toJSON, errorMessage_GlobalObject_ToISOStringNotCallable);
         return ESFunctionObject::call(instance, func, thisObject, NULL, 0, false);
     }, strings->toJSON, 1));
 
@@ -4351,7 +4372,7 @@ void GlobalObject::installDate()
         if (e.isESPointer() && e.asESPointer()->isESDateObject())
             return e.asESPointer()->asESDateObject()->toDateString();
         else
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleDateString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleDateString, errorMessage_GlobalObject_ThisNotDateObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toLocaleDateString, 0));
 
@@ -4360,7 +4381,7 @@ void GlobalObject::installDate()
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, toLocaleString);
         ESValue func = thisObject->get(strings->toString.string());
         if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleString, "toLocaleString is not callable");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleString, errorMessage_GlobalObject_ToLoacleStringNotCallable);
         return ESFunctionObject::call(instance, func, thisObject, NULL, 0, false);
     }, strings->toLocaleString, 0));
 
@@ -4370,7 +4391,7 @@ void GlobalObject::installDate()
         if (e.isESPointer() && e.asESPointer()->isESDateObject())
             return e.asESPointer()->asESDateObject()->toTimeString();
         else
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleTimeString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleTimeString, errorMessage_GlobalObject_ThisNotDateObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toLocaleTimeString, 0));
 
@@ -4380,7 +4401,7 @@ void GlobalObject::installDate()
         if (e.isESPointer() && e.asESPointer()->isESDateObject())
             return e.asESPointer()->asESDateObject()->toTimeString();
         else
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toTimeString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toTimeString, errorMessage_GlobalObject_ThisNotDateObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toTimeString, 0));
 
@@ -4399,10 +4420,10 @@ void GlobalObject::installDate()
                     , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds());
                 return ESString::create(buffer);
             } else {
-                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, "Invalid Date");
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_InvalidDate);
             }
         } else
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toUTCString, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toUTCString, errorMessage_GlobalObject_ThisNotDateObject);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toUTCString, 0));
 
@@ -4410,7 +4431,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, valueOf);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->valueOf, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->valueOf, errorMessage_GlobalObject_ThisNotDateObject);
         }
         double primitiveValue = thisObject->asESDateObject()->timeValueAsDouble();
         return ESValue(primitiveValue);
@@ -4420,7 +4441,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->getYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, getYear);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getYear, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->getYear, errorMessage_GlobalObject_ThisNotDateObject);
         }
         int ret = thisObject->asESDateObject()->getFullYear() - 1900;
         return ESValue(ret);
@@ -4430,7 +4451,7 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->setYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, setYear);
         if (!thisObject->isESDateObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setYear, builtinErrorMessageThisNotDateObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->setYear, errorMessage_GlobalObject_ThisNotDateObject);
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -4799,7 +4820,7 @@ void GlobalObject::installJSON()
             // 1
             for (auto& v : stack) {
                 if (v == value) {
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->JSON, false, strings->stringify, "JA error");
+                    throwBuiltinError(instance, ErrorCode::TypeError, strings->JSON, false, strings->stringify, errorMessage_GlobalObject_JAError);
                 }
             }
             // 2
@@ -4869,7 +4890,7 @@ void GlobalObject::installJSON()
             // 1
             for (auto& v : stack) {
                 if (v == value) {
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->JSON, false, strings->stringify, "JO error");
+                    throwBuiltinError(instance, ErrorCode::TypeError, strings->JSON, false, strings->stringify, errorMessage_GlobalObject_JOError);
                 }
             }
             // 2
@@ -5340,7 +5361,7 @@ void GlobalObject::installNumber()
         else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject())
             number = thisValue.asESPointer()->asESNumberObject()->numberData();
         else
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toExponential, builtinErrorMessageThisNotNumber);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toExponential, errorMessage_GlobalObject_ThisNotNumber);
 
         int arglen = instance->currentExecutionContext()->argumentCount();
         int digit = 0; // only used when an argument is given
@@ -5366,7 +5387,7 @@ void GlobalObject::installNumber()
         }
 
         if (digit < 0 || digit > 20) {
-            throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toExponential, builtinErrorMessageRangeError);
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toExponential, errorMessage_GlobalObject_RangeError);
         }
 
         int exp = 0;
@@ -5436,7 +5457,7 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             number = thisValue.asESPointer()->asESNumberObject()->numberData();
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toFixed, builtinErrorMessageThisNotNumber);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toFixed, errorMessage_GlobalObject_ThisNotNumber);
         }
 
         int arglen = instance->currentExecutionContext()->argumentCount();
@@ -5456,7 +5477,7 @@ void GlobalObject::installNumber()
             }
             int digit = (int) trunc(digit_d);
             if (digit < 0 || digit > 20) {
-                throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toFixed, builtinErrorMessageRangeError);
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toFixed, errorMessage_GlobalObject_RangeError);
             }
             if (isnan(number) || std::isinf(number)) {
                 return ESValue(number).toString();
@@ -5486,7 +5507,7 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             number = thisValue.asESPointer()->asESNumberObject()->numberData();
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toPrecision, builtinErrorMessageThisNotNumber);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toPrecision, errorMessage_GlobalObject_ThisNotNumber);
         }
 
         int arglen = instance->currentExecutionContext()->argumentCount();
@@ -5508,7 +5529,7 @@ void GlobalObject::installNumber()
             } else {
                 int p = (int) trunc(p_d);
                 if (p < 1 || p > 21) {
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toPrecision, builtinErrorMessageRangeError);
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toPrecision, errorMessage_GlobalObject_RangeError);
                 }
 
                 int log10_num = trunc(log10(x));
@@ -5545,7 +5566,7 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             number = thisValue.asESPointer()->asESNumberObject()->numberData();
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toString, builtinErrorMessageThisNotNumber);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toString, errorMessage_GlobalObject_ThisNotNumber);
         }
         
         if (isnan(number) || std::isinf(number)) {
@@ -5556,7 +5577,7 @@ void GlobalObject::installNumber()
         if (arglen >= 1 && !instance->currentExecutionContext()->arguments()[0].isUndefined()) {
             radix = instance->currentExecutionContext()->arguments()[0].toInteger();
             if (radix < 2 || radix > 36)
-                throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toString, "radix is not in valid range");
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toString, errorMessage_GlobalObject_RadixInvalidRange);
         }
         if (radix == 10)
             return (ESValue(number).toString());
@@ -5597,7 +5618,7 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             number = thisValue.asESPointer()->asESNumberObject()->numberData();
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toLocaleString, builtinErrorMessageThisNotNumber);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toLocaleString, errorMessage_GlobalObject_ThisNotNumber);
         }
 
         if (isnan(number) || std::isinf(number)) {
@@ -5608,7 +5629,7 @@ void GlobalObject::installNumber()
         if (arglen >= 1 && !instance->currentExecutionContext()->arguments()[0].isUndefined()) {
             radix = instance->currentExecutionContext()->arguments()[0].toInteger();
             if (radix < 2 || radix > 36)
-                throwBuiltinError(instance, ErrorCode::RangeError, strings->String, true, strings->toString, "radix is not in valid range");
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->String, true, strings->toString, errorMessage_GlobalObject_RadixInvalidRange);
         }
         if (radix == 10)
             return (ESValue(number).toString());
@@ -5651,7 +5672,7 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
         }
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->valueOf, builtinErrorMessageThisNotNumber);
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->valueOf, errorMessage_GlobalObject_ThisNotNumber);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->valueOf, 0));
 
@@ -5710,7 +5731,7 @@ void GlobalObject::installBoolean()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData()).toString();
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Boolean, true, strings->toString, builtinErrorMessageThisNotBoolean);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Boolean, true, strings->toString, errorMessage_GlobalObject_ThisNotBoolean);
             RELEASE_ASSERT_NOT_REACHED();
         }
     }, strings->toString, 0));
@@ -5723,7 +5744,7 @@ void GlobalObject::installBoolean()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData());
         }
-        throwBuiltinError(instance, ErrorCode::TypeError, strings->Boolean, true, strings->valueOf, builtinErrorMessageThisNotBoolean);
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->Boolean, true, strings->valueOf, errorMessage_GlobalObject_ThisNotBoolean);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->valueOf, 0));
 
@@ -5764,7 +5785,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->test, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->test, builtinErrorMessageThisNotRegExpObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->test, errorMessage_GlobalObject_ThisNotRegExpObject);
         escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         double lastIndex = regexp->lastIndex().toInteger();
@@ -5785,7 +5806,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->exec, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->exec, builtinErrorMessageThisNotRegExpObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->exec, errorMessage_GlobalObject_ThisNotRegExpObject);
         escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
@@ -5816,7 +5837,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESRegExpObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->toString, builtinErrorMessageThisNotRegExpObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->RegExp, true, strings->toString, errorMessage_GlobalObject_ThisNotRegExpObject);
         escargot::ESRegExpObject* R = thisVal.asESPointer()->asESRegExpObject();
 
         escargot::ESString* ret = ESString::concatTwoStrings(ESString::create("/"), R->get(strings->source.string()).toString());
@@ -5862,7 +5883,7 @@ void GlobalObject::installArrayBuffer()
     m_arrayBuffer = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // if NewTarget is undefined, throw a TypeError
         if (!instance->currentExecutionContext()->isNewExpression())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, false, strings->emptyString, "Constructor ArrayBuffer requires \'new\'");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, false, strings->emptyString, errorMessage_GlobalObject_NotExistNewInArrayBufferConstructor);
         ASSERT(instance->currentExecutionContext()->resolveThisBindingToObject()->isESArrayBufferObject());
         escargot::ESArrayBufferObject* obj = instance->currentExecutionContext()->resolveThisBindingToObject()->asESArrayBufferObject();
         int len = instance->currentExecutionContext()->argumentCount();
@@ -5873,7 +5894,7 @@ void GlobalObject::installArrayBuffer()
             int numlen = val.toNumber();
             int elemlen = val.toLength();
             if (numlen != elemlen)
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, false, strings->emptyString, "1st argument is error");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, false, strings->emptyString, errorMessage_GlobalObject_FirstArgumentInvalidLength);
             obj->allocateArrayBuffer(elemlen);
         }
         return obj;
@@ -5925,7 +5946,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     escargot::ESFunctionObject* ta_constructor = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // if NewTarget is undefined, throw a TypeError
         if (!instance->currentExecutionContext()->isNewExpression())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->TypedArray, false, strings->emptyString, "Constructor TypedArray requires \'new\'");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_NotExistNewInTypedArrayConstructor);
         ASSERT(instance->currentExecutionContext()->resolveThisBindingToObject()->isESTypedArrayObject());
         escargot::ESTypedArrayObject<T>* obj = instance->currentExecutionContext()->resolveThisBindingToObject()->asESTypedArrayObject<T>();
         int len = instance->currentExecutionContext()->argumentCount();
@@ -5938,21 +5959,20 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 int numlen = val.toNumber();
                 int elemlen = val.toLength();
                 if (numlen != elemlen)
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, "1st argument is error");
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_FirstArgumentInvalidLength);
                 obj->allocateTypedArray(elemlen);
             } else if (val.isESPointer() && val.asESPointer()->isESArrayBufferObject()) {
                 // $22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )
-                const char* msg = "ArrayBuffer length minus the byteOffset is not a multiple of the element size";
                 unsigned elementSize = obj->elementSize();
                 int offset = 0;
                 ESValue lenVal;
                 if (len >= 2)
                     offset = instance->currentExecutionContext()->arguments()[1].toInt32();
                 if (offset < 0) {
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, msg);
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_InvalidArrayBufferOffset);
                 }
                 if (offset % elementSize != 0) {
-                    throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, msg);
+                    throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_InvalidArrayBufferOffset);
                 }
                 escargot::ESArrayBufferObject* buffer = val.asESPointer()->asESArrayBufferObject();
                 unsigned bufferByteLength = buffer->bytelength();
@@ -5962,15 +5982,15 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 unsigned newByteLength;
                 if (lenVal.isUndefined()) {
                     if (bufferByteLength % elementSize != 0)
-                        throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, msg);
+                        throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_InvalidArrayBufferOffset);
                     newByteLength = bufferByteLength - offset;
                     if (newByteLength < 0)
-                        throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, msg);
+                        throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_InvalidArrayBufferOffset);
                 } else {
                     int length = lenVal.toLength();
                     newByteLength = length * elementSize;
                     if (offset + newByteLength > bufferByteLength)
-                        throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, msg);
+                        throwBuiltinError(instance, ErrorCode::RangeError, strings->TypedArray, false, strings->emptyString, errorMessage_GlobalObject_InvalidArrayBufferOffset);
                 }
                 obj->setBuffer(buffer);
                 obj->setBytelength(newByteLength);
@@ -6023,7 +6043,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int arglen = instance->currentExecutionContext()->argumentCount();
         RESOLVE_THIS_BINDING_TO_OBJECT(thisBinded, TypedArray, set);
         if (!thisBinded->isESTypedArrayObject() || arglen < 1) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->TypedArray, true, strings->set, builtinErrorMessageThisNotTypedArrayObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->TypedArray, true, strings->set, errorMessage_GlobalObject_ThisNotTypedArrayObject);
         }
         auto wrapper = thisBinded->asESTypedArrayObjectWrapper();
         int offset = 0;
@@ -6094,7 +6114,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         RESOLVE_THIS_BINDING_TO_OBJECT(thisBinded, TypedArray, subarray);
         if (!thisBinded->isESTypedArrayObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->TypedArray, true, strings->subarray, builtinErrorMessageThisNotTypedArrayObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->TypedArray, true, strings->subarray, errorMessage_GlobalObject_ThisNotTypedArrayObject);
         auto wrapper = thisBinded->asESTypedArrayObjectWrapper();
         escargot::ESArrayBufferObject* buffer = wrapper->buffer();
         unsigned srcLength = wrapper->arraylength();

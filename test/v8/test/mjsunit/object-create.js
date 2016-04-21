@@ -38,7 +38,7 @@ try {
   Object.create(4);
   assertTrue(false);
 } catch (e) {
-  assertTrue(/Object or null/.test(e));
+  assertTrue(/not an object and not null/.test(e));
 }
 
 try {
@@ -46,7 +46,7 @@ try {
   print(2);
   assertTrue(false);
 } catch (e) {
-  assertTrue(/Object or null/.test(e));
+  assertTrue(/not an object and not null/.test(e));
 }
 
 var ctr = 0;
@@ -119,7 +119,6 @@ assertEquals(1, ctr3);
 assertEquals(1, ctr4);
 
 var ctr7 = 0;
-
 var metaProps = {
   enumerable: { get: function() {
                        assertEquals(0, ctr7++);

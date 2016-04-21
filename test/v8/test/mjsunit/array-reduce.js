@@ -418,7 +418,7 @@ try {
   exception = true;
   assertTrue(e instanceof TypeError,
              "reduce callback not a function not throwing TypeError");
-  assertTrue(e.message.indexOf(" is not a function") >= 0,
+  assertTrue(e.message.indexOf(" is not callable") >= 0,
              "reduce non function TypeError type");
 }
 assertTrue(exception);
@@ -430,7 +430,7 @@ try {
   exception = true;
   assertTrue(e instanceof TypeError,
              "reduceRight callback not a function not throwing TypeError");
-  assertTrue(e.message.indexOf(" is not a function") >= 0,
+  assertTrue(e.message.indexOf(" is not callable") >= 0,
              "reduceRight non function TypeError type");
 }
 assertTrue(exception);
