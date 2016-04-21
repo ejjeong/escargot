@@ -22,6 +22,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Not in scope (Array.prototype.splice should keep array's length only in ES6)</escargot-skip>
       <files>equiv-locktypeid.js</files>
       <baseline>equiv-locktypeid.baseline</baseline>
     </default>
@@ -257,6 +258,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Due to floating point approximation</escargot-skip>
       <files>redundanttype1.js</files>
       <baseline>redundanttype1.baseline</baseline>
     </default>

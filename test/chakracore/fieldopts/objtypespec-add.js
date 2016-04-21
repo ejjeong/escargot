@@ -184,4 +184,4 @@ function printAll(n, v) {
   for (var c in v)
     printAll(n, v[c]);
 }
-printAll('this', this);
+// printAll('this', this);

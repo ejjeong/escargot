@@ -159,10 +159,11 @@ function runtest(name, func)
             output += " ";
         }
     }
-    WScript.Echo(output + ": " + (((total_time / iter) * 1000) | 0) + " (per 1000 iteration, executed " + iter + " iterations)");
+//    WScript.Echo(output + ": " + (((total_time / iter) * 1000) | 0) + " (per 1000 iteration, executed " + iter + " iterations)");
 }
 
 for (var x in test)
 {
     runtest(x, test[x]);
 }
+WScript.Echo("Passed");

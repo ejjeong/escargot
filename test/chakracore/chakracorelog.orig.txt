@@ -1219,7 +1219,7 @@ Running all tests
 [fieldopts] equiv-finaltypeandpoly.js .......... Pass
 [fieldopts] equiv-missing.js .......... Skip (Not in scope (es6))
 [fieldopts] equiv-mismatch.js .......... Pass
-[fieldopts] equiv-locktypeid.js .......... Fail
+[fieldopts] equiv-locktypeid.js .......... Skip (Not in scope (Array.prototype.splice should keep array's length only in ES6))
 [fieldopts] equiv-needmonocheck.js .......... Pass
 [fieldopts] equiv-needsmonocheck2.js .......... Pass
 [fieldopts] fieldconstprop_ldmethodfld.js .......... Pass
@@ -1228,12 +1228,12 @@ Running all tests
 [fieldopts] fieldcopyprop_deletestrict.js .......... Pass
 [fieldopts] fieldhoist2.js .......... Pass
 [fieldopts] fieldhoist4.js .......... Pass
-[fieldopts] fieldhoist5.js .......... Fail
+[fieldopts] fieldhoist5.js .......... Pass
 [fieldopts] fieldhoist6.js .......... Pass
 [fieldopts] fieldhoist6b.js .......... Pass
 [fieldopts] fieldhoist7.js .......... Pass
 [fieldopts] fieldhoist8.js .......... Pass
-[fieldopts] fieldhoist_nullfieldhoist.js .......... Fail
+[fieldopts] fieldhoist_nullfieldhoist.js .......... Pass
 [fieldopts] fieldhoist9.js .......... Pass
 [fieldopts] fieldhoist_unreachable.js .......... Pass
 [fieldopts] fieldhoist_typespec.js .......... Pass
@@ -1245,12 +1245,12 @@ Running all tests
 [fieldopts] fieldhoist_negzero.js .......... Pass
 [fieldopts] fieldhoist_negzero.js .......... Pass
 [fieldopts] fieldhoist_typeof.js .......... Pass
-[fieldopts] fieldhoist_sideeffect.js .......... Fail
+[fieldopts] fieldhoist_sideeffect.js .......... Pass
 [fieldopts] fieldcopyprop_nonwritable.js .......... Pass
 [fieldopts] fieldcopyprop_primitive.js .......... Pass
 [fieldopts] fieldcopyprop_preventextensions.js .......... Pass
 [fieldopts] fieldcopyprop_freeze.js .......... Pass
-[fieldopts] redundanttype1.js .......... Fail
+[fieldopts] redundanttype1.js .......... Skip (Due to floating point approximation)
 [fieldopts] fieldhoist_join.js .......... Pass
 [fieldopts] fieldhoist_slots.js .......... Pass
 [fieldopts] fieldhoist_slots2.js .......... Pass
@@ -1259,7 +1259,7 @@ Running all tests
 [fieldopts] fieldhoist_kills.js .......... Pass
 [fieldopts] fieldhoist_stripbailouts.js .......... Pass
 [fieldopts] redundanttype2.js .......... Pass
-[fieldopts] CheckThis.js .......... Fail
+[fieldopts] CheckThis.js .......... Pass
 [fieldopts] objptrcopyprop_bug.js .......... Pass
 [fieldopts] objptrcopyprop_typescript.js .......... Pass
 [fieldopts] fieldcopyprop_typespec.js .......... Pass
@@ -1275,7 +1275,7 @@ Running all tests
 [fieldopts] objtypespec-fieldhoist.js .......... Pass
 [fieldopts] objtypespec-fieldhoist.2.js .......... Pass
 [fieldopts] objtypespec_proto.js .......... Pass
-[fieldopts] objtypespec-add.js .......... Fail
+[fieldopts] objtypespec-add.js .......... Pass
 [fieldopts] objtypespec-add-2.js .......... Pass
 [fieldopts] objtypespec-add-4.js .......... Pass
 [fieldopts] objtypespec-newobj.1.js .......... Pass
@@ -1458,10 +1458,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              bailout		34		31		3		0		(91%)
                 loop		6		6		0		0		(100%)
        Miscellaneous		7		3		3		1		(42%)
-           fieldopts		111		93		17		1		(83%)
+           fieldopts		111		98		10		3		(88%)
          FixedFields		16		15		0		1		(93%)
             inlining		34		31		0		3		(91%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1175		109		122		(83%)
+               Total		1406		1180		102		124		(83%)

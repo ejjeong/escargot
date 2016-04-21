@@ -1,5 +1,5 @@
 [object Object]
-Object doesn't support property or method 'foo'
+Callee is not a function object
 true
 [object Object]
 undefined
