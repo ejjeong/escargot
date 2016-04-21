@@ -38,16 +38,16 @@ CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, b
     m_nanoJITDataAllocator = nullptr;
 #endif
 
+    ESVMInstance* instance = ESVMInstance::currentInstance();
     GC_REGISTER_FINALIZER_NO_ORDER(this, [] (void* obj, void* cd) {
-        ((CodeBlock *)obj)->finalize();
-    }, NULL, NULL, NULL);
-    ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+        ((CodeBlock *)obj)->finalize((ESVMInstance*)cd);
+    }, instance, NULL, NULL);
+    instance->globalObject()->registerCodeBlock(this);
 }
 
-void CodeBlock::finalize()
+void CodeBlock::finalize(ESVMInstance* instance)
 {
-    if (ESVMInstance::currentInstance()/* FIXME(add is ESVMInstance destroyed) */)
-        ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
+    instance->globalObject()->unregisterCodeBlock(this);
 
     m_code.clear();
     m_code.shrink_to_fit();

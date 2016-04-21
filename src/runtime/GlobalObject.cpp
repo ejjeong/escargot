@@ -20,6 +20,14 @@ GlobalObject::GlobalObject()
     m_didSomePrototypeObjectDefineIndexedProperty = false;
 }
 
+void GlobalObject::finalize()
+{
+    for (auto block : m_codeBlocks) {
+        block->finalize(m_instance);
+        unregisterCodeBlock(block);
+    }
+}
+
 const char* builtinErrorMessageThisUndefinedOrNull = "this value is undefined or null";
 const char* builtinErrorMessageThisNotObject = "this value is not an object";
 const char* builtinErrorMessageThisNotRegExpObject = "this value is not a RegExp object";

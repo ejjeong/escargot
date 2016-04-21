@@ -197,6 +197,7 @@ ESVMInstance::ESVMInstance()
 
 ESVMInstance::~ESVMInstance()
 {
+    m_globalObject->finalize();
 #ifdef ENABLE_ESJIT
     delete m_JITConfig;
 #endif
@@ -218,7 +219,7 @@ ESValue ESVMInstance::evaluate(ESString* source)
     m_lastExpressionStatementValue = ESValue();
     interpret(this, block);
     if (!block->m_isCached)
-        block->finalize();
+        block->finalize(this);
 
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("ESVMInstance::evaluate takes %lfms\n", (end-start)/1000.0);
@@ -261,7 +262,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall, CodeBloc
         interpret(this, block);
     }
     if (!block->m_isCached)
-        block->finalize();
+        block->finalize(this);
     m_globalExecutionContext->setStrictMode(oldGlobalContextIsStrictMode);
     m_currentExecutionContext = oldContext;
     m_currentExecutionContext->setStrictMode(oldContextIsStrictMode);

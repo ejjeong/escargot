@@ -10,6 +10,7 @@ class GlobalObject : public ESObject {
 public:
     friend class ESVMInstance;
     GlobalObject();
+    void finalize();
 
     ALWAYS_INLINE escargot::ESVMInstance* instance()
     {
