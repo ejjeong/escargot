@@ -38,6 +38,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>irviewer.js</files>
       <baseline>irviewer.baseline</baseline>
       <compile-flags>-irviewer</compile-flags>
@@ -46,6 +47,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>SetTimeout.js</files>
       <baseline>SetTimeout.baseline</baseline>
     </default>

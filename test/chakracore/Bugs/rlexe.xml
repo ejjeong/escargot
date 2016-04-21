@@ -215,6 +215,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>SIMDExtendArgCSE.js</files>
       <baseline>SIMDExtendArgCSE.baseline</baseline>
       <tags>exclude_dynapogo,exclude_ship,require_backend</tags>

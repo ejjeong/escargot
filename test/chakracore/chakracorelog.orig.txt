@@ -1013,7 +1013,7 @@ Running all tests
 [Bugs] bug56026_minimalWithProperties.js .......... Skip (Not in scope (with))
 [Bugs] bug56026_nested.js .......... Skip (Not in scope (with))
 [Bugs] bug56026_trycatch.js .......... Skip (Not in scope (with))
-[Bugs] blue_245702.js .......... Fail
+[Bugs] blue_245702.js .......... Pass
 [Bugs] bug547302.js .......... Pass
 [Bugs] bug215238.mul-53-ovf.js .......... Pass
 [Bugs] bug215238-shrua.js .......... Pass
@@ -1028,10 +1028,10 @@ Running all tests
 [Bugs] vso_os_1091425.js .......... Fail
 [Bugs] bug1092916.js .......... Pass
 [Bugs] blue_1096569.js .......... Skip (Not in scope (es6))
-[Bugs] blue_1086262.js .......... Fail
+[Bugs] blue_1086262.js .......... Pass
 [Bugs] bug1288931.js .......... Pass
 [Bugs] OS_1362136.js .......... Pass
-[Bugs] SIMDExtendArgCSE.js .......... Fail
+[Bugs] SIMDExtendArgCSE.js .......... Skip (Chakracore-only)
 [Bugs] bug_OS_4683246.js .......... Pass
 [Bugs] fabs1.js .......... Fail
 [strict] GlobalEval.js .......... Pass
@@ -1193,9 +1193,9 @@ Running all tests
 [bailout] AggressiveIntTypeSpecWithFloatPref.js .......... Pass
 [bailout] bailout-inlined.js .......... Pass
 [bailout] bug10.js .......... Pass
-[bailout] flags.js .......... Fail
+[bailout] flags.js .......... Pass
 [bailout] initlocals.js .......... Pass
-[bailout] implicit_nosideeffect.js .......... Fail
+[bailout] implicit_nosideeffect.js .......... Pass
 [bailout] inlineBuiltIns.js .......... Pass
 [bailout] inlineBuiltIns.js .......... Pass
 [bailout] bailout-branch.js .......... Pass
@@ -1214,8 +1214,8 @@ Running all tests
 [Miscellaneous] etwtest.js .......... Pass
 [Miscellaneous] evalAlias.js .......... Pass
 [Miscellaneous] oom.js .......... Skip (Takes too long)
-[Miscellaneous] irviewer.js .......... Fail
-[Miscellaneous] SetTimeout.js .......... Fail
+[Miscellaneous] irviewer.js .......... Skip (Chakracore-only)
+[Miscellaneous] SetTimeout.js .......... Skip (Chakracore-only)
 [fieldopts] equiv-finaltypeandpoly.js .......... Pass
 [fieldopts] equiv-missing.js .......... Skip (Not in scope (es6))
 [fieldopts] equiv-mismatch.js .......... Pass
@@ -1451,17 +1451,17 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              VT_DATE		1		0		1		0		(0%)
                  Lib		16		4		12		0		(25%)
                 JSON		13		9		4		0		(69%)
-                Bugs		36		21		7		8		(58%)
+                Bugs		36		23		4		9		(63%)
               strict		104		74		0		30		(71%)
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		23		3		0		(88%)
-             bailout		34		31		3		0		(91%)
+             bailout		34		33		1		0		(97%)
                 loop		6		6		0		0		(100%)
-       Miscellaneous		7		3		3		1		(42%)
+       Miscellaneous		7		3		1		3		(42%)
            fieldopts		111		98		10		3		(88%)
          FixedFields		16		15		0		1		(93%)
             inlining		34		31		0		3		(91%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1180		102		124		(83%)
+               Total		1406		1184		95		127		(84%)

@@ -1,2 +1,2 @@
 0
-ReferenceError: Variable undefined in strict mode
+ReferenceError: assignment to undeclared variable c
