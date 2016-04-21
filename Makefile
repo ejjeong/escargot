@@ -332,6 +332,8 @@ tizen_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
 	cp -f $< .
 tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
+tizen_wearable_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
 tizen_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC)
 	cp -f $< .
 tizen_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(LIB)

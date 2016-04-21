@@ -613,6 +613,8 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix)
                 c = ch - 'a' + 10;
             } else if (ch >= 'A' && ch <= 'F') {
                 c = ch - 'A' + 10;
+            } else {
+                ASSERT_NOT_REACHED();
             }
             code = code * 16 + c;
         } else {
@@ -648,6 +650,8 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
             c = ch - 'a';
         } else if (ch >= 'A' && ch <= 'F') {
             c = ch - 'A';
+        } else {
+            ASSERT_NOT_REACHED();
         }
 
         code = code * 16 + c;
@@ -968,6 +972,7 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
     } else if (ctx->m_strict && isStrictModeReservedWord(id)) {
         ParseStatus* ps = new ParseStatus(Token::IdentifierToken, std::move(id), ctx->m_lineNumber, ctx->m_lineStart, start, ctx->m_index);
         throwUnexpectedToken(adoptRef(ps), u"Future reserved word cannot used as Identifier in strict mode");
+        RELEASE_ASSERT_NOT_REACHED();
     } else {
         type = Token::IdentifierToken;
     }
@@ -3717,6 +3722,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
         }
     } else {
         throwEsprimaException(u"Unnamed function declaration is forbidden");
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
     ctx->m_allowYield = !isGenerator;
@@ -4469,7 +4475,7 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
     RefPtr<ParseStatus> token = ctx->m_lookahead;
     // , node = new Node(), computed, key, maybeMethod, proto, value;
     bool proto;
-    escargot::Node* key;
+    escargot::Node* key = nullptr;
     bool computed = match(ctx, LeftSquareBracket);
     if (match(ctx, Multiply)) {
         lex(ctx);
@@ -4843,7 +4849,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
 {
     // var type, token, expr, node;
     RefPtr<ParseStatus> token;
-    escargot::Node* expr;
+    escargot::Node* expr = nullptr;
     escargot::Node* node;
 
     if (match(ctx, LeftParenthesis)) {
@@ -4936,6 +4942,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         throwUnexpectedToken(token);
     }
 
+    ASSERT(expr);
     return expr;
 }
 

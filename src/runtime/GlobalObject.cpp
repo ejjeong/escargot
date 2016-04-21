@@ -67,6 +67,7 @@ NEVER_INLINE void throwBuiltinError(ESVMInstance* instance, ESErrorObject::Code 
 
     ASSERT(instance);
     instance->throwError(ESErrorObject::create(messageBuilder.finalize(), code));
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 UTF16String codePointTo4digitString(int codepoint)
@@ -510,7 +511,7 @@ void GlobalObject::initGlobalObject()
         //     that is represented by Z in radix-R notation.)
         // 14. Let number be the Number value for mathInt.
         bool sawDigit = false;
-        double number = 0;
+        double number = 0.0;
         while (p < strLen) {
             int digit = parseDigit(s->charAt(p), radix);
             if (digit == -1)
@@ -640,6 +641,8 @@ void GlobalObject::initGlobalObject()
                         if ((octets[0] == 0xF0) && ((octets[1] < 0x90) || (octets[1] > 0xBF))) {
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, builtinErrorMessageMalformedURI); // overlong
                         }
+                    } else {
+                        RELEASE_ASSERT_NOT_REACHED();
                     }
                     if (v >= 0x10000) {
                         const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
@@ -756,6 +759,8 @@ void GlobalObject::initGlobalObject()
                         if ((octets[0] == 0xF0) && ((octets[1] < 0x90) || (octets[1] > 0xBF))) {
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, builtinErrorMessageMalformedURI); // overlong
                         }
+                    } else {
+                        RELEASE_ASSERT_NOT_REACHED();
                     }
                     if (v >= 0x10000) {
                         const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
@@ -1082,7 +1087,7 @@ void GlobalObject::installFunction()
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
         ESValue argArray = instance->currentExecutionContext()->readArgument(1);
         size_t arrlen;
-        ESValue* arguments;
+        ESValue* arguments = nullptr;
         if (argArray.isUndefinedOrNull()) {
             // do nothing
             arrlen = 0;
@@ -1273,7 +1278,7 @@ void GlobalObject::installObject()
     // $19.1.2.4 Object.defineProperty ( O, P, Attributes )
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
     m_object->defineDataProperty(strings->defineProperty, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* obj;
+        ESObject* obj = nullptr;
         if (instance->currentExecutionContext()->argumentCount() >= 3) {
             if (instance->currentExecutionContext()->arguments()[0].isObject()) {
                 obj = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESObject();
@@ -1296,6 +1301,7 @@ void GlobalObject::installObject()
         } else {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, "# of arguments < 3");
         }
+        ASSERT(obj);
         return ESValue(obj);
     }, strings->defineProperty.string(), 3));
 
@@ -5318,7 +5324,7 @@ void GlobalObject::installNumber()
     // $20.1.3.2 Number.prototype.toExponential
     m_numberPrototype->defineDataProperty(strings->toExponential, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
-        double number;
+        double number = 0.0;
 
         if (thisValue.isNumber())
             number = thisValue.asNumber();
@@ -5381,7 +5387,7 @@ void GlobalObject::installNumber()
         sprintf(buf, stream.str().c_str(), number, exp);
 
         // remove trailing zeros
-        char* tail;
+        char* tail = nullptr;
         if (arglen == 0) {
             tail = buf + strlen(buf) - 1;
             while (*tail == '0' && *tail-- != '.') { }
@@ -5414,7 +5420,7 @@ void GlobalObject::installNumber()
     // initialize numberPrototype object: $20.1.3.3 Number.prototype.toFixed(fractionDigits)
     m_numberPrototype->defineDataProperty(strings->toFixed, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
-        double number;
+        double number = 0.0;
 
         if (thisValue.isNumber()) {
             number = thisValue.asNumber();
@@ -5464,7 +5470,7 @@ void GlobalObject::installNumber()
     // $20.1.3.5 Number.prototype.toPrecision
     m_numberPrototype->defineDataProperty(strings->toPrecision, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
-        double number;
+        double number = 0.0;
 
         if (thisValue.isNumber()) {
             number = thisValue.asNumber();
@@ -5523,7 +5529,7 @@ void GlobalObject::installNumber()
 
     escargot::ESFunctionObject* toStringFunction = escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
-        double number;
+        double number = 0.0;
 
         if (thisValue.isNumber()) {
             number = thisValue.asNumber();
@@ -5575,7 +5581,7 @@ void GlobalObject::installNumber()
     // $20.1.3.4 Number.prototype.toLocaleString
     m_numberPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
-        double number;
+        double number = 0.0;
 
         if (thisValue.isNumber()) {
             number = thisValue.asNumber();

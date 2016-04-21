@@ -45,6 +45,7 @@ if [ $TIZEN == "1" ]
 then
 	mkdir -p out/tizen_arm/arm/release.shared
 	mkdir -p out/tizen_arm/arm/release
+	mkdir -p out/tizen_wearable_arm/arm/debug.shared
 	mkdir -p out/tizen_wearable_arm/arm/release.shared
 	mkdir -p out/tizen_wearable_arm/arm/release
 #	mkdir -p out/tizen_wearable_emulator/x86/release
@@ -97,17 +98,23 @@ then
 
 	cd out/tizen_wearable_arm/arm/release.shared
 	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
+	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
+	make -j$NUMPROC
+	cd -
+
+	cd out/tizen_wearable_arm/arm/debug.shared
+	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
 
-        cd out/tizen_wearable_emulator/x86/release.shared
-        TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -g0 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT}
-        ../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT --host=i386-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-ld
-        make -j$NUMPROC
-        cd -
+	cd out/tizen_wearable_emulator/x86/release.shared
+	TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -g0 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT}
+	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT --host=i386-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-ld
+	make -j$NUMPROC
+	cd -
 
-        cd out/tizen_arm/arm/release
+	cd out/tizen_arm/arm/release
 	TCF="-march=armv7-a -O2 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT --with-cross-host=arm-linux-gnueabi CFLAGS="$TCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
