@@ -1476,11 +1476,6 @@ protected:
     ESFunctionObject* m_jsSetter;
 };
 
-inline char assembleHidenClassPropertyInfoFlags(bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
-{
-    return isData | ((int)isWritable << 1) | ((int)isEnumerable << 2) | ((int)isConfigurable << 3);
-}
-
 struct ESHiddenClassPropertyInfo {
     ESHiddenClassPropertyInfo(ESString* name, unsigned attributes)
     {
@@ -1490,9 +1485,9 @@ struct ESHiddenClassPropertyInfo {
 
     ESHiddenClassPropertyInfo();
 
-    unsigned flags() const;
-
-    static unsigned buildAttributes(bool data, bool writable, bool enumerable, bool configurable);
+    static unsigned buildAttributes(unsigned property, bool writable, bool enumerable, bool configurable);
+    static unsigned hiddenClassPopretyInfoVecIndex(bool isData, bool writable, bool enumerable, bool configurable);
+    static constexpr unsigned hiddenClassPopretyInfoVecSize() { return 16; }
 
     ALWAYS_INLINE void setWritable(bool writable);
     ALWAYS_INLINE void setEnumerable(bool enumerable);
@@ -1511,6 +1506,8 @@ struct ESHiddenClassPropertyInfo {
     ALWAYS_INLINE bool isJSAccessorProperty() const;
     ALWAYS_INLINE bool isNativeAccessorProperty() const;
     ALWAYS_INLINE ESString* name() const { return m_name; }
+    ALWAYS_INLINE unsigned attributes() const { return m_attributes; }
+    ALWAYS_INLINE unsigned property() const;
 
 private:
     ESString* m_name;
@@ -1601,7 +1598,7 @@ public:
         }
     }
 
-    inline ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable, bool forceNewHiddenClass = false);
+    inline ESHiddenClass* defineProperty(ESString* name, unsigned attributes, bool forceNewHiddenClass = false);
     inline ESHiddenClass* removeProperty(ESString* name)
     {
         return removeProperty(findProperty(name));
@@ -2390,7 +2387,7 @@ public:
         ESValue* dataPtr = m_vector.data();
         for (uint32_t i = 0; i < len; i++) {
             if (dataPtr[i] != ESValue(ESValue::ESEmptyValue)) {
-                m_hiddenClass = m_hiddenClass->defineProperty(ESValue(i).toString(), true, true, true, true, false);
+                m_hiddenClass = m_hiddenClass->defineProperty(ESValue(i).toString(), Data | PropertyDescriptor::defaultAttributes, false);
                 m_hiddenClassData.push_back(dataPtr[i]);
             }
         }

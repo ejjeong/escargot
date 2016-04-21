@@ -1426,9 +1426,10 @@ void GlobalObject::installObject()
         ESObject* obj = O.toObject();
         bool hasWritableConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            if (propertyInfo->isDataProperty())
+            if (propertyInfo->isDataProperty() || propertyInfo->isNativeAccessorProperty()) {
                 if (propertyInfo->writable())
                     hasWritableConfigurableProperty = true;
+            }
             if (propertyInfo->configurable())
                 hasWritableConfigurableProperty = true;
         });

@@ -103,25 +103,25 @@ ESVMInstance::ESVMInstance()
     //     m_strings.__proto__,
     //     0
     //     ));
-    m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), ESHiddenClassPropertyInfo::buildAttributes(false, true, false, false)));
+    m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), NativeAccessor | Writable));
 
     // $19.2.4 Function Instances
-    m_initialHiddenClassForFunctionObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, true, false, false, false);
-    m_initialHiddenClassForFunctionObject = m_initialHiddenClassForFunctionObject->defineProperty(m_strings.prototype, false, true, false, false);
-    m_initialHiddenClassForFunctionObject = m_initialHiddenClassForFunctionObject->defineProperty(m_strings.name, true, false, false, true);
+    m_initialHiddenClassForFunctionObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, Data);
+    m_initialHiddenClassForFunctionObject = m_initialHiddenClassForFunctionObject->defineProperty(m_strings.prototype, NativeAccessor | Writable);
+    m_initialHiddenClassForFunctionObject = m_initialHiddenClassForFunctionObject->defineProperty(m_strings.name, Data | Configurable);
 
-    m_initialHiddenClassForFunctionObjectWithoutPrototype = m_initialHiddenClassForObject.defineProperty(m_strings.length, true, false, false, false);
-    m_initialHiddenClassForFunctionObjectWithoutPrototype = m_initialHiddenClassForFunctionObjectWithoutPrototype->defineProperty(m_strings.name, true, false, false, false);
+    m_initialHiddenClassForFunctionObjectWithoutPrototype = m_initialHiddenClassForObject.defineProperty(m_strings.length, Data);
+    m_initialHiddenClassForFunctionObjectWithoutPrototype = m_initialHiddenClassForFunctionObjectWithoutPrototype->defineProperty(m_strings.name, Data);
 
-    m_initialHiddenClassForPrototypeObject = m_initialHiddenClassForObject.defineProperty(m_strings.constructor, true, true, false, true);
+    m_initialHiddenClassForPrototypeObject = m_initialHiddenClassForObject.defineProperty(m_strings.constructor, Data | Writable | Configurable);
 
-    m_initialHiddenClassForArrayObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, false, true, false, false);
+    m_initialHiddenClassForArrayObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, NativeAccessor | Writable);
 
-    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForObject.defineProperty(m_strings.source, false, false, false, false);
-    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.ignoreCase, false, false, false, false);
-    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.global, false, false, false, false);
-    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.multiline, false, false, false, false);
-    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.lastIndex, false, true, false, false);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForObject.defineProperty(m_strings.source, NativeAccessor);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.ignoreCase, NativeAccessor);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.global, NativeAccessor);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.multiline, NativeAccessor);
+    m_initialHiddenClassForRegExpObject = m_initialHiddenClassForRegExpObject->defineProperty(m_strings.lastIndex, NativeAccessor | Writable);
 
     m_functionPrototypeAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return self->asESFunctionObject()->protoType();

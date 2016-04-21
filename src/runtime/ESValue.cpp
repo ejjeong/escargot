@@ -57,17 +57,10 @@ ESHiddenClassPropertyInfo::ESHiddenClassPropertyInfo()
     m_attributes = Data | Deleted;
 }
 
-unsigned ESHiddenClassPropertyInfo::flags() const
+unsigned ESHiddenClassPropertyInfo::buildAttributes(unsigned property, bool writable, bool enumerable, bool configurable)
 {
-    return m_attributes & (Data | PropertyDescriptor::defaultAttributes);
-}
+    unsigned attributes = property;
 
-unsigned ESHiddenClassPropertyInfo::buildAttributes(bool data, bool writable, bool enumerable, bool configurable)
-{
-    unsigned attributes = None;
-
-    if (data)
-        attributes |= Data;
     if (writable)
         attributes |= Writable;
     if (enumerable)
@@ -76,6 +69,11 @@ unsigned ESHiddenClassPropertyInfo::buildAttributes(bool data, bool writable, bo
         attributes |= Configurable;
 
     return attributes;
+}
+
+unsigned ESHiddenClassPropertyInfo::hiddenClassPopretyInfoVecIndex(bool isData, bool writable, bool enumerable, bool configurable)
+{
+    return ESHiddenClassPropertyInfo::buildAttributes(None, writable, enumerable, configurable) | isData;
 }
 
 ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
@@ -863,7 +861,7 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
         }
         if (UNLIKELY(!isExtensible()))
             return false;
-        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, true, true, true, foundInPrototype);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, Data | PropertyDescriptor::defaultAttributes, foundInPrototype);
         m_hiddenClassData.push_back(val);
 
         if (UNLIKELY(m_flags.m_isGlobalObject))
