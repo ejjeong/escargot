@@ -405,8 +405,8 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                         // Let setter be desc.[[Set]] which cannot be undefined.
                         // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
                         if (!obj->hiddenClass()->propertyInfo(idx).isDataProperty()) {
-                            ESPropertyAccessorData* data = obj->accessorData(idx);
                             if (!foundInPrototype) {
+                                ESPropertyAccessorData* data = obj->accessorData(idx);
                                 if (data->isAccessorDescriptor()) {
                                     invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
                                     if (data->getJSSetter()) {
@@ -424,18 +424,22 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                         return;
                                     }
                                     foundInPrototype = true;
+                                    break;
                                 } else {
                                     throwObjectWriteError();
                                     return;
                                 }
                             }
                         } else {
-                            if (!obj->hiddenClass()->propertyInfo(idx).writable()) {
-                                invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
-                                throwObjectWriteError();
-                                return;
+                            if (!foundInPrototype) {
+                                if (!obj->hiddenClass()->propertyInfo(idx).writable()) {
+                                    invalidateCache(cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
+                                    throwObjectWriteError();
+                                    return;
+                                }
+                                foundInPrototype = true;
+                                break;
                             }
-                            foundInPrototype = true;
                         }
                     }
                     proto = obj->__proto__();

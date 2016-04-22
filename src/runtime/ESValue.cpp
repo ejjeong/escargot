@@ -804,13 +804,13 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
                 // Let setter be desc.[[Set]] which cannot be undefined.
                 // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
                 if (!targetObj->hiddenClass()->m_propertyInfo[t].isDataProperty()) {
-                    ESPropertyAccessorData* data = targetObj->accessorData(t);
-                    ESValue receiverVal(this);
-                    if (receiver)
-                        receiverVal = *receiver;
                     if (!foundInPrototype) {
+                        ESPropertyAccessorData* data = targetObj->accessorData(t);
                         if (data->isAccessorDescriptor()) {
                             if (data->getJSSetter()) {
+                                ESValue receiverVal(this);
+                                if (receiver)
+                                    receiverVal = *receiver;
                                 ESValue args[] = {val};
                                 ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
                                 return true;
@@ -822,15 +822,19 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
                                 return false;
                             }
                             foundInPrototype = true;
+                            break;
                         } else {
                             return false;
                         }
                     }
                 } else {
-                    if (!targetObj->hiddenClass()->m_propertyInfo[t].writable()) {
-                        return false;
+                    if (!foundInPrototype) {
+                        if (!targetObj->hiddenClass()->m_propertyInfo[t].writable()) {
+                            return false;
+                        }
+                        foundInPrototype = true;
+                        break;
                     }
-                    foundInPrototype = true;
                 }
             } else if (targetObj->isESStringObject()) {
                 uint32_t idx = key.toIndex();
