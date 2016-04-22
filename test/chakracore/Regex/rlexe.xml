@@ -22,6 +22,7 @@
     <default>
       <files>regexSplitOptimization.js</files>
       <compile-flags>-skipsplitonnoresult- -off:fieldcopyprop</compile-flags>
+      <baseline>regexSplitOptimization.baseline</baseline>
     </default>
   </test>
   <test>
