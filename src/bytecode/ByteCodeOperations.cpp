@@ -1,8 +1,12 @@
 #include "Escargot.h"
+#include "parser/esprima.h"
 #include "bytecode/ByteCode.h"
 #include "ByteCodeOperations.h"
 
 namespace escargot {
+
+const char* errorMessage_New_NotConstructor = "%s is not a constructor";
+const char* errorMessage_New_NotFunction = "%s is not a function";
 
 NEVER_INLINE ESValue getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
@@ -411,14 +415,11 @@ NEVER_INLINE ESValue typeOfOperation(ESValue* v)
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc)
 {
     if (!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
-        instance->throwError(ESValue(TypeError::create(ESString::create(u"constructor is not an function object"))));
+        instance->throwError(ErrorCode::TypeError, errorMessage_New_NotFunction, fn.toString());
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     ESFunctionObject* finalTargetFunction = function;
     if (function->nonConstructor()) {
-        UTF16String str;
-        str.append(function->name()->toUTF16String());
-        str.append(u" is not a constructor");
-        instance->throwError(ESValue(TypeError::create(ESString::create(std::move(str)))));
+        instance->throwError(ErrorCode::TypeError, errorMessage_New_NotConstructor, function->name());
     }
     CallBoundFunction* callBoundFunctionCode = nullptr;
     if (function->isBoundFunc()) {

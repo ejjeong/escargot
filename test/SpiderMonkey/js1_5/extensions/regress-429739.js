@@ -20,7 +20,7 @@ function test()
   var actual;
   try
   {
-    var o = { __noSuchMethod__: Function }; 
+    var o = { __noSuchMethod__: Function };
     actual = (new o.y) + '';
     throw new Error("didn't throw, produced a value");
   }
@@ -30,7 +30,7 @@ function test()
   }
 
   reportCompare("TypeError", actual.name, "bad error name");
-  reportCompare(true, /constructor is not an function object/.test(actual), summary);
+  reportCompare(true, /is not a function/.test(actual), summary);
 
   exitFunc ('test');
 }
