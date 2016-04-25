@@ -49,7 +49,7 @@ function shouldThrow(func, message) {
     if (called)
         throw new Error(called);
     toStringCalled = false;
-    shouldThrow(function () { test(null, propertyKey); }, "TypeError: cannot convert null into object");
+    shouldThrow(function () { test(null, propertyKey); }, "Error: propertyKey.toString is called.");
     if (toStringCalled)
         throw new Error("toString is called.");
 }());
@@ -90,7 +90,7 @@ function shouldThrow(func, message) {
     if (called)
         throw new Error(called);
     toStringCalled = false;
-    shouldThrow(function () { test(null, propertyKey); }, "TypeError: cannot convert null into object");
+    shouldThrow(function () { test(null, propertyKey); }, "Error: propertyKey.toString is called.");
     if (toStringCalled)
         throw new Error("toString is called.");
 }());
@@ -133,7 +133,7 @@ function shouldThrow(func, message) {
     if (called)
         throw new Error(called);
     toStringCalled = false;
-    shouldThrow(function () { test(null, 20, propertyKey); }, "TypeError: cannot convert null into object");
+    shouldThrow(function () { test(null, 20, propertyKey); }, "Error: propertyKey.toString is called.");
     if (toStringCalled)
         throw new Error("toString is called.");
 }());
