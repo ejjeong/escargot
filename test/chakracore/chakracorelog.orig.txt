@@ -377,8 +377,8 @@ Running all tests
 [Closures] closure_binding_2.js .......... Pass
 [Closures] closure-funcexpr-eval.js .......... Skip (function print format differs)
 [Closures] closure-qmark.js .......... Pass
-[Closures] initcachedscope.js .......... Fail
-[Closures] initcachedscope.js .......... Fail
+[Closures] initcachedscope.js .......... Pass
+[Closures] initcachedscope.js .......... Pass
 [Closures] invalcachedscope.js .......... Pass
 [Closures] invalcachedscope.js .......... Pass
 [Closures] invalcachedscope.js .......... Pass
@@ -1429,7 +1429,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		0		2		(98%)
-            Closures		18		13		2		3		(72%)
+            Closures		18		15		0		3		(83%)
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
                Error		23		6		10		7		(26%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1197		82		127		(85%)
+               Total		1406		1199		80		127		(85%)

@@ -48,7 +48,7 @@ for (i = 0; i < 2; i++)
 
 try
 {
-    new Function("let ifviki, eval = (z =  /x/g );L:switch(z) {  case eval(\"z\"): return 503599627370497;break;  }")();
+    new Function("var ifviki, eval = (z =  /x/g );L:switch(z) {  case eval(\"z\"): return 503599627370497;break;  }")();
 }
 catch(e)
 {
