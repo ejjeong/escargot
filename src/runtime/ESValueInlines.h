@@ -1,8 +1,9 @@
 #ifndef ESValueInlines_h
 #define ESValueInlines_h
 
-namespace escargot {
+#include "runtime/Error.h"
 
+namespace escargot {
 
 // The fast double-to-(unsigned-)int conversion routine does not guarantee
 // rounding towards zero.
@@ -161,9 +162,9 @@ inline ESObject* ESValue::toObjectSlowPath() const
     } else if (isESString()) {
         object = ESStringObject::create(asESPointer()->asESString());
     } else if (isNull()) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert null into object"))));
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::Code::TypeError, errorMessage_NullToObject);
     } else if (isUndefined()) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert undefined into object"))));
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::Code::TypeError, errorMessage_UndefinedToObject);
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -196,9 +197,9 @@ inline ESObject* ESValue::toTransientObjectSlowPath(GlobalObject* globalObject) 
         booleanObjectProxy->setBooleanData(toBoolean());
         object = booleanObjectProxy;
     } else if (isNull()) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert null into object"))));
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::Code::TypeError, errorMessage_NullToObject);
     } else if (isUndefined()) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert undefined into object"))));
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::Code::TypeError, errorMessage_UndefinedToObject);
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }

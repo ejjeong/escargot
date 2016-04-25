@@ -7,24 +7,24 @@
  Array.prototype.join.call(document);; throws;;   -expected: es3 TypeError ::: ReferenceError: document is not defined
  Object.prototype.propertyIsEnumerable.call(document);; throws;;   -expected: es3 TypeError ::: ReferenceError: document is not defined
  delete this; ends without error; 
- var xnew = new Object(); var y = new xnew(); throws;;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support this action
+ var xnew = new Object(); var y = new xnew(); throws;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
  var x = new Object(); var y = x.ffm; ends without error; 
-var x = new Object(); x.ff() throws;;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support property or method 'ff'
+var x = new Object(); x.ff() throws;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
 var x = function f(){return "inner";}();   -expected: es3, es5 R3eferenceError ::: ReferenceError: ff is not defined
 call to undefined fg() throws;   -expected: es3 - TypeError, es5-ReferenceError ::: ReferenceError: fg is not defined
  call to an non function object ooj();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
- o_undef();;;   -expected: es3, es5 TypeError ::: TypeError: Object expected
- o_null();;;   -expected: es3, es5 TypeError ::: TypeError: Object expected
-undefined.toString();   -expected: es3, es5 TypeError ::: TypeError: Unable to get property 'toString' of undefined or null reference
- null.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Unable to get property 'anchor' of undefined or null reference
- NaN.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support property or method 'anchor'
- true.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Object doesn't support property or method 'anchor'
-new Array(12.4) - RangeError exception:  expected in es3 and es5::: RangeError: Array length must be a finite positive integer
+ o_undef();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
+ o_null();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
+undefined.toString();   -expected: es3, es5 TypeError ::: TypeError: Cannot convert undefined into object
+ null.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Cannot convert null into object 
+ NaN.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
+ true.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
+new Array(12.4) - RangeError exception:  expected in es3 and es5::: RangeError: Array: Invalid array length
 new Array(12.4); x.length = 12.5; - RangeError exception: es5-expected, ES3-not expected  ::: RangeError: invalid array length
-(123.45).toFixed(25); - RangeError exception : expected es3, es5::: RangeError: The number of fractional digits is out of range
-(123.45).toExponential(-25); - RangeError exception : expected es3, es5 ::: RangeError: The number of fractional digits is out of range
-eval("blah."); -expected es3-EvalError exception : expected es5-SyntaxException ::: SyntaxError: Expected identifier
-f = new Function("a", "b", "return a+b."); -expected es3 and es5-SyntaxError exception ::: SyntaxError: Expected identifier
+(123.45).toFixed(25); - RangeError exception : expected es3, es5::: RangeError: Number.prototype.toFixed: invalid range
+(123.45).toExponential(-25); - RangeError exception : expected es3, es5 ::: RangeError: Number.prototype.toExponential: invalid range
+eval("blah."); -expected es3-EvalError exception : expected es5-SyntaxException ::: SyntaxError: Unexpected <end> ''. Expected a property name
+f = new Function("a", "b", "return a+b."); -expected es3 and es5-SyntaxError exception ::: SyntaxError: Unexpected Punctuator '}'. Expected a property name
 var num = 0.0009;var x = num.toFixed(3);  - no exception: not expected es3, es5  ::: value = 0.001
-var re = /a{5,4}/;   -expected: es3 -RegexExpError, es5-SyntaxError exception ::: SyntaxError: Syntax error in regular expression
+var re = /a{5,4}/;   -expected: es3 -RegexExpError, es5-SyntaxError exception ::: SyntaxError: RegExp has invalid source
 var re = new RegExp("\\0a");  - no exception: not expected es3, es5  ::: value = 

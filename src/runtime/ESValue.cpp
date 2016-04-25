@@ -21,7 +21,10 @@ const char* errorMessage_DefineProperty_LengthNotWritable = "Cannot modify prope
 const char* errorMessage_DefineProperty_NotWritable = "Cannot modify non-writable property '%s'";
 const char* errorMessage_DefineProperty_RedefineNotConfigurable = "Cannot redefine non-configurable property '%s'";
 const char* errorMessage_DefineProperty_NotExtensible ="Cannot define property '%s': object is not extensible";
-const char* errorMessage_NotAbleToConverToPrimitiveValue = "Cannot convert object to primitive value";
+const char* errorMessage_ObjectToPrimitiveValue = "Cannot convert object to primitive value";
+const char* errorMessage_NullToObject = "cannot convert null into object";
+const char* errorMessage_UndefinedToObject = "cannot convert undefined into object";
+const char* errorMessage_Call_NotFunction = "Callee is not a function object";
 
 NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* templateString, ESString* property)
 {
@@ -90,7 +93,7 @@ ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
                 return str;
         }
     }
-    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(errorMessage_NotAbleToConverToPrimitiveValue))));
+    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(errorMessage_ObjectToPrimitiveValue))));
     RELEASE_ASSERT_NOT_REACHED();
 }
 
@@ -2174,7 +2177,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             }
         }
     } else {
-        instance->throwError(ESValue(TypeError::create(ESString::create("Callee is not a function object"))));
+        instance->throwError(ErrorCode::TypeError, errorMessage_Call_NotFunction);
     }
 
     return result;

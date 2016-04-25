@@ -1,4 +1,5 @@
 #include "Escargot.h"
+#include "runtime/Error.h"
 #include "parser/esprima.h"
 #include "bytecode/ByteCode.h"
 #include "ByteCodeOperations.h"
@@ -6,7 +7,6 @@
 namespace escargot {
 
 const char* errorMessage_New_NotConstructor = "%s is not a constructor";
-const char* errorMessage_New_NotFunction = "%s is not a function";
 const char* errorMessage_InstanceOf_NotFunction = "Invalid operand to 'instanceof': Callee is not a function object";
 const char* errorMessage_InstanceOf_InvalidPrototypeProperty = "instanceof called on an object with an invalid prototype property";
 
@@ -417,7 +417,7 @@ NEVER_INLINE ESValue typeOfOperation(ESValue* v)
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc)
 {
     if (!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
-        instance->throwError(ErrorCode::TypeError, errorMessage_New_NotFunction, fn.toString());
+        instance->throwError(ErrorCode::TypeError, errorMessage_Call_NotFunction);
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     ESFunctionObject* finalTargetFunction = function;
     if (function->nonConstructor()) {

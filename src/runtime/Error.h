@@ -41,14 +41,17 @@ extern const char* errorMessage_GlobalObject_InvalidArrayBufferOffset;
 extern const char* errorMessage_GlobalObject_ReduceError;
 extern const char* errorMessage_GlobalObject_NotExistNewInArrayBufferConstructor;
 extern const char* errorMessage_GlobalObject_NotExistNewInTypedArrayConstructor;
-extern const char* errorMessage_CallStackExceeded;
 extern const char* errorMessage_GlobalObject_RangeError;
 extern const char* errorMessage_GlobalObject_InvalidArrayLength;
-extern const char* errorMessage_NotAbleToConverToPrimitiveValue;
+extern const char* errorMessage_CallStackExceeded;
+extern const char* errorMessage_ObjectToPrimitiveValue;
+extern const char* errorMessage_UndefinedToObject;
+extern const char* errorMessage_NullToObject;
 extern const char* errorMessage_New_NotConstructor;
 extern const char* errorMessage_New_NotFunction;
 extern const char* errorMessage_InstanceOf_NotFunction;
 extern const char* errorMessage_InstanceOf_InvalidPrototypeProperty;
+extern const char* errorMessage_Call_NotFunction;
 
 }
 

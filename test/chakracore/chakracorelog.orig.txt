@@ -174,7 +174,7 @@ Running all tests
 [es5] DateGetSet9.js .......... Pass
 [es5] jx2.js .......... Fail
 [es5] SemiCollonAfterBlockEs5.js .......... Pass
-[es5] exceptions.js .......... Fail
+[es5] exceptions.js .......... Pass
 [es5] ObjLitGetSet.js .......... Pass
 [es5] ObjLitGetSetParseOnly.js .......... Pass
 [es5] ObjLitGetSetParseOnly.js .......... Pass
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		92		1		13		(86%)
               Basics		56		41		1		14		(73%)
-                 es5		56		49		6		1		(87%)
+                 es5		56		50		5		1		(89%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		0		2		(98%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1193		86		127		(84%)
+               Total		1406		1194		85		127		(84%)

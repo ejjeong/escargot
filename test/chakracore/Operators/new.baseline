@@ -1,10 +1,10 @@
-test1: Test passed, expected TypeError-1 is not a function
-test2: Test passed, expected TypeError-null is not a function
-test3: Test passed, expected TypeError-1 is not a function
+test1: Test passed, expected TypeError-Callee is not a function object
+test2: Test passed, expected TypeError-Callee is not a function object
+test3: Test passed, expected TypeError-Callee is not a function object
 test4: Test passed, expected no exception thrown
-test5: Test passed, expected TypeError-[object Object] is not a function
+test5: Test passed, expected TypeError-Callee is not a function object
 test6: Test passed, expected ReferenceError-Blah is not defined
-test7: Test passed, expected TypeError-[object Object] is not a function
+test7: Test passed, expected TypeError-Callee is not a function object
 test8: Test passed, expected no exception thrown
 test9: Test passed, expected no exception thrown
 Passed
