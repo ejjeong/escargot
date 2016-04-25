@@ -242,7 +242,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
                 if (*val == *strings->length) {
                     return ESValue(willBeObject->asESString()->length());
                 }
-                ESValue ret = globalObject->stringObjectProxy()->get(val);
+                ESValue ret = globalObject->stringObjectProxy()->get(val, willBeObject);
                 return ret;
             }
         } else {
@@ -252,7 +252,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
     } else {
         if (willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-            return globalObject->numberObjectProxy()->get(*property);
+            return globalObject->numberObjectProxy()->get(*property, willBeObject);
         }
         return willBeObject->toTransientObject(globalObject)->get(*property, willBeObject);
     }
@@ -294,7 +294,7 @@ NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeOb
                     return ESValue(willBeObject->asESString()->length());
                 }
                 globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
-                ESValue ret = globalObject->stringObjectProxy()->get(val);
+                ESValue ret = globalObject->stringObjectProxy()->get(val, willBeObject);
                 return ret;
             }
         } else if (willBeObject->asESPointer()->isESStringObject()) {
