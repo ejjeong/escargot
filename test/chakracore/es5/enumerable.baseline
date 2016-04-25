@@ -53,15 +53,15 @@
   xx12: value 12 enumerable configurable
   xx13: value 13 enumerable configurable writable
   xx20: get 20
+  0: -12 enumerable configurable writable
+  1: hello enumerable configurable writable
+  2: undefined enumerable configurable writable
+  3: null enumerable configurable writable
   xx21: get 21 enumerable
   xx22: get 22 enumerable configurable
   xx25: undefined
   xx26: undefined enumerable
   xx27: undefined enumerable configurable
-  0: -12 enumerable configurable writable
-  1: hello enumerable configurable writable
-  2: undefined enumerable configurable writable
-  3: null enumerable configurable writable
   110: value 10
   111: value 11 enumerable
   112: value 12 enumerable configurable
@@ -156,8 +156,8 @@ TypeError : Object.defineProperty: first argument is not an object
 
 5. Test String with String object
   0 a
-  1 b
-  2 c
+TypeError : Cannot modify non-writable property '1'
+TypeError : Cannot redefine non-configurable property '2'
   6 6
   7 7
   --- Properties ---

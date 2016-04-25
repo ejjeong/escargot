@@ -160,7 +160,7 @@ function testPrototype(proto) {
         13: { value: 13 },
         11: { get: function() { return "get 11"; }, enumerable: true },
         15: { value: 15, enumerable: true },
-        12: { get: function() { return this.name; }, enumerable: true },        
+        12: { get: function() { return this.name; }, enumerable: true },
     });
 
     echo("*** Prototype ***");

@@ -32,7 +32,6 @@ extern const char* errorMessage_GlobalObject_JAError;
 extern const char* errorMessage_GlobalObject_JOError;
 extern const char* errorMessage_GlobalObject_RadixInvalidRange;
 extern const char* errorMessage_GlobalObject_NotDefineable;
-extern const char* errorMessage_GlobalObject_ArgcLessThanThree;
 extern const char* errorMessage_GlobalObject_FirstArgumentNotObjectAndNotNull;
 extern const char* errorMessage_GlobalObject_FirstArgumentNotCallable;
 extern const char* errorMessage_GlobalObject_FirstArgumentNotString;

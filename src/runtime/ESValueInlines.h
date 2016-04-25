@@ -1487,6 +1487,8 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
             if (i != ESValue::ESInvalidIndexValue) {
                 if (i >= asESArrayObject()->length())
                     asESArrayObject()->setLength(i+1);
+            } else {
+                asESArrayObject()->convertToSlowMode();
             }
         }
         if (UNLIKELY(m_flags.m_isGlobalObject)) {

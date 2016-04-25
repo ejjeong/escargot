@@ -53,7 +53,6 @@ const char* errorMessage_GlobalObject_JAError = "%s: JA error";
 const char* errorMessage_GlobalObject_JOError = "%s: JO error";
 const char* errorMessage_GlobalObject_RadixInvalidRange = "%s: radix is invalid range";
 const char* errorMessage_GlobalObject_NotDefineable = "%s: cannot define property";
-const char* errorMessage_GlobalObject_ArgcLessThanThree = "%s: # of arguments < 3";
 const char* errorMessage_GlobalObject_FirstArgumentNotObjectAndNotNull = "%s: first argument is not an object and not null";
 const char* errorMessage_GlobalObject_ReduceError = "%s: reduce of empty array with no initial value";
 const char* errorMessage_GlobalObject_FirstArgumentNotCallable = "%s: first argument is not callable";
@@ -1308,31 +1307,29 @@ void GlobalObject::installObject()
     // $19.1.2.4 Object.defineProperty ( O, P, Attributes )
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
     m_object->defineDataProperty(strings->defineProperty, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* obj = nullptr;
-        if (instance->currentExecutionContext()->argumentCount() >= 3) {
-            if (instance->currentExecutionContext()->arguments()[0].isObject()) {
-                obj = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESObject();
-                // TODO toPropertyKey
-                ESValue key = instance->currentExecutionContext()->arguments()[1].toString();
+        ESValue objVal = instance->currentExecutionContext()->readArgument(0);
+        ESValue name = instance->currentExecutionContext()->readArgument(1);
+        ESValue descVal = instance->currentExecutionContext()->readArgument(2);
 
-                if (!instance->currentExecutionContext()->arguments()[2].isObject())
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_ThirdArgumentNotObject);
-                ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
-                bool res;
-                if (obj->isESArrayObject())
-                    res = obj->asESArrayObject()->defineOwnProperty(key, desc, true);
-                else
-                    res = obj->defineOwnProperty(key, desc, true);
-                if (!res)
-                    throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_NotDefineable);
-            } else {
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_FirstArgumentNotObject);
-            }
-        } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_ArgcLessThanThree);
+        if (!objVal.isObject()) {
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_FirstArgumentNotObject);
         }
-        ASSERT(obj);
-        return ESValue(obj);
+
+        if (!descVal.isObject()) {
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_ThirdArgumentNotObject);
+        }
+
+        ESObject* obj = objVal.toObject();
+        ESObject* desc = descVal.toObject();
+
+
+        if (obj->isESArrayObject()) {
+            obj->asESArrayObject()->defineOwnProperty(name.toString(), desc, true);
+        } else {
+            obj->defineOwnProperty(name.toString(), desc, true);
+        }
+
+        return objVal;
     }, strings->defineProperty.string(), 3));
 
     // $19.1.2.2 Object.create ( O [ , Properties ] )

@@ -954,9 +954,18 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
 
     // 6
     idx = O->hiddenClass()->findProperty(P.toString());
-    if (idx == SIZE_MAX)
-        return true;
-    const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
+    ESHiddenClassPropertyInfo propertyInfo;
+    if (idx == SIZE_MAX) {
+        if (O->isESStringObject()) {
+            ASSERT(P.toIndex() != ESValue::ESInvalidIndexValue);
+            ASSERT(P.toIndex() < O->length());
+            propertyInfo = ESHiddenClassPropertyInfo(P.toString(), Data | Enumerable);
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    } else {
+        propertyInfo = O->hiddenClass()->propertyInfo(idx);
+    }
     if ((!descHasEnumerable || desc.enumerable() == propertyInfo.enumerable())
         && (!descHasWritable || ((propertyInfo.isDataProperty() || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && (desc.writable() == propertyInfo.writable())))
         && (!descHasConfigurable || desc.configurable() == propertyInfo.configurable())
