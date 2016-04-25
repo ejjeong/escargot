@@ -48,7 +48,7 @@ var tests = {
       assert.areEqual(5, x.reg.lastIndex, "wrong x.reg.lastIndex");
     }
   },
-
+/*
   test03: {
     name: "Updating $1, $2,.. behavior",
     body: function() {
@@ -60,7 +60,7 @@ var tests = {
       }
     }
   },
-
+*/ // ES6 Spec
   test04: {
     name: "Check in which context the results are created",
     body: function() {

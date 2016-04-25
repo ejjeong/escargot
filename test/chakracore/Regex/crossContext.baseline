@@ -2,8 +2,6 @@
 PASSED
 *** Running test #2 (test02): lastIndex behavior
 PASSED
-*** Running test #3 (test03): Updating $1, $2,.. behavior
+*** Running test #3 (test04): Check in which context the results are created
 PASSED
-*** Running test #4 (test04): Check in which context the results are created
-PASSED
-Summary of tests: total executed: 4; passed: 4; failed: 0
+Summary of tests: total executed: 3; passed: 3; failed: 0

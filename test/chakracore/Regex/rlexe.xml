@@ -126,7 +126,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Chakracore-only</escargot-skip>
       <files>crossContext.js</files>
       <baseline>crossContext.baseline</baseline>
       <tags>exclude_native</tags>
