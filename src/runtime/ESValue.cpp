@@ -3201,8 +3201,9 @@ ESString* ESDateObject::toTimeString()
 
 ESString* ESDateObject::toFullString()
 {
-    resolveCache();
+
     if (!isnan(timeValueAsDouble())) {
+        resolveCache();
         ::escargot::ESString* tmp = ESString::concatTwoStrings(toDateString(), ESString::create(u" "));
         return ESString::concatTwoStrings(tmp, toTimeString());
     } else {
