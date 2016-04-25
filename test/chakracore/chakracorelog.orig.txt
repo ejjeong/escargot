@@ -1033,7 +1033,7 @@ Running all tests
 [Bugs] OS_1362136.js .......... Pass
 [Bugs] SIMDExtendArgCSE.js .......... Skip (Chakracore-only)
 [Bugs] bug_OS_4683246.js .......... Pass
-[Bugs] fabs1.js .......... Fail
+[Bugs] fabs1.js .......... Pass
 [strict] GlobalEval.js .......... Pass
 [strict] basics_function_in_SM.js .......... Pass
 [strict] basics_function_in_SM.js .......... Pass
@@ -1451,7 +1451,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              VT_DATE		1		0		1		0		(0%)
                  Lib		16		5		11		0		(31%)
                 JSON		13		9		4		0		(69%)
-                Bugs		36		23		4		9		(63%)
+                Bugs		36		24		3		9		(66%)
               strict		104		74		0		30		(71%)
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		23		3		0		(88%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1202		78		126		(85%)
+               Total		1406		1203		77		126		(85%)
