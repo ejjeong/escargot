@@ -57,9 +57,15 @@ ESVMInstance::ESVMInstance()
     // init goto table
     interpret(this, NULL, 0);
 
-    clock_gettime(CLOCK_REALTIME, &m_cachedTimeOrigin);
-    tm* cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
-    m_gmtoff = -cachedTime->tm_gmtoff;
+    // get timezone offset w/o regarding daylight saving
+    struct tm temptm;
+    temptm.tm_year = 1970 - 1900;
+    temptm.tm_mon = 1 - 1;
+    temptm.tm_mday = 1;
+    temptm.tm_hour = 0;
+    temptm.tm_min = 0;
+    temptm.tm_sec = 0;
+    m_gmtoff = mktime(&temptm) - timegm(&temptm);
 
     m_error = ESValue(ESValue::ESEmptyValueTag::ESEmptyValue);
 
@@ -291,9 +297,9 @@ long ESVMInstance::timezoneOffset()
 
 const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 {
-    time_t t = ts.tv_sec - m_gmtoff;
-    return gmtime(&t);
-    // return localtime(&ts.tv_sec);
+//    time_t t = ts.tv_sec - m_gmtoff;
+//    return gmtime(&t);
+    return localtime(&ts.tv_sec);
 }
 
 void ESVMInstance::printValue(ESValue val, bool newLine)

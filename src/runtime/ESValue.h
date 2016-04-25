@@ -2232,7 +2232,7 @@ public:
     int getMinutes();
     int getMonth();
     int getSeconds();
-    static long getTimezoneOffset();
+    long getTimezoneOffset();
     void setTime(double t);
     int getUTCDate();
     int getUTCDay();
@@ -2272,6 +2272,9 @@ private:
     static constexpr double msPerHour = msPerSecond * secondsPerHour;
     static constexpr double msPerDay = msPerHour * hoursPerDay;
 
+    static long long getSecondSundayInMarch(long long t);
+    static long long getFirstSundayInNovember(long long t);
+    static double computeDaylightSaving(double primitiveValue);
     static double day(long long t) { return floor(t / msPerDay); }
     static double timeWithinDay(long long t) { return (int) t % (int) msPerDay; }
     static int daysInYear(long year);

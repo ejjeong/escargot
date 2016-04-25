@@ -2782,7 +2782,7 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
     } else {
         primitiveValue = parseStringToDate_1(istr, haveTZ, offset);
         if (!haveTZ) {
-            offset = -1 * getTimezoneOffset() / secondsPerMinute;
+            offset = -1 * ESVMInstance::currentInstance()->timezoneOffset() / secondsPerMinute;
         }
         primitiveValue = primitiveValue - (offset * msPerMinute);
     }
@@ -3052,16 +3052,102 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
     double primitiveValue = ymdhmsToSeconds(ym, mn, date, hour, minute, second) * 1000. + millisecond;
     if (convertToUTC) {
         primitiveValue = toUTC(primitiveValue);
+    } else {
+//        primitiveValue += computeDaylightSaving();
     }
     m_primitiveValue = primitiveValue;
     if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
         m_hasValidDate = true;
+        m_primitiveValue += computeDaylightSaving(m_primitiveValue) * msPerSecond;
+        m_isCacheDirty = true;
+        resolveCache();
     } else {
         setTimeValueAsNaN();
     }
-    
-    m_isCacheDirty = true;
-    resolveCache();
+}
+long long ESDateObject::getSecondSundayInMarch(long long t)
+{
+    int year = yearFromTime(t);
+    int leap = inLeapYear(t);
+
+    long long march = timeFromYear(year) + (31 * msPerDay) + (28 * msPerDay) + (leap * msPerDay);
+
+    int sundayCount = 0;
+    bool flag = true;
+    long long second_sunday;
+    for (second_sunday = march; flag; second_sunday += msPerDay) {
+        if ((int) (day(second_sunday) + 4) % 7 == 0) {
+            if (++sundayCount == 2)
+                flag = false;
+        }
+    }
+
+    return second_sunday;
+}
+long long ESDateObject::getFirstSundayInNovember(long long t)
+{
+    int year = yearFromTime(t);
+    int leap = inLeapYear(t);
+
+    long long nov = timeFromYear(year) + (31 * msPerDay) * 6 + (30 * msPerDay) * 3 + (28 * msPerDay) + (leap * msPerDay);
+
+    long long first_sunday;
+    for (first_sunday = nov; (int) (day(first_sunday) + 4) % 7 > 0;
+        first_sunday += msPerDay) { }
+    return first_sunday;
+}
+
+// it should return -3600(sec.) if daylightsaving is applied
+double ESDateObject::computeDaylightSaving(double primitiveValue)
+{
+    long long primitiveValueToUTC = primitiveValue;
+
+    if (ESVMInstance::currentInstance()->timezoneOffset() == 28800) {
+        long long dst_start = getSecondSundayInMarch(primitiveValueToUTC) + 2 * msPerHour;
+        long long dst_end = getFirstSundayInNovember(primitiveValueToUTC) + 2 * msPerHour;
+
+        if (primitiveValueToUTC >= dst_start && primitiveValueToUTC < dst_end)
+            return -secondsPerHour;
+        else
+            return 0.0;
+    }
+
+    return 0.0;
+
+
+//    tm localTM = *localtime_r(&primitiveValueToUTC);
+
+/*    if (localTM.tm_isdst) {
+        return -secondsPerHour;
+    } else {
+        return 0.0;
+    }*/
+}
+// code from WebKit 3369f50e501f85e27b6e7baffd0cc7ac70931cc3
+// WTF/wtf/DateMath.cpp:340
+int equivalentYearForDST(int year)
+{
+    // It is ok if the cached year is not the current year as long as the rules
+    // for DST did not change between the two years; if they did the app would need
+    // to be restarted.
+    static int minYear = 2010;
+    int maxYear = 2037;
+
+    int difference;
+    if (year > maxYear)
+        difference = minYear - year;
+    else if (year < minYear)
+        difference = maxYear - year;
+    else
+        return year;
+
+    int quotient = difference / 28;
+    int product = (quotient) * 28;
+
+    year += product;
+    ASSERT((year >= minYear && year <= maxYear) || (product - year == static_cast<int>(std::numeric_limits<double>::quiet_NaN())));
+    return year;
+//    return product;
 }
 
 void ESDateObject::resolveCache()
@@ -3070,7 +3156,15 @@ void ESDateObject::resolveCache()
         struct timespec time;
         time.tv_sec = m_primitiveValue / 1000;
         time.tv_nsec = (m_primitiveValue % 1000) * 1000000;
+        int tmpyear = yearFromTime(m_primitiveValue - ESVMInstance::currentInstance()->timezoneOffset() * msPerSecond);
+
+        if (tmpyear != equivalentYearForDST(tmpyear)) {
+            time.tv_sec = makeDay(equivalentYearForDST(tmpyear), monthFromTime(m_primitiveValue), dateFromTime(m_primitiveValue)) * secondsPerHour * hoursPerDay
+                + getUTCHours() * secondsPerHour + getUTCMinutes() * secondsPerMinute + getUTCSeconds();
+
+        }
         memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(time), sizeof(tm));
+        m_cachedTM.tm_year = tmpyear - 1900;
         m_isCacheDirty = false;
     }
 }
@@ -3163,7 +3257,9 @@ int ESDateObject::getSeconds()
 
 long ESDateObject::getTimezoneOffset()
 {
-    return ESVMInstance::currentInstance()->timezoneOffset();
+//    return ESVMInstance::currentInstance()->timezoneOffset();
+    resolveCache();
+    return -1 * m_cachedTM.tm_gmtoff;
 }
 
 void ESDateObject::setTime(double t)
@@ -3223,7 +3319,8 @@ int ESDateObject::getUTCSeconds()
 
 double ESDateObject::toUTC(double t)
 {
-    long tzOffsetAsSec = getTimezoneOffset(); // For example, it returns 28800 in GMT-8 zone
+    long tzOffsetAsSec = ESVMInstance::currentInstance()->timezoneOffset(); // For example, it returns 28800 in GMT-8 zone
+//  tzOffsetAsSec += computeDaylightSaving(t);
     return t + (double) tzOffsetAsSec * 1000.;
 }
 
