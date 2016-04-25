@@ -43,7 +43,6 @@ const char* errorMessage_GlobalObject_FileNotExist = "%s: cannot load file";
 const char* errorMessage_GlobalObject_NotExecutable = "%s: cannot run";
 const char* errorMessage_GlobalObject_FirstArgumentNotObject = "%s: first argument is not an object";
 const char* errorMessage_GlobalObject_SecondArgumentNotObject = "%s: second argument is not an object";
-const char* errorMessage_GlobalObject_ThirdArgumentNotObject = "%s: third argument is not an object";
 const char* errorMessage_GlobalObject_DescriptorNotObject = "%s: descriptor is not an object";
 const char* errorMessage_GlobalObject_ToLoacleStringNotCallable = "%s: toLocaleString is not callable";
 const char* errorMessage_GlobalObject_ToISOStringNotCallable = "%s: toISOString is not callable";
@@ -1308,25 +1307,23 @@ void GlobalObject::installObject()
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
     m_object->defineDataProperty(strings->defineProperty, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue objVal = instance->currentExecutionContext()->readArgument(0);
-        ESValue name = instance->currentExecutionContext()->readArgument(1);
-        ESValue descVal = instance->currentExecutionContext()->readArgument(2);
-
         if (!objVal.isObject()) {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_FirstArgumentNotObject);
         }
+        ESObject* obj = objVal.toObject();
+
+        escargot::ESString* name = instance->currentExecutionContext()->readArgument(1).toString();
+        ESValue descVal = instance->currentExecutionContext()->readArgument(2);
 
         if (!descVal.isObject()) {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_ThirdArgumentNotObject);
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->defineProperty, errorMessage_GlobalObject_DescriptorNotObject);
         }
-
-        ESObject* obj = objVal.toObject();
-        ESObject* desc = descVal.toObject();
-
+        PropertyDescriptor desc = PropertyDescriptor(descVal.toObject());
 
         if (obj->isESArrayObject()) {
-            obj->asESArrayObject()->defineOwnProperty(name.toString(), desc, true);
+            obj->asESArrayObject()->defineOwnProperty(name, desc, true);
         } else {
-            obj->defineOwnProperty(name.toString(), desc, true);
+            obj->defineOwnProperty(name, desc, true);
         }
 
         return objVal;
@@ -1389,13 +1386,10 @@ void GlobalObject::installObject()
 
     // $19.1.2.6 Object.getOwnPropertyDescriptor
     m_object->defineDataProperty(strings->getOwnPropertyDescriptor, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t argCount = instance->currentExecutionContext()->argumentCount();
-        ASSERT(argCount == 2);
-
         ESValue arg0 = instance->currentExecutionContext()->readArgument(0);
         if (!arg0.isObject())
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->getOwnPropertyDescriptor, errorMessage_GlobalObject_FirstArgumentNotObject);
-        ESObject* obj = arg0.asESPointer()->asESObject();
+        ESObject* obj = arg0.toObject();
 
         ESValue arg1 = instance->currentExecutionContext()->readArgument(1);
         escargot::ESString* propertyKey = arg1.toString();

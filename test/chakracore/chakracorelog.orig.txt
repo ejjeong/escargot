@@ -194,7 +194,7 @@ Running all tests
 [es5] hasItem.js .......... Fail
 [es5] regexSpace.js .......... Pass
 [es5] EnumeratingWithES5.js .......... Fail
-[es5] InsufficientArguments.js .......... Fail
+[es5] InsufficientArguments.js .......... Pass
 [es5] recursivesetter.js .......... Pass
 [es5] valueof.js .......... Pass
 [es5] tostring_override.js .......... Pass
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		93		0		13		(87%)
               Basics		56		41		1		14		(73%)
-                 es5		56		50		5		1		(89%)
+                 es5		56		51		4		1		(91%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		0		2		(98%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1195		84		127		(84%)
+               Total		1406		1196		83		127		(85%)

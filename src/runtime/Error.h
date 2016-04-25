@@ -22,7 +22,6 @@ extern const char* errorMessage_GlobalObject_FileNotExist;
 extern const char* errorMessage_GlobalObject_NotExecutable;
 extern const char* errorMessage_GlobalObject_FirstArgumentNotObject;
 extern const char* errorMessage_GlobalObject_SecondArgumentNotObject;
-extern const char* errorMessage_GlobalObject_ThirdArgumentNotObject;
 extern const char* errorMessage_GlobalObject_DescriptorNotObject;
 extern const char* errorMessage_GlobalObject_ToLoacleStringNotCallable;
 extern const char* errorMessage_GlobalObject_ToISOStringNotCallable;
