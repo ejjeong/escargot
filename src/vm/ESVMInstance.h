@@ -172,6 +172,7 @@ public:
     NEVER_INLINE void throwError(ESErrorObject::Code code, const char* templateString, ESString* replacer)
     {
         ESString* errorMessage;
+
         size_t len1 = strlen(templateString);
         size_t len2 = replacer->length();
         if (replacer->isASCIIString()) {
@@ -179,7 +180,7 @@ public:
             sprintf(buf, templateString, replacer->asciiData());
             errorMessage = ESString::create(buf);
         } else {
-            char16_t buf[len1];
+            char16_t buf[len1 + 1];
             for (size_t i = 0; i < len1; i++) {
                 buf[i] = templateString[i];
             }

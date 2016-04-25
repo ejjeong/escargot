@@ -826,7 +826,7 @@ Running all tests
 [Object] isEnumerable.js .......... Pass
 [Object] isPrototypeOf.js .......... Pass
 [Object] Object.js .......... Pass
-[Object] null.js .......... Fail
+[Object] null.js .......... Pass
 [Object] propertyIsEnumarable.js .......... Pass
 [Object] toLocaleString2.js .......... Pass
 [Object] toLocaleString.js .......... Fail
@@ -1441,7 +1441,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         TaggedFloats		1		0		0		1		(0%)
            Optimizer		206		196		1		9		(95%)
             Function		61		52		0		9		(85%)
-              Object		58		46		7		5		(79%)
+              Object		58		47		6		5		(81%)
                Regex		33		25		3		5		(75%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		12		1		0		(92%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1203		77		126		(85%)
+               Total		1406		1204		76		126		(85%)

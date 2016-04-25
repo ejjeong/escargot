@@ -222,6 +222,18 @@ NEVER_INLINE bool abstractRelationalComparisonOrEqualSlowCase(ESValue* left, ESV
     }
 }
 
+ESValue getWithErrorHandler(ESValue* willBeObject, ESValue property, GlobalObject* globalObject)
+{
+    if (UNLIKELY(willBeObject->isUndefinedOrNull())) {
+        if (willBeObject->isNull()) {
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_Get_FromNull, property.toString());
+        } else {
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_Get_FromUndefined, property.toString());
+        }
+    }
+    return willBeObject->toTransientObject(globalObject)->get(property, willBeObject);
+}
+
 NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
     if (LIKELY(willBeObject->isESPointer())) {
@@ -236,7 +248,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
                         return ESString::create(c);
                     }
                 }
-                return willBeObject->toTransientObject(globalObject)->get(*property, willBeObject);
+                return getWithErrorHandler(willBeObject, *property, globalObject);
             } else {
                 ESString* val = property->toString();
                 if (*val == *strings->length) {
@@ -254,7 +266,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             return globalObject->numberObjectProxy()->get(*property, willBeObject);
         }
-        return willBeObject->toTransientObject(globalObject)->get(*property, willBeObject);
+        return getWithErrorHandler(willBeObject, *property, globalObject);
     }
 }
 
@@ -275,7 +287,7 @@ NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeOb
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if (willBeObject->isESPointer()) {
         if (willBeObject->asESPointer()->isESArrayObject()) {
-            return willBeObject->toTransientObject(globalObject)->get(*property);
+            return getWithErrorHandler(willBeObject, *property, globalObject);
         } else if (willBeObject->asESPointer()->isESString()) {
             uint32_t idx = property->toIndex();
             if (idx != ESValue::ESInvalidIndexValue) {
@@ -287,7 +299,7 @@ NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeOb
                         return ESString::create(c);
                     }
                 }
-                return willBeObject->toTransientObject(globalObject)->get(*property, willBeObject);
+                return getWithErrorHandler(willBeObject, *property, globalObject);
             } else {
                 ESString* val = property->toString();
                 if (*val == *strings->length) {
@@ -298,7 +310,7 @@ NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeOb
                 return ret;
             }
         } else if (willBeObject->asESPointer()->isESStringObject()) {
-            return willBeObject->toTransientObject(globalObject)->get(*property, willBeObject);
+            return getWithErrorHandler(willBeObject, *property, globalObject);
         } else {
             ASSERT(willBeObject->asESPointer()->isESObject());
             return willBeObject->asESPointer()->asESObject()->get(*property);
@@ -309,7 +321,7 @@ NEVER_INLINE ESValue getObjectPrecomputedCaseOperationSlowMode(ESValue* willBeOb
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             return globalObject->numberObjectProxy()->get(*property, willBeObject);
         }
-        return willBeObject->toTransientObject(globalObject)->get(*property, willBeObject);
+        return getWithErrorHandler(willBeObject, *property, globalObject);
     }
 }
 
@@ -333,17 +345,41 @@ NEVER_INLINE void throwUndefinedReferenceError(const ESString* name)
     ESVMInstance::currentInstance()->throwError(receiver);
 }
 
+ALWAYS_INLINE bool setWithErrorHandler(ESValue* willBeObject, ESValue property, ESValue value)
+{
+    if (UNLIKELY(willBeObject->isUndefinedOrNull())) {
+        if (willBeObject->isNull()) {
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_Set_ToNull, property.toString());
+        } else {
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_Set_ToUndefined, property.toString());
+        }
+    }
+    return willBeObject->toTransientObject()->set(property, value, willBeObject);
+}
+
+ALWAYS_INLINE bool setSlowPathWithErrorHandler(ESValue* willBeObject, ESValue property, ESValue value)
+{
+    if (UNLIKELY(willBeObject->isUndefinedOrNull())) {
+        if (willBeObject->isNull()) {
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_Set_ToNull, property.toString());
+        } else {
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_Set_ToUndefined, property.toString());
+        }
+    }
+    return willBeObject->toTransientObject()->setSlowPath(property, value, willBeObject);
+}
+
 NEVER_INLINE void setObjectPrecomputedCaseOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    if (!willBeObject->toTransientObject()->setSlowPath(*property, value, willBeObject)) {
+    if (!setSlowPathWithErrorHandler(willBeObject, *property, value)) {
         throwObjectWriteError();
     }
 }
 
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
-    if (!willBeObject->toTransientObject()->set(*property, value, willBeObject)) {
+    if (!setWithErrorHandler(willBeObject, *property, value)) {
         throwObjectWriteError();
     }
 }
@@ -362,7 +398,7 @@ NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_
 
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value)
 {
-    if (!willBeObject->toTransientObject()->set(keyString, value, willBeObject)) {
+    if (!setWithErrorHandler(willBeObject, keyString, value)) {
         throwObjectWriteError();
     }
 }
@@ -508,7 +544,7 @@ NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
     bool result = false;
     if (!obj->isObject())
         ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"Type(rval) is not Object"))));
-    ESValue target = obj->toTransientObject();
+    ESValue target = obj->toObject();
     while (true) {
         if (!target.isObject()) {
             break;

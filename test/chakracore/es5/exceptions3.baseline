@@ -15,8 +15,8 @@ call to undefined fg() throws;   -expected: es3 - TypeError, es5-ReferenceError 
  call to an non function object ooj();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
  o_undef();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
  o_null();;;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
-undefined.toString();   -expected: es3, es5 TypeError ::: TypeError: Cannot convert undefined into object
- null.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Cannot convert null into object 
+undefined.toString();   -expected: es3, es5 TypeError ::: TypeError: Cannot get property 'toString' of undefined
+ null.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Cannot get property 'anchor' of null
  NaN.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
  true.anchor();;   -expected: es3, es5 TypeError ::: TypeError: Callee is not a function object
 new Array(12.4) - RangeError exception:  expected in es3 and es5::: RangeError: Array: Invalid array length

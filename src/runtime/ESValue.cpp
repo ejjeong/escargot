@@ -25,6 +25,10 @@ const char* errorMessage_ObjectToPrimitiveValue = "Cannot convert object to prim
 const char* errorMessage_NullToObject = "cannot convert null into object";
 const char* errorMessage_UndefinedToObject = "cannot convert undefined into object";
 const char* errorMessage_Call_NotFunction = "Callee is not a function object";
+const char* errorMessage_Get_FromUndefined = "Cannot get property '%s' of undefined";
+const char* errorMessage_Get_FromNull = "Cannot get property '%s' of null";
+const char* errorMessage_Set_ToUndefined = "Cannot set property '%s' of undefined";
+const char* errorMessage_Set_ToNull = "Cannot set property '%s' of null";
 
 NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* templateString, ESString* property)
 {

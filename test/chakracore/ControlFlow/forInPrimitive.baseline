@@ -1,11 +1,11 @@
 ---- Test: null ----
-TypeError: cannot convert null into object
-TypeError: cannot convert null into object
+TypeError: Cannot get property 'object_value' of null
+TypeError: Cannot get property 'object_getter' of null
 
 
 ---- Test: undefined ----
-TypeError: cannot convert undefined into object
-TypeError: cannot convert undefined into object
+TypeError: Cannot get property 'object_value' of undefined
+TypeError: Cannot get property 'object_getter' of undefined
 
 
 ---- Test: NaN ----

@@ -20,7 +20,7 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
 
-  expect = 'TypeError: cannot convert undefined into object';
+  expect = "TypeError: Cannot get property 'y' of undefined";
   actual = 'No Error';
 
   try
@@ -33,7 +33,7 @@ function test()
   }
   reportCompare(expect, actual, summary);
 
-  expect = 'TypeError: cannot convert null into object';
+  expect = "TypeError: Cannot get property 'y' of null";
   actual = 'No Error';
 
   try
@@ -46,12 +46,12 @@ function test()
   }
   reportCompare(expect, actual, summary);
 
-  expect = 'TypeError: cannot convert undefined into object';
+  expect = "TypeError: Cannot get property 'y' of undefined";
   actual = 'No Error';
 
   try
   {
-    x = undefined; 
+    x = undefined;
     x.y;
   }
   catch(ex)
@@ -60,12 +60,12 @@ function test()
   }
   reportCompare(expect, actual, summary);
 
-  expect = 'TypeError: cannot convert null into object';
+  expect = "TypeError: Cannot get property 'y' of null";
   actual = 'No Error';
 
   try
   {
-    x = null; 
+    x = null;
     x.y;
   }
   catch(ex)

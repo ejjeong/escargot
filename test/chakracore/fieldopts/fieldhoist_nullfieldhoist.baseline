@@ -1,1 +1,1 @@
-Uncaught TypeError: cannot convert undefined into object
+Uncaught TypeError: Cannot get property 'x' of undefined

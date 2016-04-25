@@ -19,9 +19,9 @@ function test()
   enterFunc ('test');
   printBugNumber(BUGNUMBER);
   printStatus (summary);
- 
+
   // 1.8 branch reports no properties, trunk reports undefined
-  expect = /TypeError: .+undefined.+/;
+  expect = /TypeError: .+undefined/;
 
   try
   {
