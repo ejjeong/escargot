@@ -13,8 +13,8 @@ p0,p1,p2,p3,p4
 Test case 3
 d1,d2,d3,d4,d5,d6,d7,p5,,p7,,p9
 12
-,p1,,p3,
-5
+,p1,,p3
+4
 
 Test case 4
 P0,P1,P2,d1,d2,d3,P8,P9

@@ -12,7 +12,7 @@ write("Test case 1");
 
 for(var i =0;i<10;i++)
 {
-  Object.defineProperty(Array.prototype, i, { get: function (i) { return function () { return "p"+i; } }(i), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, i, { value: "p"+i, writable: true, configurable: true, enumerable: true });
 }
 
 var arr=new Array(10);
@@ -33,7 +33,7 @@ write("Test case 2");
 
 for(var i =0;i<10;i++)
 {
-  Object.defineProperty(Array.prototype, i, { get: function (i) { return function () { return "p"+i; } }(i), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, i, { value: "p"+i, writable: true, configurable: true, enumerable: true });
 }
 
 var arr=new Array(10);
@@ -54,7 +54,7 @@ write("Test case 3");
 for(var i =0;i<10;i++)
 {
   i++;
-  Object.defineProperty(Array.prototype, i, { get: function (i) { return function () { return "p"+i; } }(i), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, i, { value: "p"+i, writable: true, configurable: true, enumerable: true });
 }
 
 var arr=new Array(10);
@@ -73,7 +73,7 @@ write("");
 write("Test case 4");
 for(var k=0;k<10;k++)
 {
-  Object.defineProperty(Array.prototype, k, { get: function (k) { return function () { return "P"+k; } }(k), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, k, { value: "P"+k, writable: true, configurable: true, enumerable: true });
 }
 var arr=new Array(10);
 var newarr=arr.splice(3,5,"d1","d2","d3")
@@ -90,7 +90,7 @@ write("");
 write("Test case 5");
 for(var k=0;k<10;k++)
 {
-  Object.defineProperty(Array.prototype, k, { get: function (k) { return function () { return "P"+k; } }(k), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, k, { value: "P"+k, writable: true, configurable: true, enumerable: true });
 }
 var arr=new Array(10);
 var newarr=arr.splice(3,5,"d1","d2","d3")
@@ -108,7 +108,7 @@ write("");
 write("Test case 6");
 for(var k=0;k<10;k++)
 {
-  Object.defineProperty(Array.prototype, k, { get: function (k) { return function () { return "P"+k; } }(k), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, k, { value: "P"+k, writable: true, configurable: true, enumerable: true });
 }
 var arr=new Array(10);
 var newarr=arr.splice(3,1,"d1","d2","d3")
@@ -143,8 +143,8 @@ delete Object.prototype.shift;
 write("");
 write("Test case 8");
 
-Object.defineProperty(Object.prototype, 0, { get: function () { return "hello world"; }, configurable: true, enumerable: true });
-Object.defineProperty(Array.prototype, 9, { get: function () { return "p9"; }, configurable: true, enumerable: true });
+Object.defineProperty(Object.prototype, 0, { value: "hello world", writable:true, configurable: true, enumerable: true });
+Object.defineProperty(Array.prototype, 9, { value: "p9", writable:true, configurable: true, enumerable: true });
 var arr =new Array(10);
 arr[1]=123;
 
@@ -180,12 +180,12 @@ for(var i = 1; i< 20; i = i+3)
 }
 for(var i = 0; i< 20; i = i+3)
 {
-  Object.defineProperty(Object.prototype, i, { get: function (i) { return function () { return "O"+i; } }(i), configurable: true, enumerable: true });
+  Object.defineProperty(Object.prototype, i, { value: "O"+i, writable: true, configurable: true, enumerable: true });
 }
 
 for(var i = 1; i< 20; i = i+3)
 {
-  Object.defineProperty(Array.prototype, i, { get: function (i) { return function () { return "a"+i; } }(i), configurable: true, enumerable: true });
+  Object.defineProperty(Array.prototype, i, { value: "a"+i, writable: true, configurable: true, enumerable: true });
 }
 
 arr.shift();
@@ -212,7 +212,7 @@ write(newarr.length);
 
 write("");
 write("Test case 11");
-Object.defineProperty(Object.prototype, 2, { get: function () { return 10; }, configurable: true, enumerable: true });
+Object.defineProperty(Object.prototype, 2, { value: 10, writable: true, configurable: true, enumerable: true });
 var arr = new Array(5);
 write(arr);
 write(arr.length);
