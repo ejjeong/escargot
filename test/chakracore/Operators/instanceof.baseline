@@ -212,8 +212,8 @@ new Date() instanceof bar : false
  Exception: new Object() instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Object() instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new Object() instanceof foo : false
- Exception: new Object() instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new Object() instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new Object() instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new Object() instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new Object() instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Object() instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Object() instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -233,8 +233,8 @@ new Object() instanceof foo : false
  Exception: f instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: f instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 f instanceof foo : true
- Exception: f instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: f instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: f instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: f instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: f instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: f instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: f instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -254,8 +254,8 @@ f instanceof foo : true
  Exception: b instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: b instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 b instanceof foo : false
- Exception: b instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: b instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: b instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: b instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: b instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: b instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: b instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -275,8 +275,8 @@ b instanceof foo : false
  Exception: foo instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: foo instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 foo instanceof foo : false
- Exception: foo instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: foo instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: foo instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: foo instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: foo instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: foo instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: foo instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -296,8 +296,8 @@ foo instanceof foo : false
  Exception: String.fromCharCode instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: String.fromCharCode instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 String.fromCharCode instanceof foo : false
- Exception: String.fromCharCode instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: String.fromCharCode instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: String.fromCharCode instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: String.fromCharCode instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: String.fromCharCode instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: String.fromCharCode instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: String.fromCharCode instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -317,8 +317,8 @@ String.fromCharCode instanceof foo : false
  Exception: Array.prototype.concat instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: Array.prototype.concat instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 Array.prototype.concat instanceof foo : false
- Exception: Array.prototype.concat instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: Array.prototype.concat instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: Array.prototype.concat instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: Array.prototype.concat instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: Array.prototype.concat instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: Array.prototype.concat instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: Array.prototype.concat instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -338,8 +338,8 @@ Array.prototype.concat instanceof foo : false
  Exception: [1,2,3] instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: [1,2,3] instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 [1,2,3] instanceof foo : false
- Exception: [1,2,3] instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: [1,2,3] instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: [1,2,3] instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: [1,2,3] instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: [1,2,3] instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: [1,2,3] instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: [1,2,3] instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -359,8 +359,8 @@ Array.prototype.concat instanceof foo : false
  Exception: new Array() instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Array() instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new Array() instanceof foo : false
- Exception: new Array() instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new Array() instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new Array() instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new Array() instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new Array() instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Array() instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Array() instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -380,8 +380,8 @@ new Array() instanceof foo : false
  Exception: fncs instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: fncs instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 fncs instanceof foo : false
- Exception: fncs instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: fncs instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: fncs instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: fncs instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: fncs instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: fncs instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: fncs instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -422,8 +422,8 @@ fncs instanceof foo : false
  Exception: new String('world') instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new String('world') instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new String('world') instanceof foo : false
- Exception: new String('world') instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new String('world') instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new String('world') instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new String('world') instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new String('world') instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new String('world') instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new String('world') instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -506,8 +506,8 @@ NaN instanceof Array.prototype.concat : false
  Exception: new Number(3) instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Number(3) instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new Number(3) instanceof foo : false
- Exception: new Number(3) instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new Number(3) instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new Number(3) instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new Number(3) instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new Number(3) instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Number(3) instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Number(3) instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -569,8 +569,8 @@ false instanceof Array.prototype.concat : false
  Exception: new Boolean(true) instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Boolean(true) instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new Boolean(true) instanceof foo : false
- Exception: new Boolean(true) instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new Boolean(true) instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new Boolean(true) instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new Boolean(true) instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new Boolean(true) instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Boolean(true) instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Boolean(true) instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -590,8 +590,8 @@ new Boolean(true) instanceof foo : false
  Exception: new Boolean(false) instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Boolean(false) instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new Boolean(false) instanceof foo : false
- Exception: new Boolean(false) instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new Boolean(false) instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new Boolean(false) instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new Boolean(false) instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new Boolean(false) instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Boolean(false) instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Boolean(false) instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -611,8 +611,8 @@ new Boolean(false) instanceof foo : false
  Exception: new Date() instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Date() instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 new Date() instanceof foo : false
- Exception: new Date() instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: new Date() instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: new Date() instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: new Date() instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: new Date() instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Date() instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: new Date() instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object
@@ -632,8 +632,8 @@ new Date() instanceof foo : false
  Exception: /a+/ instanceof f. Invalid operand to 'instanceof': Callee is not a function object
  Exception: /a+/ instanceof b. Invalid operand to 'instanceof': Callee is not a function object
 /a+/ instanceof foo : false
- Exception: /a+/ instanceof String.fromCharCode. Function does not have a valid prototype object
- Exception: /a+/ instanceof Array.prototype.concat. Function does not have a valid prototype object
+ Exception: /a+/ instanceof String.fromCharCode. instanceof called on an object with an invalid prototype property
+ Exception: /a+/ instanceof Array.prototype.concat. instanceof called on an object with an invalid prototype property
  Exception: /a+/ instanceof [1,2,3]. Invalid operand to 'instanceof': Callee is not a function object
  Exception: /a+/ instanceof new Array(). Invalid operand to 'instanceof': Callee is not a function object
  Exception: /a+/ instanceof fncs. Invalid operand to 'instanceof': Callee is not a function object

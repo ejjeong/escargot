@@ -164,6 +164,11 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    NEVER_INLINE void throwError(ESErrorObject::Code code, const char* templateString)
+    {
+        throwError(ESErrorObject::create(ESString::create(templateString), code));
+    }
+
     NEVER_INLINE void throwError(ESErrorObject::Code code, const char* templateString, ESString* replacer)
     {
         ESString* errorMessage;

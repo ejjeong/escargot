@@ -47,7 +47,8 @@ extern const char* errorMessage_GlobalObject_InvalidArrayLength;
 extern const char* errorMessage_NotAbleToConverToPrimitiveValue;
 extern const char* errorMessage_New_NotConstructor;
 extern const char* errorMessage_New_NotFunction;
-
+extern const char* errorMessage_InstanceOf_NotFunction;
+extern const char* errorMessage_InstanceOf_InvalidPrototypeProperty;
 
 }
 

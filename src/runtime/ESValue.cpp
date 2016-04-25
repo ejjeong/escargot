@@ -1679,11 +1679,14 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
     m_flags.m_nonConstructor = false;
-    m_protoType = ESObject::create(2);
 
-    // m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
-    m_protoType.asESPointer()->asESObject()->m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForPrototypeObject();
-    m_protoType.asESPointer()->asESObject()->m_hiddenClassData.push_back(this);
+    if (hasPrototype) {
+        m_protoType = ESObject::create(2);
+
+        // m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
+        m_protoType.asESPointer()->asESObject()->m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForPrototypeObject();
+        m_protoType.asESPointer()->asESObject()->m_hiddenClassData.push_back(this);
+    }
 
     // $19.2.4 Function Instances
     // these define in ESVMInstance::ESVMInstance()

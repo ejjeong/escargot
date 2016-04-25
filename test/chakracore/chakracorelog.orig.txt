@@ -940,7 +940,7 @@ Running all tests
 [Operators] delete3.js .......... Fail
 [Operators] div.js .......... Fail
 [Operators] equals.js .......... Fail
-[Operators] instanceof.js .......... Fail
+[Operators] instanceof.js .......... Pass
 [Operators] inst_bug.js .......... Pass
 [Operators] isin.js .......... Pass
 [Operators] logAnd.js .......... Pass
@@ -1445,7 +1445,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                Regex		33		23		4		6		(69%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		12		1		0		(92%)
-           Operators		32		26		6		0		(81%)
+           Operators		32		27		5		0		(84%)
          Conversions		5		5		0		0		(100%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)

@@ -7,6 +7,8 @@ namespace escargot {
 
 const char* errorMessage_New_NotConstructor = "%s is not a constructor";
 const char* errorMessage_New_NotFunction = "%s is not a function";
+const char* errorMessage_InstanceOf_NotFunction = "Invalid operand to 'instanceof': Callee is not a function object";
+const char* errorMessage_InstanceOf_InvalidPrototypeProperty = "instanceof called on an object with an invalid prototype property";
 
 NEVER_INLINE ESValue getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
@@ -368,7 +370,7 @@ NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObjec
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
 {
     if (!(rval->isESPointer() && rval->asESPointer()->isESFunctionObject()) || !rval->isObject())
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Invalid operand to 'instanceof': Callee is not a function object"))));
+        ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_InstanceOf_NotFunction);
     if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
         ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
         while (C->isBoundFunc())
@@ -383,7 +385,7 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
                 O = O.asESPointer()->asESObject()->__proto__();
             }
         } else {
-            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("instanceof called on an object with an invalid prototype property"))));
+            ESVMInstance::currentInstance()->throwError(ErrorCode::TypeError, errorMessage_InstanceOf_InvalidPrototypeProperty);
         }
     }
     return false;

@@ -1083,6 +1083,7 @@ void GlobalObject::installFunction()
     m_functionPrototype = emptyFunction;
     m_functionPrototype->forceNonVectorHiddenClass(true);
     m_functionPrototype->set__proto__(m_objectPrototype);
+    m_functionPrototype->setProtoType(emptyFunction);
     m_function->set__proto__(emptyFunction);
     m_function->setProtoType(emptyFunction);
     m_functionPrototype->defineDataProperty(strings->constructor, true, false, true, m_function);
