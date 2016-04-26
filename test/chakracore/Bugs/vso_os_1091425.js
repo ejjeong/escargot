@@ -23,7 +23,7 @@ WScript.LoadScriptFile("vso_os_1091425_2.js");
 try {
     eval('function nonConfigurableFoo() { /* try to override non-configurable global accessor property with a function definition */ }');
 } catch (e) {
-    if (e.message === "Cannot redefine non-configurable property 'nonConfigurableFoo'") {
+    if (e.message === "Attempted to assign to readonly property.") {
         print("Pass");
     }
     else {

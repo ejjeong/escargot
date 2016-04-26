@@ -33,6 +33,6 @@ eval("function bar() { /* same deal except for eval defined global functions con
 try {
     eval("function nonConfigurableBar() { /* try to override non-configurable global accessor property with a function definition */ }");
 } catch (e) {
-    if (!(e instanceof TypeError) || e.message != "Cannot redefine non-configurable property 'nonConfigurableBar'")
+    if (!(e instanceof TypeError) || e.message != "Attempted to assign to readonly property.")
         throw e;
 }

@@ -773,11 +773,12 @@ NEVER_INLINE void initializeFunctionDeclaration(CreateFunction* code, ExecutionC
                     ec->environment()->record()->setMutableBinding(code->m_name, function, false);
                 } else {
                     GlobalEnvironmentRecord* record = ec->environment()->record()->asGlobalEnvironmentRecord();
-                    record->bindingObject()->defineOwnProperty(code->m_name.string(), PropertyDescriptor {function, Writable | Enumerable}, true);
+                    unsigned attributeConfigurable = (code->m_isConfigurableBinding ? Configurable : 0);
+                    record->bindingObject()->defineOwnProperty(code->m_name.string(), PropertyDescriptor {function, Writable | Enumerable | attributeConfigurable}, true);
                     return;
                 }
             } else if (!binding.isDataBinding() || !binding.isMutable()) {
-                throwObjectWriteError();
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Attempted to assign to readonly property."))));
             }
         }
         ec->environment()->record()->setMutableBinding(code->m_name, function, false);

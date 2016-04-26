@@ -23,7 +23,7 @@ public:
         // CodeBlock* cb = CodeBlock::create(myResult);
         ParserContextInformation parserContextInformation;
         CodeBlock* cb = generateByteCode(nullptr, this, ExecutableType::FunctionCode, parserContextInformation, context.m_shouldGenerateByteCodeInstantly);
-        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex, m_functionIdIndexNeedsHeapAllocation), context, this);
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex, m_functionIdIndexNeedsHeapAllocation, context.m_isEvalCode), context, this);
     }
 
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)

@@ -1019,7 +1019,7 @@ Running all tests
 [Bugs] deserializationbug339404.js .......... Pass
 [Bugs] bug843670.js .......... Pass
 [Bugs] bug934443.js .......... Pass
-[Bugs] vso_os_1091425.js .......... Fail
+[Bugs] vso_os_1091425.js .......... Pass
 [Bugs] bug1092916.js .......... Pass
 [Bugs] blue_1096569.js .......... Skip (Not in scope (es6))
 [Bugs] blue_1086262.js .......... Pass
@@ -1445,7 +1445,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              VT_DATE		1		0		1		0		(0%)
                  Lib		10		9		0		1		(90%)
                 JSON		13		13		0		0		(100%)
-                Bugs		36		25		1		10		(69%)
+                Bugs		36		26		0		10		(72%)
               strict		104		74		0		30		(71%)
                 utf8		3		1		1		1		(33%)
         UnifiedRegex		26		23		3		0		(88%)
@@ -1458,4 +1458,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1242		29		129		(88%)
+               Total		1400		1243		28		129		(88%)

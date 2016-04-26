@@ -218,7 +218,7 @@ ESValue ESVMInstance::evaluate(ESString* source)
     m_currentExecutionContext = m_globalExecutionContext;
     bool oldContextIsStrictMode = oldContext->isStrictMode();
 
-    ParserContextInformation parserContextInformation(false, true, false, true);
+    ParserContextInformation parserContextInformation(false, true, false, false, true);
     CodeBlock* block = m_scriptParser->parseScript(this, source, ExecutableType::GlobalCode, parserContextInformation);
     if (block->shouldUseStrictMode())
         m_currentExecutionContext->setStrictMode(true);
@@ -246,7 +246,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall, CodeBloc
     bool shouldWorkAroundIdentifier = !isInCatchClause();
     bool hasArgumentsBinding = outerCodeBlock ? outerCodeBlock->m_hasArgumentsBinding : false;
     bool isForGlobalScope = !isDirectCall;
-    ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier, hasArgumentsBinding, isForGlobalScope);
+    ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier, hasArgumentsBinding, true, isForGlobalScope);
     CodeBlock* block = m_scriptParser->parseScript(this, source, ExecutableType::EvalCode, parserContextInformation);
     bool isStrictCode = block->shouldUseStrictMode();
     if (!m_currentExecutionContext || !isDirectCall) {

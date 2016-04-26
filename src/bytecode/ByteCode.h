@@ -184,6 +184,7 @@ struct ByteCodeGenerateContext {
         : m_baseRegisterCount(0)
         , m_codeBlock(codeBlock)
         , m_isGlobalScope(parserContextInformation.m_isForGlobalScope)
+        , m_isEvalCode(parserContextInformation.m_isEvalCode)
         , m_isOutermostContext(true)
         , m_hasArgumentsBinding(parserContextInformation.m_hasArgumentsBinding)
         , m_offsetToBasePointer(0)
@@ -205,6 +206,7 @@ struct ByteCodeGenerateContext {
         : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
         , m_codeBlock(contextBefore.m_codeBlock)
         , m_isGlobalScope(contextBefore.m_isGlobalScope)
+        , m_isEvalCode(contextBefore.m_isEvalCode)
         , m_isOutermostContext(false)
         , m_shouldGenerateByteCodeInstantly(contextBefore.m_shouldGenerateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
@@ -308,6 +310,7 @@ struct ByteCodeGenerateContext {
 
     CodeBlock* m_codeBlock;
     bool m_isGlobalScope;
+    bool m_isEvalCode;
     bool m_isOutermostContext;
 
     bool m_shouldGenerateByteCodeInstantly;
@@ -1768,7 +1771,7 @@ struct EnumerateObjectData : public gc {
 
 class CreateFunction : public ByteCode {
 public:
-    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl, size_t idIndex, bool isIdIndexOnHeapStorage)
+    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl, size_t idIndex, bool isIdIndexOnHeapStorage, bool isConfigurableBinding = false)
         : ByteCode(CreateFunctionOpcode)
         , m_name(name)
     {
@@ -1777,6 +1780,8 @@ public:
         m_isDeclaration = isDecl;
         m_idIndex = idIndex;
         m_isIdIndexOnHeapStorage = isIdIndexOnHeapStorage;
+        ASSERT(!isConfigurableBinding || isDecl);
+        m_isConfigurableBinding = isConfigurableBinding;
     }
 
 #ifndef NDEBUG
@@ -1788,8 +1793,9 @@ public:
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
     CodeBlock* m_codeBlock;
-    bool m_isDeclaration;
-    bool m_isIdIndexOnHeapStorage;
+    bool m_isDeclaration:1;
+    bool m_isIdIndexOnHeapStorage:1;
+    bool m_isConfigurableBinding:1;
     size_t m_idIndex;
 };
 

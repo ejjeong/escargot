@@ -8,10 +8,11 @@ class CodeBlock;
 class ProgramNode;
 
 struct ParserContextInformation {
-    ParserContextInformation(bool strictFromOutside = false, bool shouldWorkAroundIdentifier = true, bool hasArgumentsBinding = false, bool isForGlobalScope = false)
+    ParserContextInformation(bool strictFromOutside = false, bool shouldWorkAroundIdentifier = true, bool hasArgumentsBinding = false, bool isEvalCode = false, bool isForGlobalScope = false)
         : m_strictFromOutside(strictFromOutside)
         , m_shouldWorkAroundIdentifier(shouldWorkAroundIdentifier)
         , m_hasArgumentsBinding(hasArgumentsBinding)
+        , m_isEvalCode(isEvalCode)
         , m_isForGlobalScope(isForGlobalScope)
     {
     }
@@ -19,12 +20,13 @@ struct ParserContextInformation {
     bool m_strictFromOutside:1;
     bool m_shouldWorkAroundIdentifier:1;
     bool m_hasArgumentsBinding:1;
+    bool m_isEvalCode:1;
     bool m_isForGlobalScope:1;
 
     size_t hash() const
     {
         // we separate global / non-global code cache
-        return m_strictFromOutside | m_shouldWorkAroundIdentifier << 1 | m_hasArgumentsBinding << 2;
+        return m_strictFromOutside | m_shouldWorkAroundIdentifier << 1 | m_hasArgumentsBinding << 2 | m_isEvalCode << 3;
     }
 };
 
