@@ -53,7 +53,7 @@ run_test() {
 		printf "Skip ($SKIP)\n" | tee -a $LOG_FILE
 	else
 		if [[ $TZSET != "" ]]; then
-			TZ=US/Pacific;
+			CMD="env TZ=US/Pacific $CMD";
 		fi
 		$($CMD \
 			| sed 's/\[object global\]/[object Object]/g' \
