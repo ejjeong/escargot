@@ -40,22 +40,22 @@ Numerical properties
 Running test3...
 Duplicates
 0: [object Object]
-    a: 6
-    b: 7
     c: 3
     d: 4
+    a: 6
+    b: 7
 1: [object Object]
-    a: 6
-    b: 7
     c: 3
     d: 4
+    a: 6
+    b: 7
 2: [object Object]
-    a: 6
-    b: 7
     c: 3
     d: 4
+    a: 6
+    b: 7
 3: [object Object]
-    a: 6
-    b: 7
     c: 3
     d: 4
+    a: 6
+    b: 7
