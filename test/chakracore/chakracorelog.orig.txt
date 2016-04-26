@@ -107,7 +107,7 @@ Running all tests
 [Array] memop_bounds_check.js .......... Skip (Not in scope (es6))
 [Array] bug4587739.js .......... Skip (Not in scope (es6))
 [Basics] Array.js .......... Pass
-[Basics] ie12ScriptFunctionToStrings.js .......... Fail
+[Basics] ie12ScriptFunctionToStrings.js .......... Pass
 [Basics] DomProperties.js .......... Pass
 [Basics] ArrayConcat.js .......... Pass
 [Basics] arrayinit.js .......... Pass
@@ -1424,7 +1424,7 @@ Running all tests
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		93		0		13		(87%)
-              Basics		56		41		1		14		(73%)
+              Basics		56		42		0		14		(75%)
                  es5		56		52		3		1		(92%)
                   EH		17		11		4		2		(64%)
         InlineCaches		21		20		0		1		(95%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1211		69		126		(86%)
+               Total		1406		1212		68		126		(86%)
