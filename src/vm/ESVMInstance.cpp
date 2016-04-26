@@ -1,4 +1,5 @@
 #include "Escargot.h"
+#include "parser/esprima.h"
 #include "parser/ScriptParser.h"
 #include "ESVMInstance.h"
 #include "runtime/Environment.h"
@@ -184,7 +185,7 @@ ESVMInstance::ESVMInstance()
     m_globalObject->initGlobalObject();
 
     ESFunctionObject* thrower = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
+        instance->throwError(ErrorCode::TypeError, errorMessage_ArgumentsOrCaller_InStrictMode);
         RELEASE_ASSERT_NOT_REACHED();
     }, strings().emptyString, 1);
     thrower->defineDataProperty(m_strings.prototype.string(), false, false, false, ESObject::create());

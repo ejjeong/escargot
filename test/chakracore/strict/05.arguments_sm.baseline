@@ -10,7 +10,7 @@ arguments.caller:writable     : undefined
 arguments.caller:getter       : function () { [native code] }
 arguments.caller:setter       : function () { [native code] }
 arguments.caller:value        : undefined
-Exception: Type error
-Exception: Type error
-Exception: Type error
-Exception: Type error
+Exception: 'caller' and 'arguments' are restricted function properties and cannot be accessed in this context.
+Exception: 'caller' and 'arguments' are restricted function properties and cannot be accessed in this context.
+Exception: 'caller' and 'arguments' are restricted function properties and cannot be accessed in this context.
+Exception: 'caller' and 'arguments' are restricted function properties and cannot be accessed in this context.

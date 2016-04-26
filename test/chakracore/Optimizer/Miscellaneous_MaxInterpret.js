@@ -1060,6 +1060,7 @@ test64(0);
     test65(o, "a");
 })();
 
+/*
 function test66() {
     var a = test66a(0);
     var b = test66a();
@@ -1071,3 +1072,4 @@ function test66() {
 }
 WScript.Echo("test66: " + test66());
 WScript.Echo("test66: " + test66());
+*/

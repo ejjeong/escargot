@@ -29,6 +29,7 @@ const char* errorMessage_Get_FromUndefined = "Cannot get property '%s' of undefi
 const char* errorMessage_Get_FromNull = "Cannot get property '%s' of null";
 const char* errorMessage_Set_ToUndefined = "Cannot set property '%s' of undefined";
 const char* errorMessage_Set_ToNull = "Cannot set property '%s' of null";
+const char* errorMessage_ArgumentsOrCaller_InStrictMode = "'caller' and 'arguments' are restricted function properties and cannot be accessed in this context.";
 
 NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* templateString, ESString* property)
 {
