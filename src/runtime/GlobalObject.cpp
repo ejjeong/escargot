@@ -395,7 +395,7 @@ void GlobalObject::initGlobalObject()
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1)
-            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
         else {
             ESValue& argument = instance->currentExecutionContext()->arguments()[0];
             double num = argument.toNumber();

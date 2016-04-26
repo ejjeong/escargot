@@ -973,7 +973,7 @@ Running all tests
 [Lib] getclass.js .......... Pass
 [Lib] length2.js .......... Pass
 [Lib] LibLength.js .......... Pass
-[Lib] noargs.js .......... Fail
+[Lib] noargs.js .......... Pass
 [Lib] tostring.js .......... Pass
 [Lib] forin_lib.js .......... Pass
 [Lib] uri.js .......... Pass
@@ -1443,7 +1443,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          Conversions		5		5		0		0		(100%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
-                 Lib		10		8		1		1		(80%)
+                 Lib		10		9		0		1		(90%)
                 JSON		13		9		4		0		(69%)
                 Bugs		36		24		3		9		(66%)
               strict		104		74		0		30		(71%)
@@ -1458,4 +1458,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1223		49		128		(87%)
+               Total		1400		1224		48		128		(87%)

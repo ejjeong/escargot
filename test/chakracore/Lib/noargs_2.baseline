@@ -10,9 +10,7 @@ encodeURI = undefined
 decodeURIComponent = undefined
 encodeURIComponent = undefined
 Object = [object Object]
-Function = function anonymous() {
-
-}
+Function = function anonymous() {}
 Array = 
 String = 
 Boolean = false
@@ -25,4 +23,4 @@ ReferenceError = ReferenceError
 SyntaxError = SyntaxError
 TypeError = TypeError
 URIError = URIError
-write: function write(v) { WScript.Echo(v + ""); }
+write: function write() {}
