@@ -3232,8 +3232,7 @@ int ESDateObject::getDate()
 
 int ESDateObject::getDay()
 {
-    resolveCache();
-    return m_cachedTM.tm_wday;
+    return (((int) (day(m_primitiveValue - getTimezoneOffset() * msPerSecond) + 4) % 7) + 7) % 7;
 }
 
 int ESDateObject::getFullYear()
@@ -3300,7 +3299,7 @@ int ESDateObject::getUTCDate()
 
 int ESDateObject::getUTCDay()
 {
-    return (int) (day(m_primitiveValue) + 4) % 7;
+    return (((int) (day(m_primitiveValue) + 4) % 7) + 7) % 7;
 }
 
 int ESDateObject::getUTCFullYear()

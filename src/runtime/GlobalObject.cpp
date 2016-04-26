@@ -4404,7 +4404,7 @@ void GlobalObject::installDate()
                     , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds());
                 return ESString::create(buffer);
             } else {
-                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_InvalidDate);
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toUTCString, errorMessage_GlobalObject_InvalidDate);
             }
         } else
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toUTCString, errorMessage_GlobalObject_ThisNotDateObject);
@@ -4469,6 +4469,25 @@ void GlobalObject::installDate()
 
     // $B.2.4.3 Date.prototype.toGMTString()
     m_datePrototype->defineDataProperty(strings->toGMTString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, toGMTString);
+        if (thisObject->isESDateObject()) {
+            escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
+
+            static char days[7][4] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+            static char months[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+            char buffer[512];
+            if (!isnan(thisDateObject->timeValueAsDouble())) {
+                snprintf(buffer, 512, "%s, %02d %s %d %02d:%02d:%02d GMT"
+                    , days[thisDateObject->getUTCDay()], thisDateObject->getUTCDate(), months[thisDateObject->getUTCMonth()], thisDateObject->getUTCFullYear()
+                    , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds());
+                return ESString::create(buffer);
+            } else {
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_InvalidDate);
+            }
+        } else {
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_ThisNotDateObject);
+        }
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toGMTString, 0));
 }

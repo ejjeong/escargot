@@ -42,12 +42,12 @@ testParseDate(new Date(12, 1, 2, 1, 2, 3).toUTCString());
 testParseDate(new Date(12, 1, 2, 1, 2, 3).toISOString());
 
 myPrint("Phase 2 - parsing sample date strings");
-testParseDate("Tue Feb 02 2012 01:02:03 GMT-0800 (Pacific Standard Time)");
+testParseDate("Tue Feb 02 2012 01:02:03 GMT-0800 (PST)");
 testParseDate("Tue Feb 02 2012 01:02:03 GMT+0800 (prisec)");
 testParseDate2("Tue Feb 02 2012 01:02:03 GMT+0000", " (ﾊﾇ)");
 testParseDate("Tue Feb 02 2012 01:02:03 GMT-0000");
 testParseDate("Tue Feb 02 2012 01:02:03 GMT+0430 (prisec@)");
-testParseDate("Tue Feb 2 01:02:03 PST 2013 B.C.");
+testParseDate("Tue Feb 2 01:02:03 PST -2012");
 testParseDate("Thu Feb 2 01:02:03 PST 2012");
 
 function testDate(date) {
