@@ -172,7 +172,7 @@ Running all tests
 [es5] array_reduce.js .......... Pass
 [es5] array_reduceright.js .......... Pass
 [es5] DateGetSet9.js .......... Pass
-[es5] jx2.js .......... Fail
+[es5] jx2.js .......... Pass
 [es5] SemiCollonAfterBlockEs5.js .......... Pass
 [es5] exceptions.js .......... Pass
 [es5] ObjLitGetSet.js .......... Pass
@@ -1419,7 +1419,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		93		0		13		(87%)
               Basics		56		42		0		14		(75%)
-                 es5		56		54		1		1		(96%)
+                 es5		56		55		0		1		(98%)
                   EH		17		15		0		2		(88%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		0		2		(98%)
