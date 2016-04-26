@@ -392,19 +392,9 @@ void GlobalObject::initGlobalObject()
 
     // $18.2.3
     defineDataProperty(strings->isNaN, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue ret;
-        int len = instance->currentExecutionContext()->argumentCount();
-        if (len < 1)
-            ret = ESValue(ESValue::ESTrueTag::ESTrue);
-        else {
-            ESValue& argument = instance->currentExecutionContext()->arguments()[0];
-            double num = argument.toNumber();
-            if (std::isnan(num))
-                ret = ESValue(ESValue::ESTrueTag::ESTrue);
-            else
-                ret = ESValue(ESValue::ESFalseTag::ESFalse);
-        }
-        return ret;
+        ESValue argument = instance->currentExecutionContext()->readArgument(0)
+        double num = argument.toNumber();
+        return ESValue(std::isnan(num));
     }, strings->isNaN.string(), 1));
 
     // $18.2.4 parseFloat(string)
