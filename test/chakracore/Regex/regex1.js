@@ -80,21 +80,21 @@ Assert(re1.multiline == true, "multiline");
 Assert(re1.ignoreCase == false, "ignoreCase");
 
 var exceptionThrown = false;
-try 
+try
 {
     var re = new RegExp(/a/g, "ab");
-} 
-catch (ex) 
+}
+catch (ex)
 {
     exceptionThrown = true;
 }
 Assert(exceptionThrown, "invalid flags");
-
+/* RegExp.$1 is not spec
 var re = /(ab)/g
 
 "abc     ".match(re);
 Assert(RegExp.$1 == "ab", "lastIndex");
-
+*/
 var re = /test/;
 var exceptionThrown = false;
 try
@@ -125,7 +125,6 @@ function testsc(r, s) {
     if (!r.test(s))
         write("invalid interpretation of '" + r + "'");
 }
-
 testsc(/^\cA$/, "\x01");
 testsc(/^[\cA]$/, "\x01");
 testsc(/^\c1$/, "\\c1");
@@ -148,5 +147,3 @@ c=[/[\300-\306]/g,"A",/[\340-\346]/g,"a",/\307/g,"C",/\347/g,"c",/[\310-\313]/g,
 
 //Negation of empty char set [^] test
 write("aa".match(/([^])(\1)/));
-
-
