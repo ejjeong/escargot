@@ -65,6 +65,7 @@
   <!-- Disabled until we can resolve failures on Windows Server 2012 R2
 <test>
     <default>
+        <escargot-skip>Doesn't support multi-architecture test</escargot-skip>
         <files>toLocaleString.js</files>
         <baseline>toLocaleString.v4.baseline</baseline>
         <compile-flags>-version:4</compile-flags>
@@ -72,6 +73,7 @@
 </test>
 <test>
     <default>
+        <escargot-skip>Doesn't support multi-architecture test</escargot-skip>
         <files>toLocaleString.js</files>
         <baseline>toLocaleString.arm.baseline</baseline>
         <compile-flags>-Intl</compile-flags>
@@ -80,6 +82,7 @@
 </test>
 <test>
     <default>
+        <escargot-TZset></escargot-TZset>
         <files>toLocaleString.js</files>
         <baseline>toLocaleString.baseline</baseline>
         <compile-flags>-Intl</compile-flags>
@@ -88,6 +91,7 @@
 </test>
 <test>
     <default>
+        <escargot-skip>Doesn't support multi-architecture test</escargot-skip>
         <files>toLocaleString.js</files>
         <baseline>toLocaleString.winBlue.baseline</baseline>
         <compile-flags>-Intl</compile-flags>
