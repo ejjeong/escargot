@@ -5419,7 +5419,7 @@ void GlobalObject::installNumber()
         number /= pow(10, exp);
 
         if (arglen == 0) {
-            stream << "%lf";
+            stream << "%.15lf";
         } else {
             stream << "%." << digit << "lf";
         }
@@ -5541,20 +5541,24 @@ void GlobalObject::installNumber()
                     throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toPrecision, errorMessage_GlobalObject_RangeError);
                 }
 
-                int log10_num = trunc(log10(x));
-                if (log10_num + 1 <= p && log10_num > -6) {
-                    if (std::abs(x) >= 1) {
-                        stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+                if (LIKELY(x != 0)) {
+                    int log10_num = trunc(log10(x));
+                    if (log10_num + 1 <= p && log10_num > -6) {
+                        if (std::abs(x) >= 1) {
+                            stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+                        } else {
+                            stream << "%" << log10_num << "." << (p - log10_num) << "lf";
+                        }
                     } else {
-                        stream << "%" << log10_num << "." << (p - log10_num) << "lf";
+                        x = x / pow(10, log10_num);
+                        if (std::abs(x) < 1) {
+                            x *= 10;
+                            log10_num--;
+                        }
+                        stream << "%1." << (p - 1) << "lf" << "e" << ((log10_num >= 0) ? "+" : "") << log10_num;
                     }
                 } else {
-                    x = x / pow(10, log10_num);
-                    if (std::abs(x) < 1) {
-                        x *= 10;
-                        log10_num--;
-                    }
-                    stream << "%1." << (p - 1) << "lf" << "e" << ((log10_num >= 0) ? "+" : "") << log10_num;
+                    stream << "%1." << (p - 1) << "lf";
                 }
             }
             std::string fstr = stream.str();

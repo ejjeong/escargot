@@ -101,6 +101,7 @@
 
 <test>
     <default>
+        <escargot-skip>Doesn't support multi-architecture test</escargot-skip>
         <files>toLocaleString1.js</files>
         <baseline>toLocaleString1.v4.baseline</baseline>
         <compile-flags>-version:4</compile-flags>
@@ -109,6 +110,7 @@
 </test>
 <test>
     <default>
+        <escargot-skip>Doesn't support multi-architecture test</escargot-skip>
         <files>toLocaleString1.js</files>
         <baseline>toLocaleString1.win7.v4.baseline</baseline>
         <compile-flags>-version:4</compile-flags>
