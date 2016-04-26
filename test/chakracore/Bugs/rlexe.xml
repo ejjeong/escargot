@@ -38,6 +38,7 @@
   <test>
     <default>
       <files>bug_OS_1197716.js</files>
+      <escargot-skip>Deprecated</escargot-skip>
       <compile-flags>-deferparse</compile-flags>
       <tags>BugFix</tags>
     </default>

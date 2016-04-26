@@ -137,10 +137,10 @@ var proto = {};proto[0] = 0;var Construct = function(){};Construct.prototype = p
 proto:  {0: 0}
 o:      {0: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {writable: false});o[0] = 0;o[1] = 1;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1}
+proto:  {1: 1, 0: 0}
 o:      {1: 1, 0: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {writable: false});o[0] = 0;o[1] = 1;o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2}
+proto:  {1: 1, 2: 2, 0: 0}
 o:      {1: 1, 2: 2, 0: 0}
 var proto = {};var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {}
@@ -149,10 +149,10 @@ var proto = {};proto[0] = 0;var Construct = function(){};Construct.prototype = p
 proto:  {0: 0}
 o:      {0: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {get: function(){return 0;}});o[0] = 0;o[1] = 1;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1}
+proto:  {1: 1, 0: 0}
 o:      {1: 1, 0: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {get: function(){return 0;}});o[0] = 0;o[1] = 1;o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2}
+proto:  {1: 1, 2: 2, 0: 0}
 o:      {1: 1, 2: 2, 0: 0}
 var proto = {};var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {}
@@ -161,10 +161,10 @@ var proto = {};proto[0] = 0;var Construct = function(){};Construct.prototype = p
 proto:  {0: 0}
 o:      {0: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {get: function(){return 0;},set: function(v){}});o[0] = 0;o[1] = 1;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1}
+proto:  {1: 1, 0: 0}
 o:      {1: 1, 0: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;Object.defineProperty(proto, "0", {get: function(){return 0;},set: function(v){}});o[0] = 0;o[1] = 1;o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2}
+proto:  {1: 1, 2: 2, 0: 0}
 o:      {1: 1, 2: 2, 0: 0}
 var proto = {};var Construct = function(){};Construct.prototype = proto;var o = new Construct;CollectGarbage();echo("proto:  ", proto);echo("o:      ", o);
 proto:  {}
@@ -185,11 +185,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.
 proto:  {0: 0, 1: 1}
 o:      {0: 0, 1: 1}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {writable: false});o[1] = 1;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2}
-o:      {0: 0, 1: 1, 2: 2}
+proto:  {0: 0, 2: 2, 1: 1}
+o:      {0: 0, 2: 2, 1: 1}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {writable: false});o[1] = 1;o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 3}
-o:      {0: 0, 2: 2, 1: 1, 3: 3}
+proto:  {0: 0, 2: 2, 3: 3, 1: 1}
+o:      {0: 0, 2: 2, 3: 3, 1: 1}
 var proto = {};proto[0] = 0;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0}
 o:      {0: 0}
@@ -197,11 +197,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.
 proto:  {0: 0, 1: 0}
 o:      {0: 0, 1: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {get: function(){return 0;}});o[1] = 1;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 0, 2: 2}
-o:      {0: 0, 1: 0, 2: 2}
+proto:  {0: 0, 2: 2, 1: 0}
+o:      {0: 0, 2: 2, 1: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {get: function(){return 0;}});o[1] = 1;o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 0, 2: 2, 3: 3}
-o:      {0: 0, 2: 2, 1: 0, 3: 3}
+proto:  {0: 0, 2: 2, 3: 3, 1: 0}
+o:      {0: 0, 2: 2, 3: 3, 1: 0}
 var proto = {};proto[0] = 0;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0}
 o:      {0: 0}
@@ -209,11 +209,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.
 proto:  {0: 0, 1: 0}
 o:      {0: 0, 1: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {get: function(){return 0;},set: function(v){}});o[1] = 1;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 0, 2: 2}
-o:      {0: 0, 1: 0, 2: 2}
+proto:  {0: 0, 2: 2, 1: 0}
+o:      {0: 0, 2: 2, 1: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;Object.defineProperty(proto, "1", {get: function(){return 0;},set: function(v){}});o[1] = 1;o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 0, 2: 2, 3: 3}
-o:      {0: 0, 2: 2, 1: 0, 3: 3}
+proto:  {0: 0, 2: 2, 3: 3, 1: 0}
+o:      {0: 0, 2: 2, 3: 3, 1: 0}
 var proto = {};proto[0] = 0;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;CollectGarbage();echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0}
 o:      {0: 0}
@@ -233,11 +233,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function()
 proto:  {0: 0, 1: 1, 2: 2}
 o:      {0: 0, 1: 1, 2: 2}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {writable: false});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 3}
-o:      {0: 0, 1: 1, 2: 2, 3: 3}
+proto:  {0: 0, 1: 1, 3: 3, 2: 2}
+o:      {0: 0, 1: 1, 3: 3, 2: 2}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {writable: false});o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
-o:      {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+proto:  {0: 0, 1: 1, 3: 3, 4: 4, 2: 2}
+o:      {0: 0, 1: 1, 3: 3, 4: 4, 2: 2}
 var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0, 1: 1}
 o:      {0: 0, 1: 1}
@@ -245,11 +245,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function()
 proto:  {0: 0, 1: 1, 2: 0}
 o:      {0: 0, 1: 1, 2: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 0, 3: 3}
-o:      {0: 0, 1: 1, 2: 0, 3: 3}
+proto:  {0: 0, 1: 1, 3: 3, 2: 0}
+o:      {0: 0, 1: 1, 3: 3, 2: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {get: function(){return 0;}});o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 0, 3: 3, 4: 4}
-o:      {0: 0, 1: 1, 2: 0, 3: 3, 4: 4}
+proto:  {0: 0, 1: 1, 3: 3, 4: 4, 2: 0}
+o:      {0: 0, 1: 1, 3: 3, 4: 4, 2: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0, 1: 1}
 o:      {0: 0, 1: 1}
@@ -257,11 +257,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function()
 proto:  {0: 0, 1: 1, 2: 0}
 o:      {0: 0, 1: 1, 2: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 0, 3: 3}
-o:      {0: 0, 1: 1, 2: 0, 3: 3}
+proto:  {0: 0, 1: 1, 3: 3, 2: 0}
+o:      {0: 0, 1: 1, 3: 3, 2: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;Object.defineProperty(proto, "2", {get: function(){return 0;},set: function(v){}});o[2] = 2;echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 0, 3: 3, 4: 4}
-o:      {0: 0, 1: 1, 2: 0, 3: 3, 4: 4}
+proto:  {0: 0, 1: 1, 3: 3, 4: 4, 2: 0}
+o:      {0: 0, 1: 1, 3: 3, 4: 4, 2: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;CollectGarbage();echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0, 1: 1}
 o:      {0: 0, 1: 1}
@@ -281,11 +281,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct
 proto:  {0: 0, 1: 1, 2: 2, 3: 3}
 o:      {0: 0, 1: 1, 2: 2, 3: 3}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {writable: false});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
-o:      {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+proto:  {0: 0, 1: 1, 2: 2, 4: 4, 3: 3}
+o:      {0: 0, 1: 1, 2: 2, 4: 4, 3: 3}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;proto[5] = 5;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {writable: false});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
-o:      {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+proto:  {0: 0, 1: 1, 2: 2, 4: 4, 5: 5, 3: 3}
+o:      {0: 0, 1: 1, 2: 2, 4: 4, 5: 5, 3: 3}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0, 1: 1, 2: 2}
 o:      {0: 0, 1: 1, 2: 2}
@@ -293,11 +293,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct
 proto:  {0: 0, 1: 1, 2: 2, 3: 0}
 o:      {0: 0, 1: 1, 2: 2, 3: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 0, 4: 4}
-o:      {0: 0, 1: 1, 2: 2, 3: 0, 4: 4}
+proto:  {0: 0, 1: 1, 2: 2, 4: 4, 3: 0}
+o:      {0: 0, 1: 1, 2: 2, 4: 4, 3: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;proto[5] = 5;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {get: function(){return 0;}});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 0, 4: 4, 5: 5}
-o:      {0: 0, 1: 1, 2: 2, 3: 0, 4: 4, 5: 5}
+proto:  {0: 0, 1: 1, 2: 2, 4: 4, 5: 5, 3: 0}
+o:      {0: 0, 1: 1, 2: 2, 4: 4, 5: 5, 3: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0, 1: 1, 2: 2}
 o:      {0: 0, 1: 1, 2: 2}
@@ -305,11 +305,11 @@ var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;var Construct
 proto:  {0: 0, 1: 1, 2: 2, 3: 0}
 o:      {0: 0, 1: 1, 2: 2, 3: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 0, 4: 4}
-o:      {0: 0, 1: 1, 2: 2, 3: 0, 4: 4}
+proto:  {0: 0, 1: 1, 2: 2, 4: 4, 3: 0}
+o:      {0: 0, 1: 1, 2: 2, 4: 4, 3: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;proto[3] = 3;proto[4] = 4;proto[5] = 5;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;Object.defineProperty(proto, "3", {get: function(){return 0;},set: function(v){}});echo("proto:  ", proto);echo("o:      ", o);
-proto:  {0: 0, 1: 1, 2: 2, 3: 0, 4: 4, 5: 5}
-o:      {0: 0, 1: 1, 2: 2, 3: 0, 4: 4, 5: 5}
+proto:  {0: 0, 1: 1, 2: 2, 4: 4, 5: 5, 3: 0}
+o:      {0: 0, 1: 1, 2: 2, 4: 4, 5: 5, 3: 0}
 var proto = {};proto[0] = 0;proto[1] = 1;proto[2] = 2;var Construct = function(){};Construct.prototype = proto;var o = new Construct;o[0] = 0;o[1] = 1;o[2] = 2;CollectGarbage();echo("proto:  ", proto);echo("o:      ", o);
 proto:  {0: 0, 1: 1, 2: 2}
 o:      {0: 0, 1: 1, 2: 2}

@@ -17,9 +17,12 @@ var WScript = {
     },
     LoadScriptFile : function(path) {
         try {
-            load(path)
+            load(path);
         } catch (e) {
-            load("test\\chakracore\\UnitTestFramework\\" + path);
+            if (e.message == "GlobalObject.load: cannot load file")
+                load("test\\chakracore\\UnitTestFramework\\" + path);
+            else
+                throw e;
         }
         return nativeGlobal;
     },

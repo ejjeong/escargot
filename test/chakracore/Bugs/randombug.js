@@ -298,7 +298,7 @@ write("Test case 31");
     }
     catch(ex)
     {
-        write(TrimStackTracePath(ex.stack));
+        write(ex);
     }
 })();
 write("Passed");
@@ -465,7 +465,7 @@ write("Test case 40");
     }
     catch(ex)
     {
-        write(TrimStackTracePath(ex.stack));
+        write(ex);
     }
 })();
 write("Passed");
