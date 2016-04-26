@@ -436,12 +436,12 @@ Running all tests
 [Error] errorProps.js .......... Skip (Chakracore-only)
 [Error] ErrorCtorProps.js .......... Pass
 [Error] NativeErrors.js .......... Skip (Chakracore-only)
-[Error] outofmem.js .......... Fail
+[Error] outofmem.js .......... Pass
 [Error] stack.js .......... Skip (Chakracore-only)
 [Error] stack2.js .......... Pass
 [Error] errorCtor.js .......... Skip (Chakracore-only)
 [Error] errorNum.js .......... Skip (Chakracore-only)
-[Error] CallNonFunction.js .......... Fail
+[Error] CallNonFunction.js .......... Pass
 [Error] sourceInfo_00.js .......... Pass
 [Error] sourceInfo_01.js .......... Pass
 [Error] sourceInfo_10.js .......... Pass
@@ -455,7 +455,7 @@ Running all tests
 [Error] bug560940.js .......... Pass
 [Error] stackoverflow.js .......... Pass
 [Error] inlineSameFunc.js .......... Skip (Chakracore-only)
-[Error] PartInitStackFrame.js .......... Fail
+[Error] PartInitStackFrame.js .......... Skip (Chakracore-only)
 [Boolean] simple1.js .......... Pass
 [Boolean] simple2.js .......... Pass
 [Boolean] wrappedobj.js .......... Pass
@@ -1432,7 +1432,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
             Closures		18		15		0		3		(83%)
              Strings		36		34		0		2		(94%)
                 Date		12		4		8		0		(33%)
-               Error		23		13		3		7		(56%)
+               Error		23		15		0		8		(65%)
              Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
          ControlFlow		17		17		0		0		(100%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1212		68		126		(86%)
+               Total		1406		1214		65		127		(86%)

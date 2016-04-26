@@ -157,6 +157,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Chakracore-only</escargot-skip>
       <files>PartInitStackFrame.js</files>
       <baseline>PartInitStackFrame.baseline</baseline>
       <compile-flags>-ExtendedErrorStackForTestHost -nonative -InjectPartiallyInitializedInterpreterFrameError:3 -InjectPartiallyInitializedInterpreterFrameErrorType:1</compile-flags>
