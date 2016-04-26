@@ -157,14 +157,20 @@ function DefineDataProperty(o, p, v)
 function TestEnumerations(o, beforeTestValue, value)
 {
   WScript.Echo("Testing for-in enumeration");
+  var names = [];
   for (var i in o)
+      names.push(i);
+  names.sort();
+  for (var i = 0; i < names.length; i++)
   {
-    if (beforeTestValue) value = beforeTestValue(o, i, value);
-    TestValue(o, i, value++);
+    if (beforeTestValue) value = beforeTestValue(o, names[i], value);
+    TestValue(o, names[i], value++);
   }
+
 
   WScript.Echo("Testing getOwnPropertyNames enumeration");
   var names = Object.getOwnPropertyNames(o);
+  names.sort();
   for (var i = 0; i < names.length; i++)
   {
     if (beforeTestValue) value = beforeTestValue(o, i, value);
