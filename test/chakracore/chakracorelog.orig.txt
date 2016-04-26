@@ -978,7 +978,7 @@ Running all tests
 [Lib] forin_lib.js .......... Pass
 [Lib] uri.js .......... Pass
 [Lib] error.js .......... Pass
-[Lib] workingset.js .......... Fail
+[Lib] workingset.js .......... Skip (Not in scope (es6))
 [Lib] profiledataobject.js .......... Fail
 [Lib] profiledataobject.js .......... Fail
 [Lib] profiledataobject.js .......... Fail
@@ -1449,7 +1449,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          Conversions		5		5		0		0		(100%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
-                 Lib		16		8		8		0		(50%)
+                 Lib		16		8		7		1		(50%)
                 JSON		13		9		4		0		(69%)
                 Bugs		36		24		3		9		(66%)
               strict		104		74		0		30		(71%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1220		59		127		(86%)
+               Total		1406		1220		58		128		(86%)
