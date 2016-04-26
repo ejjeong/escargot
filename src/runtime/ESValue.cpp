@@ -3208,7 +3208,7 @@ ESString* ESDateObject::toTimeString()
         snprintf(buffer, 512, "%02d:%02d:%02d GMT%s%04d (%s)"
             , getHours(), getMinutes(), getSeconds()
             , (gmt < 0) ? "-" : "+"
-            , std::abs(gmt), tzname[0]);
+            , std::abs(gmt), m_cachedTM.tm_isdst? tzname[1] : tzname[0]);
         return ESString::create(buffer);
     } else {
         return ESString::create(u"Invalid Date");
