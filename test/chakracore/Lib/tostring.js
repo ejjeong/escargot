@@ -96,8 +96,7 @@ var stringList = [
     ["toUpperCase",0],
     ["toLocaleUpperCase",0],
 
-    // not in ECMA spec
-
+/*
     ["anchor",1],
     ["big",0],
     ["blink",0],
@@ -111,6 +110,7 @@ var stringList = [
     ["strike",0],
     ["sub",0],
     ["sup",0],
+*/ // ES6 Spec
     ["substr",2]
 ]
 

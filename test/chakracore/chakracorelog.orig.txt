@@ -969,12 +969,12 @@ Running all tests
 [Conversions] bug1.js .......... Pass
 [RWC] OneNote.ribbon.js .......... Pass
 [VT_DATE] getvardate.js .......... Fail
-[Lib] construct.js .......... Fail
+[Lib] construct.js .......... Pass
 [Lib] getclass.js .......... Pass
 [Lib] length2.js .......... Pass
 [Lib] LibLength.js .......... Pass
 [Lib] noargs.js .......... Fail
-[Lib] tostring.js .......... Fail
+[Lib] tostring.js .......... Pass
 [Lib] forin_lib.js .......... Pass
 [Lib] uri.js .......... Pass
 [Lib] error.js .......... Pass
@@ -1449,7 +1449,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          Conversions		5		5		0		0		(100%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
-                 Lib		16		6		10		0		(37%)
+                 Lib		16		8		8		0		(50%)
                 JSON		13		9		4		0		(69%)
                 Bugs		36		24		3		9		(66%)
               strict		104		74		0		30		(71%)
@@ -1464,4 +1464,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1406		1215		64		127		(86%)
+               Total		1406		1217		62		127		(86%)
