@@ -39,6 +39,7 @@ run_test() {
 	FILES=$1
 	BASELINE=$2
 	SKIP=$3
+	TZSET=$4
 
 	CMD="../$BIN $INCLUDE $FILES"
 	echo "==========================================================" >> $LOG_FILE
@@ -51,6 +52,9 @@ run_test() {
 		((LOCAL_SKIP+=1))
 		printf "Skip ($SKIP)\n" | tee -a $LOG_FILE
 	else
+		if [[ $TZSET != "" ]]; then
+			TZ=America/Los_Angeles;
+		fi
 		$($CMD \
 			| sed 's/\[object global\]/[object Object]/g' \
 			> $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
@@ -74,6 +78,10 @@ run_test() {
 				DIFF_EXIT_CODE=$?
 			fi
 		fi
+		if [[ $TZSET != "" ]]; then
+			TZ=Asia/Seoul;
+		fi
+
 		if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
 			printf "Fail\n" | tee -a $LOG_FILE
 			cat $TEMPORARY_DIFF_FILE >> $LOG_FILE
@@ -90,6 +98,7 @@ run_dir() {
 	FILES=
 	BASELINE=
 	SKIP=
+	TZSET=
 
 	LOCAL_COUNT=0
 	LOCAL_PASS=0
@@ -101,6 +110,7 @@ run_dir() {
 			FILES=
 			BASELINE=
 			SKIP=
+			TZSET=
 		fi
 		if [[ $ENTITY == files ]]; then
 			((LOCAL_COUNT+=1))
@@ -123,6 +133,9 @@ run_dir() {
 				SKIP=$CONTENT
 			fi
 		fi
+		if [[ $ENTITY == escargot-TZset ]]; then
+			TZSET=Los_Angeles
+		fi
 		if [[ "$ENTITY" == "/test" && "$FILES" != "" ]]; then
 			REAL_FILES=$(find . -iname $FILES -printf "%P\n")
 			if [[ $BASELINE == "" ]]; then
@@ -130,7 +143,7 @@ run_dir() {
 			else
 				REAL_BASELINE=$(find . -iname $BASELINE -printf "%P\n")
 			fi
-			run_test "$REAL_FILES" "$REAL_BASELINE" "$SKIP"
+			run_test "$REAL_FILES" "$REAL_BASELINE" "$SKIP" "$TZSET"
 		fi
 	done < rlexe.xml;
 
