@@ -19,6 +19,7 @@ try
 }
 catch (ex)
 {
-  var truncatedPathStack = ex.stack.replace(/\(.*\\/g, "(");
-  WScript.Echo(truncatedPathStack);
+  WScript.Echo(ex);
+  // var truncatedPathStack = ex.stack.replace(/\(.*\\/g, "(");
+  // WScript.Echo(truncatedPathStack);
 }

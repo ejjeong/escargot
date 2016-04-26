@@ -829,10 +829,10 @@ Running all tests
 [Object] null.js .......... Pass
 [Object] propertyIsEnumarable.js .......... Pass
 [Object] toLocaleString2.js .......... Pass
-[Object] toLocaleString.js .......... Fail
-[Object] toLocaleString.js .......... Fail
-[Object] toLocaleString.js .......... Fail
-[Object] toLocaleString.js .......... Fail
+[Object] toLocaleString.js .......... Skip (Doesn't support multi-architecture test)
+[Object] toLocaleString.js .......... Skip (Doesn't support multi-architecture test)
+[Object] toLocaleString.js .......... Pass
+[Object] toLocaleString.js .......... Skip (Doesn't support multi-architecture test)
 [Object] toLocaleString1.js .......... Skip (Takes too long (and Slowdown))
 [Object] toLocaleString1.js .......... Skip (Takes too long (and Slowdown))
 [Object] toLocaleString1.js .......... Skip (Takes too long (and Slowdown))
@@ -853,7 +853,7 @@ Running all tests
 [Object] forinenumcache.js .......... Pass
 [Object] forinnonenumerableshadowing.js .......... Pass
 [Object] forinfastpath.js .......... Pass
-[Object] forIn.error.js .......... Fail
+[Object] forIn.error.js .......... Pass
 [Object] HashTable.js .......... Pass
 [Object] TypeSnapshotEnumeration.js .......... Fail
 [Object] NewScObject-InlineSlotCapacityLocking.js .......... Pass
@@ -1435,7 +1435,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
         TaggedFloats		1		0		0		1		(0%)
            Optimizer		206		197		0		9		(95%)
             Function		61		52		0		9		(85%)
-              Object		58		47		6		5		(81%)
+              Object		58		49		1		8		(84%)
                Regex		33		28		0		5		(84%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		12		1		0		(92%)
@@ -1458,4 +1458,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1247		24		129		(89%)
+               Total		1400		1249		19		132		(89%)

@@ -82,7 +82,7 @@
 </test>
 <test>
     <default>
-        <escargot-TZset></escargot-TZset>
+        <!-- test is timezone-sensitive; remove exclude_jenkins after fix -->
         <files>toLocaleString.js</files>
         <baseline>toLocaleString.baseline</baseline>
         <compile-flags>-Intl</compile-flags>
