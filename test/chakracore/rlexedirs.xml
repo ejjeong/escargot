@@ -140,6 +140,7 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Chakracore-only</escargot-skip>
     <files>VT_DATE</files>
   </default>
 </dir>

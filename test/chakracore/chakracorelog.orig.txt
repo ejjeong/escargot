@@ -926,7 +926,7 @@ Running all tests
 [GlobalFunctions] parseFloat.js .......... Pass
 [GlobalFunctions] parseInt.js .......... Pass
 [GlobalFunctions] parseShortCut.js .......... Pass
-[GlobalFunctions] InternalToString.js .......... Fail
+[GlobalFunctions] InternalToString.js .......... Pass
 [GlobalFunctions] ParseInt1.js .......... Pass
 [GlobalFunctions] deferunicode.js .......... Pass
 [GlobalFunctions] toString.js .......... Pass
@@ -968,7 +968,7 @@ Running all tests
 [Conversions] ImplicitConversions.js .......... Pass
 [Conversions] bug1.js .......... Pass
 [RWC] OneNote.ribbon.js .......... Pass
-[VT_DATE] getvardate.js .......... Fail
+[VT_DATE] Skipping whole directory (Chakracore-only)
 [Lib] construct.js .......... Pass
 [Lib] getclass.js .......... Pass
 [Lib] length2.js .......... Pass
@@ -1438,11 +1438,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
               Object		58		50		0		8		(86%)
                Regex		33		28		0		5		(84%)
           Prototypes		7		7		0		0		(100%)
-     GlobalFunctions		13		12		1		0		(92%)
+     GlobalFunctions		13		13		0		0		(100%)
            Operators		32		28		4		0		(87%)
          Conversions		5		5		0		0		(100%)
                  RWC		1		1		0		0		(100%)
-             VT_DATE		1		0		1		0		(0%)
                  Lib		10		9		0		1		(90%)
                 JSON		13		13		0		0		(100%)
                 Bugs		36		26		0		10		(72%)
@@ -1458,4 +1457,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1255		13		132		(89%)
+               Total		1399		1256		11		132		(89%)
