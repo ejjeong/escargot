@@ -980,7 +980,7 @@ Running all tests
 [Lib] error.js .......... Pass
 [Lib] workingset.js .......... Skip (Not in scope (es6))
 [JSON] jx1.js .......... Pass
-[JSON] jx2.js .......... Fail
+[JSON] jx2.js .......... Pass
 [JSON] stringify-replacer.js .......... Pass
 [JSON] stringify-replacerfunc.js .......... Pass
 [JSON] space.js .......... Pass
@@ -1444,7 +1444,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
                  Lib		10		9		0		1		(90%)
-                JSON		13		9		4		0		(69%)
+                JSON		13		10		3		0		(76%)
                 Bugs		36		24		3		9		(66%)
               strict		104		74		0		30		(71%)
                 utf8		3		1		1		1		(33%)
@@ -1458,4 +1458,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1234		38		128		(88%)
+               Total		1400		1235		37		128		(88%)

@@ -197,11 +197,11 @@ undefined
 !!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -225,18 +225,18 @@ true
 99
 
 ------ JSON test stringify: SimpleObject  ------
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 ["document.location","foolish"]
@@ -246,11 +246,11 @@ true
 ["document.location","foolish"]
 
 ------ JSON test stringify: Complex array  ------
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -328,14 +328,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -359,18 +359,18 @@ true
 99
 
 ------ JSON test stringify: SimpleObject  ------
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 ["document.location","foolish"]
@@ -380,11 +380,11 @@ true
 ["document.location","foolish"]
 
 ------ JSON test stringify: Complex array  ------
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -462,14 +462,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -495,19 +495,19 @@ true
 ------ JSON test stringify: SimpleObject  ------
 {
     "MemberNo1": "\"data\"",
-    "dateMember": "2008-04-01T07:00:00.000Z",
+    "dateMember": "2008-03-31T15:00:00.000Z",
     "nullMember": null,
     "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
 {
     "MemberNo1": "\"data\"",
-    "dateMember": "2008-04-01T07:00:00.000Z",
+    "dateMember": "2008-03-31T15:00:00.000Z",
     "nullMember": null,
     "arr": [
         "document.location",
@@ -533,9 +533,9 @@ true
     "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 [
@@ -552,7 +552,7 @@ true
     "document.location",
     "foolish",
     12.3,
-    "2008-10-09T07:00:00.000Z",
+    "2008-10-08T15:00:00.000Z",
     {},
     null,
     {
@@ -575,9 +575,9 @@ true
     "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -655,14 +655,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -688,19 +688,19 @@ true
 ------ JSON test stringify: SimpleObject  ------
 {
           "MemberNo1": "\"data\"",
-          "dateMember": "2008-04-01T07:00:00.000Z",
+          "dateMember": "2008-03-31T15:00:00.000Z",
           "nullMember": null,
           "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
 {
           "MemberNo1": "\"data\"",
-          "dateMember": "2008-04-01T07:00:00.000Z",
+          "dateMember": "2008-03-31T15:00:00.000Z",
           "nullMember": null,
           "arr": [
                     "document.location",
@@ -726,9 +726,9 @@ true
           "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":true,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":true,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":99,"b":false}},"a":{"a":{},"nestedM2":1234,"b":{"a":99,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 [
@@ -745,7 +745,7 @@ true
           "document.location",
           "foolish",
           12.3,
-          "2008-10-09T07:00:00.000Z",
+          "2008-10-08T15:00:00.000Z",
           {},
           null,
           {
@@ -768,9 +768,9 @@ true
           "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -848,14 +848,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -881,16 +881,16 @@ true
 ------ JSON test stringify: SimpleObject  ------
 {
 .........."MemberNo1": "\"data\"",
-.........."dateMember": "2008-04-01T07:00:00.000Z",
+.........."dateMember": "2008-03-31T15:00:00.000Z",
 .........."nullMember": null,
 .........."stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Missing a name for object member.
 
 ------ JSON test stringify: Object with nested objects and array  ------
 {
 .........."MemberNo1": "\"data\"",
-.........."dateMember": "2008-04-01T07:00:00.000Z",
+.........."dateMember": "2008-03-31T15:00:00.000Z",
 .........."nullMember": null,
 .........."arr": [
 ...................."document.location",
@@ -915,21 +915,21 @@ true
 ..........},
 .........."stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Missing a name for object member.
 
 ------ JSON test stringify: Simple array  ------
 [
 .........."document.location",
 .........."foolish"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Complex array  ------
 [
 .........."document.location",
 .........."foolish",
 ..........12.3,
-.........."2008-10-09T07:00:00.000Z",
+.........."2008-10-08T15:00:00.000Z",
 ..........{},
 ..........null,
 ..........{
@@ -951,7 +951,7 @@ true
 ..........],
 .........."[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 
 
@@ -1029,14 +1029,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1081,11 +1081,11 @@ true
 ["document.location","foolish"]
 
 ------ JSON test stringify: Complex array  ------
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -1163,14 +1163,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1222,7 +1222,7 @@ true
     "document.location",
     "foolish",
     12.3,
-    "2008-10-09T07:00:00.000Z",
+    "2008-10-08T15:00:00.000Z",
     {},
     null,
     {},
@@ -1239,9 +1239,9 @@ true
     "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -1319,14 +1319,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1378,7 +1378,7 @@ true
           "document.location",
           "foolish",
           12.3,
-          "2008-10-09T07:00:00.000Z",
+          "2008-10-08T15:00:00.000Z",
           {},
           null,
           {},
@@ -1395,9 +1395,9 @@ true
           "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -1475,14 +1475,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1524,14 +1524,14 @@ true
 .........."document.location",
 .........."foolish"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Complex array  ------
 [
 .........."document.location",
 .........."foolish",
 ..........12.3,
-.........."2008-10-09T07:00:00.000Z",
+.........."2008-10-08T15:00:00.000Z",
 ..........{},
 ..........null,
 ..........{},
@@ -1547,7 +1547,7 @@ true
 ..........],
 .........."[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 
 
@@ -1625,14 +1625,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1677,11 +1677,11 @@ true
 ["document.location","foolish"]
 
 ------ JSON test stringify: Complex array  ------
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -1759,14 +1759,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1826,7 +1826,7 @@ true
     "document.location",
     "foolish",
     12.3,
-    "2008-10-09T07:00:00.000Z",
+    "2008-10-08T15:00:00.000Z",
     {},
     null,
     {},
@@ -1845,9 +1845,9 @@ true
     "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -1925,14 +1925,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -1992,7 +1992,7 @@ true
           "document.location",
           "foolish",
           12.3,
-          "2008-10-09T07:00:00.000Z",
+          "2008-10-08T15:00:00.000Z",
           {},
           null,
           {},
@@ -2011,9 +2011,9 @@ true
           "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -2091,14 +2091,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -2138,21 +2138,21 @@ true
 ....................}
 ..........}
 }
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Missing a name for object member.
 
 ------ JSON test stringify: Simple array  ------
 [
 .........."document.location",
 .........."foolish"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Complex array  ------
 [
 .........."document.location",
 .........."foolish",
 ..........12.3,
-.........."2008-10-09T07:00:00.000Z",
+.........."2008-10-08T15:00:00.000Z",
 ..........{},
 ..........null,
 ..........{},
@@ -2170,7 +2170,7 @@ true
 ..........],
 .........."[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 
 
@@ -2248,14 +2248,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -2300,11 +2300,11 @@ true
 ["document.location","foolish"]
 
 ------ JSON test stringify: Complex array  ------
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -2382,14 +2382,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -2449,7 +2449,7 @@ true
     "document.location",
     "foolish",
     12.3,
-    "2008-10-09T07:00:00.000Z",
+    "2008-10-08T15:00:00.000Z",
     {},
     null,
     {},
@@ -2468,9 +2468,9 @@ true
     "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -2548,14 +2548,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -2615,7 +2615,7 @@ true
           "document.location",
           "foolish",
           12.3,
-          "2008-10-09T07:00:00.000Z",
+          "2008-10-08T15:00:00.000Z",
           {},
           null,
           {},
@@ -2634,9 +2634,9 @@ true
           "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array"},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -2714,14 +2714,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -2761,21 +2761,21 @@ true
 ....................}
 ..........}
 }
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Missing a name for object member.
 
 ------ JSON test stringify: Simple array  ------
 [
 .........."document.location",
 .........."foolish"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Complex array  ------
 [
 .........."document.location",
 .........."foolish",
 ..........12.3,
-.........."2008-10-09T07:00:00.000Z",
+.........."2008-10-08T15:00:00.000Z",
 ..........{},
 ..........null,
 ..........{},
@@ -2793,7 +2793,7 @@ true
 ..........],
 .........."[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 
 
@@ -2871,14 +2871,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -2902,18 +2902,18 @@ true
 99
 
 ------ JSON test stringify: SimpleObject  ------
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false},"nestedM2":1234,"b":{"a":false,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false},"nestedM2":1234,"b":{"a":false,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 ["document.location","foolish"]
@@ -2923,11 +2923,11 @@ true
 ["document.location","foolish"]
 
 ------ JSON test stringify: Complex array  ------
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -3005,14 +3005,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -3038,19 +3038,19 @@ true
 ------ JSON test stringify: SimpleObject  ------
 {
     "MemberNo1": "\"data\"",
-    "dateMember": "2008-04-01T07:00:00.000Z",
+    "dateMember": "2008-03-31T15:00:00.000Z",
     "nullMember": null,
     "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
 {
     "MemberNo1": "\"data\"",
-    "dateMember": "2008-04-01T07:00:00.000Z",
+    "dateMember": "2008-03-31T15:00:00.000Z",
     "nullMember": null,
     "arr": [
         "document.location",
@@ -3080,9 +3080,9 @@ true
     "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false},"nestedM2":1234,"b":{"a":false,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false},"nestedM2":1234,"b":{"a":false,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 [
@@ -3099,7 +3099,7 @@ true
     "document.location",
     "foolish",
     12.3,
-    "2008-10-09T07:00:00.000Z",
+    "2008-10-08T15:00:00.000Z",
     {},
     null,
     {
@@ -3122,9 +3122,9 @@ true
     "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -3202,14 +3202,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -3235,19 +3235,19 @@ true
 ------ JSON test stringify: SimpleObject  ------
 {
           "MemberNo1": "\"data\"",
-          "dateMember": "2008-04-01T07:00:00.000Z",
+          "dateMember": "2008-03-31T15:00:00.000Z",
           "nullMember": null,
           "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Object with nested objects and array  ------
 {
           "MemberNo1": "\"data\"",
-          "dateMember": "2008-04-01T07:00:00.000Z",
+          "dateMember": "2008-03-31T15:00:00.000Z",
           "nullMember": null,
           "arr": [
                     "document.location",
@@ -3277,9 +3277,9 @@ true
           "stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
 === Parsed with no reviver and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false,"c":3.14},"nestedM2":1234,"b":{"a":false,"b":false,"c":3.14}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 === Parsed with reviver2 and restringified :
-{"MemberNo1":"\"data\"","dateMember":"2008-04-01T07:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false},"nestedM2":1234,"b":{"a":false,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
+{"MemberNo1":"\"data\"","dateMember":"2008-03-31T15:00:00.000Z","nullMember":null,"arr":["document.location","foolish"],"nested":{"nestedM1":{},"nestedM2":1234,"nestedM3":{"a":false,"b":false}},"a":{"a":{"a":false,"b":false},"nestedM2":1234,"b":{"a":false,"b":false}},"stringmember":"this string ends the obj. You should not see functionMember and undefinedMember"}
 
 ------ JSON test stringify: Simple array  ------
 [
@@ -3296,7 +3296,7 @@ true
           "document.location",
           "foolish",
           12.3,
-          "2008-10-09T07:00:00.000Z",
+          "2008-10-08T15:00:00.000Z",
           {},
           null,
           {
@@ -3319,9 +3319,9 @@ true
           "[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
 === Parsed with no reviver and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",3.14,{"a":"nested object in array","c":true},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 === Parsed with reviver2 and restringified :
-["document.location","foolish",12.3,"2008-10-09T07:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
+["document.location","foolish",12.3,"2008-10-08T15:00:00.000Z",{},null,{"intMember":3,"strMember":"string_member_in_object"},null,null,null,["NestedArray_1stParamString",null,{"a":"nested object in array","c":99},null,[]],"[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"]
 
 
 
@@ -3399,14 +3399,14 @@ null
 
 ------ JSON test stringify: undefined  ------
 undefined
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Date(2008, 10, 10)  ------
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with no reviver and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 === Parsed with reviver2 and restringified :
-"2008-11-10T08:00:00.000Z"
+"2008-11-09T15:00:00.000Z"
 
 ------ JSON test stringify: string in Object  ------
 "hello"
@@ -3432,16 +3432,16 @@ true
 ------ JSON test stringify: SimpleObject  ------
 {
 .........."MemberNo1": "\"data\"",
-.........."dateMember": "2008-04-01T07:00:00.000Z",
+.........."dateMember": "2008-03-31T15:00:00.000Z",
 .........."nullMember": null,
 .........."stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Missing a name for object member.
 
 ------ JSON test stringify: Object with nested objects and array  ------
 {
 .........."MemberNo1": "\"data\"",
-.........."dateMember": "2008-04-01T07:00:00.000Z",
+.........."dateMember": "2008-03-31T15:00:00.000Z",
 .........."nullMember": null,
 .........."arr": [
 ...................."document.location",
@@ -3470,21 +3470,21 @@ true
 ..........},
 .........."stringmember": "this string ends the obj. You should not see functionMember and undefinedMember"
 }
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Missing a name for object member.
 
 ------ JSON test stringify: Simple array  ------
 [
 .........."document.location",
 .........."foolish"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.
 
 ------ JSON test stringify: Complex array  ------
 [
 .........."document.location",
 .........."foolish",
 ..........12.3,
-.........."2008-10-09T07:00:00.000Z",
+.........."2008-10-08T15:00:00.000Z",
 ..........{},
 ..........null,
 ..........{
@@ -3506,4 +3506,4 @@ true
 ..........],
 .........."[0]-document.location, [1]-string, [2]-number, [3]-date, [4]-empty obj, [5]-missing, [6]-obj, [7]-null, [8]-undef, [9]-function, [10]-nestedArray, [11]-this"
 ]
-!!Exception: SyntaxError: Invalid character
+!!Exception: SyntaxError: Invalid value.

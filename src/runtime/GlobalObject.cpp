@@ -4487,7 +4487,6 @@ ESValue parseJSON(ESVMInstance* instance, const CharType* data)
 {
     rapidjson::GenericDocument<JSONCharType> jsonDocument;
 
-    // FIXME(ksh8281) javascript string is not null-terminated string
     rapidjson::GenericStringStream<JSONCharType> stringStream(data);
     jsonDocument.ParseStream(stringStream);
     if (jsonDocument.HasParseError()) {
@@ -4520,7 +4519,14 @@ ESValue parseJSON(ESVMInstance* instance, const CharType* data)
             return ESValue(ESValue::ESNull);
         } else if (value.IsString()) {
             if (std::is_same<CharType, char16_t>::value) {
-                return ESString::create(value.GetString());
+                UTF16String str;
+                unsigned len = value.GetStringLength();
+                str.reserve(len);
+                const CharType* chars = value.GetString();
+                for (unsigned i = 0; i < len; i++) {
+                    str.push_back(chars[i]);
+                }
+                return ESString::create(str);
             } else {
                 const char* valueAsString = (const char*)value.GetString();
                 if (isAllASCII(valueAsString, strlen(valueAsString))) {
