@@ -461,7 +461,7 @@ Running all tests
 [Boolean] wrappedobj.js .......... Pass
 [Boolean] Equals.js .......... Pass
 [Boolean] property_and_index_of_boolean.js .......... Pass
-[Number] toString.js .......... Skip (Takes too long)
+[Number] toString.js .......... Fail
 [Number] floatcmp.js .......... Pass
 [Number] NaN.js .......... Pass
 [Number] integer.js .......... Pass
@@ -833,9 +833,9 @@ Running all tests
 [Object] toLocaleString.js .......... Skip (Doesn't support multi-architecture test)
 [Object] toLocaleString.js .......... Pass
 [Object] toLocaleString.js .......... Skip (Doesn't support multi-architecture test)
-[Object] toLocaleString1.js .......... Skip (Takes too long (and Slowdown))
-[Object] toLocaleString1.js .......... Skip (Takes too long (and Slowdown))
-[Object] toLocaleString1.js .......... Skip (Takes too long (and Slowdown))
+[Object] toLocaleString1.js .......... Fail
+[Object] toLocaleString1.js .......... Fail
+[Object] toLocaleString1.js .......... Fail
 [Object] toString1.js .......... Pass
 [Object] toString2.js .......... Pass
 [Object] newobj.js .......... Pass
@@ -1428,14 +1428,14 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 Date		12		9		3		0		(75%)
                Error		23		15		0		8		(65%)
              Boolean		5		5		0		0		(100%)
-              Number		8		7		0		1		(87%)
+              Number		8		7		1		0		(87%)
          ControlFlow		17		17		0		0		(100%)
                 Math		21		20		0		1		(95%)
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		0		1		(0%)
            Optimizer		206		197		0		9		(95%)
             Function		61		52		0		9		(85%)
-              Object		58		50		0		8		(86%)
+              Object		58		50		3		5		(86%)
                Regex		33		28		0		5		(84%)
           Prototypes		7		7		0		0		(100%)
      GlobalFunctions		13		13		0		0		(100%)
@@ -1457,4 +1457,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1399		1256		11		132		(89%)
+               Total		1399		1256		15		128		(89%)

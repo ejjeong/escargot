@@ -101,7 +101,6 @@
 
 <test>
     <default>
-        <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
         <files>toLocaleString1.js</files>
         <baseline>toLocaleString1.v4.baseline</baseline>
         <compile-flags>-version:4</compile-flags>
@@ -110,7 +109,6 @@
 </test>
 <test>
     <default>
-        <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
         <files>toLocaleString1.js</files>
         <baseline>toLocaleString1.win7.v4.baseline</baseline>
         <compile-flags>-version:4</compile-flags>
@@ -119,7 +117,6 @@
 </test>
 <test>
     <default>
-        <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
         <files>toLocaleString1.js</files>
         <baseline>toLocaleString1.baseline</baseline>
         <compile-flags>-Intl</compile-flags>
