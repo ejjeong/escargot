@@ -147,6 +147,8 @@ function enumerate(testName, objectTypeName, o, deleteQ, addQ, addX) {
                 ownPropertyNamesMinusUnenumerable.push(ownPropertyNames[i]);
         ownPropertyNames = ownPropertyNamesMinusUnenumerable;
         if(a.length === ownPropertyNames.length) {
+            a.sort();
+            ownPropertyNames.sort();
             for(var i = 0; i < a.length; ++i) {
                 if(a[i] !== ownPropertyNames[i]) {
                     echo(testHeader + "FAIL: enumeration yielded different set or order of properties compared with getOwnPropertyNames. GetOwnPropertyNames returned:");
