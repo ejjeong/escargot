@@ -2184,6 +2184,8 @@ public:
     }
 };
 
+typedef int64_t time64_t;
+typedef double time64IncludingNaN;
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject);
@@ -2193,15 +2195,12 @@ public:
         return new ESDateObject();
     }
 
-    static double parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset);
-    static double parseStringToDate_2(escargot::ESString* istr, bool& haveTZ);
-    static double parseStringToDate(escargot::ESString* istr);
-    static void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
+    static time64IncludingNaN parseStringToDate(escargot::ESString* istr);
 
     void setTimeValue();
-    void setTimeValue(double t);
+    void setTimeValue(time64IncludingNaN t);
     void setTimeValue(const ESValue str);
-    void setTimeValue(int year, int month, int date, int hour, int minute, double second, double millisecond, bool convertToUTC = true);
+    void setTimeValue(int year, int month, int date, int hour, int minute, int64_t second, int64_t millisecond, bool convertToUTC = true);
     void setTimeValueAsNaN()
     {
         m_hasValidDate = false;
@@ -2212,12 +2211,26 @@ public:
         return m_hasValidDate;
     }
 
-    double timeValueAsDouble()
+    time64IncludingNaN timeValueAsDouble()
     {
         if (m_hasValidDate) {
-            return m_primitiveValue;
+            return (time64IncludingNaN) m_primitiveValue;
         } else {
             return std::numeric_limits<double>::quiet_NaN();
+        }
+    }
+
+    static time64IncludingNaN toUTC(time64_t t);
+    static time64_t ymdhmsToSeconds(int year, int month, int day, int hour, int minute, int64_t second);
+
+    static time64IncludingNaN timeClip(double V)
+    {
+        if (std::isinf(V) || std::isnan(V)) {
+            return nan("0");
+        } else if (std::abs(V) >= 8640000000000000.0) {
+            return nan("0");
+        } else {
+            return ESValue(V).toInteger();
         }
     }
 
@@ -2232,8 +2245,8 @@ public:
     int getMinutes();
     int getMonth();
     int getSeconds();
-    long getTimezoneOffset();
-    void setTime(double t);
+    int getTimezoneOffset();
+    void setTime(time64IncludingNaN t);
     int getUTCDate();
     int getUTCDay();
     int getUTCFullYear();
@@ -2242,26 +2255,18 @@ public:
     int getUTCMinutes();
     int getUTCMonth();
     int getUTCSeconds();
-    static double toUTC(double t);
-    static double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
-
-    static double timeClip(double V)
-    {
-        if (std::isinf(V) || std::isnan(V)) {
-            return nan("0");
-        } else if (std::abs(V) >= 8640000000000000.0) {
-            return nan("0");
-        } else {
-            return ESValue(V).toInteger();
-        }
-    }
 
 private:
-    void resolveCache();
+
     struct tm m_cachedTM; // it stores time disregarding timezone
     long long m_primitiveValue; // it stores timevalue regarding timezone
     bool m_isCacheDirty;
     bool m_hasValidDate; // function get***() series (in ESValue.cpp) should check if the timevalue is valid with this flag
+    int m_timezone;
+
+    void resolveCache();
+    static time64IncludingNaN parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset);
+    static time64IncludingNaN parseStringToDate_2(escargot::ESString* istr, bool& haveTZ);
 
     static constexpr double hoursPerDay = 24.0;
     static constexpr double minutesPerHour = 60.0;
@@ -2272,20 +2277,20 @@ private:
     static constexpr double msPerHour = msPerSecond * secondsPerHour;
     static constexpr double msPerDay = msPerHour * hoursPerDay;
 
-    static long long getSecondSundayInMarch(long long t);
-    static long long getFirstSundayInNovember(long long t);
-    static double computeDaylightSaving(double primitiveValue);
-    static double day(long long t) { return floor(t / msPerDay); }
-    static double timeWithinDay(long long t) { return (int) t % (int) msPerDay; }
-    static int daysInYear(long year);
-    static int dayFromYear(long year);
-    static double timeFromYear(long year) { return msPerDay * dayFromYear(year); }
-    static long yearFromTime(long long t);
-    static int inLeapYear(long long t);
-    static int dayFromMonth(long year, int month);
-    static int monthFromTime(long long t);
-    static int dateFromTime(long long t);
-    static double makeDay(long year, int month, int date);
+    static time64_t getSecondSundayInMarch(time64_t t);
+    static time64_t getFirstSundayInNovember(time64_t t);
+    static int computeDaylightSaving(time64_t primitiveValue);
+    static double day(time64_t t) { return floor(t / msPerDay); }
+    static int timeWithinDay(time64_t t) { return t % (int) msPerDay; }
+    static int daysInYear(int year);
+    static int dayFromYear(int year);
+    static time64_t timeFromYear(int year) { return msPerDay * dayFromYear(year); }
+    static int yearFromTime(time64_t t);
+    static int inLeapYear(time64_t t);
+    static int dayFromMonth(int year, int month);
+    static int monthFromTime(time64_t t);
+    static int dateFromTime(time64_t t);
+    static time64_t makeDay(int year, int month, int date);
 };
 
 class ESMathObject : public ESObject {

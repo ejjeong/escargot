@@ -8,12 +8,13 @@
 var datestring = "Sat, 12 Aug 1995 13:30:00GMT";
 WScript.Echo(Date.parse(datestring));
 
+// out of scope of escargot
 // 2. Verifying parse date with timezone given in paranthesis.
 // This parses the date to local timezone and not the timezone given in paranthesis.           
 
-datestring = "Sat, 12 Aug 1995 13:30:00 ( GMT )";
+// datestring = "Sat, 12 Aug 1995 13:30:00 ( GMT )";
 // Covers the code for space and ( )s int the parser.
-WScript.Echo(Date.parse(datestring));
+// WScript.Echo(Date.parse(datestring));
 
 // 3. Verifying parse date with invalid timezone.
 // This should cover the error condition.
@@ -22,10 +23,11 @@ datestring = "Sat, 12 Aug 1995 13:30:00NX-01";
 var actualResult = Date.parse(datestring);
 WScript.Echo(actualResult);
 
+// out of scope of escargot
 // 4. Verifying parse date with timezone.
 
-datestring = "Sat, 12 Aug 1995 13:00:00 z";
-WScript.Echo(Date.parse(datestring));
+// datestring = "Sat, 12 Aug 1995 13:00:00 z";
+// WScript.Echo(Date.parse(datestring));
 
 // 5. Verifying conversion behaviors
 

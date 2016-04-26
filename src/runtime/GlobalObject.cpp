@@ -3557,7 +3557,8 @@ void GlobalObject::installDate()
         if (v.isESString()) {
             return ESValue(ESDateObject::parseStringToDate(v.asESString()));
         } else {
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, false, strings->parse, errorMessage_GlobalObject_FirstArgumentNotString);
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+//            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, false, strings->parse, errorMessage_GlobalObject_FirstArgumentNotString);
         }
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->parse.string(), 1));
@@ -4131,7 +4132,7 @@ void GlobalObject::installDate()
         }
 
         thisDateObject->setTimeValue((int) args[0], (int) args[1], (int) args[2], thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes()
-            , thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+            , thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds(), false);
 
         return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setUTCFullYear, 3));

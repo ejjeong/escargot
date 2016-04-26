@@ -422,7 +422,7 @@ Running all tests
 [Strings] property_and_index_of_string.js .......... Pass
 [Strings] bug_OS_3080673.js .......... Pass
 [Date] DateCtr.js .......... Pass
-[Date] DateGetSet.js .......... Fail
+[Date] DateGetSet.js .......... Pass
 [Date] DateParse.js .......... Fail
 [Date] DateParse2.js .......... Fail
 [Date] toISO_3.js .......... Pass
@@ -1425,7 +1425,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
            Generated		110		108		0		2		(98%)
             Closures		18		15		0		3		(83%)
              Strings		36		34		0		2		(94%)
-                Date		12		5		7		0		(41%)
+                Date		12		6		6		0		(50%)
                Error		23		15		0		8		(65%)
              Boolean		5		5		0		0		(100%)
               Number		8		7		0		1		(87%)
@@ -1458,4 +1458,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1249		19		132		(89%)
+               Total		1400		1250		18		132		(89%)

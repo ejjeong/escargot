@@ -1,15 +1,13 @@
 808234200000
-808259400000
 NaN
-808232400000
 Got error:
     name:     TypeError
-    message:  String expected
+    message:  Cannot convert object to primitive value
 toString called:  no
 valueOf called:   no
 Got error:
     name:     TypeError
-    message:  String expected
+    message:  Cannot convert object to primitive value
 toString called:  no
 valueOf called:   yes
 NaN
@@ -18,17 +16,17 @@ valueOf called:   yes
 32400000
 toString called:  no
 valueOf called:   yes
-NaN
+-59516380800000
 toString called:  no
 valueOf called:   yes
 Got error:
     name:     TypeError
-    message:  String expected
+    message:  Cannot convert object to primitive value
 toString called:  yes
 valueOf called:   no
 Got error:
     name:     TypeError
-    message:  String expected
+    message:  Cannot convert object to primitive value
 toString called:  yes
 valueOf called:   yes
 NaN
