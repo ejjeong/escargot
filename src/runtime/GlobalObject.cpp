@@ -3520,6 +3520,7 @@ void GlobalObject::installDate()
     m_date->forceNonVectorHiddenClass(true);
     m_date->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
+    // Date.prototype.toString
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.5.2
     m_datePrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue e = instance->currentExecutionContext()->resolveThisBinding();

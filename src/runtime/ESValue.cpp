@@ -3195,9 +3195,11 @@ ESString* ESDateObject::toTimeString()
     resolveCache();
     char buffer[512];
     if (!isnan(timeValueAsDouble())) {
-        snprintf(buffer, 512, "%02d:%02d:%02d GMT%+.1g (%s)"
+        int gmt = getTimezoneOffset() / -36;
+        snprintf(buffer, 512, "%02d:%02d:%02d GMT%s%04d (%s)"
             , getHours(), getMinutes(), getSeconds()
-            , getTimezoneOffset() / -3600.0, tzname[0]);
+            , (gmt < 0) ? "-" : "+"
+            , std::abs(gmt), tzname[0]);
         return ESString::create(buffer);
     } else {
         return ESString::create(u"Invalid Date");

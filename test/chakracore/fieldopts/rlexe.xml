@@ -539,6 +539,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2</compile-flags>
@@ -548,6 +549,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:globOpt</compile-flags>
@@ -557,6 +559,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:inline</compile-flags>
@@ -566,6 +569,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:objTypeSpec</compile-flags>
@@ -575,6 +579,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:objTypeSpecNewObj</compile-flags>
@@ -584,6 +589,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:objTypeSpecNewObj -off:fixedNewObj</compile-flags>
@@ -602,6 +608,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:splitNewScObject</compile-flags>
@@ -611,6 +618,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:objTypeSpecNewObj -off:splitNewScObject</compile-flags>
@@ -620,6 +628,7 @@
   </test>
   <test>
     <default>
+      <escargot-TZset></escargot-TZset>
       <files>objtypespec-newobj.2.js</files>
       <baseline>objtypespec-newobj.2.baseline</baseline>
       <compile-flags>-maxinterpretcount:2 -off:objTypeSpecNewObj -off:fixedNewObj -off:splitNewScObject</compile-flags>
