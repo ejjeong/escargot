@@ -58,7 +58,7 @@ run_test() {
 		$($CMD \
 			| sed 's/\[object global\]/[object Object]/g' \
 			> $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
-		$(diff -Z -i $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
+		$(diff -Z -i -a $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
 		DIFF_EXIT_CODE=$?
 		if [[ $BASELINE == $TEST_ROOT/baseline/baseline1 ]]; then
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
@@ -133,7 +133,7 @@ run_dir() {
 				SKIP=$CONTENT
 			fi
 		fi
-		if [[ $ENTITY == escargot-TZset ]]; then
+		if [[ $ENTITY == *timezone-sensitive* ]]; then
 			TZSET=Los_Angeles
 		fi
 		if [[ "$ENTITY" == "/test" && "$FILES" != "" ]]; then

@@ -2,7 +2,6 @@
 <regress-exe>
   <test>
     <default>
-      <escargot-TZset></escargot-TZset>
       <files>DateCtr.js</files>
       <baseline>DateCtr.baseline</baseline>
       <!-- test is timezone-sensitive; remove exclude_jenkins after fix -->

@@ -191,7 +191,7 @@ Running all tests
 [es5] defineIndexProperty.js .......... Pass
 [es5] defineIndexProperty.js .......... Pass
 [es5] enumerable.js .......... Pass
-[es5] hasItem.js .......... Fail
+[es5] hasItem.js .......... Pass
 [es5] regexSpace.js .......... Pass
 [es5] EnumeratingWithES5.js .......... Fail
 [es5] InsufficientArguments.js .......... Pass
@@ -1288,7 +1288,7 @@ Running all tests
 [fieldopts] objtypespec-newobj.2.js .......... Pass
 [fieldopts] objtypespec-newobj.2.js .......... Pass
 [fieldopts] objtypespec-newobj.2.js .......... Pass
-[fieldopts] objtypespec-newobj.2.js .......... Fail
+[fieldopts] objtypespec-newobj.2.js .......... Pass
 [fieldopts] objtypespec-newobj.2.js .......... Pass
 [fieldopts] objtypespec-newobj.2.js .......... Pass
 [fieldopts] objtypespec-newobj.2.js .......... Pass
@@ -1419,7 +1419,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
                Array		106		93		0		13		(87%)
               Basics		56		42		0		14		(75%)
-                 es5		56		52		3		1		(92%)
+                 es5		56		53		2		1		(94%)
                   EH		17		15		0		2		(88%)
         InlineCaches		21		20		0		1		(95%)
            Generated		110		108		0		2		(98%)
@@ -1452,10 +1452,10 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
              bailout		34		34		0		0		(100%)
                 loop		6		6		0		0		(100%)
        Miscellaneous		7		4		0		3		(57%)
-           fieldopts		111		107		1		3		(96%)
+           fieldopts		111		108		0		3		(97%)
          FixedFields		16		15		0		1		(93%)
             inlining		34		31		0		3		(91%)
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1400		1243		28		129		(88%)
+               Total		1400		1245		26		129		(88%)
