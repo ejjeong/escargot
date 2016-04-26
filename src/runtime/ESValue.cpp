@@ -2845,13 +2845,16 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
         }
     } else {
         primitiveValue = parseStringToDate_1(istr, haveTZ, offset);
-        if (!haveTZ) {
-            offset = -1 * ESVMInstance::currentInstance()->timezoneOffset() / secondsPerMinute;
+        if (!std::isnan(primitiveValue)) {
+            if (!haveTZ) {
+                primitiveValue = toUTC(primitiveValue);
+            } else {
+                primitiveValue = primitiveValue - (offset * msPerMinute);
+            }
         }
-        primitiveValue = primitiveValue - (offset * msPerMinute);
     }
 
-    if (primitiveValue <= 8640000000000000 && primitiveValue >= -8640000000000000) {
+    if (primitiveValue <= options::MaximumDatePrimitiveValue && primitiveValue >= -options::MaximumDatePrimitiveValue) {
         return primitiveValue;
     } else {
         return std::numeric_limits<double>::quiet_NaN();
@@ -3086,13 +3089,13 @@ time64_t ESDateObject::getSecondSundayInMarch(time64_t t)
     bool flag = true;
     time64_t second_sunday;
     for (second_sunday = march; flag; second_sunday += msPerDay) {
-        if ((int) (day(second_sunday) + 4) % 7 == 0) {
+        if ((((int) (day(second_sunday) + 4) % 7) + 7) % 7 == 0) {
             if (++sundayCount == 2)
                 flag = false;
         }
     }
 
-    return second_sunday;
+    return second_sunday - msPerDay;
 }
 time64_t ESDateObject::getFirstSundayInNovember(time64_t t)
 {
@@ -3102,7 +3105,7 @@ time64_t ESDateObject::getFirstSundayInNovember(time64_t t)
     time64_t nov = timeFromYear(year) + (31 * msPerDay) * 6 + (30 * msPerDay) * 3 + (28 * msPerDay) + (leap * msPerDay);
 
     time64_t first_sunday;
-    for (first_sunday = nov; (int) (day(first_sunday) + 4) % 7 > 0;
+    for (first_sunday = nov; (((int) (day(first_sunday) + 4) % 7) + 7) % 7 > 0;
         first_sunday += msPerDay) { }
     return first_sunday;
 }
@@ -3113,8 +3116,8 @@ int ESDateObject::computeDaylightSaving(time64_t primitiveValue)
     time64_t primitiveValueToUTC = primitiveValue;
 
     if (ESVMInstance::currentInstance()->timezoneOffset() == 28800) {
-        time64_t dst_start = getSecondSundayInMarch(primitiveValueToUTC) + 2 * msPerHour;
-        time64_t dst_end = getFirstSundayInNovember(primitiveValueToUTC) + 2 * msPerHour;
+        time64_t dst_start = getSecondSundayInMarch(primitiveValueToUTC) + 10 * msPerHour;
+        time64_t dst_end = getFirstSundayInNovember(primitiveValueToUTC) + 10 * msPerHour;
 
         if (primitiveValueToUTC >= dst_start && primitiveValueToUTC < dst_end)
             return -secondsPerHour;
