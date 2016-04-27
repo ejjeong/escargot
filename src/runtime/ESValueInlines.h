@@ -353,7 +353,7 @@ ALWAYS_INLINE bool ESValue::toBoolean() const
 
     if (isDouble()) {
         double d = asDouble();
-        if (isnan(d))
+        if (std::isnan(d))
             return false;
         if (d == 0.0)
             return false;
@@ -375,7 +375,7 @@ inline double ESValue::toInteger() const
     if (isInt32())
         return asInt32();
     double d = toNumber();
-    if (isnan(d))
+    if (std::isnan(d))
         return 0;
     if (d == 0 || d == std::numeric_limits<double>::infinity() || d == -std::numeric_limits<double>::infinity())
         return d;

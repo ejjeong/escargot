@@ -2223,7 +2223,7 @@ void ESDateObject::setTimeValue(const ESValue str)
     escargot::ESString* istr = str.toString();
 
     time64IncludingNaN primitiveValue = parseStringToDate(istr);
-    if (isnan(primitiveValue)) {
+    if (std::isnan(primitiveValue)) {
         setTimeValueAsNaN();
     } else {
         m_primitiveValue = (time64_t) primitiveValue;
@@ -2875,7 +2875,7 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
     }
 
     parse_returned = strptime(buffer, "%B %d %Y %H:%M:%S %z", &timeinfo); // Date format with specific timezone
-    if (buffer + fmt_length == parse_returned) { 
+    if (buffer + fmt_length == parse_returned) {
         primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
 #if defined(__USE_BSD) || defined(__USE_MISC)
         primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
@@ -2901,7 +2901,7 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
         } else {
             timeinfo.tm_gmtoff *= tz;
         }
-//        if (buffer + fmt_length == parse_returned) { 
+//        if (buffer + fmt_length == parse_returned) {
             primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
 #if defined(__USE_BSD) || defined(__USE_MISC)
             primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
@@ -2930,7 +2930,7 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
         primitiveValue = toUTC(primitiveValue);
         return primitiveValue;
     }
-    return std::numeric_limits<double>::quiet_NaN();    
+    return std::numeric_limits<double>::quiet_NaN();
     */
 }
 
@@ -3190,20 +3190,20 @@ ESString* ESDateObject::toDateString()
 
     resolveCache();
     char buffer[512];
-    if (!isnan(timeValueAsDouble())) {
+    if (!std::isnan(timeValueAsDouble())) {
         snprintf(buffer, 512, "%s %s %02d %d"
             , days[getDay()], months[getMonth()], getDate(), getFullYear());
         return ESString::create(buffer);
     } else {
         return ESString::create(u"Invalid Date");
-    } 
+    }
 }
 
 ESString* ESDateObject::toTimeString()
 {
     resolveCache();
     char buffer[512];
-    if (!isnan(timeValueAsDouble())) {
+    if (!std::isnan(timeValueAsDouble())) {
         int gmt = getTimezoneOffset() / -36;
         snprintf(buffer, 512, "%02d:%02d:%02d GMT%s%04d (%s)"
             , getHours(), getMinutes(), getSeconds()
@@ -3218,14 +3218,14 @@ ESString* ESDateObject::toTimeString()
 ESString* ESDateObject::toFullString()
 {
 
-    if (!isnan(timeValueAsDouble())) {
+    if (!std::isnan(timeValueAsDouble())) {
         resolveCache();
         ::escargot::ESString* tmp = ESString::concatTwoStrings(toDateString(), ESString::create(u" "));
         return ESString::concatTwoStrings(tmp, toTimeString());
     } else {
         return ESString::create(u"Invalid Date");
     }
-    
+
 }
 int ESDateObject::getDate()
 {
@@ -3280,13 +3280,13 @@ int ESDateObject::getTimezoneOffset()
 
 void ESDateObject::setTime(double t)
 {
-    if (isnan(t)) {
+    if (std::isnan(t)) {
         setTimeValueAsNaN();
         return;
     }
 
     m_primitiveValue = floor(t);
-    
+
     if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
         m_isCacheDirty = true;
         m_hasValidDate = true;

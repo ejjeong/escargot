@@ -566,8 +566,8 @@ void GlobalObject::initGlobalObject()
                 int start = i;
                 if (i+2 >= strLen)
                     throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
-                char16_t next = stringValue->charAt(i+1);    
-                char16_t nextnext = stringValue->charAt(i+2);    
+                char16_t next = stringValue->charAt(i+1);
+                char16_t nextnext = stringValue->charAt(i+2);
                 if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
                     throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                 if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
@@ -583,7 +583,7 @@ void GlobalObject::initGlobalObject()
                 if (!(b & 0x80)) {
                     // let C be the character with code unit value B.
                     // if C is not in reservedSet, then let S be the String containing only the character C.
-                    // else, C is in reservedSet, Let S be the substring of string from position start to position k included.                    
+                    // else, C is in reservedSet, Let S be the substring of string from position start to position k included.
                     const char16_t c = b & 0x7f;
                     if ((c == ';' || c == '/' || c == '?' // uriReserved
                         || c == ':' || c == '@' || c == '&'
@@ -604,7 +604,7 @@ void GlobalObject::initGlobalObject()
                         if ((b_tmp & 0x80) == 0) {
                             break;
                         }
-                        n++;                              
+                        n++;
                     }
                     if (n == 1 || n == 5) {
                         throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
@@ -621,8 +621,8 @@ void GlobalObject::initGlobalObject()
                         if (stringValue->charAt(i) != '%') {
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         }
-                        next = stringValue->charAt(i+1);    
-                        nextnext = stringValue->charAt(i+2);    
+                        next = stringValue->charAt(i+1);
+                        nextnext = stringValue->charAt(i+2);
                         if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
@@ -634,7 +634,7 @@ void GlobalObject::initGlobalObject()
                         if ((b & 0xC0) != 0x80) {
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURI, errorMessage_GlobalObject_MalformedURI);
                         }
-    
+
                         i += 2;
                         octets[j] = b;
                         j++;
@@ -671,7 +671,7 @@ void GlobalObject::initGlobalObject()
                         unescaped.append(&l, 1);
                     }
                 }
-            } 
+            }
         }
         return escargot::ESString::create(std::move(unescaped));
         RELEASE_ASSERT_NOT_REACHED();
@@ -696,8 +696,8 @@ void GlobalObject::initGlobalObject()
                 // int start = i;
                 if (i+2 >= strLen)
                     throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
-                char16_t next = stringValue->charAt(i+1);    
-                char16_t nextnext = stringValue->charAt(i+2);    
+                char16_t next = stringValue->charAt(i+1);
+                char16_t nextnext = stringValue->charAt(i+2);
                 if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
                     throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                 if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
@@ -722,7 +722,7 @@ void GlobalObject::initGlobalObject()
                         if ((b_tmp & 0x80) == 0) {
                             break;
                         }
-                        n++;                              
+                        n++;
                     }
                     if (n == 1 || n == 5) {
                         throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
@@ -739,8 +739,8 @@ void GlobalObject::initGlobalObject()
                         if (stringValue->charAt(i) != '%') {
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         }
-                        next = stringValue->charAt(i+1);    
-                        nextnext = stringValue->charAt(i+2);    
+                        next = stringValue->charAt(i+1);
+                        nextnext = stringValue->charAt(i+2);
                         if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
@@ -752,7 +752,7 @@ void GlobalObject::initGlobalObject()
                         if ((b & 0xC0) != 0x80) {
                             throwBuiltinError(instance, ErrorCode::URIError, strings->GlobalObject, false, strings->decodeURIComponent, errorMessage_GlobalObject_MalformedURI);
                         }
-    
+
                         i += 2;
                         octets[j] = b;
                         j++;
@@ -789,7 +789,7 @@ void GlobalObject::initGlobalObject()
                         unescaped.append(&l, 1);
                     }
                 }
-            } 
+            }
         }
         return escargot::ESString::create(std::move(unescaped));
     }, strings->decodeURIComponent.string(), 1));
@@ -1698,7 +1698,7 @@ void GlobalObject::installError()
     m_typeError->set__proto__(m_functionPrototype);
     m_typeError->forceNonVectorHiddenClass(true);
     m_typeError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
-    
+
     m_typeErrorPrototype = ESErrorObject::create();
     m_typeErrorPrototype->forceNonVectorHiddenClass(true);
 
@@ -2869,7 +2869,7 @@ void GlobalObject::installString()
         double numPos = instance->currentExecutionContext()->readArgument(1).toNumber();
         double pos;
         // If numPos is NaN, let pos be +∞; otherwise, let pos be ToInteger(numPos).
-        if (isnan(numPos))
+        if (std::isnan(numPos))
             pos = std::numeric_limits<double>::infinity();
         else
             pos = numPos;
@@ -3275,8 +3275,8 @@ void GlobalObject::installString()
             double doubleStart = instance->currentExecutionContext()->arguments()[0].toNumber();
             ESValue end = instance->currentExecutionContext()->readArgument(1);
             double doubleEnd = (argCount < 2 || end.isUndefined()) ? len : end.toNumber();
-            doubleStart = (isnan(doubleStart)) ? 0 : doubleStart;
-            doubleEnd = (isnan(doubleEnd)) ? 0 : doubleEnd;
+            doubleStart = (std::isnan(doubleStart)) ? 0 : doubleStart;
+            doubleEnd = (std::isnan(doubleEnd)) ? 0 : doubleEnd;
 
             double finalStart = (int)trunc(std::min(std::max(doubleStart, 0.0), (double)len));
             double finalEnd = (int)trunc(std::min(std::max(doubleEnd, 0.0), (double)len));
@@ -3463,7 +3463,7 @@ void GlobalObject::installDate()
         escargot::ESDateObject* thisObject;
         if (instance->currentExecutionContext()->isNewExpression()) {
             thisObject = instance->currentExecutionContext()->resolveThisBindingToObject()->asESDateObject();
-            
+
             size_t arg_size = instance->currentExecutionContext()->argumentCount();
             if (arg_size == 0) {
                 thisObject->setTimeValue();
@@ -3491,7 +3491,7 @@ void GlobalObject::installDate()
                 if ((int) year >= 0 && (int) year <= 99) {
                     year += 1900;
                 }
-                if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+                if (std::isnan(year) || std::isnan(month) || std::isnan(date) || std::isnan(hour) || std::isnan(minute) || std::isnan(second) || std::isnan(millisecond)) {
                     thisObject->setTimeValueAsNaN();
                     return ESString::create("Invalid Date");
                 }
@@ -3516,7 +3516,7 @@ void GlobalObject::installDate()
         ESValue e = instance->currentExecutionContext()->resolveThisBinding();
         if (e.isESPointer() && e.asESPointer()->isESDateObject()) {
             escargot::ESDateObject* obj = e.asESPointer()->asESDateObject();
-            if (!isnan(obj->timeValueAsDouble())) {
+            if (!std::isnan(obj->timeValueAsDouble())) {
                 return obj->toFullString();
             } else {
                 return ESString::create("Invalid Date");
@@ -3571,7 +3571,7 @@ void GlobalObject::installDate()
         if ((int) year >= 0 && (int) year <= 99) {
             year += 1900;
         }
-        if (arg_size < 2 || isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+        if (arg_size < 2 || std::isnan(year) || std::isnan(month) || std::isnan(date) || std::isnan(hour) || std::isnan(minute) || std::isnan(second) || std::isnan(millisecond)) {
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         }
         ESObject* tmp = ESDateObject::create();
@@ -3820,13 +3820,13 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
-        
-        if (isnan(args[0])) {
+
+        if (std::isnan(args[0])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -3851,17 +3851,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 2)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1]) || std::isnan(args[2])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -3886,7 +3886,7 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
@@ -3896,7 +3896,7 @@ void GlobalObject::installDate()
                 break;
         }
 
-        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2]) || isnan(args[3])) {
+        if (std::isnan(args[0]) || std::isnan(args[1]) || std::isnan(args[2]) || std::isnan(args[3])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -3921,13 +3921,13 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
-        
-        if (isnan(args[0])) {
+
+        if (std::isnan(args[0])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -3952,17 +3952,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 2)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1]) || std::isnan(args[2])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -3987,17 +3987,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 1)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4022,17 +4022,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 1)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4075,13 +4075,13 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
-        
-        if (isnan(args[0])) {
+
+        if (std::isnan(args[0])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4106,17 +4106,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 2)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1]) || std::isnan(args[2])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4141,7 +4141,7 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
@@ -4151,7 +4151,7 @@ void GlobalObject::installDate()
                 break;
         }
 
-        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2]) || isnan(args[3])) {
+        if (std::isnan(args[0]) || std::isnan(args[1]) || std::isnan(args[2]) || std::isnan(args[3])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4176,13 +4176,13 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
-        
-        if (isnan(args[0])) {
+
+        if (std::isnan(args[0])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4207,17 +4207,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 2)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1]) || std::isnan(args[2])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4242,17 +4242,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 1)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4277,17 +4277,17 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        
+
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
             if (i >= 1)
                 break;
         }
-        
-        if (isnan(args[0]) || isnan(args[1])) {
+
+        if (std::isnan(args[0]) || std::isnan(args[1])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4312,10 +4312,10 @@ void GlobalObject::installDate()
     m_datePrototype->defineDataProperty(strings->toISOString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, toISOString);
         if (thisObject->isESDateObject()) {
-            escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();        
+            escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
 
             char buffer[512];
-            if (!isnan(thisDateObject->timeValueAsDouble())) {
+            if (!std::isnan(thisDateObject->timeValueAsDouble())) {
                 if (thisDateObject->getUTCFullYear() >= 0 && thisDateObject->getUTCFullYear() <= 9999) {
                     snprintf(buffer, 512, "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ"
                         , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
@@ -4331,7 +4331,7 @@ void GlobalObject::installDate()
             }
         } else {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toISOString, errorMessage_GlobalObject_ThisNotDateObject);
-        }      
+        }
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toISOString, 0));
 
@@ -4340,7 +4340,7 @@ void GlobalObject::installDate()
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         ESObject* thisObject = thisValue.toObject();
         ESValue tv = thisValue.toPrimitive(ESValue::PreferNumber);
-        if (tv.isNumber() && (isnan(tv.asNumber()) || std::isinf(tv.asNumber()))) {
+        if (tv.isNumber() && (std::isnan(tv.asNumber()) || std::isinf(tv.asNumber()))) {
             return ESValue(ESValue::ESNull);
         }
 
@@ -4398,7 +4398,7 @@ void GlobalObject::installDate()
 
             escargot::ESDateObject* thisDateObject = e.asESPointer()->asESDateObject();
             char buffer[512];
-            if (!isnan(thisDateObject->timeValueAsDouble())) {
+            if (!std::isnan(thisDateObject->timeValueAsDouble())) {
                 snprintf(buffer, 512, "%s, %02d %s %d %02d:%02d:%02d GMT"
                     , days[thisDateObject->getUTCDay()], thisDateObject->getUTCDate(), months[thisDateObject->getUTCMonth()], thisDateObject->getUTCFullYear()
                     , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds());
@@ -4445,13 +4445,13 @@ void GlobalObject::installDate()
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
-        if (isnan(thisDateObject->timeValueAsDouble())) {
+        if (std::isnan(thisDateObject->timeValueAsDouble())) {
             thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
         }
 
         args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
 
-        if (isnan(args[0])) {
+        if (std::isnan(args[0])) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
@@ -4477,7 +4477,7 @@ void GlobalObject::installDate()
             static char months[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
             char buffer[512];
-            if (!isnan(thisDateObject->timeValueAsDouble())) {
+            if (!std::isnan(thisDateObject->timeValueAsDouble())) {
                 snprintf(buffer, 512, "%s, %02d %s %d %02d:%02d:%02d GMT"
                     , days[thisDateObject->getUTCDay()], thisDateObject->getUTCDate(), months[thisDateObject->getUTCMonth()], thisDateObject->getUTCFullYear()
                     , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds());
@@ -5261,7 +5261,7 @@ void GlobalObject::installMath()
         If x is −0, the result is −0.
         If x is +∞ or −∞, the result is NaN.
         */
-        if (isnan(x))
+        if (std::isnan(x))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         else if (x == 0.0) {
             if (std::signbit(x)) {
@@ -5378,7 +5378,7 @@ void GlobalObject::installNumber()
             double fractionDigits = instance->currentExecutionContext()->arguments()[0].toNumber();
             digit = (int) trunc(fractionDigits);
         }
-        if (isnan(number)) { // 3
+        if (std::isnan(number)) { // 3
             return strings->NaN.string();
         }
 
@@ -5481,14 +5481,14 @@ void GlobalObject::installNumber()
             }
         } else if (arglen >= 1) {
             double digit_d = instance->currentExecutionContext()->arguments()[0].toNumber();
-            if (digit_d == 0 || isnan(digit_d)) {
+            if (digit_d == 0 || std::isnan(digit_d)) {
                 return ESValue(round(number)).toString();
             }
             int digit = (int) trunc(digit_d);
             if (digit < 0 || digit > 20) {
                 throwBuiltinError(instance, ErrorCode::RangeError, strings->Number, true, strings->toFixed, errorMessage_GlobalObject_RangeError);
             }
-            if (isnan(number) || std::isinf(number)) {
+            if (std::isnan(number) || std::isinf(number)) {
                 return ESValue(number).toString();
             } else if (std::abs(number) >= pow(10, 21)) {
                 return ESValue(round(number)).toString();
@@ -5525,7 +5525,7 @@ void GlobalObject::installNumber()
         } else if (arglen >= 1) {
             double x = number;
             double p_d = instance->currentExecutionContext()->arguments()[0].toNumber();
-            if (isnan(x)) {
+            if (std::isnan(x)) {
                 return strings->NaN.string();
             }
             std::basic_ostringstream<char> stream;
@@ -5581,8 +5581,8 @@ void GlobalObject::installNumber()
         } else {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toString, errorMessage_GlobalObject_ThisNotNumber);
         }
-        
-        if (isnan(number) || std::isinf(number)) {
+
+        if (std::isnan(number) || std::isinf(number)) {
             return (ESValue(number).toString());
         }
         int arglen = instance->currentExecutionContext()->argumentCount();
@@ -5634,7 +5634,7 @@ void GlobalObject::installNumber()
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Number, true, strings->toLocaleString, errorMessage_GlobalObject_ThisNotNumber);
         }
 
-        if (isnan(number) || std::isinf(number)) {
+        if (std::isnan(number) || std::isinf(number)) {
             return (ESValue(number).toString());
         }
         int arglen = instance->currentExecutionContext()->argumentCount();
@@ -5802,7 +5802,7 @@ void GlobalObject::installRegExp()
         escargot::ESRegExpObject* regexp = thisVal.asESPointer()->asESRegExpObject();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         double lastIndex = regexp->lastIndex().toInteger();
-        if (!regexp->option() & ESRegExpObject::Option::Global) {
+        if ((!regexp->option()) & ESRegExpObject::Option::Global) {
             lastIndex = 0;
         }
         if (lastIndex < 0 || lastIndex > sourceStr->length()) {
