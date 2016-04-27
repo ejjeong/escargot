@@ -43,7 +43,7 @@ Running all tests
 [Array] toLocaleString.js .......... Pass
 [Array] toLocaleString.js .......... Pass
 [Array] array_slice.js .......... Pass
-[Array] array_slice2.js .......... Skip (Takes too long)
+[Array] array_slice2.js .......... Pass
 [Array] array_sort.js .......... Pass
 [Array] array_includes.js .......... Skip (Not in scope (es6))
 [Array] array_sort2.js .......... Pass
@@ -1417,7 +1417,7 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		93		0		13		(87%)
+               Array		106		94		0		12		(88%)
               Basics		56		42		0		14		(75%)
                  es5		56		55		0		1		(98%)
                   EH		17		15		0		2		(88%)
@@ -1457,4 +1457,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1399		1263		6		130		(90%)
+               Total		1399		1264		6		129		(90%)

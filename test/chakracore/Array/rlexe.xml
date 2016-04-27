@@ -280,7 +280,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>array_slice2.js</files>
       <baseline>array_slice2.baseline</baseline>
     </default>

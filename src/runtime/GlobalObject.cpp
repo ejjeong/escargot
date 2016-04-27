@@ -2470,9 +2470,13 @@ void GlobalObject::installArray()
             if (kPresent) {
                 ESValue kValue = thisBinded->get(ESValue(k));
                 ret->defineDataProperty(ESValue(n), true, true, true, kValue);
+                k++;
+                n++;
+            } else {
+                uint32_t tmp = ESArrayObject::nextIndexForward(thisBinded, k, arrlen, false);
+                n += tmp - k;
+                k = tmp;
             }
-            k++;
-            n++;
         }
         return ret;
     }, strings->slice, 2));
