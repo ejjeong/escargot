@@ -3543,7 +3543,7 @@ void GlobalObject::installDate()
 
     // $20.3.3.2 Date.parse()
     m_date->defineDataProperty(strings->parse, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue v = instance->currentExecutionContext()->readArgument(0).toPrimitive();
+        ESValue v = instance->currentExecutionContext()->readArgument(0).toPrimitive(ESValue::PreferString);
         if (v.isESString()) {
             return ESValue(ESDateObject::parseStringToDate(v.asESString()));
         } else {
