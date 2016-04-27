@@ -24,6 +24,7 @@
       <files>biops.js</files>
       <baseline>biops.baseline</baseline>
       <!-- fails due to baseline diff apparently; remove exclude_jenkins when fixed -->
+      <!-- test is timezone-sensitive; remove exclude_jenkins after fix -->
       <tags>fail_mutators,Slow,exclude_jenkins</tags>
     </default>
   </test>
