@@ -1,0 +1,16 @@
+acid.js:223://bogus("(b.)c(?!\N)", "s");
+acid.js:240:exec(/(b.)c(?!\N)/, "a\nb\nc\n");
+acid.js:266:exec(/(.*?)a(?!(a+)b\2c)\2(.*)/, "baaabaac");
+bugFixRegression.js:281:exec(/(^(?:.|\r|\n)*?):((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\3\))?(?![^\[]*\])(?![^\(]*\))/, ":contains('Google')");
+bugFixRegression.js:290:exec(/(?:[^?#](?![^?#\/]*\.[^?#\/.]+))*/, "a/a.a");
+bugFixRegression.js:291:exec(/^((((?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/, "a/6237/8200/13977-9.js?cb=0.05630486307449717");
+bugFixRegression.js:292:r = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
+bugFixRegression.js:363:safeCall(eval, "/(?:|)(?!a)/");
+bugFixRegression.js:368:safeCall(eval, "/(?:|(?=(?:(?:[]-a]||)))((R)+?))(?!(?:i))/");
+bugFixRegression.js:403:exec(/\1((?=((?=\2))|G)\3)|(?!z{1,5}){4,}|(?=.+?)(P|L*)|(?!P|A)|\3|(?!")?|(?=(\5))/, "");
+bugFixRegression.js:404:exec(/((?=$)|(?!-))?/, "");
+bugFixRegression.js:435:exec(/(?!(.)+)/, str);
+bugFixRegression.js:490:exec(/(?!^)b*c/, "bbc");
+es5SpecExamples.js:237:exec(/(.*?)a(?!(a+)b\2c)\2(.*)/, "baaabaac");
+quantifiableAssertions.js:228:    "(?!a)",
+quantifiableAssertions.js:229:    "(?!b)"

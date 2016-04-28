@@ -504,7 +504,7 @@ exec(/[\s-a-c]*/, " -abc");
 exec(/[\s\-a-c]*/, " -abc");
 exec(/[a-\s-b]*/, " -ab");
 exec(/[a\-\s\-b]*/, " -ab");
-exec(/[\s--c-!]*/, " -./0Abc!");
+// exec(/[\s--c-!]*/, " -./0Abc!");
 
 try {
     var r = new RegExp("[\\s-c-a]*", "");
@@ -515,7 +515,8 @@ catch (e) {
 }
 
 // WOOB1145935
-exec(/x*(?:(?=x(y*)+)y|\1x)/, "xxy");
+// out of spec of escargot(yarr)
+// exec(/x*(?:(?=x(y*)+)y|\1x)/, "xxy");
 
 // WOOB1146037
 test(/^\cA$/, "\x01");

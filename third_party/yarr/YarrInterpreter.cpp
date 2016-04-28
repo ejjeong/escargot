@@ -1385,10 +1385,21 @@ public:
             if (backtrackParenthesesTerminalEnd(currentTerm(), context))
                 MATCH_NEXT();
             BACKTRACK();
-        case ByteTerm::TypeParentheticalAssertionBegin:
-            if (backtrackParentheticalAssertionBegin(currentTerm(), context))
+        case ByteTerm::TypeParentheticalAssertionBegin: {
+            int start = context->term;
+            if (backtrackParentheticalAssertionBegin(currentTerm(), context)) {
+                int end = context->term;
+                for (int i = start + 1; i < end; i++) {
+                    if (disjunction->terms[i].type == ByteTerm::ByteTerm::TypeParenthesesSubpatternOnceEnd) {
+                        unsigned subpatternId = disjunction->terms[i].atom.subpatternId;
+                        output[(subpatternId << 1)] = offsetNoMatch;
+                        output[(subpatternId << 1) + 1] = offsetNoMatch;
+                    }
+                }
                 MATCH_NEXT();
+            }
             BACKTRACK();
+        }
         case ByteTerm::TypeParentheticalAssertionEnd:
             if (backtrackParentheticalAssertionEnd(currentTerm(), context))
                 MATCH_NEXT();

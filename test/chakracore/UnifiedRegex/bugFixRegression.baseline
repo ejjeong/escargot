@@ -160,7 +160,7 @@ r.lastIndex=0
 match(/^([^a-z0-9_-])?([a-z0-9_-]+)(.*)/i /*lastIndex=0*/ , ".relevant");
 [".relevant",".","relevant",""] /*input=".relevant", index=0*/ 
 r.lastIndex=0
-exec(/([A-Z]|[a-z]|[-_,'(){}/:\. ]|[0-9]|[^#$&%])+/ /*lastIndex=0*/ , "Fbl_uex_cxe_dev4");
+exec(/([A-Z]|[a-z]|[-_,'(){}\/:\. ]|[0-9]|[^#$&%])+/ /*lastIndex=0*/ , "Fbl_uex_cxe_dev4");
 ["Fbl_uex_cxe_dev4","4"] /*input="Fbl_uex_cxe_dev4", index=0*/ 
 r.lastIndex=0
 match(/^\s*(\S+(\s+\S+)*)\s*$/ /*lastIndex=0*/ , "Fbl_uex_cxe_dev4");
@@ -471,7 +471,7 @@ exec(/(?:a||b)?/ /*lastIndex=0*/ , "b");
 ["b"] /*input="b", index=0*/ 
 r.lastIndex=0
 exec(/[\s-a-c]*/ /*lastIndex=0*/ , " -abc");
-[" -abc"] /*input=" -abc", index=0*/ 
+[" -a"] /*input=" -abc", index=0*/ 
 r.lastIndex=0
 exec(/[\s\-a-c]*/ /*lastIndex=0*/ , " -abc");
 [" -abc"] /*input=" -abc", index=0*/ 
@@ -482,12 +482,8 @@ r.lastIndex=0
 exec(/[a\-\s\-b]*/ /*lastIndex=0*/ , " -ab");
 [" -ab"] /*input=" -ab", index=0*/ 
 r.lastIndex=0
-exec(/[\s--c-!]*/ /*lastIndex=0*/ , " -./0Abc!");
-[" -./0Abc!"] /*input=" -./0Abc!", index=0*/ 
-r.lastIndex=0
-EXCEPTION
-exec(/x*(?:(?=x(y*)+)y|\1x)/ /*lastIndex=0*/ , "xxy");
-["xx",undefined] /*input="xxy", index=0*/ 
+exec(/[\s-c-a]*/ /*lastIndex=0*/ , " -abc");
+[" -a"] /*input=" -abc", index=0*/ 
 r.lastIndex=0
 test(/^\cA$/ /*lastIndex=0*/ , "\u0001");
 true
