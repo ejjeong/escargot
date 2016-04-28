@@ -16,7 +16,8 @@
   <test>
     <default>
       <files>addcross.js</files>
-      <baseline />
+      <baseline>addcross.baseline</baseline>
+      <!-- test is timezone-sensitive; remove exclude_jenkins after fix -->
     </default>
   </test>
   <test>
