@@ -1989,10 +1989,12 @@ void GlobalObject::installArray()
                     // Increase to by 1.
                     to++;
                 }
-            }
 
-            // Increase k by 1.
-            k++;
+                // Increase k by 1.
+                k++;
+            } else {
+                k = ESArrayObject::nextIndexForward(O, k, len, false);
+            }
         }
 
         return A;
@@ -2037,8 +2039,10 @@ void GlobalObject::installArray()
                 ESValue kValue = O->get(pk);
                 ESValue arguments[3] = {kValue, pk, O};
                 ESFunctionObject::call(instance, callbackfn, T, arguments, 3, false);
+                k++;
+            } else {
+                k = ESArrayObject::nextIndexForward(O, k, len, false);
             }
-            k++;
         }
         return ESValue();
     }, strings->forEach, 1));
@@ -2077,8 +2081,10 @@ void GlobalObject::installArray()
                     if (searchElement.equalsTo(elementK)) {
                         return ESValue(k);
                     }
+                    k++;
+                } else {
+                    k = ESArrayObject::nextIndexForward(thisBinded, k, len, false);
                 }
-                k++;
             }
 
             return ESValue(-1);
@@ -2182,8 +2188,10 @@ void GlobalObject::installArray()
                     if (searchElement.equalsTo(elementK)) {
                         return ESValue(k);
                     }
+                    k--;
+                } else {
+                    k = ESArrayObject::nextIndexBackward(thisBinded, k, -1, false);
                 }
-                k--;
             }
 
             return ESValue(-1);
@@ -2230,10 +2238,10 @@ void GlobalObject::installArray()
                 ESValue mappedValue = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
 
                 A->defineDataProperty(pk, true, true, true, mappedValue);
+                k++;
+            } else {
+                k = ESArrayObject::nextIndexForward(O, k, len, false);
             }
-
-            // Increase k by 1.
-            k++;
         }
 
         return A;
@@ -2320,8 +2328,10 @@ void GlobalObject::installArray()
                 fnargs[2] = ESValue(k);
                 fnargs[3] = O;
                 accumulator = ESFunctionObject::call(ESVMInstance::currentInstance(), callbackfn, ESValue(), fnargs, fnargc, false);
+                k++;
+            } else {
+                k = ESArrayObject::nextIndexForward(O, k, len, false);
             }
-            k++; // 9.d
         }
         return accumulator;
     }, strings->reduce.string(), 1));
@@ -2370,8 +2380,10 @@ void GlobalObject::installArray()
                 fnargs[2] = ESValue(k);
                 fnargs[3] = O;
                 accumulator = ESFunctionObject::call(ESVMInstance::currentInstance(), callbackfn, ESValue(), fnargs, fnargc, false);
+                k--;
+            } else {
+                k = ESArrayObject::nextIndexBackward(O, k, -1, false);
             }
-            k--; // 9.d
         }
         return accumulator;
 
