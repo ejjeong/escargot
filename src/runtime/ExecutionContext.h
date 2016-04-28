@@ -11,13 +11,13 @@ class ExecutionContext : public gc {
 public:
     ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool isNewExpression, bool isStrictMode,
         ESValue* arguments = NULL, size_t argumentsCount = 0)
-            : m_thisValue(ESValue::ESForceUninitialized)
+            : m_environment(varEnv)
+            , m_thisValue(ESValue::ESForceUninitialized)
             , m_tryOrCatchBodyResultOrArgumentsInfo(ESValue::ESForceUninitialized)
     {
         ASSERT(varEnv);
         m_data.m_isNewExpression = isNewExpression;
         m_data.m_isStrict = isStrictMode;
-        m_environment = varEnv;
         m_tryOrCatchBodyResultOrArgumentsInfo = (ESPointer *)arguments;
         m_data.m_argumentCount = argumentsCount;
 #ifdef ENABLE_ESJIT
@@ -99,7 +99,7 @@ public:
 #endif
 
     ESValue& tryOrCatchBodyReturnValue() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
-    std::vector<ESValue, gc_allocator<ESValue>>& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
+    ESValueVectorStd& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
 private:
     struct {
         bool m_isNewExpression;
@@ -114,7 +114,7 @@ private:
 
     ESValue m_thisValue;
     ESValue m_tryOrCatchBodyResultOrArgumentsInfo;
-    std::vector<ESValue, gc_allocator<ESValue>> m_tryOrCatchBodyResult;
+    ESValueVectorStd m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
     bool m_executeNextByteCode;

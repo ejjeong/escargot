@@ -136,6 +136,11 @@ public:
         return m_flags.m_canUseFastAccess;
     }
 
+    bool canUseFastAccessInHeap()
+    {
+        return m_flags.m_isFastAccessIndexIndicatesHeapIndex;
+    }
+
     bool canUseGlobalFastAccess()
     {
         return m_flags.m_canUseGlobalFastAccess;

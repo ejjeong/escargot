@@ -341,6 +341,7 @@ CodeBlock* generateByteCode(CodeBlock* block, Node* node, ExecutableType type, P
     case ExecutableType::FunctionCode:
         if (shouldGenerateByteCodeInstantly) {
             ((FunctionNode*)node)->initializeCodeBlock(block);
+            context.m_hasArgumentsBinding = block->m_hasArgumentsBinding;
             ((FunctionNode*)node)->body()->generateStatementByteCode(block, context);
             block->pushCode(ReturnFunction(), context, node);
             block->m_ast = nullptr;

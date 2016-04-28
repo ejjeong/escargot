@@ -21,17 +21,35 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
 {
     ASSERT(m_needsActivation);
     // TODO canDelete
+    size_t foundCnt = 0;
     size_t siz = (*m_innerIdentifiers).size();
+
+    bool deletableBinding = canDelete && ESVMInstance::currentInstance()->isFEName(name);
+
     for (unsigned i = 0; i < siz; i ++) {
         if ((*m_innerIdentifiers)[i] == name) {
-            if (i == m_mutableIndex) {
-                m_mutableIndex = 0;
-                m_mutableIndex -= 1;
-                m_heapAllocatedData[i] = ESValue();
+            if (deletableBinding) {
+                foundCnt++;
             }
-            return;
+
+            if (!deletableBinding || foundCnt == 2) {
+                if (i == m_mutableIndex) {
+                    m_mutableIndex = 0;
+                    m_mutableIndex -= 1;
+                    m_heapAllocatedData[i] = ESValue();
+                }
+                if (m_heapAllocatedData[i].isDeleted()) {
+                    m_heapAllocatedData[i] = ESValue();
+                }
+            }
+
+            if (!deletableBinding || foundCnt == 2) {
+                return;
+            }
         }
     }
+
+    ASSERT(foundCnt <= 2);
     if (!canDelete) {
         if (m_innerIdentifiers->size() != m_numVariableDeclarations)
             RELEASE_ASSERT_NOT_REACHED();
@@ -40,6 +58,40 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
     (*m_innerIdentifiers).push_back(name);
     m_heapAllocatedData.push_back(ESValue());
     ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+}
+
+ESBindingSlot DeclarativeEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName)
+{
+    if (!m_needsActivation)
+        return NULL;
+
+    // Searching from bottom to top can introduce small performance regression.
+    // FIXME If same-named parameter issue get fixed in other way later,
+    // this searching can start from the top again
+
+    // TODO : boundConfigurable is always true at the very first time, what if try to delete immutable binding value at the very first time?
+    size_t foundCount = 0;
+    bool isFEName = ESVMInstance::currentInstance()->isFEName(atomicName.string());
+    for (int i = m_innerIdentifiers->size() - 1; i >= 0; i--) {
+        if ((*m_innerIdentifiers)[i] == atomicName) {
+            bool isBindingMutable = (i != m_mutableIndex);
+            bool isBindingConfigurable = (i >= m_numVariableDeclarations) | (isFEName & (foundCount == 0));
+            foundCount++;
+            if (isFEName) {
+                ASSERT(foundCount <= 2);
+                if (m_heapAllocatedData[i].isDeleted()) {
+                    continue;
+                }
+            } else {
+                ASSERT(foundCount <= 1);
+                if (m_heapAllocatedData[i].isDeleted()) {
+                    return NULL;
+                }
+            }
+            return ESBindingSlot(&m_heapAllocatedData[i], true, isBindingMutable, isBindingConfigurable);
+        }
+    }
+    return NULL;
 }
 
 // $8.1.1.4.12

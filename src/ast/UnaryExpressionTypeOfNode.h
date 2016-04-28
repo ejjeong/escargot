@@ -19,7 +19,7 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_argument->isIdentifier() && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
-            if (((IdentifierNode *)m_argument)->name() == strings->arguments)
+            if (((IdentifierNode *)m_argument)->name() == strings->arguments && !context.m_isGlobalScope && !context.m_hasArgumentsBinding)
                 codeBlock->pushCode(GetArgumentsObject(), context, this);
             else
                 codeBlock->pushCode(GetByIdWithoutException(

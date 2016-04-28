@@ -2109,6 +2109,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         } else {
             stackStorage[cb->m_functionExpressionNameIndex] = ESValue(fn);
         }
+
+        ESVMInstance::currentInstance()->registerOuterFEName(fn->name());
     }
 
     const FunctionParametersInfoVector& info = cb->m_paramsInformation;
@@ -2159,7 +2161,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #else
             result = interpret(instance, cb, 0, stackStorage, &record->heapAllocatedData());
 #endif
-            instance->m_currentExecutionContext = currentContext;
         } else {
             if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
                 FunctionEnvironmentRecordWithArgumentsObject envRec(
@@ -2174,7 +2175,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #else
                 result = interpret(instance, cb, 0, stackStorage, &envRec.heapAllocatedData());
 #endif
-                instance->m_currentExecutionContext = currentContext;
             } else {
                 FunctionEnvironmentRecord envRec(
                     stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, cb->m_needsActivation, cb->m_functionExpressionNameIndex);
@@ -2187,8 +2187,11 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #else
                 result = interpret(instance, cb, 0, stackStorage, &envRec.heapAllocatedData());
 #endif
-                instance->m_currentExecutionContext = currentContext;
             }
+        }
+        instance->m_currentExecutionContext = currentContext;
+        if (cb->m_isFunctionExpression && cb->m_functionExpressionNameIndex != SIZE_MAX) {
+            ESVMInstance::currentInstance()->unregisterOuterFEName(fn->name());
         }
     } else {
         instance->throwError(ErrorCode::TypeError, errorMessage_Call_NotFunction);

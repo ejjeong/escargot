@@ -245,6 +245,21 @@ public:
         m_checkedObjects.erase(m_checkedObjects.begin(), m_checkedObjects.end());
     }
 
+    void registerOuterFEName(ESString* name)
+    {
+        m_outerFENames.insert(name);
+    }
+
+    void unregisterOuterFEName(ESString* name)
+    {
+        m_outerFENames.erase(name);
+    }
+
+    bool isFEName(ESString* name)
+    {
+        return m_outerFENames.find(name) != m_outerFENames.end();
+    }
+
     bool isInCatchClause() { return m_catchDepth != 0; }
     void enterCatchClause() { m_catchDepth++; }
     void exitCatchClause() { ASSERT(isInCatchClause()); m_catchDepth--; }
@@ -371,6 +386,7 @@ protected:
         gc_allocator<std::pair<ESRegExpObject::RegExpCacheKey, ESRegExpObject::RegExpCacheEntry> > > m_regexpCache;
 
     std::unordered_set<ESObject*, std::hash<ESObject*>, std::equal_to<ESObject*>, gc_allocator<ESObject*> > m_checkedObjects;
+    std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString*> > m_outerFENames;
 
     size_t m_catchDepth;
 public:

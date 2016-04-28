@@ -452,6 +452,12 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
         }
         if (idNode->canUseFastAccess() && nearFunctionNode) {
             if (idNode->fastAccessUpIndex() == 0) {
+                if (nearFunctionNode->usesEval()) {
+                    // Can shadow static declaration
+                    idNode->unsetFastIndex();
+                    return;
+                }
+
                 size_t heapIndexes = 0;
                 size_t stackIndexes = 0;
                 auto ids = nearFunctionNode->innerIdentifiers();
@@ -478,6 +484,12 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
                     }
                     fn = fn->outerFunctionNode();
                 }
+
+                if (fn->usesEval()) {
+                    idNode->unsetFastIndex();
+                    return;
+                }
+
                 size_t stackIndexes = 0;
                 auto ids = fn->innerIdentifiers();
                 for (unsigned i = 0; i < idNode->fastAccessIndex(); i ++) {
