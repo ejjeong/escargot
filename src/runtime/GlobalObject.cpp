@@ -2536,10 +2536,11 @@ void GlobalObject::installArray()
                 if (testResult.toBoolean()) {
                     return ESValue(true);
                 }
-            }
 
-            // Increase k by 1.
-            k++;
+                k++;
+            } else {
+                k = ESArrayObject::nextIndexForward(O, k, len, false);
+            }
         }
         return ESValue(false);
     }, strings->some.string(), 1));
