@@ -568,7 +568,7 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
         ec->tryOrCatchBodyResult().push_back(ESValue(ESValue::ESEmptyValue));
         ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)), stackStorage, heapStorage);
         if (!ret.isEmpty()) {
-            ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount)));
+            ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret);
         }
         instance->unregisterTryPos(&tryPosition);
         instance->unregisterCheckedObjectAll();
@@ -584,7 +584,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
     instance->m_currentExecutionContext = backupedEC;
     if (code->m_catchPosition == 0) {
         instance->currentExecutionContext()->setEnvironment(oldEnv);
-        ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, err, ESValue((int32_t)code->m_tryDupCount)));
+        ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, err);
         return;
     }
     LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecordForCatchClause(0, 0, InternalAtomicStringVector(), true, SIZE_MAX, code->m_name, oldEnv->record()), oldEnv);
@@ -604,14 +604,14 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
                 }
             }
         } else {
-            ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount)));
+            ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret));
         }
         instance->unregisterTryPos(&tryPosition);
         instance->unregisterCheckedObjectAll();
     } else {
         ESValue e = instance->getCatchedError();
         instance->currentExecutionContext()->setEnvironment(oldEnv);
-        ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1)));
+        ec->tryOrCatchBodyResult()[ec->tryOrCatchBodyResult().size() - 1] = (ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e));
     }
     instance->exitCatchClause();
 }

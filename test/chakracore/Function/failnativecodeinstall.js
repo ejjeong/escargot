@@ -43,8 +43,6 @@ catch (e) {
 
 function f() {
     WScript.Echo('call ' + x);
-    while (1) {
-        y++;
-    }
+    throw 1;
 }
 

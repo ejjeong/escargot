@@ -818,7 +818,7 @@ Running all tests
 [Function] calli.js .......... Pass
 [Function] caller_replaced_proto.js .......... Skip (Not in scope (with))
 [Function] bug542360.js .......... Pass
-[Function] failnativecodeinstall.js .......... Skip (Takes too long)
+[Function] failnativecodeinstall.js .......... Pass
 [Object] constructor.js .......... Pass
 [Object] constructor1.js .......... Pass
 [Object] expandos.js .......... Pass
@@ -1434,7 +1434,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
       TaggedIntegers		44		44		0		0		(100%)
         TaggedFloats		1		0		0		1		(0%)
            Optimizer		206		197		0		9		(95%)
-            Function		61		52		0		9		(85%)
+            Function		61		53		0		8		(86%)
               Object		58		52		0		6		(89%)
                Regex		33		28		0		5		(84%)
           Prototypes		7		7		0		0		(100%)
@@ -1457,4 +1457,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1399		1272		0		127		(90%)
+               Total		1399		1273		0		126		(90%)

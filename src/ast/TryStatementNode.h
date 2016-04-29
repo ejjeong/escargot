@@ -55,7 +55,6 @@ public:
 
         codeBlock->pushCode(FinallyEnd(), context, this);
         codeBlock->peekCode<FinallyEnd>(codeBlock->lastCodePosition<FinallyEnd>())->m_tryDupCount = context.m_tryStatementScopeCount;
-        codeBlock->peekCode<FinallyEnd>(codeBlock->lastCodePosition<FinallyEnd>())->m_finalizerExists = (m_finalizer) ? true : false;
 
         context.m_tryStatementScopeCount--;
     }

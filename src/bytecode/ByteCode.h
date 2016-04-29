@@ -1975,7 +1975,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->value2().asInt32());
+        printf("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->tryDupCount().asInt32());
     }
 #endif
 
@@ -2248,7 +2248,6 @@ public:
     }
 #endif
     size_t m_tryDupCount;
-    bool m_finalizerExists;
 };
 
 class PrintSpAndBp : public ByteCode {

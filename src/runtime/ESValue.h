@@ -2940,12 +2940,12 @@ protected:
         m_value = value;
     }
 
-    ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value, const ESValue& value2)
+    ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value, const ESValue& tryDupCount)
         : ESPointer(ESPointer::ESControlFlowRecord)
     {
         m_reason = reason;
         m_value = value;
-        m_value2 = value2;
+        m_tryDupCount = tryDupCount;
     }
 
 public:
@@ -2959,9 +2959,9 @@ public:
         return new ESControlFlowRecord(reason, value);
     }
 
-    static ESControlFlowRecord* create(const ControlFlowReason& reason, const ESValue& value, const ESValue& value2)
+    static ESControlFlowRecord* create(const ControlFlowReason& reason, const ESValue& value, const ESValue& tryDupCount)
     {
-        return new ESControlFlowRecord(reason, value, value2);
+        return new ESControlFlowRecord(reason, value, tryDupCount);
     }
 
     const ControlFlowReason& reason()
@@ -2974,25 +2974,25 @@ public:
         return m_value;
     }
 
-    const ESValue& value2()
+    const ESValue& tryDupCount()
     {
-        return m_value2;
+        return m_tryDupCount;
     }
 
-    void setValue(const ESValue& v)
+    void setValue(const ESValue& value)
     {
-        m_value = v;
+        m_value = value;
     }
 
-    void setValue2(const ESValue& v)
+    void setTryDupCount(const ESValue& tryDupCount)
     {
-        m_value2 = v;
+        m_tryDupCount = tryDupCount;
     }
 
 protected:
     ControlFlowReason m_reason;
     ESValue m_value;
-    ESValue m_value2;
+    ESValue m_tryDupCount;
 };
 
 }

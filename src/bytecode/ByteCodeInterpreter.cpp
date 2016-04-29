@@ -1051,53 +1051,23 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             } else {
                 ASSERT(ec->tryOrCatchBodyResult().back().asESPointer()->isESControlFlowRecord());
                 ESControlFlowRecord* record = ec->tryOrCatchBodyResult().back().asESPointer()->asESControlFlowRecord();
-                uint32_t dupCnt = record->value2().asUInt32();
-                if (dupCnt <= 1) {
-                    if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
-                        ESValue ret = record->value();
-                        ec->tryOrCatchBodyResult().pop_back();
-                        // TODO sp check
-                        return ret;
-                    } else if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
-                        ESValue val = record->value();
-                        ec->tryOrCatchBodyResult().pop_back();
-                        instance->throwError(val);
-                    } else {
-                        ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
-                        *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
-                        programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());
-                        ec->tryOrCatchBodyResult().pop_back();
-                        NEXT_INSTRUCTION();
-                    }
-                } else {
-                    if (((FinallyEnd *) currentCode)->m_tryDupCount <= 0) {
-                        ec->tryOrCatchBodyResult().pop_back();
-                        executeNextCode<FinallyEnd>(programCounter);
-                        NEXT_INSTRUCTION();
-                    } else if (((FinallyEnd *) currentCode)->m_finalizerExists && dupCnt == ((FinallyEnd *) currentCode)->m_tryDupCount) {
-                        if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
-                            ESValue ret = record->value();
-                            ec->tryOrCatchBodyResult().pop_back();
-                            // TODO sp check
-                            return ret;
-                        } else if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
-                            ESValue val = record->value();
-                            ec->tryOrCatchBodyResult().pop_back();
-                            instance->throwError(val);
-                        } else {
-                            ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
-                            *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
-                            programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());
-                            ec->tryOrCatchBodyResult().pop_back();
-                            NEXT_INSTRUCTION();
-                        }
-                    }
-                    dupCnt--;
-                    record->setValue2(ESValue((int32_t)dupCnt));
-                    // ec->tryOrCatchBodyResult().pop_back();
-                    return ESValue(ESValue::ESEmptyValue);
-                }
 
+                if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
+                    ESValue ret = record->value();
+                    ec->tryOrCatchBodyResult().pop_back();
+                    // TODO sp check
+                    return ret;
+                } else if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                    ESValue val = record->value();
+                    ec->tryOrCatchBodyResult().pop_back();
+                    instance->throwError(val);
+                } else {
+                    ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
+                    *lastExpressionStatementValue = ec->tryOrCatchBodyReturnValue();
+                    programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());
+                    ec->tryOrCatchBodyResult().pop_back();
+                    NEXT_INSTRUCTION();
+                }
             }
         }
 
