@@ -451,7 +451,7 @@ Running all tests
 [Error] sourceInfo_20.js .......... Pass
 [Error] variousErrors.js .......... Pass
 [Error] RuntimeCompileStackOverflow.js .......... Pass
-[Error] encodeoverflow.js .......... Skip (Takes too long)
+[Error] encodeoverflow.js .......... Pass
 [Error] bug560940.js .......... Pass
 [Error] stackoverflow.js .......... Pass
 [Error] inlineSameFunc.js .......... Skip (Chakracore-only)
@@ -1426,7 +1426,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
             Closures		18		15		0		3		(83%)
              Strings		36		34		0		2		(94%)
                 Date		12		12		0		0		(100%)
-               Error		23		15		0		8		(65%)
+               Error		23		16		0		7		(69%)
              Boolean		5		5		0		0		(100%)
               Number		8		8		0		0		(100%)
          ControlFlow		17		17		0		0		(100%)
@@ -1457,4 +1457,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1399		1271		0		128		(90%)
+               Total		1399		1272		0		127		(90%)

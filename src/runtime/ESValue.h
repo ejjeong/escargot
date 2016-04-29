@@ -1100,78 +1100,7 @@ public:
         return m_hasNonASCIIString;
     }
 
-    ESString* string()
-    {
-        ASSERT(isESRopeString());
-        if (m_content) {
-            return m_content;
-        }
-        if (m_hasNonASCIIString) {
-            UTF16String result;
-            // TODO: should reduce unnecessary append operations in std::string::resize
-            result.resize(m_contentLength);
-            std::vector<ESString *, gc_allocator<ESString *>> queue;
-            queue.push_back(m_left);
-            queue.push_back(m_right);
-            size_t pos = m_contentLength;
-            while (!queue.empty()) {
-                ESString* cur = queue.back();
-                queue.pop_back();
-                if (cur->isESRopeString() && (cur->asESRopeString()->m_content == nullptr)) {
-                    ESRopeString* rs = cur->asESRopeString();
-                    ASSERT(rs->m_left);
-                    ASSERT(rs->m_right);
-                    queue.push_back(rs->m_left);
-                    queue.push_back(rs->m_right);
-                } else {
-                    ESString* str = cur;
-                    if (cur->isESRopeString()) {
-                        str = cur->asESRopeString()->m_content;
-                    }
-                    pos -= str->length();
-                    char16_t* buf = const_cast<char16_t *>(result.data());
-                    for (size_t i = 0 ; i < str->length() ; i ++) {
-                        buf[i + pos] = str->charAt(i);
-                    }
-                }
-            }
-            m_content =  ESString::create(std::move(result));
-            m_left = nullptr;
-            m_right = nullptr;
-            return m_content;
-        } else {
-            ASCIIString result;
-            // TODO: should reduce unnecessary append operations in std::string::resize
-            result.resize(m_contentLength);
-            std::vector<ESString *, gc_allocator<ESString *>> queue;
-            queue.push_back(m_left);
-            queue.push_back(m_right);
-            int pos = m_contentLength;
-            while (!queue.empty()) {
-                ESString* cur = queue.back();
-                queue.pop_back();
-                if (cur && cur->isESRopeString() && cur->asESRopeString()->m_content == nullptr) {
-                    ESRopeString* rs = cur->asESRopeString();
-                    ASSERT(rs->m_left);
-                    ASSERT(rs->m_right);
-                    queue.push_back(rs->m_left);
-                    queue.push_back(rs->m_right);
-                } else {
-                    ESString* str = cur;
-                    if (cur->isESRopeString()) {
-                        str = cur->asESRopeString()->m_content;
-                    }
-                    ASSERT(str->isASCIIString());
-                    pos -= str->length();
-                    memcpy((void*)(result.data() + pos), str->asciiData(), str->length() * sizeof(char));
-                }
-            }
-            m_content = ESString::create(std::move(result));
-            m_left = nullptr;
-            m_right = nullptr;
-            return m_content;
-        }
-    }
+    ESString* string();
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfContentLength() { return offsetof(ESRopeString, m_contentLength); }

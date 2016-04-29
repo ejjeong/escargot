@@ -128,7 +128,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>encodeoverflow.js</files>
       <baseline>encodeoverflow.baseline</baseline>
       <tags>Slow</tags>
