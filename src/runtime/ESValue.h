@@ -596,22 +596,41 @@ inline bool isAllASCII(const char16_t* buf, const size_t& len)
 
 static const char32_t offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, static_cast<char32_t>(0xFA082080UL), static_cast<char32_t>(0x82082080UL) };
 
-inline char32_t readUTF8Sequence(const char*& sequence)
+inline char32_t readUTF8Sequence(const char*& sequence, bool& valid, int& charlen)
 {
     unsigned length;
     const char sch = *sequence;
+    valid = true;
     if ((sch & 0x80) == 0)
         length = 1;
-    else if ((sch & 0xE0) == 0xC0)
-        length = 2;
-    else if ((sch & 0xF0) == 0xE0)
-        length = 3;
-    else if ((sch & 0xF8) == 0xF0)
-        length = 4;
     else {
-        RELEASE_ASSERT_NOT_REACHED();
+        unsigned char ch2 = static_cast<unsigned char>(*(sequence + 1));
+        if ((sch & 0xE0) == 0xC0
+            && (ch2 & 0xC0) == 0x80)
+            length = 2;
+        else {
+            unsigned char ch3 = static_cast<unsigned char>(*(sequence + 2));
+            if ((sch & 0xF0) == 0xE0
+                && (ch2 & 0xC0) == 0x80
+                && (ch3 & 0xC0) == 0x80)
+                length = 3;
+            else {
+                unsigned char ch4 = static_cast<unsigned char>(*(sequence + 3));
+                if ((sch & 0xF8) == 0xF0
+                    && (ch2 & 0xC0) == 0x80
+                    && (ch3 & 0xC0) == 0x80
+                    && (ch4 & 0xC0) == 0x80)
+                    length = 4;
+                else {
+                    valid = false;
+                    (*sequence++);
+                    return -1;
+                }
+            }
+        }
     }
 
+    charlen = length;
     char32_t ch = 0;
     switch (length) {
     case 6:
@@ -639,11 +658,16 @@ inline UTF16String utf8StringToUTF16String(const char* buf, const size_t& len)
 {
     UTF16String str;
     const char* source = buf;
+    int charlen;
+    bool valid;
     while (source < buf + len) {
-        char32_t ch = readUTF8Sequence(source);
-        if (((uint32_t)(ch) <= 0xffff)) { // BMP
+        char32_t ch = readUTF8Sequence(source, valid, charlen);
+        if (!valid) { // Invalid sequence
+            str += 0xFFFD;
+        } else if (((uint32_t)(ch) <= 0xffff)) { // BMP
             if ((((ch) & 0xfffff800) == 0xd800)) { // SURROGATE
                 str += 0xFFFD;
+                source -= (charlen - 1);
             } else {
                 str += ch; // normal case
             }
@@ -652,6 +676,7 @@ inline UTF16String utf8StringToUTF16String(const char* buf, const size_t& len)
             str += (char16_t)(((ch) & 0x3ff) | 0xdc00); // TRAIL
         } else {
             str += 0xFFFD;
+            source -= (charlen - 1);
         }
     }
 

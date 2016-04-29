@@ -1132,7 +1132,7 @@ Running all tests
 [strict] bug212755.js .......... Skip (Not in scope (with))
 [strict] bug212755.js .......... Skip (Not in scope (with))
 [strict] OS_1362136.js .......... Pass
-[utf8] invalidutf8.js .......... Fail
+[utf8] invalidutf8.js .......... Pass
 [utf8] unicode_digit_as_identifier_should_work.js .......... Pass
 [utf8] surrogatepair.js .......... Skip (function print format differs)
 [UnifiedRegex] acid.js .......... Pass
@@ -1446,7 +1446,7 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 JSON		13		13		0		0		(100%)
                 Bugs		36		26		0		10		(72%)
               strict		104		74		0		30		(71%)
-                utf8		3		1		1		1		(33%)
+                utf8		3		2		0		1		(66%)
         UnifiedRegex		26		26		0		0		(100%)
              bailout		34		34		0		0		(100%)
                 loop		6		6		0		0		(100%)
@@ -1457,4 +1457,4 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
          DynamicCode		3		3		0		0		(100%)
      switchStatement		28		28		0		0		(100%)
 ==========================================================
-               Total		1399		1270		1		128		(90%)
+               Total		1399		1271		0		128		(90%)
