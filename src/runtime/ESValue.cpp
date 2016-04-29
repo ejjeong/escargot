@@ -2089,7 +2089,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 
 #endif
 
-ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, CodeBlock* cb, DeclarativeEnvironmentRecord* functionRecord, ESValue* stackStorage, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)
+ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, CodeBlock* cb, DeclarativeEnvironmentRecord* functionRecord, ESValue* stackStorage, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance, bool* registeredOuterFEName)
 {
     // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
     if (newEC->isStrictMode() || cb->m_isBuiltInFunction) {
@@ -2110,7 +2110,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
             stackStorage[cb->m_functionExpressionNameIndex] = ESValue(fn);
         }
 
-        ESVMInstance::currentInstance()->registerOuterFEName(fn->name());
+        ESVMInstance->registerOuterFEName(fn->name());
+        *registeredOuterFEName = true;
     }
 
     const FunctionParametersInfoVector& info = cb->m_paramsInformation;
@@ -2149,12 +2150,13 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 
         ESValue* stackStorage;
         ALLOCA_WRAPPER(instance, stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);
+        bool outerFENameRegistered = false;
         if (cb->m_needsHeapAllocatedExecutionContext) {
             auto FE = LexicalEnvironment::newFunctionEnvironment(cb->m_needsToPrepareGenerateArgumentsObject,
                 stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, arguments, argumentCount, fn, cb->m_needsActivation, cb->m_functionExpressionNameIndex);
             instance->m_currentExecutionContext = new ExecutionContext(FE, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
             FunctionEnvironmentRecord* record = (FunctionEnvironmentRecord *)FE->record();
-            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, cb, record, stackStorage, receiver, arguments, argumentCount, instance);
+            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, cb, record, stackStorage, receiver, arguments, argumentCount, instance, &outerFENameRegistered);
 
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, *instance->m_currentExecutionContext);
@@ -2169,7 +2171,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 LexicalEnvironment env(&envRec, fn->outerEnvironment());
                 ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
                 instance->m_currentExecutionContext = &ec;
-                functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance);
+                functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance, &outerFENameRegistered);
 #ifdef ENABLE_ESJIT
                 result = executeJIT(fn, instance, ec);
 #else
@@ -2181,7 +2183,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 LexicalEnvironment env(&envRec, fn->outerEnvironment());
                 ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
                 instance->m_currentExecutionContext = &ec;
-                functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance);
+                functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance, &outerFENameRegistered);
 #ifdef ENABLE_ESJIT
                 result = executeJIT(fn, instance, ec);
 #else
@@ -2190,7 +2192,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             }
         }
         instance->m_currentExecutionContext = currentContext;
-        if (cb->m_isFunctionExpression && cb->m_functionExpressionNameIndex != SIZE_MAX) {
+        if (outerFENameRegistered) {
             ESVMInstance::currentInstance()->unregisterOuterFEName(fn->name());
         }
     } else {
