@@ -48,6 +48,8 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
                     as = InternalAtomicString(instance, info[i].name()->utf16Data(), info[i].name()->length());
                 }
                 knownGlobalNames.insert(std::make_pair(as, i));
+            } else {
+                knownGlobalNames.insert(std::make_pair(strings->emptyString, i));
             }
         }
     }
