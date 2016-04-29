@@ -1348,28 +1348,9 @@ void GlobalObject::installObject()
             obj->asESArrayObject()->convertToSlowMode();
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > writableOrconfigurableProperties;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            ASSERT(propertyInfo != &dummyPropertyInfo);
-            if (((propertyInfo->isDataProperty() || !obj->accessorData(key.asESString())->isAccessorDescriptor())
-                && propertyInfo->writable())
-                || propertyInfo->configurable())
-                writableOrconfigurableProperties.push_back(std::make_pair(key, propertyInfo));
+            propertyInfo->setWritable(false);
+            propertyInfo->setConfigurable(false);
         });
-        for (auto it = writableOrconfigurableProperties.begin(); it != writableOrconfigurableProperties.end(); it++) {
-            bool writable = false;
-            bool enumerable = it->second->enumerable();
-            bool configurable = false;
-            if (it->second->isDataProperty()) {
-                ESValue value = obj->getOwnProperty(it->first);
-                bool deleteResult = obj->deleteProperty(it->first, true);
-                ASSERT(deleteResult);
-                obj->defineDataProperty(it->first, writable, enumerable, configurable, value, true);
-            } else {
-                ESPropertyAccessorData* accessorData = obj->accessorData(it->first.toString());
-                bool deleteResult = obj->deleteProperty(it->first, true);
-                ASSERT(deleteResult);
-                obj->defineAccessorProperty(it->first, accessorData, writable, enumerable, configurable, true);
-            }
-        }
         obj->setExtensible(false);
         return O;
     }, strings->freeze.string(), 1));
@@ -1497,27 +1478,8 @@ void GlobalObject::installObject()
             obj->asESArrayObject()->convertToSlowMode();
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > configurableProperties;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            ASSERT(propertyInfo != &dummyPropertyInfo);
-            if (propertyInfo->configurable())
-                configurableProperties.push_back(std::make_pair(key, propertyInfo));
-                // propertyInfo->setConfigurable(false);
+            propertyInfo->setConfigurable(false);
         });
-        for (auto it = configurableProperties.begin(); it != configurableProperties.end(); it++) {
-            bool writable = it->second->writable();
-            bool enumerable = it->second->enumerable();
-            bool configurable = false;
-            if (it->second->isDataProperty()) {
-                ESValue value = obj->getOwnProperty(it->first);
-                bool deleteResult = obj->deleteProperty(it->first, true);
-                ASSERT(deleteResult);
-                obj->defineDataProperty(it->first, writable, enumerable, configurable, value, true);
-            } else {
-                ESPropertyAccessorData* accessorData = obj->accessorData(it->first.toString());
-                bool deleteResult = obj->deleteProperty(it->first, true);
-                ASSERT(deleteResult);
-                obj->defineAccessorProperty(it->first, accessorData, writable, enumerable, configurable, true);
-            }
-        }
         obj->setExtensible(false);
         return O;
     }, strings->seal.string(), 1));

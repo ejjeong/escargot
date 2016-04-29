@@ -165,7 +165,6 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
       <files>Slow.js</files>
       <tags>exclude_chk</tags>
     </default>
