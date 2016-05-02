@@ -80,7 +80,9 @@ $(info build dir... $(OUTDIR))
 
 include $(BUILDDIR)/Toolchain.mk
 
-
+# icu
+CXXFLAGS += $(shell pkg-config --cflags icu-uc icu-io)
+LDFLAGS += $(shell pkg-config --libs icu-uc icu-io)
 
 ifeq ($(TYPE), intrepreter)
   CXXFLAGS+=$(CXXFLAGS_INTERPRETER)

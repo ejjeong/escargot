@@ -5,8 +5,8 @@
 #include "runtime/Environment.h"
 #include "bytecode/ByteCodeOperations.h"
 
-// #include <unicode/locid.h>
-// #include <unicode/datefmt.h>
+#include <unicode/locid.h>
+#include <unicode/datefmt.h>
 
 namespace escargot {
 
@@ -15,6 +15,11 @@ void GlobalObject::installDate()
     m_datePrototype = ESDateObject::create();
     m_datePrototype->forceNonVectorHiddenClass(true);
     m_datePrototype->set__proto__(m_objectPrototype);
+
+    // for test (should be removed)
+    icu::DateFormat *df = icu::DateFormat::createDateInstance();
+    icu::UnicodeString myString;
+    df->format(0.0, myString);
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.3
     m_date = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
