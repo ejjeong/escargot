@@ -5,6 +5,25 @@
 
 namespace escargot {
 
+typedef ESErrorObject::Code ErrorCode;
+
+#define RESOLVE_THIS_BINDING_TO_OBJECT(NAME, OBJ, BUILT_IN_METHOD) \
+    ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding(); \
+    if (thisVal.isUndefinedOrNull()) { \
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->OBJ, true, strings->BUILT_IN_METHOD, errorMessage_GlobalObject_ThisUndefinedOrNull); \
+    } \
+    ESObject* NAME = thisVal.toObject();
+
+#define RESOLVE_THIS_BINDING_TO_STRING(NAME, OBJ, BUILT_IN_METHOD) \
+    ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding(); \
+    if (thisVal.isUndefinedOrNull()) { \
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->OBJ, true, strings->BUILT_IN_METHOD, errorMessage_GlobalObject_ThisUndefinedOrNull); \
+    } \
+    escargot::ESString* NAME = thisVal.toString();
+
+NEVER_INLINE void throwBuiltinError(ESVMInstance* instance, ESErrorObject::Code code,
+    const InternalAtomicString& objectName, bool prototoype, const InternalAtomicString& functionName, const char* templateString);
+
 class JSBuiltinsObject;
 class GlobalObject : public ESObject {
 public:
