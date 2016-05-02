@@ -34,8 +34,8 @@ else ifeq ($(HOST), tizen_wearable_arm)
   LD    = $(TIZEN_TOOLCHAIN)/bin/arm-linux-gnueabi-ld
   AR    = $(TIZEN_TOOLCHAIN)/bin/arm-linux-gnueabi-ar
   STRIP = $(TIZEN_TOOLCHAIN)/bin/arm-linux-gnueabi-strip
-  CXXFLAGS     += -std=c++11 --sysroot=$(TIZEN_SYSROOT) -DESCARGOT_SMALL_CONFIG=1 -mthumb -finline-limit=64 -DESCARGOT_TIZEN
-  LDFLAGS     += --sysroot=$(TIZEN_SYSROOT)
+  CXXFLAGS     += -std=c++11 --sysroot=$(TIZEN_SYSROOT) -DESCARGOT_SMALL_CONFIG=1 -mthumb -finline-limit=64 -DESCARGOT_TIZEN -I$(TIZEN_SYSROOT)/usr/include
+  LDFLAGS     += --sysroot=$(TIZEN_SYSROOT) -ldlog -L$(TIZEN_SYSROOT)/usr/lib
 else
   ifndef TIZEN_SDK_HOME
     $(error TIZEN_SDK_HOME must be set)
