@@ -80,9 +80,6 @@ $(info build dir... $(OUTDIR))
 
 include $(BUILDDIR)/Toolchain.mk
 
-# icu
-CXXFLAGS += $(shell pkg-config --cflags icu-uc icu-io)
-LDFLAGS += $(shell pkg-config --libs icu-uc icu-io)
 
 ifeq ($(TYPE), intrepreter)
   CXXFLAGS+=$(CXXFLAGS_INTERPRETER)
@@ -166,6 +163,20 @@ CXXFLAGS_INTERPRETER =
 #######################################################
 # Third-party build flags
 #######################################################
+
+# icu
+ifeq ($(ARCH), x64)
+  CXXFLAGS += $(shell pkg-config --cflags icu-uc icu-io)
+  LDFLAGS += $(shell pkg-config --libs icu-uc icu-io)
+else ifeq ($(HOST), tizen_wearable_arm)
+  CXXFLAGS += -Ideps/tizen/include
+  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-2.3-target-arm
+  LDFLAGS += -licuio -licui18n -licuuc -licudata
+else ifeq ($(HOST), tizen_wearable_emulator)
+  CXXFLAGS += -Ideps/tizen/include
+  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-2.3-emulato-x86
+  LDFLAGS += -licuio -licui18n -licuuc -licudata
+endif
 
 # bdwgc
 CXXFLAGS += -Ithird_party/bdwgc/include/
