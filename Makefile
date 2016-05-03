@@ -174,7 +174,7 @@ else ifeq ($(HOST), tizen_wearable_arm)
   LDFLAGS += -licuio -licui18n -licuuc -licudata
 else ifeq ($(HOST), tizen_wearable_emulator)
   CXXFLAGS += -Ideps/tizen/include
-  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-2.3-emulato-x86
+  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-2.3-emulator-x86
   LDFLAGS += -licuio -licui18n -licuuc -licudata
 endif
 
