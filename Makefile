@@ -169,7 +169,7 @@ ifeq ($(ARCH), x64)
   CXXFLAGS += $(shell pkg-config --cflags icu-uc icu-io)
   LDFLAGS += $(shell pkg-config --libs icu-uc icu-io)
 else ifeq ($(ARCH), x86)
-  CXXFLAGS += $(shell pkg-config --cflags icu-uc icu-io)
+  CXXFLAGS += -Ideps/x86-linux/include
   LDFLAGS += -Ldeps/x86-linux/lib
   LDFLAGS += -licuio -licui18n -licuuc -licudata
 else ifeq ($(HOST), tizen_wearable_arm)
