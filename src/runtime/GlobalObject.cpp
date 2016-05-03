@@ -4349,7 +4349,7 @@ void GlobalObject::installNumber()
         } else {
             stream << "%." << digit << "lf";
         }
-        sprintf(buf, stream.str().c_str(), number, exp);
+        sprintf(buf, stream.str().c_str(), number);
 
         // remove trailing zeros
         char* tail = nullptr;
@@ -4376,7 +4376,7 @@ void GlobalObject::installNumber()
             expStream << "+";
         }
         expStream << "%d";
-        sprintf(tail, expStream.str().c_str(), number, exp);
+        sprintf(tail, expStream.str().c_str(), exp);
 
         return ESValue(ESString::create(buf));
 
