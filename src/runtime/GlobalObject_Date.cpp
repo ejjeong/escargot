@@ -5,9 +5,6 @@
 #include "runtime/Environment.h"
 #include "bytecode/ByteCodeOperations.h"
 
-#include <unicode/locid.h>
-#include <unicode/datefmt.h>
-
 namespace escargot {
 
 void GlobalObject::installDate()

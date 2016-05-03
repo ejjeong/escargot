@@ -1594,7 +1594,7 @@ bool ESRegExpObject::match(const escargot::ESString* str, RegexMatchResult& matc
         if (str->isASCIIString())
             result = JSC::Yarr::interpret(m_bytecodePattern, (const char *)chars, length, start, outputBuf);
         else
-            result = JSC::Yarr::interpret(m_bytecodePattern, (const char16_t *)chars, length, start, outputBuf);
+            result = JSC::Yarr::interpret(m_bytecodePattern, (const UChar *)chars, length, start, outputBuf);
         if (result != JSC::Yarr::offsetNoMatch) {
             if (UNLIKELY(testOnly)) {
                 // outputBuf[1] should be set to lastIndex

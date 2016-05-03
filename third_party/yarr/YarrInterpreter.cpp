@@ -1970,7 +1970,7 @@ unsigned interpret(BytecodePattern* bytecode, const String& input, unsigned star
 {
     if (input.is8Bit())
         return Interpreter<LChar>(bytecode, output, input.characters8(), input.length(), start).interpret();
-    return Interpreter<UChar>(bytecode, output, input.characters16(), input.length(), start).interpret();
+    return Interpreter<UChar>(bytecode, output, (UChar*) input.characters16(), input.length(), start).interpret();
 }
 
 unsigned interpret(BytecodePattern* bytecode, const LChar* input, unsigned length, unsigned start, unsigned* output)

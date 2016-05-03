@@ -301,6 +301,15 @@ public:
     }
     size_t nativeHeapUsage() { return m_nativeHeapUsage; }
 
+    icu::Locale* locale()
+    {
+        return m_locale;
+    }
+    void setlocale(icu::Locale* locale)
+    {
+        m_locale = locale;
+    }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -368,6 +377,8 @@ protected:
 
     long m_gmtoff;
     tm m_time;
+
+    icu::Locale* m_locale;
 
     std::vector<std::jmp_buf*, pointer_free_allocator<std::jmp_buf*> > m_tryPositions;
     ESValue m_error;

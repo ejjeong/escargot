@@ -23,6 +23,11 @@
 #include <cwchar>
 #include <climits>
 
+// icu
+#include <unicode/locid.h>
+#include <unicode/datefmt.h>
+// end of icu
+
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
 #include <iostream>
 #endif
