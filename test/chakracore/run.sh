@@ -95,7 +95,7 @@ run_test() {
 
 run_dir() {
 	DIR=$1
-  idx=$2
+	idx=$2
 	FILES=
 	BASELINE=
 	SKIP=
@@ -136,7 +136,7 @@ run_dir() {
 		fi
 		if [[ $ENTITY == *timezone-sensitive* ]]; then
 			TZSET=Los_Angeles
-    fi
+		fi
 		if [[ "$ENTITY" == "/test" && "$FILES" != "" ]]; then
 			REAL_FILES=$(find . -iname $FILES -printf "%P\n")
 			if [[ $BASELINE == "" ]]; then
@@ -160,7 +160,7 @@ run_dir() {
 main() {
 	BIN=$1
 	TESTDIR=$2
-  idx=0
+	idx=0
 
 	echo "" > $LOG_FILE
 
@@ -198,7 +198,7 @@ main() {
 				REAL_TESTDIR=$(find . -iname $TESTDIR -printf "%P\n")
 				if [[ $SKIP == "" ]]; then
 					run_dir $REAL_TESTDIR $idx
-          ((idx+=1))
+					((idx+=1))
 				else
 					echo "[$REAL_TESTDIR] Skipping whole directory ($SKIP)"
 				fi
@@ -212,14 +212,14 @@ main() {
 	TOTAL_SKIP=0
 	echo "==========================================================" | tee -a $LOG_FILE
 	echo "TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO"
-  idx=0
+	idx=0
 	for key in ${ARRAY_KEYS[@]}; do
 		print_count $key ${TABLE_COUNT[$idx]} ${TABLE_PASS[$idx]} ${TABLE_FAIL[$idx]} ${TABLE_SKIP[$idx]}
 		((TOTAL_COUNT+=${TABLE_COUNT[$idx]}))
 		((TOTAL_PASS+=${TABLE_PASS[$idx]}))
 		((TOTAL_FAIL+=${TABLE_FAIL[$idx]}))
 		((TOTAL_SKIP+=${TABLE_SKIP[$idx]}))
-    ((idx+=1))
+		((idx+=1))
 	done
 	echo "==========================================================" | tee -a $LOG_FILE
 	print_count "Total" $TOTAL_COUNT $TOTAL_PASS $TOTAL_FAIL $TOTAL_SKIP
