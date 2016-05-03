@@ -179,7 +179,7 @@ void GC_free_hook(void* address)
 
 #endif
 
-bool evaluate(escargot::ESVMInstance* instance, escargot::ESString* str, bool readFromFile = false)
+bool evaluate(escargot::ESVMInstance* instance, escargot::ESString* str, bool printValue, bool readFromFile)
 {
     std::jmp_buf tryPosition;
     if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
@@ -194,7 +194,9 @@ bool evaluate(escargot::ESVMInstance* instance, escargot::ESString* str, bool re
             }
 #endif
         }
-        instance->printValue(ret);
+        if (printValue) {
+            instance->printValue(ret);
+        }
         instance->unregisterTryPos(&tryPosition);
         instance->unregisterCheckedObjectAll();
     } else {
@@ -335,7 +337,7 @@ int main(int argc, char* argv[])
                 return 3;
             }
             escargot::ESString* str = escargot::ESString::create(buf);
-            evaluate(ES, str);
+            evaluate(ES, str, true, false);
         }
     } else {
         for (int i = 1; i < argc; i ++) {
@@ -349,7 +351,7 @@ int main(int argc, char* argv[])
 #endif
             if (strcmp(argv[i], "-e") == 0) {
                 escargot::ESString* str = escargot::ESString::create(argv[++i]);
-                evaluate(ES, str);
+                evaluate(ES, str, false, false);
             }
 #ifndef NDEBUG
             if (strcmp(argv[i], "-usever") == 0) {
@@ -393,7 +395,7 @@ int main(int argc, char* argv[])
                 fclose(fp);
 
                 escargot::ESString* source = escargot::ESString::createUTF16StringIfNeeded(std::move(str));
-                if (!evaluate(ES, source, true))
+                if (!evaluate(ES, source, false, true))
                     return 3;
             }
 
@@ -407,7 +409,7 @@ int main(int argc, char* argv[])
                         return 3;
                     }
                     escargot::ESString* str = escargot::ESString::create(buf);
-                    evaluate(ES, str);
+                    evaluate(ES, str, true, false);
                 }
             }
         }
