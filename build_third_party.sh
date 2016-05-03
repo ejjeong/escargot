@@ -136,7 +136,7 @@ then
 
   cd out/tizen_wearable_arm/arm/debug
 	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
+	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
 

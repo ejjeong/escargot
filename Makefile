@@ -150,9 +150,13 @@ CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wn
 CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 
 ifeq ($(HOST), tizen_wearable_arm)
-  CXXFLAGS += -Os -g0 -finline-limit=64
+  ifeq ($(MODE), release)
+    CXXFLAGS += -Os -g0 -finline-limit=64
+  endif
 else ifeq ($(HOST), tizen_wearble_emulator)
-  CXXFLAGS += -Os -g0 -finline-limit=64
+  ifeq ($(MODE), release)
+    CXXFLAGS += -Os -g0 -finline-limit=64
+  endif
 endif
 
 
