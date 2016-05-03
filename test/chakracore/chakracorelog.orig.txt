@@ -1207,7 +1207,7 @@ Running all tests
 [Miscellaneous] longstring.js .......... Pass
 [Miscellaneous] etwtest.js .......... Pass
 [Miscellaneous] evalAlias.js .......... Pass
-[Miscellaneous] oom.js .......... Skip (Takes too long)
+[Miscellaneous] oom.js .......... Skip (GC internal abort)
 [Miscellaneous] irviewer.js .......... Skip (Chakracore-only)
 [Miscellaneous] SetTimeout.js .......... Skip (Chakracore-only)
 [fieldopts] equiv-finaltypeandpoly.js .......... Pass

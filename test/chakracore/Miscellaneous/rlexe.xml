@@ -29,7 +29,7 @@
   </test>
   <test>
     <default>
-      <escargot-skip>Takes too long</escargot-skip>
+      <escargot-skip>GC internal abort</escargot-skip>
       <files>oom.js</files>
       <baseline>oom.baseline</baseline>
       <compile-flags>-forcefragmentaddressspace:8000000</compile-flags>
