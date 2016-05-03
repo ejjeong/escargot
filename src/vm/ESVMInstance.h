@@ -301,13 +301,22 @@ public:
     }
     size_t nativeHeapUsage() { return m_nativeHeapUsage; }
 
-    icu::Locale* locale()
+    icu::Locale& locale()
     {
         return m_locale;
     }
-    void setlocale(icu::Locale* locale)
+    void setlocale(icu::Locale locale)
     {
         m_locale = locale;
+    }
+
+    icu::TimeZone* timezone()
+    {
+        return m_timezone;
+    }
+    void setTimezone(icu::TimeZone* tz)
+    {
+        m_timezone = tz;
     }
 
 #ifdef ENABLE_ESJIT
@@ -376,9 +385,9 @@ protected:
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
 
     long m_gmtoff;
-    tm m_time;
 
-    icu::Locale* m_locale;
+    icu::Locale m_locale;
+    icu::TimeZone* m_timezone;
 
     std::vector<std::jmp_buf*, pointer_free_allocator<std::jmp_buf*> > m_tryPositions;
     ESValue m_error;

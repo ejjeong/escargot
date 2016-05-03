@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *  209 tests will be skipped
+ *  204 tests will be skipped
  *    3 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1974 tests are expected to pass
+ * 1979 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2114 tests
+Running 2119 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -510,6 +510,7 @@ Done running mjsunit/regress/regress-1130: pass
 Done running mjsunit/regress/regress-1131: pass
 Done running mjsunit/regress/regress-1134697: pass
 Done running mjsunit/regress/regress-113924: pass
+Done running mjsunit/regress/regress-114: pass
 Done running mjsunit/regress/regress-1146: pass
 Done running mjsunit/regress/regress-1149: pass
 Done running mjsunit/regress/regress-1150: pass
@@ -573,6 +574,7 @@ Done running mjsunit/regress/regress-1447: pass
 Done running mjsunit/regress/regress-145201: pass
 Done running mjsunit/regress/regress-1472: pass
 Done running mjsunit/regress/regress-148378: pass
+Done running mjsunit/regress/regress-149: pass
 Done running mjsunit/regress/regress-1491: pass
 Done running mjsunit/regress/regress-1513: pass
 Done running mjsunit/regress/regress-1529: pass
@@ -665,6 +667,7 @@ Done running mjsunit/regress/regress-2931: pass
 Done running mjsunit/regress/regress-294: pass
 Done running mjsunit/regress/regress-2980: pass
 Done running mjsunit/regress/regress-298269: pass
+Done running mjsunit/regress/regress-2984: pass
 Done running mjsunit/regress/regress-299979: pass
 Done running mjsunit/regress/regress-3006390: pass
 Done running mjsunit/regress/regress-3010: pass
@@ -699,6 +702,7 @@ Done running mjsunit/regress/regress-350887: pass
 Done running mjsunit/regress/regress-351: pass
 Done running mjsunit/regress/regress-352059: pass
 Done running mjsunit/regress/regress-353551: pass
+Done running mjsunit/regress/regress-355485: pass
 Done running mjsunit/regress/regress-357054: pass
 Done running mjsunit/regress/regress-358088: pass
 Done running mjsunit/regress/regress-358090: pass
@@ -926,6 +930,7 @@ Done running mjsunit/regress/regress-is-contextual: pass
 Done running mjsunit/regress/regress-iteration-order: pass
 Done running mjsunit/regress/regress-json-parse-index: pass
 Done running mjsunit/regress/regress-json-stringify-gc: pass
+Done running mjsunit/regress/regress-latin-1: pass
 Done running mjsunit/regress/regress-lea-matching: pass
 Done running mjsunit/regress/regress-mask-array-length: pass
 Done running mjsunit/regress/regress-merge-descriptors: pass

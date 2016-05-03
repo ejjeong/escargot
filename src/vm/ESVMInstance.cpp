@@ -59,14 +59,9 @@ ESVMInstance::ESVMInstance()
     interpret(this, NULL, 0);
 
     // get timezone offset w/o regarding daylight saving
-    struct tm temptm;
-    temptm.tm_year = 1970 - 1900;
-    temptm.tm_mon = 1 - 1;
-    temptm.tm_mday = 1;
-    temptm.tm_hour = 0;
-    temptm.tm_min = 0;
-    temptm.tm_sec = 0;
-    m_gmtoff = mktime(&temptm) - timegm(&temptm);
+    m_locale = icu::Locale::getUS();
+    m_timezone = icu::TimeZone::createDefault();
+    m_gmtoff = -m_timezone->getRawOffset() / 1000;
 
     m_error = ESValue(ESValue::ESEmptyValueTag::ESEmptyValue);
 

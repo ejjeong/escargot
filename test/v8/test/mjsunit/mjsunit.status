@@ -826,18 +826,11 @@
   'regress/regress-280531': [SKIP],
   'regress/regress-crbug-501808': [SKIP],
 
-  ## 6. non-ascii's to[Upper|Lower]Case
-  'regress/regress-114': [SKIP],
-  'regress/regress-149': [SKIP],
-  'regress/regress-2984': [SKIP],
-  'regress/regress-355485': [SKIP],
-  'regress/regress-latin-1': [SKIP],
-
-  ## 7. Accepted timeout (due to yarr performance limitation)
+  ## 6. Accepted timeout (due to yarr performance limitation)
   'ascii-regexp-subject': [TIMEOUT], # 50s
   'regress/regress-crbug-482998': [TIMEOUT], # 10m~
 
-  ## 8. YARR lookahead problem
+  ## 7. YARR lookahead problem
   'regress/regress-176': [SKIP],
   'regress/regress-187': [SKIP],
   'regexp-lookahead': [SKIP],

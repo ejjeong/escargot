@@ -716,6 +716,7 @@ public:
     static ESString* create(ASCIIString&& src);
     static ESString* create(const ASCIIString& src);
     static ESString* create(UTF16String&& src);
+    static ESString* create(icu::UnicodeString& src);
     static ESString* createASCIIStringIfNeeded(const char16_t* src, size_t len)
     {
         if (isAllASCII(src, len)) {
@@ -763,6 +764,7 @@ public:
     ASCIIString* uncheckedAsASCIIString() const;
     UTF16String* uncheckedAsUTF16String() const;
     UTF16String toUTF16String() const;
+    icu::UnicodeString toUnicodeString() const;
     const char* asciiData() const;
     const char16_t* utf16Data() const;
     const char* utf8Data() const;
@@ -1156,6 +1158,16 @@ inline ESString* ESString::create(char16_t c)
     return new ESUTF16String(std::move(UTF16String({c})));
 }
 
+inline ESString* ESString::create(icu::UnicodeString& src)
+{
+    UTF16String str;
+    size_t srclen = src.length();
+    for (size_t i = 0; i < srclen; i++) {
+        str.push_back(src.charAt(i));
+    }
+    return new ESUTF16String(std::move(str));
+}
+
 inline ESString* ESString::data() const
 {
     if (UNLIKELY(isESRopeString())) {
@@ -1301,6 +1313,15 @@ inline UTF16String ESString::toUTF16String() const
         return std::move(str);
     } else {
         return *(ss->asUTF16String());
+    }
+}
+
+inline icu::UnicodeString ESString::toUnicodeString() const
+{
+    if (isASCIIString()) {
+        return icu::UnicodeString(asASCIIString()->data(), asASCIIString()->length(), US_INV);
+    } else {
+        return icu::UnicodeString((const UChar*)asUTF16String()->data(), asUTF16String()->length());
     }
 }
 

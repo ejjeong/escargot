@@ -3265,9 +3265,9 @@ void GlobalObject::installString()
             return ESString::create(std::move(newstr));
         } else {
             UTF16String newstr(*str->asUTF16String());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
-            return ESString::create(std::move(newstr));
+            icu::UnicodeString _newstr = icu::UnicodeString((const UChar*)newstr.data(), newstr.length());
+            _newstr.toLower();
+            return ESString::create(_newstr);
         }
     }, strings->toLocaleLowerCase.string(), 0));
 
@@ -3281,9 +3281,9 @@ void GlobalObject::installString()
             return ESString::create(std::move(newstr));
         } else {
             UTF16String newstr(*str->asUTF16String());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
-            return ESString::create(std::move(newstr));
+            icu::UnicodeString _newstr = icu::UnicodeString((const UChar*)newstr.data(), newstr.length());
+            _newstr.toLower();
+            return ESString::create(_newstr);
         }
     }, strings->toLowerCase.string(), 0));
 
@@ -3297,9 +3297,9 @@ void GlobalObject::installString()
             return ESString::create(std::move(newstr));
         } else {
             UTF16String newstr(*str->asUTF16String());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
-            return ESString::create(std::move(newstr));
+            icu::UnicodeString _newstr = icu::UnicodeString((const UChar*)newstr.data(), newstr.length());
+            _newstr.toUpper();
+            return ESString::create(_newstr);
         }
     }, strings->toLocaleUpperCase.string(), 0));
 
@@ -3313,9 +3313,9 @@ void GlobalObject::installString()
             return ESString::create(std::move(newstr));
         } else {
             UTF16String newstr(*str->asUTF16String());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
-            return ESString::create(std::move(newstr));
+            icu::UnicodeString _newstr = icu::UnicodeString((const UChar*)newstr.data(), newstr.length());
+            _newstr.toUpper();
+            return ESString::create(_newstr);
         }
     }, strings->toUpperCase.string(), 0));
 
