@@ -8,10 +8,10 @@ LOG_FILE=$TEST_ROOT/chakracorelog.verbose.txt
 INCLUDE=" $TEST_ROOT/include.js $TEST_ROOT/UnitTestFramework/UnitTestFramework.js"
 
 ARRAY_KEYS=()
-declare -A TABLE_COUNT
-declare -A TABLE_PASS
-declare -A TABLE_FAIL
-declare -A TABLE_SKIP
+declare -a TABLE_COUNT
+declare -a TABLE_PASS
+declare -a TABLE_FAIL
+declare -a TABLE_SKIP
 
 print_usage() {
 	echo "$ cd test/chakracore"
@@ -58,23 +58,23 @@ run_test() {
 		$($CMD \
 			| sed 's/\[object global\]/[object Object]/g' \
 			> $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
-		$(diff -Z -i -a $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
+		$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
 		DIFF_EXIT_CODE=$?
 		if [[ $BASELINE == $TEST_ROOT/baseline/baseline1 ]]; then
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline2 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline2 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline3 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline3 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline4 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline4 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$(diff -Z -i $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline5 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline5 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 		fi
@@ -95,6 +95,7 @@ run_test() {
 
 run_dir() {
 	DIR=$1
+  idx=$2
 	FILES=
 	BASELINE=
 	SKIP=
@@ -135,7 +136,7 @@ run_dir() {
 		fi
 		if [[ $ENTITY == *timezone-sensitive* ]]; then
 			TZSET=Los_Angeles
-		fi
+    fi
 		if [[ "$ENTITY" == "/test" && "$FILES" != "" ]]; then
 			REAL_FILES=$(find . -iname $FILES -printf "%P\n")
 			if [[ $BASELINE == "" ]]; then
@@ -148,10 +149,10 @@ run_dir() {
 	done < rlexe.xml;
 
 	ARRAY_KEYS+=($DIR)
-	TABLE_COUNT[$DIR]=$LOCAL_COUNT
-	TABLE_PASS[$DIR]=$LOCAL_PASS
-	TABLE_FAIL[$DIR]=$LOCAL_FAIL
-	TABLE_SKIP[$DIR]=$LOCAL_SKIP
+	TABLE_COUNT[$idx]=$LOCAL_COUNT
+	TABLE_PASS[$idx]=$LOCAL_PASS
+	TABLE_FAIL[$idx]=$LOCAL_FAIL
+	TABLE_SKIP[$idx]=$LOCAL_SKIP
 
 	cd ..
 }
@@ -159,6 +160,7 @@ run_dir() {
 main() {
 	BIN=$1
 	TESTDIR=$2
+  idx=0
 
 	echo "" > $LOG_FILE
 
@@ -172,7 +174,7 @@ main() {
 		echo "Running $TESTDIR" | tee -a $LOG_FILE
 		REAL_TESTDIR=$(find . -iname $TESTDIR -printf "%P\n")
 		if [[ -d $REAL_TESTDIR ]]; then
-			run_dir $REAL_TESTDIR
+			run_dir $REAL_TESTDIR $idx
 		else
 			echo "Invalid dir $TESTDIR"
 			exit 1
@@ -195,7 +197,8 @@ main() {
 			if [[ $ENTITY == /dir ]]; then
 				REAL_TESTDIR=$(find . -iname $TESTDIR -printf "%P\n")
 				if [[ $SKIP == "" ]]; then
-					run_dir $REAL_TESTDIR
+					run_dir $REAL_TESTDIR $idx
+          ((idx+=1))
 				else
 					echo "[$REAL_TESTDIR] Skipping whole directory ($SKIP)"
 				fi
@@ -209,12 +212,14 @@ main() {
 	TOTAL_SKIP=0
 	echo "==========================================================" | tee -a $LOG_FILE
 	echo "TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO"
+  idx=0
 	for key in ${ARRAY_KEYS[@]}; do
-		print_count $key ${TABLE_COUNT[$key]} ${TABLE_PASS[$key]} ${TABLE_FAIL[$key]} ${TABLE_SKIP[$key]}
-		((TOTAL_COUNT+=${TABLE_COUNT[$key]}))
-		((TOTAL_PASS+=${TABLE_PASS[$key]}))
-		((TOTAL_FAIL+=${TABLE_FAIL[$key]}))
-		((TOTAL_SKIP+=${TABLE_SKIP[$key]}))
+		print_count $key ${TABLE_COUNT[$idx]} ${TABLE_PASS[$idx]} ${TABLE_FAIL[$idx]} ${TABLE_SKIP[$idx]}
+		((TOTAL_COUNT+=${TABLE_COUNT[$idx]}))
+		((TOTAL_PASS+=${TABLE_PASS[$idx]}))
+		((TOTAL_FAIL+=${TABLE_FAIL[$idx]}))
+		((TOTAL_SKIP+=${TABLE_SKIP[$idx]}))
+    ((idx+=1))
 	done
 	echo "==========================================================" | tee -a $LOG_FILE
 	print_count "Total" $TOTAL_COUNT $TOTAL_PASS $TOTAL_FAIL $TOTAL_SKIP
