@@ -179,6 +179,36 @@ void GC_free_hook(void* address)
 
 #endif
 
+bool evaluate(escargot::ESVMInstance* instance, escargot::ESString* str, bool readFromFile = false)
+{
+    std::jmp_buf tryPosition;
+    if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
+        escargot::ESValue ret = instance->evaluate(str);
+        if (readFromFile) {
+#ifndef NDEBUG
+            if (instance->m_reportCompiledFunction) {
+                printf("(%zu)\n", instance->m_compiledFunctions);
+            }
+            if (instance->m_reportOSRExitedFunction) {
+                printf("(%zu)\n", instance->m_osrExitedFunctions);
+            }
+#endif
+        }
+        instance->printValue(ret);
+        instance->unregisterTryPos(&tryPosition);
+        instance->unregisterCheckedObjectAll();
+    } else {
+        escargot::ESValue err = instance->getCatchedError();
+        printf("Uncaught ");
+        escargot::ESVMInstance::printValue(err);
+        if (readFromFile) {
+            instance->exit();
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
 #ifdef PROFILE_MASSIF
@@ -305,17 +335,7 @@ int main(int argc, char* argv[])
                 return 3;
             }
             escargot::ESString* str = escargot::ESString::create(buf);
-            std::jmp_buf tryPosition;
-            if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
-                escargot::ESValue ret = ES->evaluate(str);
-                ES->printValue(ret);
-                ES->unregisterTryPos(&tryPosition);
-                ES->unregisterCheckedObjectAll();
-            } else {
-                escargot::ESValue err = ES->getCatchedError();
-                printf("Uncaught ");
-                escargot::ESVMInstance::printValue(err);
-            }
+            evaluate(ES, str);
         }
     } else {
         for (int i = 1; i < argc; i ++) {
@@ -329,16 +349,7 @@ int main(int argc, char* argv[])
 #endif
             if (strcmp(argv[i], "-e") == 0) {
                 escargot::ESString* str = escargot::ESString::create(argv[++i]);
-                std::jmp_buf tryPosition;
-                if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
-                    escargot::ESValue ret = ES->evaluate(str);
-                    ES->unregisterTryPos(&tryPosition);
-                    ES->unregisterCheckedObjectAll();
-                } else {
-                    escargot::ESValue err = ES->getCatchedError();
-                    printf("Uncaught ");
-                    escargot::ESVMInstance::printValue(err);
-                }
+                evaluate(ES, str);
             }
 #ifndef NDEBUG
             if (strcmp(argv[i], "-usever") == 0) {
@@ -380,27 +391,10 @@ int main(int argc, char* argv[])
                     str += buf;
                 }
                 fclose(fp);
+
                 escargot::ESString* source = escargot::ESString::createUTF16StringIfNeeded(std::move(str));
-                std::jmp_buf tryPosition;
-                if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
-                    escargot::ESValue ret = ES->evaluate(source);
-#ifndef NDEBUG
-                    if (ES->m_reportCompiledFunction) {
-                        printf("(%zu)\n", escargot::ESVMInstance::currentInstance()->m_compiledFunctions);
-                    }
-                    if (ES->m_reportOSRExitedFunction) {
-                        printf("(%zu)\n", escargot::ESVMInstance::currentInstance()->m_osrExitedFunctions);
-                    }
-#endif
-                    ES->unregisterTryPos(&tryPosition);
-                    ES->unregisterCheckedObjectAll();
-                } else {
-                    escargot::ESValue err = ES->getCatchedError();
-                    printf("Uncaught ");
-                    escargot::ESVMInstance::printValue(err);
-                    ES->exit();
+                if (!evaluate(ES, source, true))
                     return 3;
-                }
             }
 
             if (strcmp(argv[i], "--shell") == 0) {
@@ -413,17 +407,7 @@ int main(int argc, char* argv[])
                         return 3;
                     }
                     escargot::ESString* str = escargot::ESString::create(buf);
-                    std::jmp_buf tryPosition;
-                    if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
-                        escargot::ESValue ret = ES->evaluate(str);
-                        ES->printValue(ret);
-                        ES->unregisterTryPos(&tryPosition);
-                        ES->unregisterCheckedObjectAll();
-                    } else {
-                        escargot::ESValue err = ES->getCatchedError();
-                        printf("Uncaught ");
-                        escargot::ESVMInstance::printValue(err);
-                    }
+                    evaluate(ES, str);
                 }
             }
         }

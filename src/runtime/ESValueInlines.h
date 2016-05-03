@@ -154,7 +154,7 @@ ALWAYS_INLINE ESObject* ESValue::toObject() const
 
 inline ESObject* ESValue::toObjectSlowPath() const
 {
-    ESObject* object;
+    ESObject* object = nullptr;
     if (isNumber()) {
         object = ESNumberObject::create(toNumber());
     } else if (isBoolean()) {

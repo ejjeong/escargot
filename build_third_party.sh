@@ -48,6 +48,7 @@ then
 	mkdir -p out/tizen_wearable_arm/arm/debug.shared
 	mkdir -p out/tizen_wearable_arm/arm/release.shared
 	mkdir -p out/tizen_wearable_arm/arm/release
+	mkdir -p out/tizen_wearable_arm/arm/debug
 #	mkdir -p out/tizen_wearable_emulator/x86/release
 	mkdir -p out/tizen_wearable_emulator/x86/debug.shared
 	mkdir -p out/tizen_wearable_emulator/x86/release.shared
@@ -129,6 +130,12 @@ then
 
 	cd out/tizen_wearable_arm/arm/release
 	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
+	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
+	make -j$NUMPROC
+	cd -
+
+  cd out/tizen_wearable_arm/arm/debug
+	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
