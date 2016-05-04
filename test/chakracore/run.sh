@@ -1,6 +1,18 @@
 TEST_ROOT=$(pwd)
 BIN=
 
+if [[ $(uname -m) == *"arm"* ]]; then
+	ARM=1
+else
+	ARM=0
+fi
+
+if [[ "$ARM" == "1" ]]; then
+	DIFF_CMD=$TEST_ROOT/diff.py
+else
+	DIFF_CMD="diff -Z -i -a"
+fi
+
 TEMPORARY_OUTPUT_FILE=$TEST_ROOT/tmp
 TEMPORARY_DIFF_FILE=$TEST_ROOT/diff
 LOG_FILE=$TEST_ROOT/chakracorelog.verbose.txt
@@ -58,23 +70,23 @@ run_test() {
 		$($CMD \
 			| sed 's/\[object global\]/[object Object]/g' \
 			> $TEMPORARY_OUTPUT_FILE 2>> $LOG_FILE)
-		$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
+		$($DIFF_CMD $TEMPORARY_OUTPUT_FILE $BASELINE 2>&1 > $TEMPORARY_DIFF_FILE)
 		DIFF_EXIT_CODE=$?
 		if [[ $BASELINE == $TEST_ROOT/baseline/baseline1 ]]; then
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline2 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($DIFF_CMD $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline2 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline3 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($DIFF_CMD $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline3 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline4 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($DIFF_CMD $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline4 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 			if [[ "$DIFF_EXIT_CODE" != "0" ]]; then
-				$($TEST_ROOT/diff.py $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline5 2>&1 > $TEMPORARY_DIFF_FILE)
+				$($DIFF_CMD $TEMPORARY_OUTPUT_FILE $TEST_ROOT/baseline/baseline5 2>&1 > $TEMPORARY_DIFF_FILE)
 				DIFF_EXIT_CODE=$?
 			fi
 		fi
