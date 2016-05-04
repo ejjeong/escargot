@@ -35,7 +35,7 @@
 17 toString()     : 60
 17 toLocaleString : 50
 18 toString()     : Thu Oct 24 1974 00:20:30 GMT-0700 (PDT)
-18 toLocaleString : Thu Oct 24 1974 00:20:30 GMT-0700 (PDT)
+18 toLocaleString : Thursday, October 24, 1974 12:20:30 AM Pacific Daylight Time
 19 toString()     : array a1
 19 toLocaleString : 10,20
 20 toString()     : 10.123,20.456
@@ -45,6 +45,6 @@
 22 toString()     : 1
 22 toLocaleString : 1
 arr.toString()     : 1,0,1,-1,12345678,10.23344,-1.2345,NaN,Infinity,-Infinity,11111111222,hello,helloworld,false,true,[object Object],20,30,60,Thu Oct 24 1974 00:20:30 GMT-0700 (PDT),array a1,10.123,20.456,12345678912345678,1,,,,20,,LastValue!!
-arr.toLocaleString : 1,0,1,-1,12345678,10.23344,-1.2345,NaN,Infinity,-Infinity,11111111222,hello,helloworld,false,true,[object Object],10,30,50,Thu Oct 24 1974 00:20:30 GMT-0700 (PDT),10,20,10.123,20.456,12345678912345678,1,,,,20,,LastValue!! 
+arr.toLocaleString : 1,0,1,-1,12345678,10.23344,-1.2345,NaN,Infinity,-Infinity,11111111222,hello,helloworld,false,true,[object Object],10,30,50,Thursday, October 24, 1974 12:20:30 AM Pacific Daylight Time,10,20,10.123,20.456,12345678912345678,1,,,,20,,LastValue!!
 arr1.toString()     : ,,,,,,
 arr1.toLocaleString : ,,,,,,

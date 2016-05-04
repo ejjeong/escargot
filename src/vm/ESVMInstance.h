@@ -305,18 +305,20 @@ public:
     {
         return m_locale;
     }
+    // The function below will be used by StarFish
     void setlocale(icu::Locale locale)
     {
         m_locale = locale;
     }
 
-    icu::TimeZone* timezone()
+    icu::TimeZone* timezone() const
     {
         return m_timezone;
     }
-    void setTimezone(icu::TimeZone* tz)
+    // The function below will be used by StarFish
+    void setTimezoneID(icu::UnicodeString id)
     {
-        m_timezone = tz;
+        m_timezoneID = id;
     }
 
 #ifdef ENABLE_ESJIT
@@ -388,6 +390,7 @@ protected:
 
     icu::Locale m_locale;
     icu::TimeZone* m_timezone;
+    icu::UnicodeString m_timezoneID;
 
     std::vector<std::jmp_buf*, pointer_free_allocator<std::jmp_buf*> > m_tryPositions;
     ESValue m_error;

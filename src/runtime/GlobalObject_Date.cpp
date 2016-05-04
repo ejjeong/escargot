@@ -13,11 +13,6 @@ void GlobalObject::installDate()
     m_datePrototype->forceNonVectorHiddenClass(true);
     m_datePrototype->set__proto__(m_objectPrototype);
 
-    // for test (should be removed)
-    icu::DateFormat *df = icu::DateFormat::createDateInstance();
-    icu::UnicodeString myString;
-    df->format(0.0, myString);
-
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.3
     m_date = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESDateObject* thisObject;
@@ -923,10 +918,15 @@ void GlobalObject::installDate()
     // $20.3.4.39 Date.prototype.toLocaleString()
     m_datePrototype->defineDataProperty(strings->toLocaleString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, Date, toLocaleString);
-        ESValue func = thisObject->get(strings->toString.string());
-        if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Date, true, strings->toLocaleString, errorMessage_GlobalObject_ToLoacleStringNotCallable);
-        return ESFunctionObject::call(instance, func, thisObject, NULL, 0, false);
+
+        icu::DateFormat *df = icu::DateFormat::createDateInstance(icu::DateFormat::FULL, instance->locale());
+        icu::UnicodeString myString;
+        df->format(thisObject->asESDateObject()->timeValueAsDouble(), myString);
+        myString.append(u' ');
+        icu::DateFormat *tf = icu::DateFormat::createTimeInstance(icu::DateFormat::FULL, instance->locale());
+        tf->format(thisObject->asESDateObject()->timeValueAsDouble(), myString);
+
+        return ESString::create(myString);
     }, strings->toLocaleString, 0));
 
     // $20.3.4.40 Date.prototype.toLocaleTimeString()
