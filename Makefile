@@ -51,10 +51,17 @@ endif
 
 ifneq (,$(findstring tizen_wearable_arm,$(MAKECMDGOALS)))
   HOST=tizen_wearable_arm
+else ifneq (,$(findstring tizen3_wearable_arm,$(MAKECMDGOALS)))
+  HOST=tizen3_wearable_arm
 else ifneq (,$(findstring tizen_arm,$(MAKECMDGOALS)))
   HOST=tizen_arm
+else ifneq (,$(findstring tizen3_arm,$(MAKECMDGOALS)))
+  HOST=tizen3_arm
 else ifneq (,$(findstring tizen_wearable_emulator,$(MAKECMDGOALS)))
   HOST=tizen_wearable_emulator
+  ARCH=x86
+else ifneq (,$(findstring tizen3_wearable_emulator,$(MAKECMDGOALS)))
+  HOST=tizen3_wearable_emulator
   ARCH=x86
 endif
 
@@ -66,8 +73,13 @@ else
   OUTPUT=bin
 endif
 
+include $(BUILDDIR)/Toolchain.mk
 
-OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
+ifneq (,$(findstring tizen,$(MAKECMDGOALS)))
+  OUTDIR=out/tizen_$(VERSION)/$(ARCH)/$(TYPE)/$(MODE)
+else
+  OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
+endif
 
 
 $(info host... $(HOST))
@@ -76,9 +88,6 @@ $(info type... $(TYPE))
 $(info mode... $(MODE))
 $(info output... $(OUTPUT))
 $(info build dir... $(OUTDIR))
-
-
-include $(BUILDDIR)/Toolchain.mk
 
 
 ifeq ($(TYPE), intrepreter)
@@ -149,11 +158,7 @@ CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra 
 CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
 CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 
-ifeq ($(HOST), tizen_wearable_arm)
-  ifeq ($(MODE), release)
-    CXXFLAGS += -Os -g0 -finline-limit=64
-  endif
-else ifeq ($(HOST), tizen_wearble_emulator)
+ifneq ($(filter $(HOST),tizen_wearable_arm tizen3_wearable_arm tizen_wearable_emulator tizen3_wearable_emulator), )
   ifeq ($(MODE), release)
     CXXFLAGS += -Os -g0 -finline-limit=64
   endif
@@ -175,15 +180,15 @@ ifeq ($(ARCH), x64)
 else ifeq ($(ARCH), x86)
   CXXFLAGS += -Ideps/x86-linux/include
   LDFLAGS += -Ldeps/x86-linux/lib
-  LDFLAGS += -licui18n -licuuc -licudata
-else ifeq ($(HOST), tizen_wearable_arm)
+  LDFLAGS += -licuio -licui18n -licuuc -licudata
+else ifneq ($(filter $(HOST),tizen_wearable_arm tizen3_wearable_arm), )
   CXXFLAGS += -Ideps/tizen/include
-  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-2.3-target-arm
-  LDFLAGS += -licui18n -licuuc -licudata
-else ifeq ($(HOST), tizen_wearable_emulator)
+  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-target-arm
+  LDFLAGS += -licuio -licui18n -licuuc -licudata
+else ifneq ($(filter $(HOST),tizen_wearable_emulator tizen3_wearable_emulator), )
   CXXFLAGS += -Ideps/tizen/include
-  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-2.3-emulator-x86
-  LDFLAGS += -licui18n -licuuc -licudata
+  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-emulator-x86
+  LDFLAGS += -licuio -licui18n -licuuc -licudata
 endif
 
 # bdwgc
@@ -341,7 +346,7 @@ x64.interpreter.release.static: $(OUTDIR)/$(STATIC)
 #	cp -f $< .
 #tizen_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#izen_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#tizen_arm.interpreter.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
 tizen_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
@@ -365,6 +370,39 @@ tizen_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC)
 	cp -f $< .
 tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC)
 	cp -f $< .
+
+##### TIZEN3 #####
+#tizen3_arm.jit.debug: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen3_arm.jit.release: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen3_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen3_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+tizen3_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+	cp -f $< .
+#tizen3_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen3_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+tizen3_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
+	cp -f $< .
+tizen3_wearable_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+	cp -f $< .
+tizen3_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+	cp -f $< .
+tizen3_wearable_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
+tizen3_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
+tizen3_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(LIB)
+	cp -f $< .
+tizen3_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
+tizen3_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC)
+	cp -f $< .
+
 
 $(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 	@echo "[LINK] $@"
