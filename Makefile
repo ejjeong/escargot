@@ -73,8 +73,13 @@ else
   OUTPUT=bin
 endif
 
+include $(BUILDDIR)/Toolchain.mk
 
-OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
+ifneq (,$(findstring tizen,$(MAKECMDGOALS)))
+  OUTDIR=out/tizen_$(VERSION)/$(ARCH)/$(TYPE)/$(MODE)
+else
+  OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
+endif
 
 
 $(info host... $(HOST))
@@ -83,9 +88,6 @@ $(info type... $(TYPE))
 $(info mode... $(MODE))
 $(info output... $(OUTPUT))
 $(info build dir... $(OUTDIR))
-
-
-include $(BUILDDIR)/Toolchain.mk
 
 
 ifeq ($(TYPE), intrepreter)
