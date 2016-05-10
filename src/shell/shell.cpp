@@ -327,6 +327,15 @@ int main(int argc, char* argv[])
 #endif
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();
+
+    ES->setlocale(icu::Locale::getUS());
+    char* tz;
+    tz = getenv("TZ");
+    if (tz)
+        ES->setTimezoneID(icu::UnicodeString(tz));
+    else
+        ES->setTimezoneID(icu::UnicodeString("Asia/Seoul"));
+
     if (argc == 1) {
         while (true) {
             char buf[512];

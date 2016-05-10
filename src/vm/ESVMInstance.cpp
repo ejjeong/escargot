@@ -67,10 +67,8 @@ ESVMInstance::ESVMInstance()
     temptm.tm_sec = 0;
 
     m_gmtoff = mktime(&temptm) - timegm(&temptm);
-    // temporary code for escargot standalone. Actually, it should be set by StarFish, outside escargot;
-    m_locale = icu::Locale::getUS();
-    m_timezoneID = icu::UnicodeString("Asia/Seoul");
 
+    m_timezone = NULL;
     // this code below should be lazy-loaded because of memory usage issue
     // m_timezone = icu::TimeZone::detectHostTimeZone();
     // m_gmtoff = -m_timezone->getRawOffset() / 1000;

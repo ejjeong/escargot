@@ -2274,11 +2274,7 @@ time64IncludingNaN ESDateObject::applyLocalTimezoneOffset(time64_t t)
     escargot::ESVMInstance* curIns = ESVMInstance::currentInstance();
 
     if (curIns->timezone() == NULL) {
-#ifdef NEVER_DEFINED
         curIns->setTimezone(icu::TimeZone::createTimeZone(curIns->timezoneID()));
-#else
-        curIns->setTimezone(icu::TimeZone::createDefault());
-#endif
     }
 
     UErrorCode succ = U_ZERO_ERROR;
