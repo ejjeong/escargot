@@ -341,11 +341,27 @@ void GlobalObject::initGlobalObject()
                 escargot::ESString* data = ESString::create(str.data());
                 return data;
             }
-            return ESValue();
         }
-        return ESValue();
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->read, "%s: cannot read");
     }, strings->read.string());
     set(strings->read.string(), readFunction);
+
+    auto appendFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        if (instance->currentExecutionContext()->argumentCount() > 1) {
+            ESValue path = instance->currentExecutionContext()->readArgument(0);
+            ESValue content = instance->currentExecutionContext()->readArgument(1);
+            const char* pathStr = path.toString()->utf8Data();
+            const char* contentStr = content.toString()->utf8Data();
+            FILE* fp = fopen(pathStr, "a");
+            if (fp) {
+                fputs (contentStr, fp);
+                fclose(fp);
+                return ESValue();
+            }
+        }
+        throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->append, "%s: cannot append");
+    }, strings->append.string());
+    set(strings->append.string(), appendFunction);
 
     // Function Properties of the Global Object
     m_eval = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

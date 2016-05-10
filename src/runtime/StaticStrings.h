@@ -226,6 +226,7 @@ class ESString;
     F(preventExtensions) \
     F(print) \
     F(read) \
+    F(append) \
     F(reduce) \
     F(reduceRight) \
     F(replace) \
