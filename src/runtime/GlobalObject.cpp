@@ -343,6 +343,7 @@ void GlobalObject::initGlobalObject()
             }
         }
         throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->read, "%s: cannot read");
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->read.string());
     set(strings->read.string(), readFunction);
 
@@ -360,6 +361,7 @@ void GlobalObject::initGlobalObject()
             }
         }
         throwBuiltinError(instance, ErrorCode::TypeError, strings->GlobalObject, false, strings->append, "%s: cannot append");
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->append.string());
     set(strings->append.string(), appendFunction);
 
