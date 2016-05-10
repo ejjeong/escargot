@@ -1657,36 +1657,19 @@ ESArrayObject* ESRegExpObject::createRegExpMatchedArray(const RegexMatchResult& 
 
 ESArrayObject* ESRegExpObject::pushBackToRegExpMatchedArray(escargot::ESArrayObject* array, size_t& index, const size_t limit, const RegexMatchResult& result, const escargot::ESString* str)
 {
-    bool global = option() && Option::Global;
-
-    if (global) {
-        for (unsigned i = 0; i < result.m_matchResults.size(); i++) {
-            if (i == 0)
+    for (unsigned i = 0; i < result.m_matchResults.size(); i ++) {
+        for (unsigned j = 0; j < result.m_matchResults[i].size(); j ++) {
+            if (i == 0 && j == 0)
                 continue;
 
-            if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
+            if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
                 array->defineDataProperty(ESValue(index++), true, true, true, ESValue(ESValue::ESUndefined));
             else
-                array->defineDataProperty(ESValue(index++), true, true, true, str->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
+                array->defineDataProperty(ESValue(index++), true, true, true, str->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
             if (index == limit)
                 return array;
         }
-    } else {
-        for (unsigned i = 0; i < result.m_matchResults.size(); i ++) {
-            for (unsigned j = 0; j < result.m_matchResults[i].size(); j ++) {
-                if (i == 0 && j == 0)
-                    continue;
-
-                if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                    array->defineDataProperty(ESValue(index++), true, true, true, ESValue(ESValue::ESUndefined));
-                else
-                    array->defineDataProperty(ESValue(index++), true, true, true, str->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
-                if (index == limit)
-                    return array;
-            }
-        }
     }
-
     return array;
 }
 
