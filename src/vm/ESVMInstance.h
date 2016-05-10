@@ -268,9 +268,11 @@ public:
 
     ALWAYS_INLINE void stackCheck()
     {
+#ifndef ESCARGOT_TIZEN
         char dummy;
         if (UNLIKELY(static_cast<size_t>(stackStart() - &dummy) > options::MaxStackDepth))
             throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
+#endif
     }
 
     ALWAYS_INLINE void argumentCountCheck(size_t arglen)

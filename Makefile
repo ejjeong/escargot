@@ -177,10 +177,6 @@ CXXFLAGS_INTERPRETER =
 ifeq ($(ARCH), x64)
   CXXFLAGS += $(shell pkg-config --cflags icu-i18n)
   LDFLAGS += $(shell pkg-config --libs icu-i18n)
-else ifeq ($(ARCH), x86)
-  CXXFLAGS += -Ideps/x86-linux/include
-  LDFLAGS += -Ldeps/x86-linux/lib
-  LDFLAGS += -licuio -licui18n -licuuc -licudata
 else ifneq ($(filter $(HOST),tizen_wearable_arm tizen3_wearable_arm), )
   CXXFLAGS += -Ideps/tizen/include
   LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-target-arm
@@ -189,6 +185,11 @@ else ifneq ($(filter $(HOST),tizen_wearable_emulator tizen3_wearable_emulator), 
   CXXFLAGS += -Ideps/tizen/include
   LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-emulator-x86
   LDFLAGS += -licuio -licui18n -licuuc -licudata
+else ifeq ($(ARCH), x86)
+  CXXFLAGS += -Ideps/x86-linux/include
+  LDFLAGS += -Ldeps/x86-linux/lib
+  LDFLAGS += -licuio -licui18n -licuuc -licudata
+
 endif
 
 # bdwgc
