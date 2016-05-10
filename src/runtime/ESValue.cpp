@@ -2277,7 +2277,7 @@ time64IncludingNaN ESDateObject::applyLocalTimezoneOffset(time64_t t)
 #ifdef NEVER_DEFINED
         curIns->setTimezone(icu::TimeZone::createTimeZone(curIns->timezoneID()));
 #else
-        curIns->setTimezone(icu::TimeZone::detectHostTimeZone());
+        curIns->setTimezone(icu::TimeZone::createDefault());
 #endif
     }
 
