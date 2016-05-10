@@ -926,6 +926,8 @@ void GlobalObject::installDate()
         icu::DateFormat *tf = icu::DateFormat::createTimeInstance(icu::DateFormat::FULL, instance->locale());
         tf->format(thisObject->asESDateObject()->timeValueAsDouble(), myString);
 
+        delete df;
+        delete tf;
         return ESString::create(myString);
     }, strings->toLocaleString, 0));
 

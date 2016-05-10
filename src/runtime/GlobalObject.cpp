@@ -355,7 +355,7 @@ void GlobalObject::initGlobalObject()
             const char* contentStr = content.toString()->utf8Data();
             FILE* fp = fopen(pathStr, "a");
             if (fp) {
-                fputs (contentStr, fp);
+                fputs(contentStr, fp);
                 fclose(fp);
                 return ESValue();
             }

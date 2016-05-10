@@ -314,6 +314,14 @@ public:
     {
         return m_timezone;
     }
+    void setTimezone(icu::TimeZone *tz)
+    {
+        m_timezone = tz->clone();
+    }
+    icu::UnicodeString timezoneID() const
+    {
+        return m_timezoneID;
+    }
     // The function below will be used by StarFish
     void setTimezoneID(icu::UnicodeString id)
     {

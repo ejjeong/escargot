@@ -2195,7 +2195,7 @@ public:
         }
     }
 
-    static time64IncludingNaN toUTC(time64_t t);
+    static time64IncludingNaN applyLocalTimezoneOffset(time64_t t);
     static time64_t ymdhmsToSeconds(int year, int month, int day, int hour, int minute, int64_t second);
 
     static time64IncludingNaN timeClip(double V)

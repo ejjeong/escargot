@@ -2196,7 +2196,7 @@ void ESDateObject::setTimeValue()
 {
     struct timespec time;
     clock_gettime(CLOCK_REALTIME, &time);
-    m_primitiveValue = time.tv_sec * (time64_t) 1000 + floor(time.tv_nsec / 1000000);
+    m_primitiveValue = time.tv_sec * msPerSecond + floor(time.tv_nsec / 1000000);
     m_isCacheDirty = true;
     m_hasValidDate = true;
 }
@@ -2227,10 +2227,10 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
     if (mn < 0)
         mn = (mn + 12) % 12;
 
-    time64IncludingNaN primitiveValue = ymdhmsToSeconds(ym, mn, date, hour, minute, second) * 1000. + millisecond;
+    time64IncludingNaN primitiveValue = ymdhmsToSeconds(ym, mn, date, hour, minute, second) * msPerSecond + millisecond;
 
     if (convertToUTC) {
-        primitiveValue = toUTC((time64_t) primitiveValue);
+        primitiveValue = applyLocalTimezoneOffset((time64_t) primitiveValue);
     }
 
     if (LIKELY(!std::isnan(primitiveValue)) && primitiveValue <= options::MaximumDatePrimitiveValue && primitiveValue >= -options::MaximumDatePrimitiveValue) {
@@ -2243,12 +2243,73 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
     m_isCacheDirty = true;
 }
 
-time64IncludingNaN ESDateObject::toUTC(time64_t t)
+// code from WebKit 3369f50e501f85e27b6e7baffd0cc7ac70931cc3
+// WTF/wtf/DateMath.cpp:340
+int equivalentYearForDST(int year)
 {
-    int tzOffsetAsSec = ESVMInstance::currentInstance()->timezoneOffset(); // For example, it returns 28800 in GMT-8 zone
-    time64IncludingNaN primitiveValue = t + (double) tzOffsetAsSec * 1000.;
-    if (primitiveValue <= options::MaximumDatePrimitiveValue && primitiveValue >= -options::MaximumDatePrimitiveValue) {
-        primitiveValue += computeDaylightSaving((time64_t) primitiveValue) * msPerSecond;
+    // It is ok if the cached year is not the current year as long as the rules
+    // for DST did not change between the two years; if they did the app would need
+    // to be restarted.
+    static int minYear = 2010;
+    int maxYear = 2037;
+
+    int difference;
+    if (year > maxYear)
+        difference = minYear - year;
+    else if (year < minYear)
+        difference = maxYear - year;
+    else
+        return year;
+
+    int quotient = difference / 28;
+    int product = (quotient) * 28;
+
+    year += product;
+    ASSERT((year >= minYear && year <= maxYear) || (product - year == static_cast<int>(std::numeric_limits<double>::quiet_NaN())));
+    return year;
+}
+
+time64IncludingNaN ESDateObject::applyLocalTimezoneOffset(time64_t t)
+{
+    escargot::ESVMInstance* curIns = ESVMInstance::currentInstance();
+
+    if (curIns->timezone() == NULL) {
+#ifdef NEVER_DEFINED
+        curIns->setTimezone(icu::TimeZone::createTimeZone(curIns->timezoneID()));
+#else
+        curIns->setTimezone(icu::TimeZone::detectHostTimeZone());
+#endif
+    }
+
+    UErrorCode succ = U_ZERO_ERROR;
+    time64IncludingNaN primitiveValue = t;
+    int32_t stdOffset, dstOffset;
+
+    // roughly check range before calling yearFromTime function
+    stdOffset = curIns->timezone()->getRawOffset();
+    primitiveValue -= stdOffset;
+    if (primitiveValue > options::MaximumDatePrimitiveValue || primitiveValue < -options::MaximumDatePrimitiveValue) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
+    // Find the equivalent year because ECMAScript spec says
+    // The implementation should not try to determine
+    // whether the exact time was subject to daylight saving time,
+    // but just whether daylight saving time would have been in effect
+    // if the current daylight saving time algorithm had been used at the time.
+    primitiveValue = t;
+    int year = yearFromTime(t);
+    int equivalentYear = equivalentYearForDST(year);
+    if (year != equivalentYear) {
+        primitiveValue = primitiveValue - timeFromYear(year) + timeFromYear(equivalentYear);
+    }
+
+    curIns->timezone()->getOffset(primitiveValue, true, stdOffset, dstOffset, succ);
+
+    primitiveValue = t - stdOffset - dstOffset;
+
+    // range check should be completed by caller function
+    if (succ == U_ZERO_ERROR) {
         return primitiveValue;
     }
     return std::numeric_limits<double>::quiet_NaN();
@@ -2356,11 +2417,10 @@ static bool parseLong(const char* string, char** stopPosition, int base, long* r
     }
 }
 
-double ESDateObject::parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset)
+time64IncludingNaN ESDateObject::parseStringToDate_1(escargot::ESString* istr, bool& haveTZ, int& offset)
 {
     haveTZ = false;
     offset = 0;
-
 
     long month = -1;
     const char* dateString = istr->utf8Data();
@@ -2765,7 +2825,7 @@ static char* parseES5TimePortion(char* currentPosition, long& hours, long& minut
     return currentPosition;
 }
 
-double ESDateObject::parseStringToDate_2(escargot::ESString* istr, bool& haveTZ)
+time64IncludingNaN ESDateObject::parseStringToDate_2(escargot::ESString* istr, bool& haveTZ)
 {
     haveTZ = true;
     const char* dateString = istr->utf8Data();
@@ -2819,23 +2879,23 @@ double ESDateObject::parseStringToDate_2(escargot::ESString* istr, bool& haveTZ)
     }
 
     double dateSeconds = ymdhmsToSeconds(year, month - 1, day, hours, minutes, (int) seconds) - timeZoneSeconds;
-    return dateSeconds * msPerSecond + (seconds - (int) seconds) * 1000;
+    return dateSeconds * msPerSecond + (seconds - (int) seconds) * msPerSecond;
 }
 
-double ESDateObject::parseStringToDate(escargot::ESString* istr)
+time64IncludingNaN ESDateObject::parseStringToDate(escargot::ESString* istr)
 {
     bool haveTZ;
     int offset;
-    double primitiveValue = parseStringToDate_2(istr, haveTZ);
+    time64IncludingNaN primitiveValue = parseStringToDate_2(istr, haveTZ);
     if (!std::isnan(primitiveValue)) {
         if (!haveTZ) { // add local timezone offset
-            primitiveValue = toUTC(primitiveValue);
+            primitiveValue = applyLocalTimezoneOffset(primitiveValue);
         }
     } else {
         primitiveValue = parseStringToDate_1(istr, haveTZ, offset);
         if (!std::isnan(primitiveValue)) {
             if (!haveTZ) {
-                primitiveValue = toUTC(primitiveValue);
+                primitiveValue = applyLocalTimezoneOffset(primitiveValue);
             } else {
                 primitiveValue = primitiveValue - (offset * msPerMinute);
             }
@@ -2847,79 +2907,6 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
     } else {
         return std::numeric_limits<double>::quiet_NaN();
     }
-
-/*    struct tm timeinfo;
-    double primitiveValue = 0.0;
-    timeinfo.tm_mday = 1; // set special initial case for mday. if we don't initialize it, it would be set to 0
-
-    char* buffer = (char*)istr->toNullableUTF8String().m_buffer;
-    char* parse_returned;
-    size_t fmt_length = istr->length();
-
-    parse_returned = strptime(buffer, "%Y", &timeinfo); // Date format with UTC timezone
-    if (buffer + fmt_length == parse_returned) {
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, 0, 1, 0, 0, 0) * 1000.;
-        return primitiveValue;
-    }
-
-    parse_returned = strptime(buffer, "%B %d %Y %H:%M:%S %z", &timeinfo); // Date format with specific timezone
-    if (buffer + fmt_length == parse_returned) {
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
-#if defined(__USE_BSD) || defined(__USE_MISC)
-        primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
-#else
-        primitiveValue = primitiveValue - timeinfo.__tm_gmtoff * 1000;
-#endif
-        return primitiveValue;
-    }
-
-    parse_returned = strptime(buffer, "%A %B %d %Y %H:%M:%S GMT", &timeinfo); // Date format with specific timezone
-    if (parse_returned) { // consider as "%A %B %d %Y %H:%M:%S GMT+9 (KST)" like format
-        // TODO : consider of setting daylightsaving flag (timeinfo->tm_isdst)
-        timeinfo.tm_gmtoff = 1 * 60 * 60; // 1 hour
-        if (*parse_returned == '-') {
-            timeinfo.tm_gmtoff *= -1;
-        }
-        parse_returned++;
-        int tz = *parse_returned - '0';
-        if (*(parse_returned+1) != ' ') {
-            tz *= 10;
-            tz += *(parse_returned+1) - '0';
-            timeinfo.tm_gmtoff *= tz;
-        } else {
-            timeinfo.tm_gmtoff *= tz;
-        }
-//        if (buffer + fmt_length == parse_returned) {
-            primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
-#if defined(__USE_BSD) || defined(__USE_MISC)
-            primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
-#else
-            primitiveValue = primitiveValue - timeinfo.__tm_gmtoff * 1000;
-#endif
-            return primitiveValue;
-//        }
-    }
-
-    parse_returned = strptime(buffer, "%Y-%m-%dT%H:%M:%S.", &timeinfo); // Date format with UTC timezone
-    if (buffer + fmt_length == parse_returned + 3) { // for milliseconds part
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
-        return primitiveValue;
-    }
-
-    parse_returned = strptime(buffer, "%Y-%m-%dT%H:%M:%S.", &timeinfo); // Date format with UTC timezone
-    if (buffer + fmt_length == parse_returned + 4) { // for milliseconds part and 'Z' part
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
-        return primitiveValue;
-    }
-
-    parse_returned = strptime(buffer, "%m/%d/%Y %H:%M:%S", &timeinfo); // Date format with local timezone
-    if (buffer + fmt_length == parse_returned) {
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
-        primitiveValue = toUTC(primitiveValue);
-        return primitiveValue;
-    }
-    return std::numeric_limits<double>::quiet_NaN();
-    */
 }
 
 int ESDateObject::daysInYear(int year)
@@ -3054,9 +3041,10 @@ int ESDateObject::dateFromTime(time64_t t)
 time64_t ESDateObject::makeDay(int year, int month, int date)
 {
     // TODO: have to check whether year or month is infinity
-//    if(year == infinity || month == infinity){
-//        return nan;
-//    }
+    //  if(year == infinity || month == infinity){
+    //      return nan;
+    //  }
+
     // adjustment on argument[0],[1] is performed at setTimeValue(with 7 arguments) function
     ASSERT(0 <= month && month < 12);
     long ym = year;
@@ -3065,108 +3053,23 @@ time64_t ESDateObject::makeDay(int year, int month, int date)
     return day(t) + date - 1;
 }
 
-
-time64_t ESDateObject::getSecondSundayInMarch(time64_t t)
-{
-    int year = yearFromTime(t);
-    int leap = inLeapYear(t);
-
-    time64_t march = timeFromYear(year) + (31 * msPerDay) + (28 * msPerDay) + (leap * msPerDay);
-
-    int sundayCount = 0;
-    bool flag = true;
-    time64_t second_sunday;
-    for (second_sunday = march; flag; second_sunday += msPerDay) {
-        if ((((int) (day(second_sunday) + 4) % 7) + 7) % 7 == 0) {
-            if (++sundayCount == 2)
-                flag = false;
-        }
-    }
-
-    return second_sunday - msPerDay;
-}
-time64_t ESDateObject::getFirstSundayInNovember(time64_t t)
-{
-    int year = yearFromTime(t);
-    int leap = inLeapYear(t);
-
-    time64_t nov = timeFromYear(year) + (31 * msPerDay) * 6 + (30 * msPerDay) * 3 + (28 * msPerDay) + (leap * msPerDay);
-
-    time64_t first_sunday;
-    for (first_sunday = nov; (((int) (day(first_sunday) + 4) % 7) + 7) % 7 > 0;
-        first_sunday += msPerDay) { }
-    return first_sunday;
-}
-
-// it should return -3600(sec.) if daylightsaving is applied
-int ESDateObject::computeDaylightSaving(time64_t primitiveValue)
-{
-    time64_t primitiveValueToUTC = primitiveValue;
-
-    if (ESVMInstance::currentInstance()->timezoneOffset() == 28800) {
-        time64_t dst_start = getSecondSundayInMarch(primitiveValueToUTC) + 10 * msPerHour;
-        time64_t dst_end = getFirstSundayInNovember(primitiveValueToUTC) + 10 * msPerHour;
-
-        if (primitiveValueToUTC >= dst_start && primitiveValueToUTC < dst_end)
-            return -secondsPerHour;
-        else
-            return 0.0;
-    }
-
-    return 0.0;
-
-
-//    tm localTM = *localtime_r(&primitiveValueToUTC);
-
-/*    if (localTM.tm_isdst) {
-        return -secondsPerHour;
-    } else {
-        return 0.0;
-    }*/
-}
-// code from WebKit 3369f50e501f85e27b6e7baffd0cc7ac70931cc3
-// WTF/wtf/DateMath.cpp:340
-int equivalentYearForDST(int year)
-{
-    // It is ok if the cached year is not the current year as long as the rules
-    // for DST did not change between the two years; if they did the app would need
-    // to be restarted.
-    static int minYear = 2010;
-    int maxYear = 2037;
-
-    int difference;
-    if (year > maxYear)
-        difference = minYear - year;
-    else if (year < minYear)
-        difference = maxYear - year;
-    else
-        return year;
-
-    int quotient = difference / 28;
-    int product = (quotient) * 28;
-
-    year += product;
-    ASSERT((year >= minYear && year <= maxYear) || (product - year == static_cast<int>(std::numeric_limits<double>::quiet_NaN())));
-    return year;
-//    return product;
-}
-
 void ESDateObject::resolveCache()
 {
     if (m_isCacheDirty) {
         struct timespec time;
-        time.tv_sec = floor(m_primitiveValue / 1000.0);
+        time.tv_sec = floor(m_primitiveValue / msPerSecond);
         time.tv_nsec = (m_primitiveValue % 1000) * 1000000;
         if (time.tv_nsec < 0)
             time.tv_nsec = (time.tv_nsec + 1000000000) % 1000000000;
 
-        int tmpyear = yearFromTime(m_primitiveValue - ESVMInstance::currentInstance()->timezoneOffset() * msPerSecond);
+        int realyear = yearFromTime(m_primitiveValue);
+        int equivalentYear = equivalentYearForDST(realyear);
 
-        if (tmpyear != equivalentYearForDST(tmpyear)) {
-            time.tv_sec = time.tv_sec + (timeFromYear(equivalentYearForDST(tmpyear)) - timeFromYear(tmpyear)) / 1000;
+        if (realyear != equivalentYear) {
+            time.tv_sec = time.tv_sec + (timeFromYear(equivalentYear) - timeFromYear(realyear)) / msPerSecond;
         }
         memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(time), sizeof(tm));
-        m_cachedTM.tm_year = tmpyear - 1900;
+        m_cachedTM.tm_year += (realyear - equivalentYear);
         m_isCacheDirty = false;
     }
 }
@@ -3215,6 +3118,7 @@ ESString* ESDateObject::toFullString()
     }
 
 }
+
 int ESDateObject::getDate()
 {
     resolveCache();
@@ -3223,7 +3127,8 @@ int ESDateObject::getDate()
 
 int ESDateObject::getDay()
 {
-    return (((int) (day(m_primitiveValue - getTimezoneOffset() * msPerSecond) + 4) % 7) + 7) % 7;
+    int ret = ((int) day(m_primitiveValue - getTimezoneOffset() * msPerSecond) + 4) % 7;
+    return (ret < 0) ? (ret + 7) % 7 : ret;
 }
 
 int ESDateObject::getFullYear()
@@ -3237,10 +3142,13 @@ int ESDateObject::getHours()
     resolveCache();
     return m_cachedTM.tm_hour;
 }
+
 int ESDateObject::getMilliseconds()
 {
-    return (((long long) m_primitiveValue % (int) msPerSecond) + (int) msPerSecond) % (int) msPerSecond;
+    int ret = m_primitiveValue % (int) msPerSecond;
+    return (ret < 0) ? (ret + (int) msPerSecond) % (int) msPerSecond : ret;
 }
+
 int ESDateObject::getMinutes()
 {
     resolveCache();
@@ -3261,7 +3169,6 @@ int ESDateObject::getSeconds()
 
 int ESDateObject::getTimezoneOffset()
 {
-//    return ESVMInstance::currentInstance()->timezoneOffset();
     resolveCache();
     return -1 * m_cachedTM.tm_gmtoff;
 }
@@ -3275,7 +3182,7 @@ void ESDateObject::setTime(double t)
 
     m_primitiveValue = floor(t);
 
-    if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
+    if (m_primitiveValue <= options::MaximumDatePrimitiveValue && m_primitiveValue >= -options::MaximumDatePrimitiveValue) {
         m_isCacheDirty = true;
         m_hasValidDate = true;
     } else {
@@ -3290,7 +3197,8 @@ int ESDateObject::getUTCDate()
 
 int ESDateObject::getUTCDay()
 {
-    return (((int) (day(m_primitiveValue) + 4) % 7) + 7) % 7;
+    int ret = (int) (day(m_primitiveValue) + 4) % 7;
+    return (ret < 0) ? (ret + 7) % 7 : ret;
 }
 
 int ESDateObject::getUTCFullYear()
@@ -3300,15 +3208,20 @@ int ESDateObject::getUTCFullYear()
 
 int ESDateObject::getUTCHours()
 {
-    return (((long long) floor(m_primitiveValue / msPerHour) % (int) hoursPerDay) + (int) hoursPerDay) % (int) hoursPerDay;
+    int ret = (long long) floor(m_primitiveValue / msPerHour) % (int) hoursPerDay;
+    return (ret < 0) ? (ret + (int) hoursPerDay) % (int) hoursPerDay : ret;
 }
+
 int ESDateObject::getUTCMilliseconds()
 {
-    return (((long long) m_primitiveValue % (int) msPerSecond) + (int) msPerSecond) % (int) msPerSecond;
+    int ret = m_primitiveValue % (int) msPerSecond;
+    return (ret < 0) ? (ret + (int) msPerSecond) % (int) msPerSecond : ret;
 }
+
 int ESDateObject::getUTCMinutes()
 {
-    return (((long long) floor(m_primitiveValue / msPerMinute) % (int) minutesPerHour) + (int) minutesPerHour) % (int) minutesPerHour;
+    int ret = (long long) floor(m_primitiveValue / msPerMinute) % (int) minutesPerHour;
+    return (ret < 0) ? (ret + (int) minutesPerHour) % (int) minutesPerHour : ret;
 }
 
 int ESDateObject::getUTCMonth()
@@ -3318,7 +3231,8 @@ int ESDateObject::getUTCMonth()
 
 int ESDateObject::getUTCSeconds()
 {
-    return (((long long) floor(m_primitiveValue / msPerSecond) % (int) secondsPerMinute) + (int) secondsPerMinute) % (int) secondsPerMinute;
+    int ret = (long long) floor(m_primitiveValue / msPerSecond) % (int) secondsPerMinute;
+    return (ret < 0) ? (ret + (int) secondsPerMinute) % (int) secondsPerMinute : ret;
 }
 
 
