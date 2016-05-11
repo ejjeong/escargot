@@ -1716,6 +1716,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn)
 {
     m_codeBlock = CodeBlock::create(ExecutableType::FunctionCode, 0, true);
+    m_codeBlock->m_isStrict = true;
     m_codeBlock->m_hasCode = true;
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));
 #ifndef NDEBUG
@@ -2077,7 +2078,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, CodeBlock* cb, DeclarativeEnvironmentRecord* functionRecord, ESValue* stackStorage, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance, bool* registeredOuterFEName)
 {
     // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
-    if (newEC->isStrictMode() || cb->m_isBuiltInFunction) {
+    if (newEC->isStrictMode()) {
         newEC->setThisBinding(receiver);
     } else {
         if (receiver.isUndefinedOrNull()) {
