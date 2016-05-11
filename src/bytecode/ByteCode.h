@@ -2361,6 +2361,7 @@ public:
     bool m_needsToPrepareGenerateArgumentsObject;
     bool m_hasArgumentsBinding;
     bool m_isBuiltInFunction;
+    bool m_forceDenyStrictMode;
     bool m_isCached;
 
     bool m_isFunctionExpressionNameHeapAllocated;

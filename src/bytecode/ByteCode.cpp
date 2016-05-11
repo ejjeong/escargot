@@ -28,6 +28,7 @@ CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, b
     m_isFunctionExpressionNameHeapAllocated = false;
     m_needsActivation = false;
     m_functionExpressionNameIndex = SIZE_MAX;
+    m_forceDenyStrictMode = false;
 #ifdef ENABLE_ESJIT
     m_cachedJITFunction = nullptr;
     m_executeCount = 0;
