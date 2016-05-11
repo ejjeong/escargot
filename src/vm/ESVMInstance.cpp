@@ -23,8 +23,6 @@ ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
-    GC_add_roots(this, (void *)(((size_t)this + sizeof(ESVMInstance)) + 1));
-
     GC_set_oom_fn([](size_t bytes) -> void* {
         ESVMInstance::currentInstance()->throwOOMError();
         RELEASE_ASSERT_NOT_REACHED();
