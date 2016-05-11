@@ -1370,8 +1370,20 @@ void GlobalObject::installObject()
         size_t idx = obj->hiddenClass()->findProperty(propertyKey);
         if (idx != SIZE_MAX)
             return escargot::PropertyDescriptor::fromPropertyDescriptor(obj, propertyKey, idx);
-        else
+        else {
+            if (UNLIKELY(obj->hasPropertyInterceptor())) {
+                ESValue v = obj->readKeyForPropertyInterceptor(propertyKey);
+                if (!v.isDeleted()) {
+                    ESObject* desc = ESObject::create();
+                    desc->set(strings->value.string(), v);
+                    desc->set(strings->writable.string(), ESValue(false));
+                    desc->set(strings->enumerable.string(), ESValue(false));
+                    desc->set(strings->configurable.string(), ESValue(false));
+                    return desc;
+                }
+            }
             return escargot::PropertyDescriptor::fromPropertyDescriptorForIndexedProperties(obj, arg1.toIndex());
+        }
     }, strings->getOwnPropertyDescriptor.string(), 2));
 
     // $19.1.2.7 Object.getOwnPropertyNames

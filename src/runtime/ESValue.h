@@ -1745,7 +1745,6 @@ private:
     unsigned m_seenAttributes;
 };
 
-typedef bool (*HasPropertyCallback)(const ESValue& key, ESObject* obj);
 typedef ESValueVector (*PropertyEnumerationCallback)(ESObject* obj);
 typedef ESValue (*PropertyCallback)(const ESValue& key, ESObject* obj);
 
@@ -1753,14 +1752,12 @@ struct ESObjectRareData : public gc {
     ESObjectRareData()
     {
         m_hasPropertyInterceptor = false;
-        m_hasPropertyCallback = nullptr;
         m_propertyEnumerationCallback = nullptr;
         m_propertyCallback = nullptr;
         m_extraPointerData = nullptr;
     }
 
     bool m_hasPropertyInterceptor;
-    HasPropertyCallback m_hasPropertyCallback;
     PropertyEnumerationCallback m_propertyEnumerationCallback;
     PropertyCallback m_propertyCallback;
     void* m_extraPointerData;
@@ -1920,12 +1917,12 @@ public:
     inline void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
     inline void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
 
-    void setPropertyInterceptor(HasPropertyCallback hasIndex, PropertyEnumerationCallback enumeration, PropertyCallback readIndex)
+    void setPropertyInterceptor(PropertyCallback readIndex, PropertyEnumerationCallback enumeration)
     {
+        ASSERT(!isESArrayObject());
         ensureRareData();
         forceNonVectorHiddenClass(true);
         m_objectRareData->m_hasPropertyInterceptor = true;
-        m_objectRareData->m_hasPropertyCallback = hasIndex;
         m_objectRareData->m_propertyEnumerationCallback = enumeration;
         m_objectRareData->m_propertyCallback = readIndex;
     }
@@ -1933,6 +1930,11 @@ public:
     ALWAYS_INLINE bool hasPropertyInterceptor()
     {
         return !isESArrayObject() && m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
+    }
+
+    ESValue readKeyForPropertyInterceptor(const ESValue& key)
+    {
+        return m_objectRareData->m_propertyCallback(key, this);
     }
 
 #ifdef ENABLE_ESJIT
@@ -1950,18 +1952,6 @@ protected:
         if (m_objectRareData == nullptr) {
             m_objectRareData = new ESObjectRareData();
         }
-    }
-
-    bool hasKeyForPropertyInterceptor(const ESValue& key)
-    {
-        ASSERT(hasPropertyInterceptor());
-        return m_objectRareData->m_hasPropertyCallback(key, this);
-    }
-
-    ESValue readKeyForPropertyInterceptor(const ESValue& key)
-    {
-        ASSERT(hasKeyForPropertyInterceptor(key));
-        return m_objectRareData->m_propertyCallback(key, this);
     }
 
     ESValueVector propertyEnumerationForPropertyInterceptor()

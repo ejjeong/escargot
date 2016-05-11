@@ -1378,8 +1378,10 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
             return false;
         }
     }
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return false;
+    if (UNLIKELY(hasPropertyInterceptor())) {
+        ESValue v = readKeyForPropertyInterceptor(key);
+        if (!v.isDeleted())
+            return false;
     }
 
     escargot::ESString* keyString = key.toString();
@@ -1461,8 +1463,11 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
             return false;
         }
     }
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return false;
+
+    if (UNLIKELY(hasPropertyInterceptor())) {
+        ESValue v = readKeyForPropertyInterceptor(key);
+        if (!v.isDeleted())
+            return false;
     }
 
     if (UNLIKELY(m_flags.m_isGlobalObject))
@@ -1536,8 +1541,10 @@ inline bool ESObject::deletePropertyWithException(const ESValue& key, bool force
 
 inline bool ESObject::deletePropertySlowPath(const ESValue& key, bool force)
 {
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return false;
+    if (UNLIKELY(hasPropertyInterceptor())) {
+        ESValue v = readKeyForPropertyInterceptor(key);
+        if (!v.isDeleted())
+            return false;
     }
 
     size_t idx = m_hiddenClass->findProperty(key.toString());
@@ -1625,11 +1632,17 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
         uint32_t idx = key.toIndex();
         if ((uint32_t)idx < asESStringObject()->length())
             return true;
-    } else if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return true;
     }
 
-    return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
+    bool ret = m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
+    if (!ret) {
+        if (UNLIKELY(hasPropertyInterceptor())) {
+            ESValue v = readKeyForPropertyInterceptor(key);
+            if (!v.isDeleted())
+                return true;
+        }
+    }
+    return ret;
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
@@ -1641,10 +1654,6 @@ inline ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* receiver)
         ESValue val = target->getOwnPropertyFastPath(key);
         if (!val.isEmpty())
             return val;
-
-        if (UNLIKELY(target->hasPropertyInterceptor() && target->hasKeyForPropertyInterceptor(key))) {
-            return target->readKeyForPropertyInterceptor(key);
-        }
 
         escargot::ESString* keyString = key.toString();
         size_t t = target->m_hiddenClass->findProperty(keyString);
@@ -1661,6 +1670,12 @@ inline ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* receiver)
         if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject()) {
             target = target->__proto__().asESPointer()->asESObject();
         } else {
+            if (UNLIKELY(hasPropertyInterceptor())) {
+                ESValue v = readKeyForPropertyInterceptor(key);
+                if (!v.isDeleted()) {
+                    return v;
+                }
+            }
             return ESValue();
         }
     }
@@ -1703,15 +1718,16 @@ inline ESValue ESObject::getOwnPropertyFastPath(escargot::ESValue key)
 
 inline ESValue ESObject::getOwnPropertySlowPath(escargot::ESValue key)
 {
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return readKeyForPropertyInterceptor(key);
-    }
-
     escargot::ESString* keyString = key.toString();
     size_t t = m_hiddenClass->findProperty(keyString);
     if (t != SIZE_MAX) {
         return m_hiddenClass->read(this, this, keyString, t);
     } else {
+        if (UNLIKELY(hasPropertyInterceptor())) {
+            ESValue v = readKeyForPropertyInterceptor(key);
+            if (!v.isDeleted())
+                return v;
+        }
         return ESValue();
     }
 }

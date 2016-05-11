@@ -787,8 +787,10 @@ void ESObject::setValueAsProtoType(const ESValue& obj)
 
 NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
-    if (UNLIKELY(hasPropertyInterceptor() && hasKeyForPropertyInterceptor(key))) {
-        return false;
+    if (UNLIKELY(hasPropertyInterceptor())) {
+        ESValue v = readKeyForPropertyInterceptor(key);
+        if (!v.isDeleted())
+            return false;
     }
 
     escargot::ESString* keyString = key.toString();
