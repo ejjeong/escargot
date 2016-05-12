@@ -135,17 +135,6 @@ class ESString;
     F(input) \
     F(index) \
     F(compile) \
-    F(TypedArray) \
-    F(Int8Array) \
-    F(Int16Array) \
-    F(Int32Array) \
-    F(Uint8Array) \
-    F(Uint16Array) \
-    F(Uint32Array) \
-    F(Uint8ClampedArray) \
-    F(Float32Array) \
-    F(Float64Array) \
-    F(ArrayBuffer) \
     F(byteLength) \
     F(subarray) \
     F(buffer) \
@@ -247,6 +236,24 @@ class ESString;
     F(trim) \
     F(unescape) \
     F(unshift) \
+    FOR_EACH_ES6_STRING(F)
+
+#ifdef USE_ES6_FEATURE
+#define FOR_EACH_ES6_STRING(F) \
+    F(TypedArray) \
+    F(Int8Array) \
+    F(Int16Array) \
+    F(Int32Array) \
+    F(Uint8Array) \
+    F(Uint16Array) \
+    F(Uint32Array) \
+    F(Uint8ClampedArray) \
+    F(Float32Array) \
+    F(Float64Array) \
+    F(ArrayBuffer)
+#else
+#define FOR_EACH_ES6_STRING(F)
+#endif
 
 class Strings {
 public:

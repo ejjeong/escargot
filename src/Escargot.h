@@ -394,6 +394,10 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #error "I don't know what architecture this is!"
 #endif
 
+#define USE_ES6_FEATURE
+#ifdef ESCARGOT_TIZEN
+#undef USE_ES6_FEATURE
+#endif
 
 namespace escargot {
 

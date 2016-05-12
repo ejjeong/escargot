@@ -178,10 +178,12 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
                     }
                 }
             }
+#ifdef USE_ES6_FEATURE
         } else if (ptr->isESTypedArrayObject()) {
             uint32_t idx = property->toIndex();
             ESTypedArrayObjectWrapper* arr =ptr->asESTypedArrayObjectWrapper();
             return arr->get(idx);
+#endif
         } else if (ptr->isESString()) {
             uint32_t idx = property->toIndex();
             if (LIKELY(idx < ptr->asESString()->length())) {
@@ -313,10 +315,12 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                     }
                 }
             }
+#ifdef USE_ES6_FEATURE
         } else if (ptr->isESTypedArrayObject()) {
             uint32_t idx = property->toIndex();
             ptr->asESTypedArrayObjectWrapper()->set(idx, value);
             return;
+#endif
         }
     }
     setObjectOperationSlowCase(willBeObject, property, value);

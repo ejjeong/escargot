@@ -3867,6 +3867,7 @@ EvalError::EvalError(escargot::ESString* message)
     set__proto__(ESVMInstance::currentInstance()->globalObject()->evalErrorPrototype());
 }
 
+#ifdef USE_ES6_FEATURE
 ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
     : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype())
     , m_data(NULL)
@@ -3928,6 +3929,7 @@ bool ESTypedArrayObjectWrapper::set(uint32_t key, ESValue val)
     }
     RELEASE_ASSERT_NOT_REACHED();
 }
+#endif
 
 ESArgumentsObject::ESArgumentsObject(FunctionEnvironmentRecordWithArgumentsObject* environment)
     : ESObject((Type)(Type::ESObject | Type::ESArgumentsObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype(), 6)

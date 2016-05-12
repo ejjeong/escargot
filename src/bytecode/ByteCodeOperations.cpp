@@ -494,6 +494,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = URIError::create();
     } else if (function == globalObject->evalError()) {
         receiver = EvalError::create();
+#ifdef USE_ES6_FEATURE
     } else if (function == globalObject->int8Array()) {
         receiver = ESTypedArrayObject<Int8Adaptor>::create();
     } else if (function == globalObject->uint8Array()) {
@@ -514,6 +515,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = ESTypedArrayObject<Float64Adaptor>::create();
     } else if (function == globalObject->arrayBuffer()) {
         receiver = ESArrayBufferObject::create();
+#endif
     } else {
         receiver = ESObject::create();
     }

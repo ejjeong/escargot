@@ -1364,12 +1364,14 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
             }
         }
     }
+#ifdef USE_ES6_FEATURE
     if (isESTypedArrayObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
     }
+#endif
     if (isESStringObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue && i < asESStringObject()->length()) {
@@ -1449,12 +1451,14 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
             asESArrayObject()->convertToSlowMode();
         }
     }
+#ifdef USE_ES6_FEATURE
     if (isESTypedArrayObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
     }
+#endif
     if (isESStringObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue && i < asESStringObject()->length()) {
@@ -1580,11 +1584,13 @@ inline bool ESObject::deleteProperty(const ESValue& key, bool force)
             }
             return true;
         }
+#ifdef USE_ES6_FEATURE
     } else if (isESTypedArrayObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
             return true;
         }
+#endif
     } else if (isESStringObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
@@ -1624,10 +1630,12 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
                     return true;
             }
         }
+#ifdef USE_ES6_FEATURE
     } else if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue && (uint32_t)idx < asESTypedArrayObjectWrapper()->length())
             return true;
+#endif
     } else if (isESStringObject()) {
         uint32_t idx = key.toIndex();
         if ((uint32_t)idx < asESStringObject()->length())
@@ -1699,11 +1707,13 @@ inline ESValue ESObject::getOwnPropertyFastPath(escargot::ESValue key)
                 return asESArrayObject()->m_vector[idx];
             }
         }
+#ifdef USE_ES6_FEATURE
     } else if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
             return asESTypedArrayObjectWrapper()->get(idx);
         }
+#endif
     } else if (isESStringObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
@@ -1778,10 +1788,12 @@ inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, esca
                 return true;
             }
         }
+#ifdef USE_ES6_FEATURE
     } else if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
         asESTypedArrayObjectWrapper()->set(idx, val);
         return true;
+#endif
     } else if (isESStringObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue)
@@ -1805,9 +1817,11 @@ ALWAYS_INLINE size_t ESObject::keyCount()
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         siz += asESArrayObject()->length();
     }
+#ifdef USE_ES6_FEATURE
     if (isESTypedArrayObject()) {
         siz += asESTypedArrayObjectWrapper()->length();
     }
+#endif
     if (isESStringObject()) {
         siz += asESStringObject()->length();
     }
@@ -1924,11 +1938,13 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
         }
     }
 
+#ifdef USE_ES6_FEATURE
     if (isESTypedArrayObject()) {
         for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
             t(ESValue(i).toString());
         }
     }
+#endif
 
     if (isESStringObject()) {
         for (uint32_t i = 0; i < asESStringObject()->length(); i++) {
@@ -1963,11 +1979,13 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
         }
     }
 
+#ifdef USE_ES6_FEATURE
     if (isESTypedArrayObject()) {
         for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
             t(ESValue(i).toString(), &ESHiddenClassPropertyInfo::s_dummyPropertyInfo);
         }
     }
+#endif
 
     if (isESStringObject()) {
         for (uint32_t i = 0; i < asESStringObject()->length(); i++) {
@@ -2043,6 +2061,7 @@ ALWAYS_INLINE bool ESArrayObject::isFastmode()
     return m_flags.m_isFastMode;
 }
 
+#ifdef USE_ES6_FEATURE
 template<>
 inline ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype, ESPointer::Type type)
     : ESTypedArrayObjectWrapper(arraytype,
@@ -2105,6 +2124,7 @@ inline ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arr
     (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float64ArrayPrototype())
 {
 }
+#endif
 
 #define ESStringBuilderInlineStorageMax 12
 

@@ -29,6 +29,7 @@ class ESVMInstance;
 class ESPointer;
 class ESRegExpObject;
 class ESMathObject;
+#ifdef USE_ES6_FEATURE
 // ES6 Typed Array
 class ESArrayBufferObject;
 class ESArrayBufferView;
@@ -36,6 +37,7 @@ template<typename TypeArg>
 class ESTypedArrayObject;
 class ESTypedArrayObjectWrapper;
 class ESDataViewObject;
+#endif
 class ESArgumentsObject;
 class ESControlFlowRecord;
 class CodeBlock;
@@ -270,10 +272,12 @@ public:
         ESRegExpObject = 1 << 9,
         ESMathObject = 1 << 10,
         ESBooleanObject = 1 << 11,
+#ifdef USE_ES6_FEATURE
         ESArrayBufferObject = 1 << 12,
         ESArrayBufferView = 1 << 13,
         ESTypedArrayObject = 1 << 14,
         ESDataViewObject = 1 << 15,
+#endif
         ESArgumentsObject = 1 << 16,
         ESControlFlowRecord = 1 << 17,
         ESJSONObject = 1 << 18,
@@ -446,6 +450,7 @@ public:
         return reinterpret_cast<::escargot::ESDateObject *>(this);
     }
 
+#ifdef USE_ES6_FEATURE
     ALWAYS_INLINE bool isESArrayBufferObject() const
     {
         return m_type & Type::ESArrayBufferObject;
@@ -506,6 +511,7 @@ public:
 #endif
         return reinterpret_cast<::escargot::ESDataViewObject *>(this);
     }
+#endif
 
     ALWAYS_INLINE bool isESArgumentsObject() const
     {
@@ -2679,6 +2685,7 @@ template<> struct equal_to<escargot::ESRegExpObject::RegExpCacheKey> {
 
 namespace escargot {
 
+#ifdef USE_ES6_FEATURE
 enum TypedArrayType {
     Int8Array,
     Uint8Array,
@@ -2920,6 +2927,7 @@ public:
         return new ESDataViewObject();
     }
 };
+#endif
 
 class ESArgumentsObject : public ESObject {
 protected:

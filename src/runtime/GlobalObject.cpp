@@ -213,8 +213,10 @@ void GlobalObject::initGlobalObject()
     installNumber();
     installBoolean();
     installRegExp();
+#ifdef USE_ES6_FEATURE
     installArrayBuffer();
     installTypedArray();
+#endif
 
     // Value Properties of the Global Object
     defineDataProperty(strings->Infinity, false, false, false, ESValue(std::numeric_limits<double>::infinity()));
@@ -1261,6 +1263,7 @@ void GlobalObject::installObject()
             return ESString::createAtomicString("[object Math]");
         } else if (thisVal->isESJSONObject()) {
             return ESString::createAtomicString("[object JSON]");
+#ifdef USE_ES6_FEATURE
         } else if (thisVal->isESTypedArrayObject()) {
             ASCIIString ret = "[object ";
             ESValue ta_constructor = thisVal->get(strings->constructor.string());
@@ -1270,6 +1273,7 @@ void GlobalObject::installObject()
             ret.append(ta_name.toString()->asciiData());
             ret.append("]");
             return ESString::createAtomicString(ret.data());
+#endif
         } else if (thisVal->isESArgumentsObject()) {
             return ESString::createAtomicString("[object Arguments]");
         } else if (thisVal->isGlobalObject()) {
@@ -1526,7 +1530,11 @@ void GlobalObject::installObject()
         RESOLVE_THIS_BINDING_TO_OBJECT(O, Object, propertyIsEnumerable);
         if (!O->hasOwnProperty(key))
             return ESValue(false);
-        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject()) {
+        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode())
+#ifdef USE_ES6_FEATURE
+            || O->isESTypedArrayObject()
+#endif
+            ) {
             if (*key != *strings->length.string())
             // In fast mode, it was already checked in O->hasOwnProperty.
                 return ESValue(true);
@@ -4841,6 +4849,7 @@ void GlobalObject::installRegExp()
     defineDataProperty(strings->RegExp, true, false, true, m_regexp);
 }
 
+#ifdef USE_ES6_FEATURE
 void GlobalObject::installArrayBuffer()
 {
     m_arrayBufferPrototype = ESArrayBufferObject::create();
@@ -5120,6 +5129,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     defineDataProperty(ta_name, true, false, true, ta_constructor);
     return ta_constructor;
 }
+#endif
 
 void GlobalObject::registerCodeBlock(CodeBlock* cb)
 {

@@ -216,6 +216,7 @@ public:
         return m_eval;
     }
 
+#ifdef USE_ES6_FEATURE
     ALWAYS_INLINE escargot::ESFunctionObject* int8Array()
     {
         return m_Int8Array;
@@ -341,6 +342,7 @@ public:
     {
         return m_arrayBufferPrototype;
     }
+#endif
 
     // DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
     // NOTE rooted ESValue* has short life time.
@@ -390,10 +392,12 @@ protected:
     void installNumber();
     void installBoolean();
     void installRegExp();
+#ifdef USE_ES6_FEATURE
     void installArrayBuffer();
     void installTypedArray();
     template <typename T>
     escargot::ESFunctionObject* installTypedArray(escargot::ESString*);
+#endif
 
     escargot::ESVMInstance* m_instance;
 
@@ -433,6 +437,7 @@ protected:
     escargot::ESFunctionObject* m_evalError;
     escargot::ESObject* m_evalErrorPrototype;
 
+#ifdef USE_ES6_FEATURE
     // Constructor and prototypes for TypedArray
     escargot::ESFunctionObject* m_Int8Array;
     escargot::ESObject* m_Int8ArrayPrototype;
@@ -454,6 +459,7 @@ protected:
     escargot::ESObject* m_Float64ArrayPrototype;
     escargot::ESFunctionObject* m_arrayBuffer;
     escargot::ESObject* m_arrayBufferPrototype;
+#endif
 
     escargot::ESFunctionObject* m_eval;
     escargot::ESFunctionObject* m_objectProtoTypeToString;
