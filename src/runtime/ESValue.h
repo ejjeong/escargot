@@ -1484,6 +1484,7 @@ struct ESHiddenClassPropertyInfo {
     ALWAYS_INLINE unsigned attributes() const { return m_attributes; }
     ALWAYS_INLINE unsigned property() const;
 
+    static ESHiddenClassPropertyInfo s_dummyPropertyInfo;
 private:
     ESString* m_name;
     unsigned m_attributes;

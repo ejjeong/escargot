@@ -39,7 +39,7 @@ NEVER_INLINE bool reject(bool throwFlag, ESErrorObject::Code code, const char* t
     return false;
 }
 
-ESHiddenClassPropertyInfo dummyPropertyInfo(nullptr, Data | PropertyDescriptor::defaultAttributes);
+ESHiddenClassPropertyInfo ESHiddenClassPropertyInfo::s_dummyPropertyInfo(nullptr, Data | PropertyDescriptor::defaultAttributes);
 ESHiddenClassPropertyInfo::ESHiddenClassPropertyInfo()
 {
     m_name = NULL;

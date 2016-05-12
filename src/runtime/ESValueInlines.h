@@ -1952,7 +1952,6 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
     }
 }
 
-extern ESHiddenClassPropertyInfo dummyPropertyInfo;
 template <typename Functor>
 ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
 {
@@ -1960,13 +1959,13 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
         for (uint32_t i = 0; i < asESArrayObject()->length(); i++) {
             if (asESArrayObject()->m_vector[i].isEmpty())
                 continue;
-            t(ESValue(i).toString(), &dummyPropertyInfo);
+            t(ESValue(i).toString(), &ESHiddenClassPropertyInfo::s_dummyPropertyInfo);
         }
     }
 
     if (isESTypedArrayObject()) {
         for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
-            t(ESValue(i).toString(), &dummyPropertyInfo);
+            t(ESValue(i).toString(), &ESHiddenClassPropertyInfo::s_dummyPropertyInfo);
         }
     }
 
