@@ -592,6 +592,15 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
 
+        int64_t tmpargs[2] = {(int64_t) args[0], (int64_t) args[1]};
+        for (size_t i = 0; i < arg_size; i++) {
+            if (tmpargs[i] != args[i]) {
+                thisDateObject->setTimeValueAsNaN();
+                return ESValue(thisDateObject->timeValueAsDouble());
+            }
+            if (i >= 1)
+                break;
+        }
         thisDateObject->setTimeValue(thisDateObject->getFullYear(), thisDateObject->getMonth(), thisDateObject->getDate()
             , thisDateObject->getHours(), thisDateObject->getMinutes(), args[0], args[1]);
 
