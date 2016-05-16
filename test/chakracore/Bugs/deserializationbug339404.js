@@ -45,7 +45,7 @@ protoObj0.method1.prototype = {
         }
     }
 };
-for(var _strvar22 in (new Int8Array(1))) {
+for(var _strvar22 in (new Array(1))) {
     var n = function() {}
     var m = function() {}
     n(m(new protoObj0.method1().method1()));
