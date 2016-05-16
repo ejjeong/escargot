@@ -728,7 +728,7 @@ type-of-functions-and-objects.js
 // typedarray-sort.js // ES6 TypedArray
 // typeof-symbol.js // ES6 Symbol
 uint32-to-number-fold-constant-with-do-overflow.js
-// uint32array-unsigned-load.js
+// uint32array-unsigned-load.js // ES6 Uint32Array
 undefined-access-dictionary-then-proto-change.js
 undefined-access-then-proto-change.js
 // unscopables.js // with statement

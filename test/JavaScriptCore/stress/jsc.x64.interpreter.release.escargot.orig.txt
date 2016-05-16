@@ -1,785 +1,786 @@
-[1] // IIFE-es6-default-parameters.js // ES6 ..... Excluded
-[2] IIFE-function-name-captured.js ..... Succ
-[3] // activation-sink-default-value-tdz-error.js // ES6 'let' ..... Excluded
-[4] activation-sink-default-value.js ..... Succ
-[5] // activation-sink-osrexit-default-value-tdz-error.js // ES6 'let' ..... Excluded
-[6] activation-sink-osrexit-default-value.js ..... Succ
-[7] activation-sink-osrexit.js ..... Succ
-[8] activation-sink.js ..... Succ
-[9] activation-test-loop.js ..... Succ
-[10] add-constant-overflow-recovery.js ..... Succ
-[11] add-inferred-type-table-to-existing-structure.js ..... Succ
-[12] add-int52-constant-overflow-recovery.js ..... Succ
-[13] add-int52-large-constant-overflow-recovery.js ..... Succ
-[14] add-overflow-recovery.js ..... Succ
-[15] add-overflows-after-not-equal.js ..... Succ
-[16] add-small-constant-overflow-recovery.js ..... Succ
-[17] arguments-bizarre-behavior.js ..... Succ
-[18] // arguments-bizarre-behaviour-disable-enumerability.js // (skip) enumerable property & for .. in problem ..... Excluded
-[19] arguments-callee-uninitialized.js ..... Succ
-[20] arguments-captured.js ..... Succ
-[21] arguments-copy-register-array-backing-store.js ..... Succ
-[22] arguments-custom-properties-gc.js ..... Succ
-[23] arguments-exit-fixed.js ..... Succ
-[24] arguments-exit-strict-mode-fixed.js ..... Succ
-[25] arguments-exit-strict-mode.js ..... Succ
-[26] arguments-exit.js ..... Succ
-[27] arguments-inlined-exit-strict-mode-fixed.js ..... Succ
-[28] arguments-inlined-exit-strict-mode.js ..... Succ
-[29] arguments-inlined-exit.js ..... Succ
-[30] arguments-interference-cfg.js ..... Succ
-[31] arguments-interference.js ..... Succ
-[32] // arguments-iterator.js // ES6 'for ... of' ..... Excluded
-[33] arguments-length-always-dont-enum.js ..... Succ
-[34] arith-add-with-constants.js ..... Succ
-[35] arith-modulo-node-behaviors.js ..... Succ
-[36] arith-mul-with-constants.js ..... Succ
-[37] // array-copywithin.js // ES6 'for ... of' ..... Excluded
-[38] // array-fill-put-by-val.js // ES6 Object syntax ..... Excluded
-[39] // array-filter-put-by-val-direct.js // ES6 Object syntax ..... Excluded
-[40] // array-find-does-not-lookup-twice.js // ES6 Object syntax ..... Excluded
-[41] // array-from-abs-and-floor.js // ES6 Array.from ..... Excluded
-[42] // array-from-put-by-val-direct.js // ES6 Array.from ..... Excluded
-[43] // array-from-set-length.js // ES6 Array.from ..... Excluded
-[44] // array-from-with-accessors.js // ES6 Array.from ..... Excluded
-[45] // array-from-with-iterable.js // ES6 Array.from ..... Excluded
-[46] // array-from-with-iterator.js // ES6 Array.from ..... Excluded
-[47] // array-iterators-next-with-call.js // ES6 'for ... of' ..... Excluded
-[48] // array-iterators-next.js // ES6 destructuring ..... Excluded
-[49] array-length-array-storage-plain-object.js ..... Succ
-[50] array-length-plain-object.js ..... Succ
-[51] // array-map-put-by-val-direct.js // ES6 Object syntax ..... Excluded
-[52] // array-message-passing.js // ES6 DataView ..... Excluded
-[53] array-pop-contiguous.js ..... Succ
-[54] array-pop-double-hole.js ..... Succ
-[55] array-pop-double.js ..... Succ
-[56] array-pop-int32.js ..... Succ
-[57] array-push-contiguous.js ..... Succ
-[58] array-push-double-then-nan.js ..... Succ
-[59] array-push-double.js ..... Succ
-[60] array-push.js ..... Succ
-[61] arrayify-fires-watchpoint.js ..... Succ
-[62] arrayify-structure-bad-test.js ..... Succ
-[63] arrayify-to-structure-contradiction.js ..... Succ
-[64] // arrow-function-token-is-not-keyword.js // ES6 '=>' ..... Excluded
-[65] // arrowfunction-activation-sink-osrexit-default-value-tdz-error.js // ES6 '=>' ..... Excluded
-[66] // arrowfunction-activation-sink-osrexit-default-value.js // ES6 '=>' ..... Excluded
-[67] // arrowfunction-activation-sink-osrexit.js // ES6 '=>' ..... Excluded
-[68] // arrowfunction-activation-sink.js // ES6 '=>' ..... Excluded
-[69] // arrowfunction-bound.js // ES6 '=>' ..... Excluded
-[70] // arrowfunction-call.js // ES6 '=>' ..... Excluded
-[71] // arrowfunction-constructor.js // ES6 '=>' ..... Excluded
-[72] // arrowfunction-lexical-bind-this-1.js // ES6 '=>' ..... Excluded
-[73] // arrowfunction-lexical-bind-this-2.js // ES6 '=>' ..... Excluded
-[74] // arrowfunction-lexical-bind-this-3.js // ES6 '=>' ..... Excluded
-[75] // arrowfunction-lexical-bind-this-4.js // ES6 '=>' ..... Excluded
-[76] // arrowfunction-lexical-bind-this-5.js // ES6 '=>' ..... Excluded
-[77] // arrowfunction-lexical-bind-this-6.js // ES6 '=>' ..... Excluded
-[78] // arrowfunction-lexical-this-activation-sink-osrexit.js // ES6 '=>' ..... Excluded
-[79] // arrowfunction-lexical-this-activation-sink.js // ES6 '=>' ..... Excluded
-[80] // arrowfunction-lexical-this-sinking-no-double-allocate.js // ES6 '=>' ..... Excluded
-[81] // arrowfunction-lexical-this-sinking-osrexit.js // ES6 '=>' ..... Excluded
-[82] // arrowfunction-lexical-this-sinking-put.js // ES6 '=>' ..... Excluded
-[83] // arrowfunction-others.js // ES6 '=>' ..... Excluded
-[84] // arrowfunction-prototype.js // ES6 '=>' ..... Excluded
-[85] // arrowfunction-run-10-1.js // ES6 '=>' ..... Excluded
-[86] // arrowfunction-run-10-2.js // ES6 '=>' ..... Excluded
-[87] // arrowfunction-run-10000-1.js // ES6 '=>' ..... Excluded
-[88] // arrowfunction-run-10000-2.js // ES6 '=>' ..... Excluded
-[89] // arrowfunction-sinking-no-double-allocate.js // ES6 '=>' ..... Excluded
-[90] // arrowfunction-sinking-osrexit.js // ES6 '=>' ..... Excluded
-[91] // arrowfunction-sinking-put.js // ES6 '=>' ..... Excluded
-[92] // arrowfunction-tdz.js // ES6 '=>' ..... Excluded
-[93] // arrowfunction-tostring.js // ES6 '=>' ..... Excluded
-[94] // arrowfunction-typeof.js // ES6 '=>' ..... Excluded
-[95] // assign-argument-in-inlined-call.js // Deprecated function.arguments ..... Excluded
-[96] assign-captured-argument-in-inlined-call.js ..... Succ
-[97] assignment-in-function-call-bracket-node.js ..... Succ
-[98] basic-eden-gc-test.js ..... Succ
-[99] bit-op-value-to-int32-input-liveness.js ..... Succ
-[100] branch-check-int32-on-boolean-to-number-untyped.js ..... Succ
-[101] branch-check-number-on-boolean-to-number-untyped.js ..... Succ
-[102] // branch-may-exit-due-to-object-or-other-use-kind.js // JSC 'makeMasquerader()' ..... Excluded
-[103] // bug-131764.js // ES6 spread '...' ..... Excluded
-[104] builtin-function-is-construct-type-none.js ..... Succ
-[105] cached-prototype-setter.js ..... Succ
-[106] call-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
-[107] call-varargs-from-inlined-code-with-odd-number-of-arguments.js ..... Succ
-[108] call-varargs-from-inlined-code.js ..... Succ
-[109] call-varargs-length-effects.js ..... Succ
-[110] // call-varargs-with-different-arguments-length-after-warmup.js // ES6 spread '...' ..... Excluded
-[111] capture-escape-and-throw.js ..... Succ
-[112] captured-arguments-variable.js ..... Succ
-[113] // class-syntax-block-scoping.js // ES6 class ..... Excluded
-[114] // class-syntax-definition-semantics.js // ES6 class ..... Excluded
-[115] // class-syntax-derived-default-constructor.js // ES6 class ..... Excluded
-[116] // class-syntax-no-loop-tdz.js // ES6 class ..... Excluded
-[117] // class-syntax-no-tdz-in-catch.js // ES6 class ..... Excluded
-[118] // class-syntax-no-tdz-in-conditional.js // ES6 class ..... Excluded
-[119] // class-syntax-no-tdz-in-eval.js // ES6 class ..... Excluded
-[120] // class-syntax-no-tdz-in-loop-no-inline-super.js // ES6 class ..... Excluded
-[121] // class-syntax-no-tdz-in-loop.js // ES6 class ..... Excluded
-[122] // class-syntax-no-tdz.js // ES6 class ..... Excluded
-[123] // class-syntax-tdz-in-catch.js // ES6 class ..... Excluded
-[124] // class-syntax-tdz-in-conditional.js // ES6 class ..... Excluded
-[125] // class-syntax-tdz-in-eval.js // ES6 class ..... Excluded
-[126] // class-syntax-tdz-in-loop.js // ES6 class ..... Excluded
-[127] // class-syntax-tdz.js // ES6 class ..... Excluded
-[128] cloned-arguments-get-by-val-double-array.js ..... Succ
-[129] // cloned-arguments-should-visit-callee-during-gc.js // Deprecated function.arguments ..... Excluded
-[130] closure-call-exit.js ..... Succ
-[131] compare-eq-object-or-other-to-object.js ..... Succ
-[132] compare-eq-object-to-object-or-other.js ..... Succ
-[133] compare-eq-on-null-and-undefined-non-peephole.js ..... Succ
-[134] compare-eq-on-null-and-undefined-optimized-in-constant-folding.js ..... Succ
-[135] compare-eq-on-null-and-undefined.js ..... Succ
-[136] compare-strict-eq-integer-to-misc.js ..... Succ
-[137] // computed-accessor-parsing.js // ES6 class ..... Excluded
-[138] // computed-accessor.js // ES6 class ..... Excluded
-[139] // const-and-with-statement.js // ES6 const ..... Excluded
-[140] // const-exception-handling.js // ES6 const ..... Excluded
-[141] // const-loop-semantics.js // ES6 const ..... Excluded
-[142] // const-not-strict-mode.js // ES6 const ..... Excluded
-[143] // const-semantics.js // ES6 const ..... Excluded
-[144] // const-tdz.js // ES6 const ..... Excluded
-[145] // constant-closure-var-with-dynamic-invalidation.js // with statement ..... Excluded
-[146] constant-folding-osr-exit.js ..... Succ
-[147] // construct-forward-varargs-for-inlined-escaped-arguments.js // ES6 spread '...' ..... Excluded
-[148] // construct-varargs-inline-smaller-Foo.js // ES6 spread '...' ..... Excluded
-[149] // construct-varargs-inline.js // ES6 spread '...' ..... Excluded
-[150] // construct-varargs-no-inline.js // ES6 spread '...' ..... Excluded
-[151] // constructor-with-return.js // ES6 Symbol ..... Excluded
-[152] create-this-with-callee-variants.js ..... Succ
-[153] // custom-iterators.js // ES6 Symbol ..... Excluded
-[154] dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js ..... Succ
-[155] dead-access-to-captured-variable-preceded-by-a-live-store.js ..... Succ
-[156] dead-fiat-double-to-int52-then-exit-not-int52.js ..... Succ
-[157] dead-fiat-double-to-int52.js ..... Succ
-[158] dead-fiat-int32-to-int52.js ..... Succ
-[159] dead-fiat-value-to-int52-double-path.js ..... Succ
-[160] dead-fiat-value-to-int52-then-exit-not-double.js ..... Succ
-[161] dead-fiat-value-to-int52-then-exit-not-int52.js ..... Succ
-[162] dead-fiat-value-to-int52.js ..... Succ
-[163] dead-get-closure-var.js ..... Succ
-[164] dead-int32-to-double.js ..... Succ
-[165] dead-osr-entry-value.js ..... Succ
-[166] dead-speculating-argument-use.js ..... Succ
-[167] dead-uint32-to-number.js ..... Succ
-[168] dead-value-with-mov-hint-in-another-block.js ..... Succ
-[169] // destructuring-assignment-accepts-iterables.js // ES6 destructuring ..... Excluded
-[170] dfg-create-arguments-inline-alloc.js ..... Succ
-[171] dfg-exception-try-catch-in-constructor-with-inlined-throw.js ..... Succ
-[172] dfg-put-by-val-direct-with-edge-numbers.js ..... Succ
-[173] dfg-rare-data.js ..... Succ
-[174] // dfg-tail-calls.js // Deprecated function.caller ..... Excluded
-[175] // dfg-to-primitive-pass-symbol.js // ES6 Symbol ..... Excluded
-[176] // disable-function-dot-arguments.js // Deprecated function.arguments ..... Excluded
-[177] double-as-int32.js ..... Succ
-[178] double-rep-with-non-cell.js ..... Succ
-[179] double-rep-with-null.js ..... Succ
-[180] double-rep-with-undefined.js ..... Succ
-[181] // duplicate-computed-accessors.js // ES6 class ..... Excluded
-[182] elidable-new-object-roflcopter-then-exit.js ..... Succ
-[183] elide-new-object-dag-then-exit.js ..... Succ
-[184] empty-function.js ..... Succ
-[185] empty_eos_regex_split.js ..... Succ
-[186] // equality-type-checking.js // JSC 'addressOf()' ..... Excluded
-[187] // equals-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
-[188] // es6-default-parameters.js // ES6 default parameter ..... Excluded
-[189] // es6-for-of-loop-exception.js // ES6 for ... of ..... Excluded
-[190] escape-object-in-diamond-then-exit.js ..... Succ
-[191] eval-script-contains-null-character.js ..... Succ
-[192] eval-that-is-not-eval.js ..... Succ
-[193] exception-dfg-inlined-frame-not-strict-equal.js ..... Succ
-[194] exception-dfg-not-strict-equal.js ..... Succ
-[195] exception-dfg-operation-read-value.js ..... Succ
-[196] exception-dfg-throw-from-catch-block.js ..... Succ
-[197] exception-effect-strcat.js ..... Succ
-[198] exception-in-strcat-string-overflow.js ..... Succ
-[199] exception-in-strcat.js ..... Succ
-[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Succ
-[201] exception-in-to-property-key-should-be-handled-early.js ..... Succ
-[202] exit-after-int32-to-double.js ..... Succ
-[203] exit-after-int52-to-double.js ..... Succ
-[204] exit-after-int52-to-value.js ..... Succ
-[205] exit-after-llvm-folds-large-int-constant.js ..... Succ
-[206] // exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js // Deprecated function.arguments ..... Excluded
-[207] exit-from-ftl-with-arity-check-fail.js ..... Succ
-[208] exit-from-getter.js ..... Succ
-[209] exit-from-setter.js ..... Succ
-[210] fiat-double-to-int52-then-exit-not-int52.js ..... Succ
-[211] fiat-double-to-int52-then-fail-to-fold.js ..... Succ
-[212] fiat-double-to-int52-then-fold.js ..... Succ
-[213] fiat-double-to-int52.js ..... Succ
-[214] fiat-int32-to-int52.js ..... Succ
-[215] fiat-value-to-int52-double-path.js ..... Succ
-[216] fiat-value-to-int52-then-exit-not-double.js ..... Succ
-[217] fiat-value-to-int52-then-exit-not-int52.js ..... Succ
-[218] fiat-value-to-int52-then-fail-to-fold.js ..... Succ
-[219] fiat-value-to-int52-then-fold.js ..... Succ
-[220] fiat-value-to-int52.js ..... Succ
-[221] flatten-oversize-dictionary-object.js ..... Succ
-[222] // float32-array-nan-inlined.js // ES6 TypedArray ..... Excluded
-[223] // float32-array-nan.js // ES6 TypedArray ..... Excluded
-[224] // float32-array-out-of-bounds.js // ES6 TypedArray ..... Excluded
-[225] // float32-repeat-out-of-bounds.js // ES6 TypedArray ..... Excluded
-[226] // float32array-out-of-bounds.js // ES6 TypedArray ..... Excluded
-[227] // float64-array-nan-inlined.js // ES6 TypedArray ..... Excluded
-[228] // float64-array-nan.js ..... Excluded
-[229] fold-based-on-int32-proof-mul-branch.js ..... Succ
-[230] fold-based-on-int32-proof-mul.js ..... Succ
-[231] fold-based-on-int32-proof-or-zero.js ..... Succ
-[232] fold-based-on-int32-proof.js ..... Succ
-[233] fold-load-varargs-arity-check-fail-barely.js ..... Succ
-[234] fold-load-varargs-arity-check-fail.js ..... Succ
-[235] fold-multi-get-by-offset-to-get-by-offset-with-watchpoint.js ..... Succ
-[236] fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check-new.js ..... Succ
-[237] fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check.js ..... Succ
-[238] fold-multi-get-by-offset-to-get-by-offset.js ..... Succ
-[239] fold-multi-put-by-offset-to-put-by-offset-without-folding-the-structure-check.js ..... Succ
-[240] fold-multi-put-by-offset-to-put-by-offset.js ..... Succ
-[241] fold-profiled-call-to-call.js ..... Succ
-[242] fold-to-double-constant-then-exit.js ..... Succ
-[243] fold-to-int52-constant-then-exit.js ..... Succ
-[244] fold-to-primitive-in-cfa.js ..... Succ
-[245] fold-to-primitive-to-identity-in-cfa.js ..... Succ
-[246] // fold-typed-array-properties.js // ES6 TypedArray ..... Excluded
-[247] for-in-array-mode.js ..... Succ
-[248] for-in-base-reassigned-later-and-change-structure.js ..... Succ
-[249] for-in-base-reassigned-later.js ..... Succ
-[250] for-in-base-reassigned.js ..... Succ
-[251] for-in-capture-string-loop-var.js ..... Succ
-[252] for-in-delete-during-iteration.js ..... Succ
-[253] for-in-modify-int-loop-var.js ..... Succ
-[254] for-in-modify-string-loop-var.js ..... Succ
-[255] for-in-prototype.js ..... Succ
-[256] // for-in-proxy-target-changed-structure.js // ES6 Proxy ..... Excluded
-[257] // for-in-proxy.js // ES6 Proxy ..... Excluded
-[258] for-in-shadow-prototype-property.js ..... Succ
-[259] for-in-string.js ..... Succ
-[260] for-in-tests.js ..... Succ
-[261] for-in-typed-array.js ..... Succ
-[262] forward-varargs-for-inlined-escaped-arguments.js ..... Succ
-[263] freeze_leek.js ..... Succ
-[264] ftl-arithcos.js ..... Succ
-[265] ftl-arithsin.js ..... Succ
-[266] ftl-arithsqrt.js ..... Succ
-[267] ftl-checkin-variable.js ..... Succ
-[268] ftl-checkin.js ..... Succ
-[269] ftl-get-my-argument-by-val-inlined-and-not-inlined.js ..... Succ
-[270] ftl-get-my-argument-by-val-inlined.js ..... Succ
-[271] ftl-get-my-argument-by-val.js ..... Succ
-[272] ftl-getmyargumentslength-inline.js ..... Succ
-[273] ftl-getmyargumentslength.js ..... Succ
-[274] // ftl-gettypedarrayoffset-simple.js // ES6 TypedArray ..... Excluded
-[275] // ftl-gettypedarrayoffset-wasteful.js // ES6 TypedArray ..... Excluded
-[276] ftl-in-overflow.js ..... Succ
-[277] ftl-library-exception.js ..... Succ
-[278] ftl-library-inline-gettimezoneoffset.js ..... Succ
-[279] // ftl-library-inlining-exceptions-dataview.js // ES6 DataView ..... Excluded
-[280] ftl-library-inlining-exceptions.js ..... Succ
-[281] // ftl-library-inlining-loops.js // ES6 DataView ..... Excluded
-[282] ftl-library-inlining-random.js ..... Succ
-[283] ftl-library-substring.js ..... Succ
-[284] ftl-putbyid.js ..... Succ
-[285] ftl-putbyiddirect.js ..... Succ
-[286] ftl-reallocatepropertystorage.js ..... Succ
-[287] ftl-switch-string-slow-duplicate-cases.js ..... Succ
-[288] ftl-to-ftl-arity-fixup.js ..... Succ
-[289] function-expression-exit.js ..... Succ
-[290] function-name-scope.js ..... Succ
-[291] function-reentry-infer-on-self.js ..... Succ
-[292] function-sinking-no-double-allocate.js ..... Succ
-[293] function-sinking-osrexit.js ..... Succ
-[294] function-sinking-put.js ..... Succ
-[295] fuzz-bug-16399949.js ..... Succ
-[296] // generational-opaque-roots.js // JSC-only ..... Excluded
-[297] get-argument-by-val-in-inlined-varargs-call-out-of-bounds.js ..... Succ
-[298] get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js ..... Succ
-[299] get-by-id-throw-from-getter-through-optimized-code.js ..... Succ
-[300] get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit.js ..... Succ
-[301] get-by-id-throw-from-unexpected-getter-through-optimized-code.js ..... Succ
-[302] get-by-id-untyped.js ..... Succ
-[303] get-by-val-double-predicted-int.js ..... Succ
-[304] // get-by-val-on-undecided-array-type.js // ES6 const ..... Excluded
-[305] // get-by-val-on-undecided-sane-chain-1.js // ES6 const ..... Excluded
-[306] // get-by-val-on-undecided-sane-chain-2.js // ES6 const ..... Excluded
-[307] // get-by-val-on-undecided-sane-chain-3.js // ES6 const ..... Excluded
-[308] // get-by-val-on-undecided-sane-chain-4.js // ES6 const ..... Excluded
-[309] // get-by-val-on-undecided-sane-chain-5.js // ES6 const ..... Excluded
-[310] // get-by-val-on-undecided-sane-chain-6.js // ES6 const ..... Excluded
-[311] // get-by-val-on-undecided-trivial.js // ES6 const ..... Excluded
-[312] get-by-val-out-of-bounds-basics.js ..... Succ
-[313] get-by-val-with-string-constructor.js ..... Succ
-[314] get-by-val-with-string-exit.js ..... Succ
-[315] get-by-val-with-string-generated.js ..... Succ
-[316] get-by-val-with-string-getter.js ..... Succ
-[317] get-by-val-with-string.js ..... Succ
-[318] // get-by-val-with-symbol-constructor.js // ES6 Symbol ..... Excluded
-[319] // get-by-val-with-symbol-exit.js // ES6 Symbol ..... Excluded
-[320] // get-by-val-with-symbol-getter.js // ES6 Symbol ..... Excluded
-[321] // get-by-val-with-symbol.js // ES6 Symbol ..... Excluded
-[322] get-declared-unpassed-argument-in-direct-arguments.js ..... Succ
-[323] get-declared-unpassed-argument-in-scoped-arguments.js ..... Succ
-[324] get-local-elimination.js ..... Succ
-[325] get-my-argument-by-val-creates-arguments.js ..... Succ
-[326] get-my-argument-by-val-for-inlined-escaped-arguments.js ..... Succ
-[327] get-my-argument-by-val-inlined-no-formal-parameters.js ..... Succ
-[328] get-my-argument-by-val-out-of-bounds-no-warm-up.js ..... Succ
-[329] get-my-argument-by-val-out-of-bounds.js ..... Succ
-[330] get-my-argument-by-val-safe-out-of-bounds.js ..... Succ
-[331] get-my-argument-by-val-safe-wrap-around.js ..... Succ
-[332] get-my-argument-by-val-wrap-around-no-warm-up.js ..... Succ
-[333] get-my-argument-by-val-wrap-around.js ..... Succ
-[334] get-stack-identity-due-to-sinking.js ..... Succ
-[335] // get-stack-mapping-with-dead-get-stack.js // Deprecated function.arguments ..... Excluded
-[336] // get-stack-mapping.js // Deprecated function.arguments ..... Excluded
-[337] getter-arity.js ..... Succ
-[338] getter.js ..... Succ
-[339] // global-environment-does-not-trap-unscopables.js // ES6 Symbol, with ..... Excluded
-[340] // global-lexical-let-no-rhs.js // ES6 let ..... Excluded
-[341] // global-lexical-redeclare-variable.js // ES6 let ..... Excluded
-[342] // global-lexical-redefine-const.js // ES6 const ..... Excluded
-[343] // global-lexical-var-injection.js // ES6 let ..... Excluded
-[344] // global-lexical-variable-tdz.js // ES6 let or const ..... Excluded
-[345] // global-lexical-variable-unresolved-property.js // ES6 let or const ..... Excluded
-[346] // global-lexical-variable-with-statement.js // ES6 let ..... Excluded
-[347] goofy-function-reentry-incorrect-inference.js ..... Succ
-[348] // has-custom-properties.js // JSC 'hasCustomProperties()' ..... Excluded
-[349] heap-allocator-allocates-incorrect-size-for-activation.js ..... Succ
-[350] ic-throw-through-optimized-code.js ..... Succ
-[351] // impure-get-own-property-slot-inline-cache.js // JSC ImpureGetter ..... Excluded
-[352] infer-constant-global-property.js ..... Succ
-[353] infer-constant-property.js ..... Succ
-[354] infer-uninitialized-closure-var.js ..... Succ
-[355] inferred-infinite-loop-that-uses-captured-variables.js ..... Succ
-[356] infinite-loop-that-uses-captured-variables-before-throwing.js ..... Succ
-[357] infinite-loop-that-uses-captured-variables-but-they-do-not-escape.js ..... Succ
-[358] infinite-loop-that-uses-captured-variables-with-osr-entry.js ..... Succ
-[359] infinite-loop-that-uses-captured-variables.js ..... Succ
-[360] initialize_functions_after_arguments.js ..... Succ
-[361] // injected-numeric-setter-on-prototype.js // ES6 Class ..... Excluded
-[362] inline-call-that-doesnt-use-all-args.js ..... Succ
-[363] inline-call-varargs-and-call.js ..... Succ
-[364] inline-call-varargs.js ..... Succ
-[365] inline-closure-call.js ..... Succ
-[366] inline-llint-with-switch.js ..... Succ
-[367] // inline-varargs-get-arguments.js // Deprecated function.arguments ..... Excluded
-[368] inlined-constructor-this-liveness.js ..... Succ
-[369] inlined-function-this-liveness.js ..... Succ
-[370] instanceof-not-cell.js ..... Succ
-[371] instanceof.js ..... Succ
-[372] int16-put-by-val-in-and-out-of-bounds.js ..... Succ
-[373] int16-put-by-val-in-bounds-then-exit-out-of-bounds.js ..... Succ
-[374] int16-put-by-val-out-of-bounds-bounds-then-do-in-bounds.js ..... Succ
-[375] int32-object-out-of-bounds.js ..... Succ
-[376] int32-out-of-bounds.js ..... Succ
-[377] int32array-transition-on-nan.js ..... Succ
-[378] int52-ai-add-then-filter-int32.js ..... Succ
-[379] int52-ai-mul-and-clean-neg-zero-then-filter-int32.js ..... Succ
-[380] int52-ai-mul-then-filter-int32-directly.js ..... Succ
-[381] int52-ai-mul-then-filter-int32.js ..... Succ
-[382] int52-ai-neg-then-filter-int32.js ..... Succ
-[383] int52-ai-sub-then-filter-int32.js ..... Succ
-[384] int52-argument.js ..... Succ
-[385] int52-force-osr-exit-path.js ..... Succ
-[386] int52-inlined-call-argument.js ..... Succ
-[387] int52-variable.js ..... Succ
-[388] int8-repeat-out-of-bounds.js ..... Succ
-[389] invalidation-point.js ..... Succ
-[390] inverted-additive-subsumption.js ..... Succ
-[391] // is-undefined-exit-on-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
-[392] // is-undefined-jettison-on-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
-[393] // is-undefined-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
-[394] // iterator-functions.js // ES6 Symbol ..... Excluded
-[395] // iterator-names.js // ES6 Symbol ..... Excluded
-[396] // iterator-prototype.js // ES6 Symbol ..... Excluded
-[397] // iterator-return-beyond-multiple-iteration-scopes.js // ES6 for ... of ..... Excluded
-[398] // iterators-shape.js // ES6 Symbol ..... Excluded
-[399] jit-cache-poly-replace-then-cache-get-and-fold-then-invalidate.js ..... Succ
-[400] jit-cache-replace-then-cache-get-and-fold-then-invalidate.js ..... Succ
-[401] jit-put-to-scope-global-cache-watchpoint-invalidate.js ..... Succ
-[402] large-regexp.js ..... Succ
-[403] // lexical-let-and-with-statement.js // ES6 let ..... Excluded
-[404] // lexical-let-exception-handling.js // ES6 let ..... Excluded
-[405] // lexical-let-global-not-captured-variables.js // ES6 let ..... Excluded
-[406] // lexical-let-loop-semantics.js // ES6 let ..... Excluded
-[407] // lexical-let-not-strict-mode.js // ES6 let ..... Excluded
-[408] // lexical-let-semantics.js // ES6 let ..... Excluded
-[409] // lexical-let-tdz.js // ES6 let ..... Excluded
-[410] // lexical-scoping-break-continue.js // ES6 let ..... Excluded
-[411] licm-no-pre-header.js ..... Succ
-[412] licm-pre-header-cannot-exit.js ..... Succ
-[413] list.js ..... Succ
-[414] liveness-pruning-needed-for-osr-availability-eager.js ..... Succ
-[415] liveness-pruning-needed-for-osr-availability.js ..... Succ
-[416] llint-cache-replace-then-cache-get-and-fold-then-invalidate.js ..... Succ
-[417] llint-put-to-scope-global-cache-watchpoint-invalidate.js ..... Succ
-[418] load-varargs-elimination-bounds-check-barely.js ..... Succ
-[419] load-varargs-elimination-bounds-check.js ..... Succ
-[420] load-varargs-then-inlined-call-and-exit-strict.js ..... Succ
-[421] load-varargs-then-inlined-call-and-exit.js ..... Succ
-[422] load-varargs-then-inlined-call-exit-in-foo.js ..... Succ
-[423] load-varargs-then-inlined-call-inlined.js ..... Succ
-[424] load-varargs-then-inlined-call.js ..... Succ
-[425] // logical-not-masquerades.js // JSC 'makeMasquerader()' ..... Excluded
-[426] make-dictionary-repatch.js ..... Succ
-[427] make-large-string-jit-strcat.js ..... Succ
-[428] make-large-string-jit.js ..... Succ
-[429] make-large-string-strcat.js ..... Succ
-[430] make-large-string.js ..... Succ
-[431] make-rope-2.js ..... Succ
-[432] make-rope-3.js ..... Succ
-[433] many-sunken-locals.js ..... Succ
-[434] // map-constructor-adder.js // ES6 Map ..... Excluded
-[435] // map-constructor.js // ES6 for ... of ..... Excluded
-[436] // map-iterators-next.js // ES6 for ... of ..... Excluded
-[437] materialize-past-butterfly-allocation.js ..... Succ
-[438] materialize-past-put-structure.js ..... Succ
-[439] math-abs-positive.js ..... Succ
-[440] // math-clz32-basics.js // ES6 Math.clz32() ..... Excluded
-[441] math-log-basics.js ..... Succ
-[442] math-log-with-constants.js ..... Succ
-[443] math-pow-basics.js ..... Succ
-[444] math-pow-becomes-custom-function.js ..... Succ
-[445] math-pow-coherency.js ..... Succ
-[446] math-pow-integer-exponent-fastpath.js ..... Succ
-[447] math-pow-nan-behaviors.js ..... Succ
-[448] math-pow-with-constants.js ..... Succ
-[449] math-pow-with-never-NaN-exponent.js ..... Succ
-[450] math-round-arith-rounding-mode.js ..... Succ
-[451] math-round-basics.js ..... Succ
-[452] math-sqrt-basics-disable-architecture-specific-optimizations.js ..... Succ
-[453] math-sqrt-basics.js ..... Succ
-[454] max-boolean-exit.js ..... Succ
-[455] misc-is-object-or-null.js ..... Succ
-[456] // modify-map-during-iteration.js // ES6 for ... of ..... Excluded
-[457] // modify-set-during-iteration.js // ES6 for ... of ..... Excluded
-[458] // modules-syntax-error-with-names.js // ES6 module ..... Excluded
-[459] // modules-syntax-error.js // ES6 module ..... Excluded
-[460] // modules-syntax.js // ES6 module ..... Excluded
-[461] mul-boolean-exit.js ..... Succ
-[462] multi-get-by-offset-dce.js ..... Succ
-[463] multi-get-by-offset-hoist-around-structure-check.js ..... Succ
-[464] multi-get-by-offset-proto-and-self.js ..... Succ
-[465] multi-get-by-offset-self-or-proto.js ..... Succ
-[466] multi-put-by-offset-multiple-transitions.js ..... Succ
-[467] multi-put-by-offset-reallocation-butterfly-cse.js ..... Succ
-[468] multi-put-by-offset-reallocation-cases.js ..... Succ
-[469] mutual-tail-call-no-stack-overflow.js ..... Succ
-[470] nan-equal-untyped.js ..... Succ
-[471] nan-equal.js ..... Succ
-[472] new-array-dead.js ..... Succ
-[473] new-array-storage-array-with-size.js ..... Succ
-[474] new-array-then-exit.js ..... Succ
-[475] new-array-with-size-throw-exception-and-tear-off-arguments.js ..... Succ
-[476] new-array-with-size-with-bad-time.js ..... Succ
-[477] new-contiguous-array-with-size.js ..... Succ
-[478] new-double-array-with-size.js ..... Succ
-[479] new-function-expression-has-structures.js ..... Succ
-[480] new-int32-array-with-size.js ..... Succ
-[481] // new-largeish-contiguous-array-with-size.js // run pass if set GC_MAXIMUM_HEAP_SIZE with 10000000 ..... Excluded
-[482] // new-target.js // ES6 new.target ..... Excluded
-[483] new-undecided-array-with-size.js ..... Succ
-[484] no-abc-skippy-loop.js ..... Succ
-[485] no-abc-skippy-paired-loop.js ..... Succ
-[486] // non-constructors.js // ES6 class ..... Excluded
-[487] not-cell-use.js ..... Succ
-[488] // numeric-setter-on-prototype-non-blank-array.js // ES6 Class ..... Excluded
-[489] // numeric-setter-on-prototype.js // ES6 Class ..... Excluded
-[490] // numeric-setter-on-self.js // ES6 Class ..... Excluded
-[491] object-allocation-sinking-with-uninitialized-property-on-one-path.js ..... Succ
-[492] object-assign-enumerable.js ..... Succ
-[493] // object-assign-order.js // ES6 Symbol ..... Excluded
-[494] object-escapes-in-loop.js ..... Succ
-[495] // object-freeze-accept-non-object.js // ES6 Symbol ..... Excluded
-[496] // object-get-own-property-descriptor-perform-to-object.js // ES6 for ... of ..... Excluded
-[497] // object-get-own-property-names-perform-to-object.js // ES6 for ... of ..... Excluded
-[498] // object-get-own-property-symbols-perform-to-object.js // ES6 for ... of ..... Excluded
-[499] // object-get-own-property-symbols.js // ES6 Object.getOwnPropertySymbols ..... Excluded
-[500] // object-get-prototype-of-perform-to-object.js // ES6 for ... of ..... Excluded
-[501] // object-is-extensible-accept-non-object.js // ES6 for ... of ..... Excluded
-[502] // object-is-frozen-accept-non-object.js // ES6 for ... of ..... Excluded
-[503] // object-is-sealed-accept-non-object.js // ES6 for ... of ..... Excluded
-[504] // object-keys-perform-to-object.js // ES6 for ... of ..... Excluded
-[505] // object-prevent-extensions-accept-non-object.js // ES6 for ... of ..... Excluded
-[506] // object-seal-accept-non-object.js // ES6 for ... of ..... Excluded
-[507] obviously-elidable-new-object-then-exit.js ..... Succ
-[508] op-push-name-scope-crashes-profiler.js ..... Succ
-[509] operation-get-by-val-default-should-not-called-for-already-optimized-site.js ..... Succ
-[510] other-is-object-or-null.js ..... Succ
-[511] // pathname-resolve.js // ES6 Promise ..... Excluded
-[512] phantom-arguments-set-local-then-exit-in-same-block.js ..... Succ
-[513] phantom-direct-arguments-clobber-argument-count.js ..... Succ
-[514] phantom-direct-arguments-clobber-callee.js ..... Succ
-[515] phantom-inadequacy.js ..... Succ
-[516] phantom-local-captured-but-not-flushed-to-ssa.js ..... Succ
-[517] plus-boolean-exit.js ..... Succ
-[518] plus-boolean-or-double.js ..... Succ
-[519] plus-boolean-or-int.js ..... Succ
-[520] poly-call-exit-this.js ..... Succ
-[521] poly-call-exit.js ..... Succ
-[522] poly-call-stub-in-getter-stub.js ..... Succ
-[523] poly-chain-getter.js ..... Succ
-[524] poly-chain-setter.js ..... Succ
-[525] poly-chain-then-getter.js ..... Succ
-[526] poly-chain-then-setter.js ..... Succ
-[527] poly-getter-combo.js ..... Succ
-[528] poly-getter-then-chain.js ..... Succ
-[529] poly-getter-then-self.js ..... Succ
-[530] poly-self-getter.js ..... Succ
-[531] poly-self-then-getter.js ..... Succ
-[532] poly-setter-combo.js ..... Succ
-[533] poly-setter-then-self.js ..... Succ
-[534] polymorphic-prototype-accesses.js ..... Succ
-[535] prop-type-boolean-then-string.js ..... Succ
-[536] prop-type-int32-then-string.js ..... Succ
-[537] prop-type-number-then-string.js ..... Succ
-[538] prop-type-object-or-other-then-string.js ..... Succ
-[539] prop-type-object-then-string.js ..... Succ
-[540] prop-type-other-then-string.js ..... Succ
-[541] prop-type-string-then-object.js ..... Succ
-[542] prop-type-struct-or-other-then-string.js ..... Succ
-[543] prop-type-struct-then-object-opt-fold.js ..... Succ
-[544] prop-type-struct-then-object-opt-multi.js ..... Succ
-[545] prop-type-struct-then-object-opt.js ..... Succ
-[546] prop-type-struct-then-object.js ..... Succ
-[547] // prop-type-symbol-then-object.js // ES6 Symbol ..... Excluded
-[548] // prop-type-symbol-then-string.js // ES6 Symbol ..... Excluded
-[549] // property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js // ES6 for ... of, Reflect ..... Excluded
-[550] proto-setter.js ..... Succ
-[551] prototype-getter.js ..... Succ
-[552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
-[553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
-[554] put-by-id-build-list-order-recurse.js ..... Succ
-[555] // put-by-id-direct-should-be-done-for-non-index-property.js // ES6 duplicate symbole usage between data property and accessor property ..... Excluded
-[556] put-by-id-on-new-object-after-prototype-transition-non-strict.js ..... Succ
-[557] put-by-id-on-new-object-after-prototype-transition-strict.js ..... Succ
-[558] put-by-id-strict-build-list-order.js ..... Succ
-[559] put-by-id-throw-through-optimized-code.js ..... Succ
-[560] put-by-id-transition-null-prototype.js ..... Succ
-[561] put-by-val-out-of-bounds-basics.js ..... Succ
-[562] put-by-val-with-string-break.js ..... Succ
-[563] put-by-val-with-string-generated.js ..... Succ
-[564] put-by-val-with-string-generic.js ..... Succ
-[565] // put-by-val-with-symbol-break.js // ES6 Symbol ..... Excluded
-[566] // put-by-val-with-symbol-generic.js // ES6 Symbol ..... Excluded
-[567] put-local-conservative.js ..... Succ
-[568] // raise-error-in-iterator-close.js // ES6 for ... of ..... Excluded
-[569] real-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
-[570] recurse-infinitely-on-getter.js ..... Succ
-[571] recursive_property_redefine_during_inline_caching.js ..... Succ
-[572] redundant-add-overflow-checks.js ..... Succ
-[573] redundant-array-bounds-checks-addition-skip-first.js ..... Succ
-[574] redundant-array-bounds-checks-addition.js ..... Succ
-[575] redundant-array-bounds-checks-unchecked-addition.js ..... Succ
-[576] redundant-array-bounds-checks.js ..... Succ
-[577] // reflect-apply.js // ES6 Reflect ..... Excluded
-[578] // reflect-define-property.js // ES6 Reflect ..... Excluded
-[579] // reflect-delete-property.js // ES6 Reflect ..... Excluded
-[580] // reflect-enumerate.js // ES6 Reflect ..... Excluded
-[581] // reflect-get-own-property.js // ES6 Reflect ..... Excluded
-[582] // reflect-get-prototype-of.js // ES6 Reflect ..... Excluded
-[583] // reflect-get.js // ES6 Reflect ..... Excluded
-[584] // reflect-has.js // ES6 Reflect ..... Excluded
-[585] // reflect-is-extensible.js // ES6 Reflect ..... Excluded
-[586] // reflect-own-keys.js // ES6 Reflect ..... Excluded
-[587] // reflect-prevent-extensions.js // ES6 Reflect ..... Excluded
-[588] // reflect-set-prototype-of.js // ES6 Reflect ..... Excluded
-[589] regexp-matches-array.js ..... Succ
-[590] regress-132147.js ..... Succ
-[591] regress-135155.js ..... Succ
-[592] regress-141489.js ..... Succ
-[593] regress-141883.js ..... Succ
-[594] regress-148564.js ..... Succ
-[595] remove-phantom-after-setlocal.js ..... Succ
-[596] repeat-put-to-scope-global-with-same-value-watchpoint-invalidate.js ..... Succ
-[597] repeated-arity-check-fail.js ..... Succ
-[598] repeated-put-by-id-reallocating-transition.js ..... Succ
-[599] replacement-watchpoint-dictionary.js ..... Succ
-[600] replacement-watchpoint.js ..... Succ
-[601] reserved-word-with-escape.js ..... Succ
-[602] // rest-elements.js // ES6 rest parameter syntax ..... Excluded
-[603] retry-cache-later.js ..... Succ
-[604] // runtime-array.js // JSC 'createRuntimeArray()' ..... Excluded
-[605] runtime-throw-through-optimized-code.js ..... Succ
-[606] scoped-arguments-array-length.js ..... Succ
-[607] scoped-then-direct-arguments-get-by-val-in-baseline.js ..... Succ
-[608] // set-constructor-adder.js // ES6 Set ..... Excluded
-[609] // set-constructor.js // ES6 for ... of ..... Excluded
-[610] // set-iterators-next.js // ES6 for ... of ..... Excluded
-[611] set-same-prototype.js ..... Succ
-[612] setter.js ..... Succ
-[613] simple-polyvariant-call-inlining-example.js ..... Succ
-[614] simple-polyvariant-get-by-id-inlining-example.js ..... Succ
-[615] simple-polyvariant-put-by-id-inlining-example.js ..... Succ
-[616] simple-prototype-accesses.js ..... Succ
-[617] simplify-varargs-mandatory-minimum-smaller-than-limit.js ..... Succ
-[618] singleton-scope-then-overwrite.js ..... Succ
-[619] singleton-scope-then-realloc-and-overwrite.js ..... Succ
-[620] singleton-scope-then-realloc.js ..... Succ
-[621] sink-arguments-past-invalid-check-dfg.js ..... Succ
-[622] sink-arguments-past-invalid-check-int32-dfg.js ..... Succ
-[623] sink-arguments-past-invalid-check-int32.js ..... Succ
-[624] sink-arguments-past-invalid-check-sneakier.js ..... Succ
-[625] sink-arguments-past-invalid-check.js ..... Succ
-[626] sink-function-past-invalid-check-sneakier.js ..... Succ
-[627] sink-function-past-invalid-check-sneaky.js ..... Succ
-[628] sink-multigetbyoffset.js ..... Succ
-[629] sink-object-past-invalid-check-int32.js ..... Succ
-[630] sink-object-past-invalid-check-sneakier.js ..... Succ
-[631] sink-object-past-invalid-check-sneaky.js ..... Succ
-[632] sink-object-past-invalid-check.js ..... Succ
-[633] sink_checkstructure.js ..... Succ
-[634] slightly-more-difficult-to-fold-reflective-arguments-access.js ..... Succ
-[635] sort-array-with-undecided.js ..... Succ
-[636] sparse-array-entry-update-144067.js ..... Succ
-[637] sparse-map-non-overlapping.js ..... Succ
-[638] // sparse-map-non-skip-getter-overriding.js // ES6 duplicate symbole usage between data property and accessor property ..... Excluded
-[639] sparse-map-non-skip.js ..... Succ
-[640] sparse_splice.js ..... Succ
-[641] static-function-delete.js ..... Succ
-[642] static-function-put.js ..... Succ
-[643] // static-getter-delete.js // ES6 RegExp.prototype.global is AccessorProperty ..... Excluded
-[644] // static-getter-descriptors.js // ES6 RegExp.prototype.global is AccessorProperty ..... Excluded
-[645] static-getter-enumeration.js ..... Succ
-[646] static-getter-get.js ..... Succ
-[647] // static-getter-in-names.js // ES6 RegExp.prototype.flags (21.2.5.3) ..... Excluded
-[648] // static-getter-names.js // ES6 for ... of ..... Excluded
-[649] // static-getter-put.js // ES6 RegExp.prototype.global is AccessorProperty ..... Excluded
-[650] strict-to-this-int.js ..... Succ
-[651] // string-from-code-point.js // ES6 for ... of ..... Excluded
-[652] string-ident-to-not-string-var-equality.js ..... Succ
-[653] // string-iterators.js // ES6 destructuring ..... Excluded
-[654] string-out-of-bounds-negative-proto-value.js ..... Succ
-[655] // string-raw.js // ES6 String.raw ..... Excluded
-[656] sub-overflows-after-not-equal.js ..... Succ
-[657] // super-call-does-not-look-up-constructor.js // ES6 Class ..... Excluded
-[658] switch-typeof-indirect.js ..... Succ
-[659] switch-typeof-slightly-indirect.js ..... Succ
-[660] switch-typeof.js ..... Succ
-[661] // symbol-and-string-constructor.js // ES6 Symbol ..... Excluded
-[662] // symbol-define-property.js // ES6 Symbol ..... Excluded
-[663] // symbol-equality.js // ES6 Symbol ..... Excluded
-[664] // symbol-registry.js // ES6 Symbol ..... Excluded
-[665] // symbol-seal-and-freeze.js // ES6 Symbol ..... Excluded
-[666] // symbol-with-json.js // ES6 Symbol ..... Excluded
-[667] // tagged-templates-identity.js // ES6 Template string ..... Excluded
-[668] // tagged-templates-raw-strings.js // ES6 Template string ..... Excluded
-[669] // tagged-templates-syntax.js // ES6 Template string ..... Excluded
-[670] // tagged-templates-template-object.js // ES6 Template string ..... Excluded
-[671] // tagged-templates-this.js // ES6 Template string ..... Excluded
-[672] // tagged-templates.js // ES6 Template string ..... Excluded
-[673] tail-call-in-inline-cache.js ..... Succ
-[674] tail-call-no-stack-overflow.js ..... Succ
-[675] // tail-call-recognize.js // Deprecated function.caller ..... Excluded
-[676] // tail-call-varargs-no-stack-overflow.js // ES6 spread '...' ..... Excluded
-[677] tail-calls-dont-overwrite-live-stack.js ..... Succ
-[678] // template-literal-line-terminators.js // ES6 Template string ..... Excluded
-[679] // template-literal-syntax.js // ES6 Template string ..... Excluded
-[680] // template-literal.js // ES6 Template string ..... Excluded
-[681] test-spec-misc.js ..... Succ
-[682] // throw-from-ftl-call-ic-slow-path-cells.js // ES6 TypedArray ..... Excluded
-[683] // throw-from-ftl-call-ic-slow-path-undefined.js // ES6 TypedArray ..... Excluded
-[684] // throw-from-ftl-call-ic-slow-path.js // ES6 TypedArray ..... Excluded
-[685] throw-from-ftl-in-loop.js ..... Succ
-[686] throw-from-ftl.js ..... Succ
-[687] throw-through-optimized-code.js ..... Succ
-[688] tier-up-in-loop-with-cfg-simplification.js ..... Succ
-[689] to-string-on-object-or-string.js ..... Succ
-[690] to-string-on-object.js ..... Succ
-[691] to-string-on-string-object.js ..... Succ
-[692] to-string-on-string-or-string-object-then-object.js ..... Succ
-[693] to-string-on-string-or-string-object.js ..... Succ
-[694] to-string-on-value-or-string.js ..... Succ
-[695] to-string-on-value.js ..... Succ
-[696] to-this-polymorphic.js ..... Succ
-[697] toprimitive-speculated-types.js ..... Succ
-[698] // trailing-comma-in-patterns.js // ES6 Symbol ..... Excluded
-[699] tricky-array-bounds-checks.js ..... Succ
-[700] tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
-[701] tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
-[702] tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
-[703] tricky-infinite-loop-that-uses-captured-variables.js ..... Succ
-[704] trivially-foldable-reflective-arguments-access.js ..... Succ
-[705] // try-catch-custom-getter-as-get-by-id.js // JSC 'createCustomGetterObject()' ..... Excluded
-[706] try-catch-getter-as-get-by-id-register-restoration.js ..... Succ
-[707] try-catch-getter-as-get-by-id.js ..... Succ
-[708] try-catch-setter-as-put-by-id.js ..... Succ
-[709] try-catch-stub-routine-replaced.js ..... Succ
-[710] type-of-functions-and-objects.js ..... Succ
-[711] // typed-array-byte-offset.js // ES6 TypedArray ..... Excluded
-[712] // typed-array-get-by-val-profiling.js // ES6 TypedArray ..... Excluded
-[713] // typed-array-put-by-val-profiling.js // ES6 TypedArray ..... Excluded
-[714] // typedarray-copyWithin.js // ES6 TypedArray ..... Excluded
-[715] // typedarray-every.js // ES6 TypedArray ..... Excluded
-[716] // typedarray-fill.js // ES6 TypedArray ..... Excluded
-[717] // typedarray-filter.js // ES6 TypedArray ..... Excluded
-[718] // typedarray-find.js // ES6 TypedArray ..... Excluded
-[719] // typedarray-findIndex.js // ES6 TypedArray ..... Excluded
-[720] // typedarray-forEach.js // ES6 TypedArray ..... Excluded
-[721] // typedarray-indexOf.js // ES6 TypedArray ..... Excluded
-[722] // typedarray-lastIndexOf.js // ES6 TypedArray ..... Excluded
-[723] // typedarray-map.js // ES6 TypedArray ..... Excluded
-[724] // typedarray-reduce.js // ES6 TypedArray ..... Excluded
-[725] // typedarray-reduceRight.js // ES6 TypedArray ..... Excluded
-[726] // typedarray-slice.js // ES6 TypedArray ..... Excluded
-[727] // typedarray-some.js // ES6 TypedArray ..... Excluded
-[728] // typedarray-sort.js // ES6 TypedArray ..... Excluded
-[729] // typeof-symbol.js // ES6 Symbol ..... Excluded
-[730] uint32-to-number-fold-constant-with-do-overflow.js ..... Succ
-[731] // uint32array-unsigned-load.js // ES6 ..... Excluded
-[732] undefined-access-dictionary-then-proto-change.js ..... Succ
-[733] undefined-access-then-proto-change.js ..... Succ
-[734] // unscopables.js // with statement ..... Excluded
-[735] untyped-equality.js ..... Succ
-[736] untyped-less-than.js ..... Succ
-[737] use-arguments-as-object-pointer.js ..... Succ
-[738] v8-crypto-strict.js ..... Succ
-[739] v8-deltablue-strict.js ..... Succ
-[740] v8-earley-boyer-strict.js ..... Succ
-[741] v8-raytrace-strict.js ..... Succ
-[742] v8-regexp-strict.js ..... Succ
-[743] v8-richards-strict.js ..... Succ
-[744] v8-splay-strict.js ..... Succ
-[745] value-to-int32-undefined-constant.js ..... Succ
-[746] value-to-int32-undefined.js ..... Succ
-[747] // values-unscopables.js // with statement ..... Excluded
-[748] varargs-closure-inlined-exit-strict-mode.js ..... Succ
-[749] varargs-closure-inlined-exit.js ..... Succ
-[750] varargs-exit.js ..... Succ
-[751] varargs-inlined-exit.js ..... Succ
-[752] varargs-inlined-simple-exit-aliasing-weird-reversed-args.js ..... Succ
-[753] varargs-inlined-simple-exit-aliasing-weird.js ..... Succ
-[754] varargs-inlined-simple-exit-aliasing.js ..... Succ
-[755] varargs-inlined-simple-exit.js ..... Succ
-[756] varargs-inlining-underflow.js ..... Succ
-[757] varargs-then-slow-call.js ..... Succ
-[758] varargs-too-few-arguments.js ..... Succ
-[759] varargs-varargs-closure-inlined-exit.js ..... Succ
-[760] varargs-varargs-inlined-exit-strict-mode.js ..... Succ
-[761] varargs-varargs-inlined-exit.js ..... Succ
-[762] // wasm-arithmetic-float32.js // web assembly ..... Excluded
-[763] // wasm-arithmetic-float64.js // web assembly ..... Excluded
-[764] // wasm-arithmetic-int32.js // web assembly ..... Excluded
-[765] // wasm-calls.js // web assembly ..... Excluded
-[766] // wasm-comma.js // web assembly ..... Excluded
-[767] // wasm-control-flow.js // web assembly ..... Excluded
-[768] // wasm-globals.js // web assembly ..... Excluded
-[769] // wasm-linear-memory.js // web assembly ..... Excluded
-[770] // wasm-locals.js // web assembly ..... Excluded
-[771] // wasm-relational.js // web assembly ..... Excluded
-[772] // wasm-type-conversion.js // web assembly ..... Excluded
-[773] // weak-map-constructor-adder.js // ES6 WeakMap ..... Excluded
-[774] // weak-map-constructor.js // ES6 for ... of ..... Excluded
-[775] // weak-set-constructor-adder.js // ES6 WeakSet ..... Excluded
-[776] // weak-set-constructor.js // ES6 for ... of ..... Excluded
-[777] weird-equality-folding-cases.js ..... Succ
-[778] weird-getter-counter.js ..... Succ
-[779] // weird-put-stack-varargs.js // Deprecated function.arguments ..... Excluded
-[780] weird-setter-counter-syntactic.js ..... Succ
-[781] weird-setter-counter.js ..... Succ
-All      :  781
-Excluded :  277
-Succeed  :  504
-Failed   :  0
+[1] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/IIFE-es6-default-parameters.js  .... Excluded (ES6)
+[2] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/IIFE-function-name-captured.js .... Success
+[3] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-default-value-tdz-error.js  .... Excluded (ES6 'let')
+[4] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-default-value.js .... Success
+[5] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit-default-value-tdz-error.js  .... Excluded (ES6 'let')
+[6] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit-default-value.js .... Success
+[7] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit.js .... Success
+[8] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink.js .... Success
+[9] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-test-loop.js .... Success
+[10] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-constant-overflow-recovery.js .... Success
+[11] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-inferred-type-table-to-existing-structure.js .... Success
+[12] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-int52-constant-overflow-recovery.js .... Success
+[13] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-int52-large-constant-overflow-recovery.js .... Success
+[14] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-overflow-recovery.js .... Success
+[15] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-overflows-after-not-equal.js .... Success
+[16] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-small-constant-overflow-recovery.js .... Success
+[17] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-bizarre-behavior.js .... Success
+[18] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-bizarre-behaviour-disable-enumerability.js  .... Excluded ((skip) enumerable property & for .. in problem)
+[19] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-callee-uninitialized.js .... Success
+[20] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-captured.js .... Success
+[21] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-copy-register-array-backing-store.js .... Success
+[22] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-custom-properties-gc.js .... Success
+[23] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-exit-fixed.js .... Success
+[24] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-exit-strict-mode-fixed.js .... Success
+[25] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-exit-strict-mode.js .... Success
+[26] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-exit.js .... Success
+[27] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-inlined-exit-strict-mode-fixed.js .... Success
+[28] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-inlined-exit-strict-mode.js .... Success
+[29] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-inlined-exit.js .... Success
+[30] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-interference-cfg.js .... Success
+[31] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-interference.js .... Success
+[32] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-iterator.js  .... Excluded (ES6 'for ... of')
+[33] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-length-always-dont-enum.js .... Success
+[34] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arith-add-with-constants.js .... Success
+[35] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arith-modulo-node-behaviors.js .... Success
+[36] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arith-mul-with-constants.js .... Success
+[37] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-copywithin.js  .... Excluded (ES6 'for ... of')
+[38] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-fill-put-by-val.js  .... Excluded (ES6 Object syntax)
+[39] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-filter-put-by-val-direct.js  .... Excluded (ES6 Object syntax)
+[40] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-find-does-not-lookup-twice.js  .... Excluded (ES6 Object syntax)
+[41] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-abs-and-floor.js  .... Excluded (ES6 Array.from)
+[42] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-put-by-val-direct.js  .... Excluded (ES6 Array.from)
+[43] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-set-length.js  .... Excluded (ES6 Array.from)
+[44] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-accessors.js  .... Excluded (ES6 Array.from)
+[45] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-iterable.js  .... Excluded (ES6 Array.from)
+[46] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-iterator.js  .... Excluded (ES6 Array.from)
+[47] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-iterators-next-with-call.js  .... Excluded (ES6 'for ... of')
+[48] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-iterators-next.js  .... Excluded (ES6 destructuring)
+[49] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-length-array-storage-plain-object.js .... Success
+[50] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-length-plain-object.js .... Success
+[51] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-map-put-by-val-direct.js  .... Excluded (ES6 Object syntax)
+[52] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-message-passing.js  .... Excluded (ES6 DataView)
+[53] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-contiguous.js .... Success
+[54] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-double-hole.js .... Success
+[55] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-double.js .... Success
+[56] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-int32.js .... Success
+[57] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-push-contiguous.js .... Success
+[58] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-push-double-then-nan.js .... Success
+[59] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-push-double.js .... Success
+[60] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-push.js .... Success
+[61] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrayify-fires-watchpoint.js .... Success
+[62] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrayify-structure-bad-test.js .... Success
+[63] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrayify-to-structure-contradiction.js .... Success
+[64] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrow-function-token-is-not-keyword.js  .... Excluded (ES6 '=>')
+[65] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit-default-value-tdz-error.js  .... Excluded (ES6 '=>')
+[66] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit-default-value.js  .... Excluded (ES6 '=>')
+[67] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit.js  .... Excluded (ES6 '=>')
+[68] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink.js  .... Excluded (ES6 '=>')
+[69] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-bound.js  .... Excluded (ES6 '=>')
+[70] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-call.js  .... Excluded (ES6 '=>')
+[71] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-constructor.js  .... Excluded (ES6 '=>')
+[72] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-1.js  .... Excluded (ES6 '=>')
+[73] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-2.js  .... Excluded (ES6 '=>')
+[74] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-3.js  .... Excluded (ES6 '=>')
+[75] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-4.js  .... Excluded (ES6 '=>')
+[76] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-5.js  .... Excluded (ES6 '=>')
+[77] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-6.js  .... Excluded (ES6 '=>')
+[78] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-activation-sink-osrexit.js  .... Excluded (ES6 '=>')
+[79] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-activation-sink.js  .... Excluded (ES6 '=>')
+[80] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-no-double-allocate.js  .... Excluded (ES6 '=>')
+[81] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-osrexit.js  .... Excluded (ES6 '=>')
+[82] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-put.js  .... Excluded (ES6 '=>')
+[83] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-others.js  .... Excluded (ES6 '=>')
+[84] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-prototype.js  .... Excluded (ES6 '=>')
+[85] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10-1.js  .... Excluded (ES6 '=>')
+[86] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10-2.js  .... Excluded (ES6 '=>')
+[87] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10000-1.js  .... Excluded (ES6 '=>')
+[88] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10000-2.js  .... Excluded (ES6 '=>')
+[89] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-no-double-allocate.js  .... Excluded (ES6 '=>')
+[90] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-osrexit.js  .... Excluded (ES6 '=>')
+[91] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-put.js  .... Excluded (ES6 '=>')
+[92] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-tdz.js  .... Excluded (ES6 '=>')
+[93] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-tostring.js  .... Excluded (ES6 '=>')
+[94] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-typeof.js  .... Excluded (ES6 '=>')
+[95] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assign-argument-in-inlined-call.js  .... Excluded (Deprecated function.arguments)
+[96] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assign-captured-argument-in-inlined-call.js .... Success
+[97] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assignment-in-function-call-bracket-node.js .... Success
+[98] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/basic-eden-gc-test.js .... Success
+[99] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/bit-op-value-to-int32-input-liveness.js .... Success
+[100] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-check-int32-on-boolean-to-number-untyped.js .... Success
+[101] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-check-number-on-boolean-to-number-untyped.js .... Success
+[102] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-may-exit-due-to-object-or-other-use-kind.js  .... Excluded (JSC 'makeMasquerader()')
+[103] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/bug-131764.js  .... Excluded (ES6 spread '...')
+[104] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/builtin-function-is-construct-type-none.js .... Success
+[105] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cached-prototype-setter.js .... Success
+[106] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-forward-varargs-for-inlined-escaped-arguments.js .... Success
+[107] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-from-inlined-code-with-odd-number-of-arguments.js .... Success
+[108] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-from-inlined-code.js .... Success
+[109] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-length-effects.js .... Success
+[110] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-with-different-arguments-length-after-warmup.js  .... Excluded (ES6 spread '...')
+[111] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/capture-escape-and-throw.js .... Success
+[112] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/captured-arguments-variable.js .... Success
+[113] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-block-scoping.js  .... Excluded (ES6 class)
+[114] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-definition-semantics.js  .... Excluded (ES6 class)
+[115] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-derived-default-constructor.js  .... Excluded (ES6 class)
+[116] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-loop-tdz.js  .... Excluded (ES6 class)
+[117] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-catch.js  .... Excluded (ES6 class)
+[118] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-conditional.js  .... Excluded (ES6 class)
+[119] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-eval.js  .... Excluded (ES6 class)
+[120] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-loop-no-inline-super.js  .... Excluded (ES6 class)
+[121] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-loop.js  .... Excluded (ES6 class)
+[122] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz.js  .... Excluded (ES6 class)
+[123] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-catch.js  .... Excluded (ES6 class)
+[124] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-conditional.js  .... Excluded (ES6 class)
+[125] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-eval.js  .... Excluded (ES6 class)
+[126] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-loop.js  .... Excluded (ES6 class)
+[127] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz.js  .... Excluded (ES6 class)
+[128] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cloned-arguments-get-by-val-double-array.js .... Success
+[129] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cloned-arguments-should-visit-callee-during-gc.js  .... Excluded (Deprecated function.arguments)
+[130] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/closure-call-exit.js .... Success
+[131] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-object-or-other-to-object.js .... Success
+[132] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-object-to-object-or-other.js .... Success
+[133] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-on-null-and-undefined-non-peephole.js .... Success
+[134] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-on-null-and-undefined-optimized-in-constant-folding.js .... Success
+[135] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-on-null-and-undefined.js .... Success
+[136] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-strict-eq-integer-to-misc.js .... Success
+[137] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/computed-accessor-parsing.js  .... Excluded (ES6 class)
+[138] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/computed-accessor.js  .... Excluded (ES6 class)
+[139] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-and-with-statement.js  .... Excluded (ES6 const)
+[140] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-exception-handling.js  .... Excluded (ES6 const)
+[141] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-loop-semantics.js  .... Excluded (ES6 const)
+[142] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-not-strict-mode.js  .... Excluded (ES6 const)
+[143] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-semantics.js  .... Excluded (ES6 const)
+[144] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-tdz.js  .... Excluded (ES6 const)
+[145] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constant-closure-var-with-dynamic-invalidation.js  .... Excluded (with statement)
+[146] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constant-folding-osr-exit.js .... Success
+[147] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-forward-varargs-for-inlined-escaped-arguments.js  .... Excluded (ES6 spread '...')
+[148] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-inline-smaller-Foo.js  .... Excluded (ES6 spread '...')
+[149] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-inline.js  .... Excluded (ES6 spread '...')
+[150] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-no-inline.js  .... Excluded (ES6 spread '...')
+[151] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constructor-with-return.js  .... Excluded (ES6 Symbol)
+[152] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/create-this-with-callee-variants.js .... Success
+[153] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/custom-iterators.js  .... Excluded (ES6 Symbol)
+[154] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js .... Success
+[155] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-access-to-captured-variable-preceded-by-a-live-store.js .... Success
+[156] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-double-to-int52-then-exit-not-int52.js .... Success
+[157] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-double-to-int52.js .... Success
+[158] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-int32-to-int52.js .... Success
+[159] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-value-to-int52-double-path.js .... Success
+[160] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-value-to-int52-then-exit-not-double.js .... Success
+[161] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-value-to-int52-then-exit-not-int52.js .... Success
+[162] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-value-to-int52.js .... Success
+[163] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-get-closure-var.js .... Success
+[164] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-int32-to-double.js .... Success
+[165] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-osr-entry-value.js .... Success
+[166] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-speculating-argument-use.js .... Success
+[167] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-uint32-to-number.js .... Success
+[168] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-value-with-mov-hint-in-another-block.js .... Success
+[169] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/destructuring-assignment-accepts-iterables.js  .... Excluded (ES6 destructuring)
+[170] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-create-arguments-inline-alloc.js .... Success
+[171] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-exception-try-catch-in-constructor-with-inlined-throw.js .... Success
+[172] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-put-by-val-direct-with-edge-numbers.js .... Success
+[173] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-rare-data.js .... Success
+[174] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-tail-calls.js  .... Excluded (Deprecated function.caller)
+[175] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-to-primitive-pass-symbol.js  .... Excluded (ES6 Symbol)
+[176] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/disable-function-dot-arguments.js  .... Excluded (Deprecated function.arguments)
+[177] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-as-int32.js .... Success
+[178] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-rep-with-non-cell.js .... Success
+[179] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-rep-with-null.js .... Success
+[180] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-rep-with-undefined.js .... Success
+[181] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/duplicate-computed-accessors.js  .... Excluded (ES6 class)
+[182] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/elidable-new-object-roflcopter-then-exit.js .... Success
+[183] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/elide-new-object-dag-then-exit.js .... Success
+[184] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/empty-function.js .... Success
+[185] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/empty_eos_regex_split.js .... Success
+[186] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/equality-type-checking.js  .... Excluded (JSC 'addressOf()')
+[187] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/equals-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+[188] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/es6-default-parameters.js  .... Excluded (ES6 default parameter)
+[189] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/es6-for-of-loop-exception.js  .... Excluded (ES6 for ... of)
+[190] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/escape-object-in-diamond-then-exit.js .... Success
+[191] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/eval-script-contains-null-character.js .... Success
+[192] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/eval-that-is-not-eval.js .... Success
+[193] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-dfg-inlined-frame-not-strict-equal.js .... Success
+[194] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-dfg-not-strict-equal.js .... Success
+[195] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-dfg-operation-read-value.js .... Success
+[196] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-dfg-throw-from-catch-block.js .... Success
+[197] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-effect-strcat.js .... Success
+[198] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-in-strcat-string-overflow.js .... Success
+[199] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-in-strcat.js .... Success
+[200] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-in-to-property-key-should-be-handled-early-in-object-methods.js .... Success
+[201] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exception-in-to-property-key-should-be-handled-early.js .... Success
+[202] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-int32-to-double.js .... Success
+[203] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-int52-to-double.js .... Success
+[204] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-int52-to-value.js .... Success
+[205] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-llvm-folds-large-int-constant.js .... Success
+[206] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js  .... Excluded (Deprecated function.arguments)
+[207] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-ftl-with-arity-check-fail.js .... Success
+[208] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-getter.js .... Success
+[209] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-setter.js .... Success
+[210] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-double-to-int52-then-exit-not-int52.js .... Success
+[211] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-double-to-int52-then-fail-to-fold.js .... Success
+[212] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-double-to-int52-then-fold.js .... Success
+[213] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-double-to-int52.js .... Success
+[214] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-int32-to-int52.js .... Success
+[215] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52-double-path.js .... Success
+[216] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52-then-exit-not-double.js .... Success
+[217] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52-then-exit-not-int52.js .... Success
+[218] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52-then-fail-to-fold.js .... Success
+[219] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52-then-fold.js .... Success
+[220] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52.js .... Success
+[221] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/flatten-oversize-dictionary-object.js .... Success
+[222] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-nan-inlined.js  .... Excluded (ES6 TypedArray)
+[223] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-nan.js  .... Excluded (ES6 TypedArray)
+[224] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-out-of-bounds.js  .... Excluded (ES6 TypedArray)
+[225] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-repeat-out-of-bounds.js  .... Excluded (ES6 TypedArray)
+[226] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32array-out-of-bounds.js  .... Excluded (ES6 TypedArray)
+[227] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float64-array-nan-inlined.js  .... Excluded (ES6 TypedArray)
+[228] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ .... Excluded (float64-array-nan.js)
+[229] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof-mul-branch.js .... Success
+[230] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof-mul.js .... Success
+[231] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof-or-zero.js .... Success
+[232] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof.js .... Success
+[233] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-load-varargs-arity-check-fail-barely.js .... Success
+[234] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-load-varargs-arity-check-fail.js .... Success
+[235] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-multi-get-by-offset-to-get-by-offset-with-watchpoint.js .... Success
+[236] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check-new.js .... Success
+[237] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check.js .... Success
+[238] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-multi-get-by-offset-to-get-by-offset.js .... Success
+[239] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-multi-put-by-offset-to-put-by-offset-without-folding-the-structure-check.js .... Success
+[240] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-multi-put-by-offset-to-put-by-offset.js .... Success
+[241] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-profiled-call-to-call.js .... Success
+[242] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-double-constant-then-exit.js .... Success
+[243] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-int52-constant-then-exit.js .... Success
+[244] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-primitive-in-cfa.js .... Success
+[245] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-primitive-to-identity-in-cfa.js .... Success
+[246] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-typed-array-properties.js  .... Excluded (ES6 TypedArray)
+[247] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-array-mode.js .... Success
+[248] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-base-reassigned-later-and-change-structure.js .... Success
+[249] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-base-reassigned-later.js .... Success
+[250] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-base-reassigned.js .... Success
+[251] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-capture-string-loop-var.js .... Success
+[252] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-delete-during-iteration.js .... Success
+[253] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-modify-int-loop-var.js .... Success
+[254] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-modify-string-loop-var.js .... Success
+[255] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-prototype.js .... Success
+[256] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-proxy-target-changed-structure.js  .... Excluded (ES6 Proxy)
+[257] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-proxy.js  .... Excluded (ES6 Proxy)
+[258] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-shadow-prototype-property.js .... Success
+[259] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-string.js .... Success
+[260] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-tests.js .... Success
+[261] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-typed-array.js .... Success
+[262] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/forward-varargs-for-inlined-escaped-arguments.js .... Success
+[263] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/freeze_leek.js .... Success
+[264] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-arithcos.js .... Success
+[265] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-arithsin.js .... Success
+[266] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-arithsqrt.js .... Success
+[267] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-checkin-variable.js .... Success
+[268] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-checkin.js .... Success
+[269] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-get-my-argument-by-val-inlined-and-not-inlined.js .... Success
+[270] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-get-my-argument-by-val-inlined.js .... Success
+[271] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-get-my-argument-by-val.js .... Success
+[272] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-getmyargumentslength-inline.js .... Success
+[273] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-getmyargumentslength.js .... Success
+[274] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-gettypedarrayoffset-simple.js  .... Excluded (ES6 TypedArray)
+[275] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-gettypedarrayoffset-wasteful.js  .... Excluded (ES6 TypedArray)
+[276] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-in-overflow.js .... Success
+[277] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-exception.js .... Success
+[278] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inline-gettimezoneoffset.js .... Success
+[279] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-exceptions-dataview.js  .... Excluded (ES6 DataView)
+[280] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-exceptions.js .... Success
+[281] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-loops.js  .... Excluded (ES6 DataView)
+[282] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-random.js .... Success
+[283] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-substring.js .... Success
+[284] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-putbyid.js .... Success
+[285] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-putbyiddirect.js .... Success
+[286] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-reallocatepropertystorage.js .... Success
+[287] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-switch-string-slow-duplicate-cases.js .... Success
+[288] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-to-ftl-arity-fixup.js .... Success
+[289] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-expression-exit.js .... Success
+[290] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-name-scope.js .... Success
+[291] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-reentry-infer-on-self.js .... Success
+[292] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-sinking-no-double-allocate.js .... Success
+[293] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-sinking-osrexit.js .... Success
+[294] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-sinking-put.js .... Success
+[295] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fuzz-bug-16399949.js .... Success
+[296] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/generational-opaque-roots.js  .... Excluded (JSC-only)
+[297] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-argument-by-val-in-inlined-varargs-call-out-of-bounds.js .... Success
+[298] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js .... Success
+[299] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-throw-from-getter-through-optimized-code.js .... Success
+[300] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit.js .... Success
+[301] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-throw-from-unexpected-getter-through-optimized-code.js .... Success
+[302] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-untyped.js .... Success
+[303] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-double-predicted-int.js .... Success
+[304] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-array-type.js  .... Excluded (ES6 const)
+[305] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-1.js  .... Excluded (ES6 const)
+[306] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-2.js  .... Excluded (ES6 const)
+[307] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-3.js  .... Excluded (ES6 const)
+[308] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-4.js  .... Excluded (ES6 const)
+[309] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-5.js  .... Excluded (ES6 const)
+[310] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-6.js  .... Excluded (ES6 const)
+[311] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-trivial.js  .... Excluded (ES6 const)
+[312] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-out-of-bounds-basics.js .... Success
+[313] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-constructor.js .... Success
+[314] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-exit.js .... Success
+[315] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-generated.js .... Success
+[316] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-getter.js .... Success
+[317] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string.js .... Success
+[318] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-constructor.js  .... Excluded (ES6 Symbol)
+[319] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-exit.js  .... Excluded (ES6 Symbol)
+[320] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-getter.js  .... Excluded (ES6 Symbol)
+[321] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol.js  .... Excluded (ES6 Symbol)
+[322] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-declared-unpassed-argument-in-direct-arguments.js .... Success
+[323] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-declared-unpassed-argument-in-scoped-arguments.js .... Success
+[324] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-local-elimination.js .... Success
+[325] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-creates-arguments.js .... Success
+[326] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-for-inlined-escaped-arguments.js .... Success
+[327] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-inlined-no-formal-parameters.js .... Success
+[328] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-out-of-bounds-no-warm-up.js .... Success
+[329] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-out-of-bounds.js .... Success
+[330] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-safe-out-of-bounds.js .... Success
+[331] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-safe-wrap-around.js .... Success
+[332] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-wrap-around-no-warm-up.js .... Success
+[333] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-wrap-around.js .... Success
+[334] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-stack-identity-due-to-sinking.js .... Success
+[335] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-stack-mapping-with-dead-get-stack.js  .... Excluded (Deprecated function.arguments)
+[336] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-stack-mapping.js  .... Excluded (Deprecated function.arguments)
+[337] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/getter-arity.js .... Success
+[338] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/getter.js .... Success
+[339] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-environment-does-not-trap-unscopables.js  .... Excluded (ES6 Symbol, with)
+[340] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-let-no-rhs.js  .... Excluded (ES6 let)
+[341] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-redeclare-variable.js  .... Excluded (ES6 let)
+[342] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-redefine-const.js  .... Excluded (ES6 const)
+[343] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-var-injection.js  .... Excluded (ES6 let)
+[344] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-tdz.js  .... Excluded (ES6 let or const)
+[345] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-unresolved-property.js  .... Excluded (ES6 let or const)
+[346] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-with-statement.js  .... Excluded (ES6 let)
+[347] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/goofy-function-reentry-incorrect-inference.js .... Success
+[348] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/has-custom-properties.js  .... Excluded (JSC 'hasCustomProperties()')
+[349] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/heap-allocator-allocates-incorrect-size-for-activation.js .... Success
+[350] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ic-throw-through-optimized-code.js .... Success
+[351] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/impure-get-own-property-slot-inline-cache.js  .... Excluded (JSC ImpureGetter)
+[352] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infer-constant-global-property.js .... Success
+[353] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infer-constant-property.js .... Success
+[354] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infer-uninitialized-closure-var.js .... Success
+[355] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inferred-infinite-loop-that-uses-captured-variables.js .... Success
+[356] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infinite-loop-that-uses-captured-variables-before-throwing.js .... Success
+[357] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infinite-loop-that-uses-captured-variables-but-they-do-not-escape.js .... Success
+[358] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infinite-loop-that-uses-captured-variables-with-osr-entry.js .... Success
+[359] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infinite-loop-that-uses-captured-variables.js .... Success
+[360] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/initialize_functions_after_arguments.js .... Success
+[361] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/injected-numeric-setter-on-prototype.js  .... Excluded (ES6 Class)
+[362] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-call-that-doesnt-use-all-args.js .... Success
+[363] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-call-varargs-and-call.js .... Success
+[364] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-call-varargs.js .... Success
+[365] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-closure-call.js .... Success
+[366] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-llint-with-switch.js .... Success
+[367] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-varargs-get-arguments.js  .... Excluded (Deprecated function.arguments)
+[368] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inlined-constructor-this-liveness.js .... Success
+[369] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inlined-function-this-liveness.js .... Success
+[370] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/instanceof-not-cell.js .... Success
+[371] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/instanceof.js .... Success
+[372] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int16-put-by-val-in-and-out-of-bounds.js .... Success
+[373] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int16-put-by-val-in-bounds-then-exit-out-of-bounds.js .... Success
+[374] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int16-put-by-val-out-of-bounds-bounds-then-do-in-bounds.js .... Success
+[375] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int32-object-out-of-bounds.js .... Success
+[376] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int32-out-of-bounds.js .... Success
+[377] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int32array-transition-on-nan.js .... Success
+[378] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-ai-add-then-filter-int32.js .... Success
+[379] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-ai-mul-and-clean-neg-zero-then-filter-int32.js .... Success
+[380] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-ai-mul-then-filter-int32-directly.js .... Success
+[381] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-ai-mul-then-filter-int32.js .... Success
+[382] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-ai-neg-then-filter-int32.js .... Success
+[383] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-ai-sub-then-filter-int32.js .... Success
+[384] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-argument.js .... Success
+[385] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-force-osr-exit-path.js .... Success
+[386] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-inlined-call-argument.js .... Success
+[387] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int52-variable.js .... Success
+[388] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int8-repeat-out-of-bounds.js .... Success
+[389] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/invalidation-point.js .... Success
+[390] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inverted-additive-subsumption.js .... Success
+[391] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-exit-on-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+[392] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-jettison-on-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+[393] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+[394] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-functions.js  .... Excluded (ES6 Symbol)
+[395] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-names.js  .... Excluded (ES6 Symbol)
+[396] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-prototype.js  .... Excluded (ES6 Symbol)
+[397] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-return-beyond-multiple-iteration-scopes.js  .... Excluded (ES6 for ... of)
+[398] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterators-shape.js  .... Excluded (ES6 Symbol)
+[399] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/jit-cache-poly-replace-then-cache-get-and-fold-then-invalidate.js .... Success
+[400] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/jit-cache-replace-then-cache-get-and-fold-then-invalidate.js .... Success
+[401] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/jit-put-to-scope-global-cache-watchpoint-invalidate.js .... Success
+[402] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/large-regexp.js .... Success
+[403] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-and-with-statement.js  .... Excluded (ES6 let)
+[404] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-exception-handling.js  .... Excluded (ES6 let)
+[405] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-global-not-captured-variables.js  .... Excluded (ES6 let)
+[406] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-loop-semantics.js  .... Excluded (ES6 let)
+[407] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-not-strict-mode.js  .... Excluded (ES6 let)
+[408] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-semantics.js  .... Excluded (ES6 let)
+[409] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-tdz.js  .... Excluded (ES6 let)
+[410] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-scoping-break-continue.js  .... Excluded (ES6 let)
+[411] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/licm-no-pre-header.js .... Success
+[412] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/licm-pre-header-cannot-exit.js .... Success
+[413] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/list.js .... Success
+[414] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/liveness-pruning-needed-for-osr-availability-eager.js .... Success
+[415] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/liveness-pruning-needed-for-osr-availability.js .... Success
+[416] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/llint-cache-replace-then-cache-get-and-fold-then-invalidate.js .... Success
+[417] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/llint-put-to-scope-global-cache-watchpoint-invalidate.js .... Success
+[418] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-elimination-bounds-check-barely.js .... Success
+[419] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-elimination-bounds-check.js .... Success
+[420] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call-and-exit-strict.js .... Success
+[421] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call-and-exit.js .... Success
+[422] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call-exit-in-foo.js .... Success
+[423] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call-inlined.js .... Success
+[424] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call.js .... Success
+[425] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/logical-not-masquerades.js  .... Excluded (JSC 'makeMasquerader()')
+[426] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-dictionary-repatch.js .... Success
+[427] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-large-string-jit-strcat.js .... Success
+[428] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-large-string-jit.js .... Success
+[429] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-large-string-strcat.js .... Success
+[430] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-large-string.js .... Success
+[431] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-rope-2.js .... Success
+[432] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-rope-3.js .... Success
+[433] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/many-sunken-locals.js .... Success
+[434] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-constructor-adder.js  .... Excluded (ES6 Map)
+[435] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-constructor.js  .... Excluded (ES6 for ... of)
+[436] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-iterators-next.js  .... Excluded (ES6 for ... of)
+[437] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/materialize-past-butterfly-allocation.js .... Success
+[438] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/materialize-past-put-structure.js .... Success
+[439] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-abs-positive.js .... Success
+[440] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-clz32-basics.js  .... Excluded (ES6 Math.clz32())
+[441] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-log-basics.js .... Success
+[442] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-log-with-constants.js .... Success
+[443] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-basics.js .... Success
+[444] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-becomes-custom-function.js .... Success
+[445] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-coherency.js .... Success
+[446] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-integer-exponent-fastpath.js .... Success
+[447] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-nan-behaviors.js .... Success
+[448] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-with-constants.js .... Success
+[449] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-with-never-NaN-exponent.js .... Success
+[450] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-round-arith-rounding-mode.js .... Success
+[451] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-round-basics.js .... Success
+[452] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-sqrt-basics-disable-architecture-specific-optimizations.js .... Success
+[453] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-sqrt-basics.js .... Success
+[454] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/max-boolean-exit.js .... Success
+[455] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/misc-is-object-or-null.js .... Success
+[456] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modify-map-during-iteration.js  .... Excluded (ES6 for ... of)
+[457] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modify-set-during-iteration.js  .... Excluded (ES6 for ... of)
+[458] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax-error-with-names.js  .... Excluded (ES6 module)
+[459] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax-error.js  .... Excluded (ES6 module)
+[460] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax.js  .... Excluded (ES6 module)
+[461] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/mul-boolean-exit.js .... Success
+[462] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-get-by-offset-dce.js .... Success
+[463] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-get-by-offset-hoist-around-structure-check.js .... Success
+[464] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-get-by-offset-proto-and-self.js .... Success
+[465] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-get-by-offset-self-or-proto.js .... Success
+[466] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-put-by-offset-multiple-transitions.js .... Success
+[467] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-put-by-offset-reallocation-butterfly-cse.js .... Success
+[468] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-put-by-offset-reallocation-cases.js .... Success
+[469] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/mutual-tail-call-no-stack-overflow.js .... Success
+[470] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/nan-equal-untyped.js .... Success
+[471] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/nan-equal.js .... Success
+[472] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-array-dead.js .... Success
+[473] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-array-storage-array-with-size.js .... Success
+[474] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-array-then-exit.js .... Success
+[475] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-array-with-size-throw-exception-and-tear-off-arguments.js .... Success
+[476] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-array-with-size-with-bad-time.js .... Success
+[477] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-contiguous-array-with-size.js .... Success
+[478] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-double-array-with-size.js .... Success
+[479] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-function-expression-has-structures.js .... Success
+[480] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-int32-array-with-size.js .... Success
+[481] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-largeish-contiguous-array-with-size.js  .... Excluded (run pass if set GC_MAXIMUM_HEAP_SIZE with 10000000)
+[482] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-target.js  .... Excluded (ES6 new.target)
+[483] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-undecided-array-with-size.js .... Success
+[484] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/no-abc-skippy-loop.js .... Success
+[485] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/no-abc-skippy-paired-loop.js .... Success
+[486] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/non-constructors.js  .... Excluded (ES6 class)
+[487] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/not-cell-use.js .... Success
+[488] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-prototype-non-blank-array.js  .... Excluded (ES6 Class)
+[489] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-prototype.js  .... Excluded (ES6 Class)
+[490] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-self.js  .... Excluded (ES6 Class)
+[491] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-allocation-sinking-with-uninitialized-property-on-one-path.js .... Success
+[492] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-assign-enumerable.js .... Success
+[493] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-assign-order.js  .... Excluded (ES6 Symbol)
+[494] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-escapes-in-loop.js .... Success
+[495] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-freeze-accept-non-object.js  .... Excluded (ES6 Symbol)
+[496] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-descriptor-perform-to-object.js  .... Excluded (ES6 for ... of)
+[497] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-names-perform-to-object.js  .... Excluded (ES6 for ... of)
+[498] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-symbols-perform-to-object.js  .... Excluded (ES6 for ... of)
+[499] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-symbols.js  .... Excluded (ES6 Object.getOwnPropertySymbols)
+[500] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-prototype-of-perform-to-object.js  .... Excluded (ES6 for ... of)
+[501] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-extensible-accept-non-object.js  .... Excluded (ES6 for ... of)
+[502] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-frozen-accept-non-object.js  .... Excluded (ES6 for ... of)
+[503] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-sealed-accept-non-object.js  .... Excluded (ES6 for ... of)
+[504] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-keys-perform-to-object.js  .... Excluded (ES6 for ... of)
+[505] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-prevent-extensions-accept-non-object.js  .... Excluded (ES6 for ... of)
+[506] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-seal-accept-non-object.js  .... Excluded (ES6 for ... of)
+[507] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/obviously-elidable-new-object-then-exit.js .... Success
+[508] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/op-push-name-scope-crashes-profiler.js .... Success
+[509] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/operation-get-by-val-default-should-not-called-for-already-optimized-site.js .... Success
+[510] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/other-is-object-or-null.js .... Success
+[511] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/pathname-resolve.js  .... Excluded (ES6 Promise)
+[512] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-arguments-set-local-then-exit-in-same-block.js .... Success
+[513] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-direct-arguments-clobber-argument-count.js .... Success
+[514] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-direct-arguments-clobber-callee.js .... Success
+[515] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-inadequacy.js .... Success
+[516] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-local-captured-but-not-flushed-to-ssa.js .... Success
+[517] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/plus-boolean-exit.js .... Success
+[518] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/plus-boolean-or-double.js .... Success
+[519] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/plus-boolean-or-int.js .... Success
+[520] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-call-exit-this.js .... Success
+[521] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-call-exit.js .... Success
+[522] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-call-stub-in-getter-stub.js .... Success
+[523] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-chain-getter.js .... Success
+[524] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-chain-setter.js .... Success
+[525] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-chain-then-getter.js .... Success
+[526] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-chain-then-setter.js .... Success
+[527] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-getter-combo.js .... Success
+[528] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-getter-then-chain.js .... Success
+[529] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-getter-then-self.js .... Success
+[530] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-self-getter.js .... Success
+[531] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-self-then-getter.js .... Success
+[532] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-setter-combo.js .... Success
+[533] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/poly-setter-then-self.js .... Success
+[534] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/polymorphic-prototype-accesses.js .... Success
+[535] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-boolean-then-string.js .... Success
+[536] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-int32-then-string.js .... Success
+[537] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-number-then-string.js .... Success
+[538] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-object-or-other-then-string.js .... Success
+[539] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-object-then-string.js .... Success
+[540] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-other-then-string.js .... Success
+[541] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-string-then-object.js .... Success
+[542] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-or-other-then-string.js .... Success
+[543] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object-opt-fold.js .... Success
+[544] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object-opt-multi.js .... Success
+[545] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object-opt.js .... Success
+[546] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object.js .... Success
+[547] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-symbol-then-object.js  .... Excluded (ES6 Symbol)
+[548] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-symbol-then-string.js  .... Excluded (ES6 Symbol)
+[549] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js  .... Excluded (ES6 for ... of, Reflect)
+[550] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/proto-setter.js .... Success
+[551] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prototype-getter.js .... Success
+[552] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/proxy-inline-cache.js  .... Excluded (ES6 Proxy)
+[553] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prune-multi-put-by-offset-replace-or-transition-variant.js .... Success
+[554] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-build-list-order-recurse.js .... Success
+[555] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-direct-should-be-done-for-non-index-property.js  .... Excluded (ES6 duplicate symbole usage between data property and accessor property)
+[556] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-on-new-object-after-prototype-transition-non-strict.js .... Success
+[557] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-on-new-object-after-prototype-transition-strict.js .... Success
+[558] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-strict-build-list-order.js .... Success
+[559] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-throw-through-optimized-code.js .... Success
+[560] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-transition-null-prototype.js .... Success
+[561] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-out-of-bounds-basics.js .... Success
+[562] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-string-break.js .... Success
+[563] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-string-generated.js .... Success
+[564] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-string-generic.js .... Success
+[565] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-symbol-break.js  .... Excluded (ES6 Symbol)
+[566] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-symbol-generic.js  .... Excluded (ES6 Symbol)
+[567] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-local-conservative.js .... Success
+[568] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/raise-error-in-iterator-close.js  .... Excluded (ES6 for ... of)
+[569] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/real-forward-varargs-for-inlined-escaped-arguments.js .... Success
+[570] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/recurse-infinitely-on-getter.js .... Success
+[571] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/recursive_property_redefine_during_inline_caching.js .... Success
+[572] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-add-overflow-checks.js .... Success
+[573] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks-addition-skip-first.js .... Success
+[574] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks-addition.js .... Success
+[575] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks-unchecked-addition.js .... Success
+[576] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks.js .... Success
+[577] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-apply.js  .... Excluded (ES6 Reflect)
+[578] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-define-property.js  .... Excluded (ES6 Reflect)
+[579] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-delete-property.js  .... Excluded (ES6 Reflect)
+[580] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-enumerate.js  .... Excluded (ES6 Reflect)
+[581] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get-own-property.js  .... Excluded (ES6 Reflect)
+[582] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get-prototype-of.js  .... Excluded (ES6 Reflect)
+[583] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get.js  .... Excluded (ES6 Reflect)
+[584] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-has.js  .... Excluded (ES6 Reflect)
+[585] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-is-extensible.js  .... Excluded (ES6 Reflect)
+[586] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-own-keys.js  .... Excluded (ES6 Reflect)
+[587] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-prevent-extensions.js  .... Excluded (ES6 Reflect)
+[588] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-set-prototype-of.js  .... Excluded (ES6 Reflect)
+[589] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regexp-matches-array.js .... Success
+[590] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-132147.js .... Success
+[591] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-135155.js .... Success
+[592] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-141489.js .... Success
+[593] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-141883.js .... Success
+[594] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-148564.js .... Success
+[595] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/remove-phantom-after-setlocal.js .... Success
+[596] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/repeat-put-to-scope-global-with-same-value-watchpoint-invalidate.js .... Success
+[597] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/repeated-arity-check-fail.js .... Success
+[598] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/repeated-put-by-id-reallocating-transition.js .... Success
+[599] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/replacement-watchpoint-dictionary.js .... Success
+[600] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/replacement-watchpoint.js .... Success
+[601] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reserved-word-with-escape.js .... Success
+[602] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/rest-elements.js  .... Excluded (ES6 rest parameter syntax)
+[603] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/retry-cache-later.js .... Success
+[604] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/runtime-array.js  .... Excluded (JSC 'createRuntimeArray()')
+[605] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/runtime-throw-through-optimized-code.js .... Success
+[606] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/scoped-arguments-array-length.js .... Success
+[607] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/scoped-then-direct-arguments-get-by-val-in-baseline.js .... Success
+[608] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-constructor-adder.js  .... Excluded (ES6 Set)
+[609] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-constructor.js  .... Excluded (ES6 for ... of)
+[610] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-iterators-next.js  .... Excluded (ES6 for ... of)
+[611] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-same-prototype.js .... Success
+[612] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/setter.js .... Success
+[613] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/simple-polyvariant-call-inlining-example.js .... Success
+[614] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/simple-polyvariant-get-by-id-inlining-example.js .... Success
+[615] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/simple-polyvariant-put-by-id-inlining-example.js .... Success
+[616] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/simple-prototype-accesses.js .... Success
+[617] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/simplify-varargs-mandatory-minimum-smaller-than-limit.js .... Success
+[618] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/singleton-scope-then-overwrite.js .... Success
+[619] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/singleton-scope-then-realloc-and-overwrite.js .... Success
+[620] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/singleton-scope-then-realloc.js .... Success
+[621] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-arguments-past-invalid-check-dfg.js .... Success
+[622] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-arguments-past-invalid-check-int32-dfg.js .... Success
+[623] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-arguments-past-invalid-check-int32.js .... Success
+[624] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-arguments-past-invalid-check-sneakier.js .... Success
+[625] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-arguments-past-invalid-check.js .... Success
+[626] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-function-past-invalid-check-sneakier.js .... Success
+[627] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-function-past-invalid-check-sneaky.js .... Success
+[628] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-multigetbyoffset.js .... Success
+[629] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-object-past-invalid-check-int32.js .... Success
+[630] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-object-past-invalid-check-sneakier.js .... Success
+[631] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-object-past-invalid-check-sneaky.js .... Success
+[632] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink-object-past-invalid-check.js .... Success
+[633] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sink_checkstructure.js .... Success
+[634] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/slightly-more-difficult-to-fold-reflective-arguments-access.js .... Success
+[635] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sort-array-with-undecided.js .... Success
+[636] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-array-entry-update-144067.js .... Success
+[637] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-overlapping.js .... Success
+[638] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-skip-getter-overriding.js  .... Excluded (ES6 duplicate symbole usage between data property and accessor property)
+[639] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-skip.js .... Success
+[640] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse_splice.js .... Success
+[641] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-function-delete.js .... Success
+[642] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-function-put.js .... Success
+[643] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-delete.js  .... Excluded (ES6 RegExp.prototype.global is AccessorProperty)
+[644] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-descriptors.js  .... Excluded (ES6 RegExp.prototype.global is AccessorProperty)
+[645] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-enumeration.js .... Success
+[646] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-get.js .... Success
+[647] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-in-names.js  .... Excluded (ES6 RegExp.prototype.flags (21.2.5.3))
+[648] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-names.js  .... Excluded (ES6 for ... of)
+[649] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-put.js  .... Excluded (ES6 RegExp.prototype.global is AccessorProperty)
+[650] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/strict-to-this-int.js .... Success
+[651] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-from-code-point.js  .... Excluded (ES6 for ... of)
+[652] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-ident-to-not-string-var-equality.js .... Success
+[653] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-iterators.js  .... Excluded (ES6 destructuring)
+[654] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-out-of-bounds-negative-proto-value.js .... Success
+[655] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-raw.js  .... Excluded (ES6 String.raw)
+[656] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sub-overflows-after-not-equal.js .... Success
+[657] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/super-call-does-not-look-up-constructor.js  .... Excluded (ES6 Class)
+[658] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/switch-typeof-indirect.js .... Success
+[659] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/switch-typeof-slightly-indirect.js .... Success
+[660] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/switch-typeof.js .... Success
+[661] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-and-string-constructor.js  .... Excluded (ES6 Symbol)
+[662] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-define-property.js  .... Excluded (ES6 Symbol)
+[663] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-equality.js  .... Excluded (ES6 Symbol)
+[664] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-registry.js  .... Excluded (ES6 Symbol)
+[665] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-seal-and-freeze.js  .... Excluded (ES6 Symbol)
+[666] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-with-json.js  .... Excluded (ES6 Symbol)
+[667] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-identity.js  .... Excluded (ES6 Template string)
+[668] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-raw-strings.js  .... Excluded (ES6 Template string)
+[669] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-syntax.js  .... Excluded (ES6 Template string)
+[670] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-template-object.js  .... Excluded (ES6 Template string)
+[671] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-this.js  .... Excluded (ES6 Template string)
+[672] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates.js  .... Excluded (ES6 Template string)
+[673] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-in-inline-cache.js .... Success
+[674] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-no-stack-overflow.js .... Success
+[675] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-recognize.js  .... Excluded (Deprecated function.caller)
+[676] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-varargs-no-stack-overflow.js  .... Excluded (ES6 spread '...')
+[677] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-calls-dont-overwrite-live-stack.js .... Success
+[678] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal-line-terminators.js  .... Excluded (ES6 Template string)
+[679] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal-syntax.js  .... Excluded (ES6 Template string)
+[680] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal.js  .... Excluded (ES6 Template string)
+[681] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/test-spec-misc.js .... Success
+[682] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path-cells.js  .... Excluded (ES6 TypedArray)
+[683] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path-undefined.js  .... Excluded (ES6 TypedArray)
+[684] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path.js  .... Excluded (ES6 TypedArray)
+[685] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-in-loop.js .... Success
+[686] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl.js .... Success
+[687] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-through-optimized-code.js .... Success
+[688] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tier-up-in-loop-with-cfg-simplification.js .... Success
+[689] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-object-or-string.js .... Success
+[690] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-object.js .... Success
+[691] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-string-object.js .... Success
+[692] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-string-or-string-object-then-object.js .... Success
+[693] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-string-or-string-object.js .... Success
+[694] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-value-or-string.js .... Success
+[695] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-value.js .... Success
+[696] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-this-polymorphic.js .... Success
+[697] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/toprimitive-speculated-types.js .... Success
+[698] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/trailing-comma-in-patterns.js  .... Excluded (ES6 Symbol)
+[699] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-array-bounds-checks.js .... Success
+[700] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js .... Success
+[701] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js .... Success
+[702] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js .... Success
+[703] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-infinite-loop-that-uses-captured-variables.js .... Success
+[704] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/trivially-foldable-reflective-arguments-access.js .... Success
+[705] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-custom-getter-as-get-by-id.js  .... Excluded (JSC 'createCustomGetterObject()')
+[706] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-getter-as-get-by-id-register-restoration.js .... Success
+[707] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-getter-as-get-by-id.js .... Success
+[708] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-setter-as-put-by-id.js .... Success
+[709] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-stub-routine-replaced.js .... Success
+[710] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/type-of-functions-and-objects.js .... Success
+[711] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-byte-offset.js  .... Excluded (ES6 TypedArray)
+[712] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-get-by-val-profiling.js  .... Excluded (ES6 TypedArray)
+[713] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-put-by-val-profiling.js  .... Excluded (ES6 TypedArray)
+[714] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-copyWithin.js  .... Excluded (ES6 TypedArray)
+[715] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-every.js  .... Excluded (ES6 TypedArray)
+[716] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-fill.js  .... Excluded (ES6 TypedArray)
+[717] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-filter.js  .... Excluded (ES6 TypedArray)
+[718] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-find.js  .... Excluded (ES6 TypedArray)
+[719] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-findIndex.js  .... Excluded (ES6 TypedArray)
+[720] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-forEach.js  .... Excluded (ES6 TypedArray)
+[721] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-indexOf.js  .... Excluded (ES6 TypedArray)
+[722] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-lastIndexOf.js  .... Excluded (ES6 TypedArray)
+[723] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-map.js  .... Excluded (ES6 TypedArray)
+[724] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-reduce.js  .... Excluded (ES6 TypedArray)
+[725] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-reduceRight.js  .... Excluded (ES6 TypedArray)
+[726] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-slice.js  .... Excluded (ES6 TypedArray)
+[727] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-some.js  .... Excluded (ES6 TypedArray)
+[728] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-sort.js  .... Excluded (ES6 TypedArray)
+[729] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typeof-symbol.js  .... Excluded (ES6 Symbol)
+[730] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/uint32-to-number-fold-constant-with-do-overflow.js .... Success
+[731] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/uint32array-unsigned-load.js  .... Excluded (ES6 Uint32Array)
+[732] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/undefined-access-dictionary-then-proto-change.js .... Success
+[733] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/undefined-access-then-proto-change.js .... Success
+[734] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/unscopables.js  .... Excluded (with statement)
+[735] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/untyped-equality.js .... Success
+[736] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/untyped-less-than.js .... Success
+[737] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/use-arguments-as-object-pointer.js .... Success
+[738] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-crypto-strict.js .... Success
+[739] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-deltablue-strict.js .... Success
+[740] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-earley-boyer-strict.js .... Success
+[741] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-raytrace-strict.js .... Success
+[742] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-regexp-strict.js .... Success
+[743] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-richards-strict.js .... Success
+[744] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-splay-strict.js .... Success
+[745] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/value-to-int32-undefined-constant.js .... Success
+[746] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/value-to-int32-undefined.js .... Success
+[747] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/values-unscopables.js  .... Excluded (with statement)
+[748] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-closure-inlined-exit-strict-mode.js .... Success
+[749] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-closure-inlined-exit.js .... Success
+[750] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-exit.js .... Success
+[751] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-inlined-exit.js .... Success
+[752] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-inlined-simple-exit-aliasing-weird-reversed-args.js .... Success
+[753] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-inlined-simple-exit-aliasing-weird.js .... Success
+[754] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-inlined-simple-exit-aliasing.js .... Success
+[755] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-inlined-simple-exit.js .... Success
+[756] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-inlining-underflow.js .... Success
+[757] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-then-slow-call.js .... Success
+[758] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-too-few-arguments.js .... Success
+[759] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-varargs-closure-inlined-exit.js .... Success
+[760] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-varargs-inlined-exit-strict-mode.js .... Success
+[761] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-varargs-inlined-exit.js .... Success
+[762] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-float32.js  .... Excluded (web assembly)
+[763] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-float64.js  .... Excluded (web assembly)
+[764] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-int32.js  .... Excluded (web assembly)
+[765] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-calls.js  .... Excluded (web assembly)
+[766] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-comma.js  .... Excluded (web assembly)
+[767] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-control-flow.js  .... Excluded (web assembly)
+[768] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-globals.js  .... Excluded (web assembly)
+[769] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-linear-memory.js  .... Excluded (web assembly)
+[770] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-locals.js  .... Excluded (web assembly)
+[771] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-relational.js  .... Excluded (web assembly)
+[772] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-type-conversion.js  .... Excluded (web assembly)
+[773] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-map-constructor-adder.js  .... Excluded (ES6 WeakMap)
+[774] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-map-constructor.js  .... Excluded (ES6 for ... of)
+[775] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-set-constructor-adder.js  .... Excluded (ES6 WeakSet)
+[776] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-set-constructor.js  .... Excluded (ES6 for ... of)
+[777] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-equality-folding-cases.js .... Success
+[778] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-getter-counter.js .... Success
+[779] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-put-stack-varargs.js  .... Excluded (Deprecated function.arguments)
+[780] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-setter-counter-syntactic.js .... Success
+[781] test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-setter-counter.js .... Success
+total : 781
+succ : 504
+fail : 0
+ignore : 277
+timeout : 0
