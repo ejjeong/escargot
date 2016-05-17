@@ -279,15 +279,6 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall, CodeBloc
     return m_lastExpressionStatementValue;
 }
 
-void ESVMInstance::enter()
-{
-    ASSERT(!escargot::currentInstance);
-    escargot::currentInstance = this;
-    escargot::strings = &m_strings;
-    char dummy;
-    m_stackStart = &dummy;
-}
-
 void ESVMInstance::exit()
 {
     escargot::currentInstance = NULL;

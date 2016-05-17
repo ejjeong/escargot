@@ -58,7 +58,15 @@ public:
     ALWAYS_INLINE ExecutionContext* globalExecutionContext() { return m_globalExecutionContext; }
     ALWAYS_INLINE GlobalObject* globalObject() { return m_globalObject; }
 
-    void enter();
+    ALWAYS_INLINE void enter()
+    {
+        ASSERT(!escargot::currentInstance);
+        escargot::currentInstance = this;
+        escargot::strings = &m_strings;
+        char dummy;
+        m_stackStart = &dummy;
+    }
+
     void exit();
     ALWAYS_INLINE static ESVMInstance* currentInstance()
     {
@@ -268,11 +276,9 @@ public:
 
     ALWAYS_INLINE void stackCheck()
     {
-#ifndef ESCARGOT_TIZEN
         char dummy;
         if (UNLIKELY(static_cast<size_t>(stackStart() - &dummy) > options::MaxStackDepth))
             throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
-#endif
     }
 
     ALWAYS_INLINE void argumentCountCheck(size_t arglen)
