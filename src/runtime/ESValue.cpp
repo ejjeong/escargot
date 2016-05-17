@@ -3178,9 +3178,8 @@ void ESDateObject::setTime(double t)
         return;
     }
 
-    m_primitiveValue = floor(t);
-
-    if (m_primitiveValue <= options::MaximumDatePrimitiveValue && m_primitiveValue >= -options::MaximumDatePrimitiveValue) {
+    if (t <= options::MaximumDatePrimitiveValue && t >= -options::MaximumDatePrimitiveValue) {
+        m_primitiveValue = floor(t);
         m_isCacheDirty = true;
         m_hasValidDate = true;
     } else {
