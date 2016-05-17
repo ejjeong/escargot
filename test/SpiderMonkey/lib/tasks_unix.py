@@ -45,7 +45,10 @@ def spawn_test(test, prefix, passthrough, run_skipped, show_cmd):
 
         os.dup2(wout, 1)
         os.dup2(werr, 2)
-
+    if test.env is not None:
+        for key in os.environ.keys():
+            if key not in test.env:
+                test.env[key] = os.environ[key]
     os.execvpe(cmd[0], cmd, test.env)
 
 def total_seconds(td):
