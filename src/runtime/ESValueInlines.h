@@ -2031,12 +2031,19 @@ ALWAYS_INLINE void ESObject::sort(const Comp& c)
             asESArrayObject()->set(i, values[i]);
     } else {
         uint32_t len = get(strings->length.string()).toUint32();
-        ESValueVector selected(len);
+        // TODO : Should separate sparse and compact array later
+        ESValueVectorStd selected;
         uint32_t n = 0;
-        for (uint32_t i = 0; i < len; i++) {
-            if (hasProperty(ESValue(i))) {
-                selected.push_back(get(ESValue(i)));
+        uint32_t k = 0;
+
+        while (k < len) {
+            ESValue idx = ESValue(k);
+            if (hasProperty(idx)) {
+                selected.push_back(get(idx));
                 n++;
+                k++;
+            } else {
+                k = ESArrayObject::nextIndexForward(this, k, len, false);
             }
         }
         std::sort(selected.begin(), selected.end(), c);
@@ -2046,9 +2053,15 @@ ALWAYS_INLINE void ESObject::sort(const Comp& c)
                 ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("Attempted to assign to readonly property.")));
 
         }
-        while (i != len) {
-            deleteProperty(ESValue(i));
-            i++;
+        while (i < len) {
+            ESValue idx = ESValue(i);
+            if (hasProperty(idx)) {
+                deleteProperty(ESValue(i));
+                i++;
+            } else {
+                i = ESArrayObject::nextIndexForward(this, i, len, false);
+            }
+
         }
     }
 }
