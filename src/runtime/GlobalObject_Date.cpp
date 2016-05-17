@@ -1017,7 +1017,7 @@ void GlobalObject::installDate()
             return ESValue(thisDateObject->timeValueAsDouble());
         }
         if (std::isnan(thisDateObject->timeValueAsDouble())) {
-            thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
+            thisDateObject->setTimeValue(1970, 0, 1, 0, 0, 0, 0, true);
         }
 
         args[0] = instance->currentExecutionContext()->readArgument(0).toNumber();
