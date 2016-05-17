@@ -1840,9 +1840,9 @@ void GlobalObject::installArray()
                 argi = instance->currentExecutionContext()->readArgument(i - 1);
             }
             if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
-                int64_t curIndex = 0;
+                double curIndex = 0;
                 escargot::ESArrayObject* arr = argi.asESPointer()->asESArrayObject();
-                int64_t len = arr->length();
+                uint32_t len = arr->length();
 
                 while (curIndex < len) {
                     if (arr->hasProperty(ESValue(curIndex))) {
@@ -2078,7 +2078,7 @@ void GlobalObject::installArray()
     // $22.1.3.12 Array.prototype.join(separator)
     m_arrayPrototype->ESObject::defineDataProperty(strings->join, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RESOLVE_THIS_BINDING_TO_OBJECT(thisBinded, Array, join);
-        int64_t len = thisBinded->length();
+        uint32_t len = thisBinded->length();
         ESValue separator = instance->currentExecutionContext()->readArgument(0);
         size_t lenMax = ESString::maxLength();
         escargot::ESString* sep;
@@ -2095,13 +2095,13 @@ void GlobalObject::installArray()
         }
 
         ESStringBuilder builder;
-        int64_t prevIndex = 0;
-        int64_t curIndex = 0;
+        double prevIndex = 0;
+        double curIndex = 0;
         while (curIndex < len) {
             if (curIndex != 0) {
                 if (sep->length() > 0) {
-                    if (static_cast<int64_t>(builder.contentLength()) >
-                        static_cast<int64_t>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
+                    if (static_cast<double>(builder.contentLength()) >
+                        static_cast<double>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
                         instance->throwOOMError();
                     }
                     while (curIndex - prevIndex > 1) {
@@ -2124,8 +2124,8 @@ void GlobalObject::installArray()
             }
         }
         if (sep->length() > 0) {
-            if (static_cast<int64_t>(builder.contentLength()) >
-                static_cast<int64_t>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
+            if (static_cast<double>(builder.contentLength()) >
+                static_cast<double>(lenMax - (curIndex - prevIndex - 1) * sep->length())) {
                 instance->throwOOMError();
             }
             while (curIndex - prevIndex > 1) {
@@ -2149,7 +2149,7 @@ void GlobalObject::installArray()
             return ESValue(-1);
         } else {
             double n = 0;
-            int64_t k = 0;
+            double k = 0;
             ESValue searchElement = instance->currentExecutionContext()->readArgument(0);
             if (instance->currentExecutionContext()->argumentCount() >= 2) {
                 ESValue fromIndex = instance->currentExecutionContext()->readArgument(1);
@@ -2161,8 +2161,7 @@ void GlobalObject::installArray()
             if (n >= 0) {
                 k = (n > len - 1) ? len - 1 : n;
             } else {
-                k = len;
-                k -= (-1) * n;
+                k = len + n;
             }
 
             while (k >= 0) {
@@ -2575,7 +2574,7 @@ void GlobalObject::installArray()
         double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger();
         size_t start;
         size_t deleteCnt = 0, insertCnt = 0;
-        int64_t k;
+        double k;
 
         if (relativeStart < 0)
             start = arrlen+relativeStart > 0 ? arrlen+relativeStart : 0;
@@ -2591,7 +2590,7 @@ void GlobalObject::installArray()
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
 
         k = start;
-        while (k < static_cast<int64_t>(static_cast<int64_t>(deleteCnt) + start)) {
+        while (k < static_cast<double>(static_cast<double>(deleteCnt) + start)) {
             ESValue from = ESValue(k);
 
             if (thisBinded->hasProperty(from)) {
@@ -2605,10 +2604,10 @@ void GlobalObject::installArray()
 
         size_t leftInsert = insertCnt;
         if (insertCnt < deleteCnt) {
-            thisBinded->relocateIndexesForward(static_cast<int64_t>(start) + deleteCnt, static_cast<int64_t>(arrlen), static_cast<int64_t>(insertCnt)- deleteCnt);
+            thisBinded->relocateIndexesForward(static_cast<double>(start) + deleteCnt, static_cast<double>(arrlen), insertCnt- deleteCnt);
 
             k = arrlen - 1;
-            while (k > static_cast<int64_t>(static_cast<int64_t>(arrlen) - deleteCnt + insertCnt - 1)) {
+            while (k > static_cast<double>(static_cast<double>(arrlen) - deleteCnt + insertCnt - 1)) {
                 if (thisBinded->hasProperty(ESValue(k))) {
                     thisBinded->deletePropertyWithException(ESValue(k));
                     k--;
@@ -2617,7 +2616,7 @@ void GlobalObject::installArray()
                 }
             }
         } else if (insertCnt > deleteCnt) {
-            thisBinded->relocateIndexesBackward(static_cast<int64_t>(arrlen) - 1, static_cast<int64_t>(start) + deleteCnt - 1, static_cast<int64_t>(insertCnt) - deleteCnt);
+            thisBinded->relocateIndexesBackward(static_cast<double>(arrlen) - 1, static_cast<double>(start) + deleteCnt - 1, insertCnt - deleteCnt);
         }
         k = start;
         size_t argIdx = 2;
@@ -2698,7 +2697,7 @@ void GlobalObject::installArray()
         RESOLVE_THIS_BINDING_TO_OBJECT(O, Array, unshift);
         const uint32_t len = O->get(strings->length.string()).toUint32();
         size_t argCount = instance->currentExecutionContext()->argumentCount();
-        O->relocateIndexesBackward(static_cast<int64_t>(len) - 1, -1, argCount);
+        O->relocateIndexesBackward(static_cast<double>(len) - 1, -1, argCount);
 
         ESValue* items = instance->currentExecutionContext()->arguments();
         for (size_t j = 0; j < argCount; j++) {
@@ -2708,8 +2707,8 @@ void GlobalObject::installArray()
         if (O->isESArrayObject() && len > ESValue::ESInvalidIndexValue - argCount) {
             throwBuiltinError(instance, ErrorCode::RangeError, strings->Array, true, strings->unshift, errorMessage_GlobalObject_RangeError);
         }
-        O->set(strings->length.string(), ESValue(double(len) + argCount), true);
-        return ESValue(double(len) + argCount);
+        O->set(strings->length.string(), ESValue(static_cast<double>(len) + argCount), true);
+        return ESValue(static_cast<double>(len) + argCount);
     }, strings->unshift.string(), 1));
 
     m_arrayPrototype->ESObject::set(strings->length, ESValue(0));

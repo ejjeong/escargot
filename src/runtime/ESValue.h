@@ -1921,8 +1921,8 @@ public:
 
     inline void set__proto__(const ESValue& obj);
     ALWAYS_INLINE size_t keyCount();
-    inline void relocateIndexesForward(int64_t start, int64_t end, int64_t offset);
-    inline void relocateIndexesBackward(int64_t start, int64_t end, int64_t offset);
+    inline void relocateIndexesForward(double start, double end, unsigned offset);
+    inline void relocateIndexesBackward(double start, double end, unsigned offset);
 
     void setPropertyInterceptor(PropertyCallback readIndex, PropertyEnumerationCallback enumeration)
     {
@@ -2391,8 +2391,8 @@ public:
     bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
     bool defineOwnProperty(const ESValue& key, ESObject* desc, bool throwFlag);
 
-    static int64_t nextIndexForward(ESObject* obj, const int64_t cur, const int64_t len, const bool skipUndefined);
-    static int64_t nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined);
+    static double nextIndexForward(ESObject* obj, const double cur, const double len, const bool skipUndefined);
+    static double nextIndexBackward(ESObject* obj, const double cur, const double end, const bool skipUndefined);
 
     ALWAYS_INLINE GlobalObject* globalObject() { return m_globalObjectForESArrayObject; }
     ALWAYS_INLINE void setGlobalObject(GlobalObject* globalObject) { m_globalObjectForESArrayObject = globalObject; }

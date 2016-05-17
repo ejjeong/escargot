@@ -1264,10 +1264,10 @@ bool ESArrayObject::defineOwnProperty(const ESValue& P, ESObject* obj, bool thro
     return defineOwnProperty(P, PropertyDescriptor { obj }, throwFlag);
 }
 
-int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined)
+double ESArrayObject::nextIndexForward(ESObject* obj, const double cur, const double end, const bool skipUndefined)
 {
     ESValue ptr = obj;
-    int64_t ret = end;
+    double ret = end;
     while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
         ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             uint32_t index = ESValue::ESInvalidIndexValue;
@@ -1276,7 +1276,7 @@ int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const 
                     return;
                 }
                 if (index > cur) {
-                    ret = std::min(static_cast<int64_t>(index), ret);
+                    ret = std::min(static_cast<double>(index), ret);
                 }
             }
         });
@@ -1285,10 +1285,10 @@ int64_t ESArrayObject::nextIndexForward(ESObject* obj, const int64_t cur, const 
     return ret;
 }
 
-int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const int64_t end, const bool skipUndefined)
+double ESArrayObject::nextIndexBackward(ESObject* obj, const double cur, const double end, const bool skipUndefined)
 {
     ESValue ptr = obj;
-    int64_t ret = end;
+    double ret = end;
     while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
         ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             uint32_t index = ESValue::ESInvalidIndexValue;
@@ -1297,7 +1297,7 @@ int64_t ESArrayObject::nextIndexBackward(ESObject* obj, const int64_t cur, const
                     return;
                 }
                 if (index < cur) {
-                    ret = std::max(static_cast<int64_t>(index), ret);
+                    ret = std::max(static_cast<double>(index), ret);
                 }
             }
         });

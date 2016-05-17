@@ -1829,7 +1829,7 @@ ALWAYS_INLINE size_t ESObject::keyCount()
     return siz;
 }
 
-inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t offset)
+inline void ESObject::relocateIndexesForward(double start, double end, unsigned offset)
 {
     if (offset == 0)
         return;
@@ -1878,7 +1878,7 @@ inline void ESObject::relocateIndexesForward(int64_t start, int64_t end, int64_t
     }
 }
 
-inline void ESObject::relocateIndexesBackward(int64_t start, int64_t end, int64_t offset)
+inline void ESObject::relocateIndexesBackward(double start, double end, unsigned offset)
 {
     if (offset == 0)
         return;
