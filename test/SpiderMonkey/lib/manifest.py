@@ -280,7 +280,7 @@ def _parse_test_header(fullpath, testcase, xul_tester):
             testcase.timeout = int(buf[len("// escargot-timeout:"):].strip())
         elif escargot_matches.group(1) == "env":
             testcase.env = json.loads(buf[len("// escargot-env:"):].strip())
-        buf = next_buf
+        buf, _, _ = next_buf.partition('\n')
 
     matches = TEST_HEADER_PATTERN_INLINE.match(buf)
 

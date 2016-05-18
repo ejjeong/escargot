@@ -1,5 +1,5 @@
-// escargot-timeout: 10
-// |reftest| skip-if(Android&&isDebugBuild) slow -- bug 1216226
+// escargot-timeout: 60
+// |reftest| skip-if((Android&&isDebugBuild)||xulRuntime.XPCOMABI.match(/arm/)) -- bug 1216226
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,7 @@ var global = this;
 
 printBugNumber(BUGNUMBER);
 printStatus (summary);
- 
+
 var start = new Date();
 var p;
 var i;
@@ -31,4 +31,3 @@ reportCompare(expect, actual, summary);
 var stop = new Date();
 
 print('Elapsed time: ' + Math.floor((stop - start)/1000) + ' seconds');
-
