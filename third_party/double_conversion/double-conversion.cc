@@ -442,7 +442,7 @@ const int kMaxSignificantDigits = 772;
 // Returns true if a nonspace found and false if the end has reached.
 static inline bool AdvanceToNonspace(const char** current, const char* end) {
   while (*current != end) {
-    if (**current != ' ') return true;
+    if (**current != ' ' && **current != '\t') return true;
     ++*current;
   }
   return false;

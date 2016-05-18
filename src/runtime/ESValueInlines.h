@@ -3,6 +3,9 @@
 
 #include "runtime/Error.h"
 
+#include "double-conversion.h"
+#include "ieee.h"
+
 namespace escargot {
 
 // The fast double-to-(unsigned-)int conversion routine does not guarantee
@@ -261,7 +264,7 @@ inline double ESValue::toNumberSlowCase() const
         if (data->length() == 0)
             return 0;
 
-        char* end;
+        int end;
         char* buf;
         ALLOCA_WRAPPER(ESVMInstance::currentInstance(), buf, char*, data->length() + 1, true);
         const size_t len = data->length();
@@ -276,8 +279,12 @@ inline double ESValue::toNumberSlowCase() const
             val = std::numeric_limits<double>::quiet_NaN();
             return val;
         }
-        val = strtod(buf, &end);
-        if (end != buf + len) {
+        double_conversion::StringToDoubleConverter converter(double_conversion::StringToDoubleConverter::ALLOW_HEX
+            | double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES
+            | double_conversion::StringToDoubleConverter::ALLOW_TRAILING_SPACES, 0.0, double_conversion::Double::NaN(),
+            strings->Infinity.string()->asciiData(), strings->NaN.string()->asciiData());
+        val = converter.StringToDouble(buf, len, &end);
+        if (static_cast<size_t>(end) != len) {
             auto isSpace = [] (char16_t c) -> bool {
                 switch (c) {
                 case 0x0009: case 0x000A: case 0x000B: case 0x000C:
@@ -323,8 +330,8 @@ inline double ESValue::toNumberSlowCase() const
             }
             if (state != State::Invalid) {
                 buf[ptr] = 0;
-                val = strtod(buf, &end);
-                if (end != buf + ptr)
+                val = converter.StringToDouble(buf, ptr, &end);
+                if (static_cast<size_t>(end) != ptr)
                     val = std::numeric_limits<double>::quiet_NaN();
             } else
                 val = std::numeric_limits<double>::quiet_NaN();

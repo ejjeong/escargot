@@ -2,7 +2,11 @@
 #include "esprima.h"
 
 #include "ast/AST.h"
+#include "runtime/StaticStrings.h"
 #include "wtfbridge.h"
+
+#include "double-conversion.h"
+#include "ieee.h"
 
 using namespace JSC::Yarr;
 
@@ -1881,7 +1885,13 @@ PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
         throwEsprimaException();
     }
 
-    double ll = strtod(number.data(), NULL);
+    int length = number.length();
+    int length_dummy;
+    double_conversion::StringToDoubleConverter converter(double_conversion::StringToDoubleConverter::ALLOW_HEX
+        | double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES
+        | double_conversion::StringToDoubleConverter::ALLOW_TRAILING_SPACES, 0.0, double_conversion::Double::NaN(),
+        escargot::strings->Infinity.string()->asciiData(), escargot::strings->NaN.string()->asciiData());
+    double ll = converter.StringToDouble(number.data(), length, &length_dummy);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
