@@ -553,6 +553,11 @@ run-spidermonkey:
 	./jstests.py -s --xul-info=x86_64-gcc3:Linux:false ../../escargot --failure-file=mozilla.x64.interpreter.release.escargot.gen.txt -p "$(OPT)"; \
 	diff mozilla.x64.interpreter.release.escargot.orig.txt mozilla.x64.interpreter.release.escargot.gen.txt
 
+run-spidermonkey-for-32bit:
+	cd test/SpiderMonkey; \
+	./jstests.py -s --xul-info=x86-gcc3:Linux:false ../../escargot --failure-file=mozilla.x86.interpreter.release.escargot.gen.txt -p "$(OPT)"; \
+	diff mozilla.x86.interpreter.release.escargot.orig.txt mozilla.x64.interpreter.release.escargot.gen.txt
+
 run-jsc-mozilla:     
 	cd test/JavaScriptCore/mozilla/; \
         perl jsDriver.pl -e escargot -s ../../../escargot
@@ -570,5 +575,10 @@ run-chakracore:
 run-v8-test:
 	./test/v8/tool/run-tests.py --quickcheck --no-presubmit --no-variants --arch-and-mode=x64.release --escargot --report -p verbose --no-sorting mjsunit | tee test/v8/mjsunit.gen.txt; \
 	diff test/v8/mjsunit.orig.txt test/v8/mjsunit.gen.txt
+
+run-v8-test-for-32bit:
+	./test/v8/tool/run-tests.py --quickcheck --no-presubmit --no-variants --arch-and-mode=x32.release --escargot --report -p verbose --no-sorting mjsunit | tee test/v8/mjsunit.gen.txt; \
+	diff test/v8/mjsunit.orig.txt test/v8/mjsunit.gen.txt
+
 
 .PHONY: clean
