@@ -394,11 +394,6 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #error "I don't know what architecture this is!"
 #endif
 
-#define USE_ES6_FEATURE
-#ifdef ESCARGOT_TIZEN
-#undef USE_ES6_FEATURE
-#endif
-
 namespace escargot {
 
 typedef std::basic_string<char16_t, std::char_traits<char16_t>, gc_allocator<char16_t> > UTF16String;

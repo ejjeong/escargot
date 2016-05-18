@@ -127,7 +127,7 @@ CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -frounding-math -fsignaling-nans
 CXXFLAGS += -Wno-invalid-offsetof
-BIN_CXXFLAGS += -fvisibility=hidden
+BIN_CXXFLAGS += -fvisibility=hidden -DUSE_ES6_FEATURE
 
 ifeq ($(OUTPUT), lib)
   CXXFLAGS += -fPIC
