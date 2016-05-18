@@ -56,20 +56,9 @@ ESVMInstance::ESVMInstance()
     // init goto table
     interpret(this, NULL, 0);
 
-    struct tm temptm;
-    temptm.tm_year = 1970 - 1900;
-    temptm.tm_mon = 1 - 1;
-    temptm.tm_mday = 1;
-    temptm.tm_hour = 0;
-    temptm.tm_min = 0;
-    temptm.tm_sec = 0;
-
-    m_gmtoff = mktime(&temptm) - timegm(&temptm);
-
+    // if you don't use localtime() or timegm() or etc. you should call tzset() to use tzname[]
+    tzset();
     m_timezone = NULL;
-    // this code below should be lazy-loaded because of memory usage issue
-    // m_timezone = icu::TimeZone::detectHostTimeZone();
-    // m_gmtoff = -m_timezone->getRawOffset() / 1000;
 
     m_error = ESValue(ESValue::ESEmptyValueTag::ESEmptyValue);
 
@@ -283,18 +272,6 @@ void ESVMInstance::exit()
 {
     escargot::currentInstance = NULL;
     escargot::strings = NULL;
-}
-
-long ESVMInstance::timezoneOffset()
-{
-    return m_gmtoff;
-}
-
-const tm* ESVMInstance::computeLocalTime(const timespec& ts)
-{
-//    time_t t = ts.tv_sec - m_gmtoff;
-//    return gmtime(&t);
-    return localtime(&ts.tv_sec);
 }
 
 void ESVMInstance::printValue(ESValue val, bool newLine)

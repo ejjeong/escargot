@@ -3036,6 +3036,44 @@ int ESDateObject::dateFromTime(time64_t t)
     }
 }
 
+int ESDateObject::daysFromTime(time64_t t)
+{
+    if (t < 0)
+        t -= (msPerDay - 1);
+    return static_cast<int>(t / msPerDay);
+}
+
+void ESDateObject::computeLocalTime(time64_t t, struct tm& tm)
+{
+
+    escargot::ESVMInstance* curIns = ESVMInstance::currentInstance();
+    if (curIns->timezone() == NULL) {
+        curIns->setTimezone(icu::TimeZone::createTimeZone(curIns->timezoneID()));
+    }
+
+    UErrorCode succ = U_ZERO_ERROR;
+    int32_t stdOffset, dstOffset;
+    curIns->timezone()->getOffset(t, false, stdOffset, dstOffset, succ);
+
+    tm.tm_isdst = dstOffset == 0 ? 0 : 1;
+    tm.tm_gmtoff = (stdOffset + dstOffset) / 1000;
+
+    t = t + stdOffset + dstOffset;
+
+    int days = daysFromTime(t);
+    int timeInDay = static_cast<int>(t - days * msPerDay);
+    ASSERT(timeInDay >= 0);
+    tm.tm_year = yearFromTime(t) - 1900;
+    tm.tm_mon = monthFromTime(t);
+    tm.tm_mday = dateFromTime(t);
+    int weekday = (days + 4) % 7;
+    tm.tm_wday = weekday >= 0 ? weekday : weekday + 7;
+    tm.tm_hour = timeInDay / (int) msPerHour;
+    tm.tm_min = (timeInDay / (int) msPerMinute) % 60;
+    tm.tm_sec = (timeInDay / (int) msPerSecond) % 60;
+    // tm.tm_yday
+}
+
 time64_t ESDateObject::makeDay(int year, int month, int date)
 {
     // TODO: have to check whether year or month is infinity
@@ -3054,19 +3092,14 @@ time64_t ESDateObject::makeDay(int year, int month, int date)
 void ESDateObject::resolveCache()
 {
     if (m_isCacheDirty) {
-        struct timespec time;
-        time.tv_sec = floor(m_primitiveValue / msPerSecond);
-        time.tv_nsec = (m_primitiveValue % 1000) * 1000000;
-        if (time.tv_nsec < 0)
-            time.tv_nsec = (time.tv_nsec + 1000000000) % 1000000000;
-
         int realyear = yearFromTime(m_primitiveValue);
         int equivalentYear = equivalentYearForDST(realyear);
+        time64_t primitiveValueForDST = m_primitiveValue;
 
         if (realyear != equivalentYear) {
-            time.tv_sec = time.tv_sec + (timeFromYear(equivalentYear) - timeFromYear(realyear)) / msPerSecond;
+            primitiveValueForDST = primitiveValueForDST + (timeFromYear(equivalentYear) - timeFromYear(realyear));
         }
-        memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(time), sizeof(tm));
+        computeLocalTime(primitiveValueForDST, m_cachedTM);
         m_cachedTM.tm_year += (realyear - equivalentYear);
         m_isCacheDirty = false;
     }

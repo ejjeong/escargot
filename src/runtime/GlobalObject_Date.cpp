@@ -400,15 +400,16 @@ void GlobalObject::installDate()
         }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        double args[3] = {0, (double) thisDateObject->getMonth(), (double) thisDateObject->getDate()};
 
         if (arg_size < 1) {
             thisDateObject->setTimeValueAsNaN();
             return ESValue(thisDateObject->timeValueAsDouble());
         }
         if (std::isnan(thisDateObject->timeValueAsDouble())) {
-            thisDateObject->setTimeValue(0, 0, 1, 0, 0, 0, 0, true);
+            thisDateObject->setTimeValue(1970, 0, 1, 0, 0, 0, 0, true);
         }
+
+        double args[3] = {0, (double) thisDateObject->getMonth(), (double) thisDateObject->getDate()};
 
         for (size_t i = 0; i < arg_size; i++) {
             args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();

@@ -2249,9 +2249,6 @@ private:
     static constexpr double msPerHour = msPerSecond * secondsPerHour;
     static constexpr double msPerDay = msPerHour * hoursPerDay;
 
-    static time64_t getSecondSundayInMarch(time64_t t);
-    static time64_t getFirstSundayInNovember(time64_t t);
-    static int computeDaylightSaving(time64_t primitiveValue);
     static double day(time64_t t) { return floor(t / msPerDay); }
     static int timeWithinDay(time64_t t) { return t % (int) msPerDay; }
     static int daysInYear(int year);
@@ -2262,6 +2259,8 @@ private:
     static int dayFromMonth(int year, int month);
     static int monthFromTime(time64_t t);
     static int dateFromTime(time64_t t);
+    static int daysFromTime(time64_t t); // return the number of days after 1970.1.1
+    static void computeLocalTime(time64_t, struct tm& tm);
     static time64_t makeDay(int year, int month, int date);
 };
 

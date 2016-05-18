@@ -103,9 +103,6 @@ public:
 
     ALWAYS_INLINE WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
 
-    long timezoneOffset();
-    const tm* computeLocalTime(const timespec& ts);
-
     ALWAYS_INLINE ESHiddenClass* initialHiddenClassForObject()
     {
         return &m_initialHiddenClassForObject;
@@ -398,8 +395,6 @@ protected:
     ESValue m_lastExpressionStatementValue;
 
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
-
-    long m_gmtoff;
 
     icu::Locale m_locale;
     icu::TimeZone* m_timezone;
