@@ -3,7 +3,7 @@ Total: 2347 tests
  *  204 tests will be skipped
  *    3 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 1979 tests are expected to pass
+ * 1978 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
