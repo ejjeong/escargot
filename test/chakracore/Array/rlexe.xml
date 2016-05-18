@@ -8,6 +8,7 @@
   </test>
   <test>
     <default>
+      <escargot-tizen-wearable-skip>Using too much memory</escargot-tizen-wearable-skip>
       <files>array_init.js</files>
       <baseline>array_init.baseline</baseline>
       <tags>Slow</tags>

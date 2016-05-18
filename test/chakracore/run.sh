@@ -135,6 +135,9 @@ run_dir() {
 		if [[ $ENTITY == escargot-skip ]]; then
 			SKIP=$CONTENT
 		fi
+		if [[ $ENTITY == escargot-tizen-wearable-skip && "$ARM" == "1" ]]; then
+			SKIP=$CONTENT
+		fi
 		if [[ $ENTITY == compile-flags ]]; then # overwrite some variables
 			if [[ $CONTENT == *-dump:bytecode* ]]; then
 				BASELINE=
