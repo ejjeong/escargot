@@ -2790,32 +2790,69 @@ protected:
     unsigned m_byteoffset;
 };
 
-template<typename TypeArg, TypedArrayType type>
+template<typename Adapter, TypedArrayType type>
 struct TypedArrayAdaptor {
-    typedef TypeArg Type;
+    typedef typename Adapter::Type Type;
     static const TypedArrayType typeVal = type;
-    static TypeArg toNative(ESValue val)
+    static Type toNative(ESValue val)
     {
-        return static_cast<TypeArg>(val.toNumber());
+        if (val.isInt32()) {
+            return Adapter::toNativeFromInt32(val.asInt32());
+        } else if (val.isDouble()) {
+            return Adapter::toNativeFromDouble(val.asDouble());
+        }
+        return static_cast<Type>(val.toNumber());
     }
 };
-struct Int8Adaptor: TypedArrayAdaptor<int8_t, TypedArrayType::Int8Array> {
+
+template<typename TypeArg>
+struct IntegralTypedArrayAdapter {
+    typedef TypeArg Type;
+    static TypeArg toNativeFromInt32(int32_t value)
+    {
+        return static_cast<TypeArg>(value);
+    }
+
+    static TypeArg toNativeFromDouble(double value)
+    {
+        int32_t result = static_cast<int32_t>(value);
+        if (static_cast<double>(result) != value)
+            result = ESValue(value).toInt32();
+        return static_cast<TypeArg>(result);
+    }
 };
-struct Int16Adaptor: TypedArrayAdaptor<int16_t, TypedArrayType::Int16Array> {
+
+template<typename TypeArg>
+struct FloatTypedArrayAdaptor {
+    typedef TypeArg Type;
+    static TypeArg toNativeFromInt32(int32_t value)
+    {
+        return static_cast<TypeArg>(value);
+    }
+
+    static TypeArg toNativeFromDouble(double value)
+    {
+        return value;
+    }
 };
-struct Int32Adaptor: TypedArrayAdaptor<int32_t, TypedArrayType::Int32Array> {
+
+struct Int8Adaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<int8_t>, TypedArrayType::Int8Array> {
 };
-struct Uint8Adaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8Array> {
+struct Int16Adaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<int16_t>, TypedArrayType::Int16Array> {
 };
-struct Uint16Adaptor: TypedArrayAdaptor<uint16_t, TypedArrayType::Uint16Array> {
+struct Int32Adaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<int32_t>, TypedArrayType::Int32Array> {
 };
-struct Uint32Adaptor: TypedArrayAdaptor<uint32_t, TypedArrayType::Uint32Array> {
+struct Uint8Adaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<uint8_t>, TypedArrayType::Uint8Array> {
 };
-struct Uint8ClampedAdaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8ClampedArray> {
+struct Uint16Adaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<uint16_t>, TypedArrayType::Uint16Array> {
 };
-struct Float32Adaptor: TypedArrayAdaptor<float, TypedArrayType::Float32Array> {
+struct Uint32Adaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<uint32_t>, TypedArrayType::Uint32Array> {
 };
-struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {
+struct Uint8ClampedAdaptor: TypedArrayAdaptor<IntegralTypedArrayAdapter<uint8_t>, TypedArrayType::Uint8ClampedArray> {
+};
+struct Float32Adaptor: TypedArrayAdaptor<FloatTypedArrayAdaptor<float>, TypedArrayType::Float32Array> {
+};
+struct Float64Adaptor: TypedArrayAdaptor<FloatTypedArrayAdaptor<double>, TypedArrayType::Float64Array> {
 };
 
 class ESTypedArrayObjectWrapper : public ESArrayBufferView {
