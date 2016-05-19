@@ -1992,10 +1992,13 @@ protected:
         bool m_nonConstructor: 1;
         bool m_isBoundFunction: 1;
 
+        // property deletion counter
+        uint32_t m_deleteCount: 2;
+
         // extra data
         uint32_t m_extraData: 24;
 
-        size_t m_margin: 34;
+        size_t m_margin: 32;
     } m_flags;
 #endif
 #ifdef ESCARGOT_32
@@ -2011,10 +2014,13 @@ protected:
         bool m_nonConstructor: 1;
         bool m_isBoundFunction: 1;
 
+        // property deletion counter
+        uint32_t m_deleteCount: 2;
+
         // extra data
         uint32_t m_extraData: 24;
 
-        size_t m_margin: 2;
+        //size_t m_margin: 0;
     } m_flags;
 #endif
 };

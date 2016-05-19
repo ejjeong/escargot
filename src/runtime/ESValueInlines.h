@@ -1558,6 +1558,12 @@ inline bool ESObject::deletePropertySlowPath(const ESValue& key, bool force)
             return false;
     }
 
+    if (m_flags.m_deleteCount == 3) {
+        forceNonVectorHiddenClass(true);
+    } else {
+        m_flags.m_deleteCount++;
+    }
+
     size_t idx = m_hiddenClass->findProperty(key.toString());
     if (idx == SIZE_MAX) // if undefined, return true
         return true;
