@@ -555,6 +555,8 @@ def Execute(arch, mode, args, options, suites, workspace):
       shell_dir = os.path.join(workspace, options.outdir, mode)
       mode = BuildbotToV8Mode(mode)
     else:
+      if arch == "x32":
+          arch = "x86"
       shell_dir = os.path.join(
           workspace,
           "..",
