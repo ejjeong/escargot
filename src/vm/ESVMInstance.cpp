@@ -15,6 +15,8 @@
 namespace escargot {
 
 
+size_t ESVMInstance::m_nativeHeapUsage = 0;
+
 #ifndef ANDROID
 __thread ESVMInstance* currentInstance;
 #else
@@ -35,8 +37,6 @@ ESVMInstance::ESVMInstance()
         }
     });
     */
-    m_nativeHeapUsage = 0;
-
 #ifndef NDEBUG
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;

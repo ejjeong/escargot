@@ -22,8 +22,8 @@ void GlobalObject::finalize()
 {
     for (auto block : m_codeBlocks) {
         block->finalize(m_instance);
-        unregisterCodeBlock(block);
     }
+    m_codeBlocks.clear();
 }
 
 const char* errorMessage_GlobalObject_ThisUndefinedOrNull = "%s: this value is undefined or null";

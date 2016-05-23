@@ -48,6 +48,8 @@ CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, b
 
 void CodeBlock::finalize(ESVMInstance* instance)
 {
+    GC_REGISTER_FINALIZER_NO_ORDER(this, NULL, NULL, NULL, NULL);
+
     instance->globalObject()->unregisterCodeBlock(this);
 
     m_code.clear();

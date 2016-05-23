@@ -36,7 +36,7 @@ typedef std::unordered_map<std::pair<const char *, size_t>, ESString *,
     std::hash<std::pair<const char *, size_t> >, std::equal_to<std::pair<const char *, size_t> >,
     gc_allocator<std::pair<const std::pair<const char *, size_t>, ESString *> > > InternalAtomicStringMap;
 
-class ESVMInstance : public gc_cleanup {
+class ESVMInstance : public gc {
 #ifdef ENABLE_ESJIT
     friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos);
 #else
@@ -404,7 +404,7 @@ protected:
     ESValue m_error;
 
     std::vector<ESSimpleAllocatorMemoryFragment, pointer_free_allocator<ESSimpleAllocatorMemoryFragment> > m_allocatedMemorys;
-    size_t m_nativeHeapUsage;
+    static size_t m_nativeHeapUsage;
 
 #ifdef ENABLE_ESJIT
     nanojit::Config* m_JITConfig;
