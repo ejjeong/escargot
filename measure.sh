@@ -67,19 +67,19 @@ elif [[ $1 == jsc32.full.jit ]]; then
   tc="jsc32.baselineJIT"
 elif [[ $1 == escargot.interp* ]]; then
   make x64.interpreter.release -j8
-  cmd="./out/x64/interpreter/release/escargot"
+  cmd="./out/linux/x64/interpreter/release/escargot"
   tc="escargot64.interp"
 elif [[ $1 == escargot.jit ]]; then
   make x64.jit.release -j8
-  cmd="./out/x64/jit/release/escargot"
+  cmd="./out/linux/x64/jit/release/escargot"
   tc="escargot64.jit"
 elif [[ $1 == escargot32.interp* ]]; then
   make x86.interpreter.release -j8
-  cmd="./out/x86/interpreter/release/escargot"
+  cmd="./out/linux/x86/interpreter/release/escargot"
   tc="escargot32.interp"
 elif [[ $1 == escargot32.jit ]]; then
   make x86.jit.release -j8
-  cmd="./out/x86/jit/release/escargot"
+  cmd="./out/linux/x86/jit/release/escargot"
   tc="escargot32.jit"
 else
   echo "choose one between ([escargot|jsc|v8](32)?.(full)?.[interp|jit|base])|duk"

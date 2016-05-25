@@ -2020,7 +2020,7 @@ protected:
         // extra data
         uint32_t m_extraData: 24;
 
-        //size_t m_margin: 0;
+        // size_t m_margin: 0;
     } m_flags;
 #endif
 };

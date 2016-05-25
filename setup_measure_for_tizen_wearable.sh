@@ -3,7 +3,7 @@
 function build-interp() {
   make tizen_wearable_arm.interpreter.release -j  
   mkdir -p test/bin/tizen_wearable_arm/escargot/interp
-  cp ./out/tizen_2.3.1/arm/interpreter/release/escargot ./test/bin/tizen_wearable_arm/escargot/interp/escargot.release
+  cp ./out/tizen_wearable_arm/arm/interpreter/release/escargot ./test/bin/tizen_wearable_arm/escargot/interp/escargot.release
 }
 
 export SDB=$TIZEN_SDK_HOME/tools/sdb

@@ -75,12 +75,7 @@ endif
 
 include $(BUILDDIR)/Toolchain.mk
 
-ifneq (,$(findstring tizen,$(MAKECMDGOALS)))
-  OUTDIR=out/tizen_$(VERSION)/$(ARCH)/$(TYPE)/$(MODE)
-else
-  OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
-endif
-
+OUTDIR=out/$(HOST)/$(ARCH)/$(TYPE)/$(MODE)
 
 $(info host... $(HOST))
 $(info arch... $(ARCH))
