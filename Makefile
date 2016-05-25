@@ -165,6 +165,11 @@ endif
 CXXFLAGS_JIT = -DENABLE_ESJIT=1
 CXXFLAGS_INTERPRETER =
 
+# for printing TC coverage log
+ifeq ($(TC), 1)
+CXXFLAGS += -DSTARFISH_TC_COVERAGE
+endif
+
 #######################################################
 # Third-party build flags
 #######################################################
@@ -418,7 +423,7 @@ $(OUTDIR)/%.o: %.cpp Makefile
 	@mkdir -p $(dir $@)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
-	
+
 $(OUTDIR)/%.o: %.cc Makefile
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
@@ -554,7 +559,7 @@ run-spidermonkey-for-32bit:
 	./jstests.py -s --xul-info=x86-gcc3:Linux:false ../../escargot --failure-file=mozilla.x86.interpreter.release.escargot.gen.txt -p "$(OPT)"; \
 	diff mozilla.x86.interpreter.release.escargot.orig.txt mozilla.x64.interpreter.release.escargot.gen.txt
 
-run-jsc-mozilla:     
+run-jsc-mozilla:
 	cd test/JavaScriptCore/mozilla/; \
         perl jsDriver.pl -e escargot -s ../../../escargot
 
