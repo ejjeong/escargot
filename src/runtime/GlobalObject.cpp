@@ -21,7 +21,7 @@ GlobalObject::GlobalObject()
 void GlobalObject::finalize()
 {
     for (auto block : m_codeBlocks) {
-        block->finalize(m_instance);
+        block->finalize(m_instance, false);
     }
     m_codeBlocks.clear();
 }

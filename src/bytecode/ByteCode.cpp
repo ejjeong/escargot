@@ -41,16 +41,17 @@ CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, b
 
     ESVMInstance* instance = ESVMInstance::currentInstance();
     GC_REGISTER_FINALIZER_NO_ORDER(this, [] (void* obj, void* cd) {
-        ((CodeBlock *)obj)->finalize((ESVMInstance*)cd);
+        ((CodeBlock *)obj)->finalize((ESVMInstance*)cd, true);
     }, instance, NULL, NULL);
     instance->globalObject()->registerCodeBlock(this);
 }
 
-void CodeBlock::finalize(ESVMInstance* instance)
+void CodeBlock::finalize(ESVMInstance* instance, bool unregisterCodeBlockNow)
 {
     GC_REGISTER_FINALIZER_NO_ORDER(this, NULL, NULL, NULL, NULL);
 
-    instance->globalObject()->unregisterCodeBlock(this);
+    if (unregisterCodeBlockNow)
+        instance->globalObject()->unregisterCodeBlock(this);
 
     m_code.clear();
     m_code.shrink_to_fit();

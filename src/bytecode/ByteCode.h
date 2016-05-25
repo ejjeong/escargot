@@ -2292,7 +2292,7 @@ public:
 private:
     CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction);
 public:
-    void finalize(ESVMInstance* instance);
+    void finalize(ESVMInstance* instance, bool unregisterCodeBlockNow);
 
     template <typename CodeType>
     void pushCode(const CodeType& type, ByteCodeGenerateContext& context, Node* node);
