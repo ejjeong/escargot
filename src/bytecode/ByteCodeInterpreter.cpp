@@ -5,6 +5,27 @@
 
 namespace escargot {
 
+#ifdef STARFISH_TC_COVERAGE
+#define TC_COVERAGE_LOG \
+    if (!willBeObject->isUndefinedOrNull()) { \
+        if (willBeObject->toObject()->__proto__().isESPointer() && willBeObject->toObject()->__proto__().asESPointer()->isESObject()) { \
+            ESValue c = willBeObject->toObject()->__proto__().asESPointer()->asESObject()->get(ESString::create("constructor")); \
+            if (c.isESPointer() && c.asESPointer()->isESObject()) { \
+                printf("%s&&&%s\n", c.asESPointer()->asESObject()->get(ESString::create("name")).toString()->utf8Data(), code->m_propertyValue->utf8Data()); \
+            } \
+        } \
+    }
+
+#define TC_COVERAGE_LOG2 \
+    if (!willBeObject.isUndefinedOrNull()) { \
+        if (willBeObject.toObject()->__proto__().isESPointer() && willBeObject.toObject()->__proto__().asESPointer()->isESObject()) { \
+            ESValue c = willBeObject.toObject()->__proto__().asESPointer()->asESObject()->get(ESString::create("constructor")); \
+            if (c.isESPointer() && c.asESPointer()->isESObject()) { \
+                printf("%s&&&%s\n", c.asESPointer()->asESObject()->get(ESString::create("name")).toString()->utf8Data(), code->m_propertyValue->utf8Data()); \
+            } \
+        } \
+    }
+#endif
 
 NEVER_INLINE void registerOpcode(ESVMInstance* instance, Opcode opcode, const char* opcodeName, void* opcodeAddress)
 {
@@ -640,6 +661,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
             ESValue* willBeObject = POP(stack, bp);
+#ifdef STARFISH_TC_COVERAGE
+TC_COVERAGE_LOG
+#endif
+
 #ifndef ENABLE_ESJIT
             PUSH(stack, topOfStack, getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, globalObject,
                 &code->m_inlineCache));
@@ -657,6 +682,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             GetObjectPreComputedCaseAndPushObject* code = (GetObjectPreComputedCaseAndPushObject*)currentCode;
             ESValue willBeObject = *POP(stack, bp);
+
+#ifdef STARFISH_TC_COVERAGE
+TC_COVERAGE_LOG2
+#endif
+
 #ifndef ENABLE_ESJIT
             PUSH(stack, topOfStack, getObjectPreComputedCaseOperation(&willBeObject, code->m_propertyValue, globalObject,
                 &code->m_inlineCache));
@@ -692,6 +722,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             GetObjectPreComputedCaseWithPeeking* code = (GetObjectPreComputedCaseWithPeeking*)currentCode;
             ESValue* willBeObject = PEEK(stack, bp);
+
+#ifdef STARFISH_TC_COVERAGE
+TC_COVERAGE_LOG
+#endif
+
 #ifndef ENABLE_ESJIT
             PUSH(stack, topOfStack, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
                 &code->m_inlineCache));
@@ -721,6 +756,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             SetObjectPreComputedCase* code = (SetObjectPreComputedCase*)currentCode;
             const ESValue& value = *POP(stack, bp);
             ESValue* willBeObject = POP(stack, bp);
+
+#ifdef STARFISH_TC_COVERAGE
+TC_COVERAGE_LOG
+#endif
+
             setObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, value, &code->m_cachedhiddenClassChain
                 , &code->m_cachedIndex, &code->m_hiddenClassWillBe);
             PUSH(stack, topOfStack, value);
