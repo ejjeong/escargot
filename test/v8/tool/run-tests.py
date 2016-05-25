@@ -562,6 +562,7 @@ def Execute(arch, mode, args, options, suites, workspace):
           "..",
           "..",
           options.outdir,
+          "linux",
           arch,
           "interpreter",
           MODES[mode]["output_folder"]
