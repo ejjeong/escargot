@@ -2,8 +2,8 @@ BUILDDIR=./build
 HOST=linux
 
 BIN=escargot
-LIB=libescargot.so
-STATIC=libescargot.a
+SHARED_LIB=libescargot.so
+STATIC_LIB=libescargot.a
 
 #######################################################
 # Environments
@@ -53,10 +53,10 @@ ifneq (,$(findstring tizen_wearable_arm,$(MAKECMDGOALS)))
   HOST=tizen_wearable_arm
 else ifneq (,$(findstring tizen3_wearable_arm,$(MAKECMDGOALS)))
   HOST=tizen3_wearable_arm
-else ifneq (,$(findstring tizen_arm,$(MAKECMDGOALS)))
-  HOST=tizen_arm
-else ifneq (,$(findstring tizen3_arm,$(MAKECMDGOALS)))
-  HOST=tizen3_arm
+else ifneq (,$(findstring tizen_mobile_arm,$(MAKECMDGOALS)))
+  HOST=tizen_mobile_arm
+else ifneq (,$(findstring tizen3_mobile_arm,$(MAKECMDGOALS)))
+  HOST=tizen3_mobile_arm
 else ifneq (,$(findstring tizen_wearable_emulator,$(MAKECMDGOALS)))
   HOST=tizen_wearable_emulator
   ARCH=x86
@@ -66,16 +66,15 @@ else ifneq (,$(findstring tizen3_wearable_emulator,$(MAKECMDGOALS)))
 endif
 
 ifneq (,$(findstring shared,$(MAKECMDGOALS)))
-  OUTPUT=lib
+  OUTPUT=shared_lib
 else ifneq (,$(findstring static,$(MAKECMDGOALS)))
-  OUTPUT=static
+  OUTPUT=static_lib
 else
   OUTPUT=bin
 endif
 
-include $(BUILDDIR)/Toolchain.mk
-
 OUTDIR=out/$(HOST)/$(ARCH)/$(TYPE)/$(MODE)
+ESCARGOT_ROOT=.
 
 $(info host... $(HOST))
 $(info arch... $(ARCH))
@@ -84,201 +83,69 @@ $(info mode... $(MODE))
 $(info output... $(OUTPUT))
 $(info build dir... $(OUTDIR))
 
+#######################################################
+# Build flags
+#######################################################
 
-ifeq ($(TYPE), intrepreter)
+include $(BUILDDIR)/Toolchain.mk
+include $(BUILDDIR)/Flags.mk
+
+# common flags
+CXXFLAGS += $(CXXFLAGS_COMMON)
+LDFLAGS += $(LDFLAGS_COMMON)
+
+# HOST flags
+ifeq ($(HOST), linux)
+  CXXFLAGS += $(CXXFLAGS_LINUX)
+else ifneq (,$(findstring tizen,$(HOST)))
+  CXXFLAGS += $(CXXFLAGS_TIZEN)
+endif
+
+# ARCH flags
+ifeq ($(ARCH), x64)
+  CXXFLAGS += $(CXXFLAGS_X64)
+  LDFLAGS += $(LDFLAGS_X64)
+else ifeq ($(ARCH), x86)
+  CXXFLAGS += $(CXXFLAGS_X86)
+  LDFLAGS += $(LDFLAGS_X86)
+else ifeq ($(ARCH), arm)
+  CXXFLAGS += $(CXXFLAGS_ARM)
+  LDFLAGS += $(LDFLAGS_ARM)
+endif
+
+# TYPE flags
+ifeq ($(TYPE), interpreter)
   CXXFLAGS+=$(CXXFLAGS_INTERPRETER)
 else ifeq ($(TYPE), jit)
+  include $(BUILDDIR)/JIT.mk
   CXXFLAGS+=$(CXXFLAGS_JIT)
 endif
 
-ifeq ($(ARCH), x64)
-  CXXFLAGS += -DESCARGOT_64=1
-else ifeq ($(ARCH), x86)
-  #https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
-  CXXFLAGS += -DESCARGOT_32=1 -m32 -mfpmath=sse -msse -msse2
-  LDFLAGS += -m32
-else ifeq ($(ARCH), arm)
-  CXXFLAGS += -DESCARGOT_32=1 -march=armv7-a
-endif
-
+# MODE flags
 ifeq ($(MODE), debug)
   CXXFLAGS += $(CXXFLAGS_DEBUG)
 else ifeq ($(MODE), release)
   CXXFLAGS += $(CXXFLAGS_RELEASE)
 endif
 
-
-#######################################################
-# Global build flags
-#######################################################
-
-# common flags
-ifeq ($(HOST), linux)
-    CXXFLAGS += -DENABLE_CODECACHE
-    # CXXFLAGS += -DENABLE_DTOACACHE
-endif
-CXXFLAGS += -DESCARGOT
-CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
-CXXFLAGS += -fdata-sections -ffunction-sections
-CXXFLAGS += -frounding-math -fsignaling-nans
-CXXFLAGS += -Wno-invalid-offsetof
-CXXFLAGS += -DUSE_ES6_FEATURE
-BIN_CXXFLAGS += -fvisibility=hidden
-
-ifeq ($(OUTPUT), lib)
-  CXXFLAGS += -fPIC
-  CFLAGS += -fPIC
-else
-  ifeq ($(OUTPUT), static)
-    CXXFLAGS += -fPIC
-    CFLAGS += -fPIC
-  else
-    CXXFLAGS += $(BIN_CXXFLAGS)
-  endif
-endif
-
-LDFLAGS += -lpthread
-LDFLAGS += -lrt
-SHARED_LDFLAGS += -ldl
-# -ltcmalloc_minimal
-BIN_LDFLAGS += -Wl,--gc-sections
-
-ifeq ($(OUTPUT), lib)
-  LDFLAGS += $(SHARED_LDFLAGS)
-else
-  LDFLAGS += $(BIN_LDFLAGS)
-endif
-
-# flags for debug/release
-CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
-CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
-CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
-
-ifneq ($(filter $(HOST),tizen_wearable_arm tizen3_wearable_arm tizen_wearable_emulator tizen3_wearable_emulator), )
-  ifeq ($(MODE), release)
-    CXXFLAGS += -Os -g0 -finline-limit=64
-  endif
-endif
-
-
-# flags for jit/interpreter
-CXXFLAGS_JIT = -DENABLE_ESJIT=1
-CXXFLAGS_INTERPRETER =
-
-# for printing TC coverage log
-ifeq ($(TC), 1)
-CXXFLAGS += -DSTARFISH_TC_COVERAGE
-endif
-
-#######################################################
-# Third-party build flags
-#######################################################
-
-# icu
-ifeq ($(ARCH), x64)
-  CXXFLAGS += $(shell pkg-config --cflags icu-i18n)
-  LDFLAGS += $(shell pkg-config --libs icu-i18n)
-else ifneq ($(filter $(HOST),tizen_wearable_arm tizen3_wearable_arm), )
-  CXXFLAGS += -Ideps/tizen/include
-  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-target-arm
-  LDFLAGS += -licuio -licui18n -licuuc -licudata
-else ifneq ($(filter $(HOST),tizen_wearable_emulator tizen3_wearable_emulator), )
-  CXXFLAGS += -Ideps/tizen/include
-  LDFLAGS += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-emulator-x86
-  LDFLAGS += -licuio -licui18n -licuuc -licudata
-else ifeq ($(ARCH), x86)
-  CXXFLAGS += -Ideps/x86-linux/include
-  LDFLAGS += -Ldeps/x86-linux/lib
-  LDFLAGS += -licuio -licui18n -licuuc -licudata
-
-endif
-
-# bdwgc
-CXXFLAGS += -Ithird_party/bdwgc/include/
-CXXFLAGS_DEBUG += -DGC_DEBUG
-
+# OUTPUT flags
 ifeq ($(OUTPUT), bin)
-  GCLIBS=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE)/.libs/libgc.a
-else
-  GCLIBS=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE).shared/.libs/libgc.a
+  CXXFLAGS += $(CXXFLAGS_BIN)
+  LDFLAGS += $(LDFLAGS_BIN)
+else ifeq ($(OUTPUT), shared_lib)
+  CXXFLAGS += $(CXXFLAGS_SHAREDLIB)
+  LDFLAGS += $(LDFLAGS_SHAREDLIB)
+else ifeq ($(OUTPUT), static_lib)
+  CXXFLAGS += $(CXXFLAGS_STATICLIB)
+  LDFLAGS += $(LDFLAGS_STATICLIB)
 endif
 
-ifeq ($(TYPE), jit)
-  #include third_party/nanojit/Build.mk
-  ####################################
-  # ARCH-dependent settings
-  ####################################
-  ifeq ($(ARCH), x64)
-    TARGET_CPU=x86_64
-    CXXFLAGS += -DAVMPLUS_64BIT
-    CXXFLAGS += -DAVMPLUS_AMD64
-    CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
-  else ifeq ($(ARCH), x86)
-    TARGET_CPU=i686
-    CXXFLAGS += -DAVMPLUS_32BIT
-    CXXFLAGS += -DAVMPLUS_IA32
-    CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
-  else ifeq ($(ARCH), arm)
-    TARGET_CPU=arm
-    # CXXFLAGS += -mfpu=neon #enabled by LOCAL_ARM_NEON := true
-    CXXFLAGS += -DAVMPLUS_32BIT
-    CXXFLAGS += -DAVMPLUS_ARM
-    CXXFLAGS += -DTARGET_THUMB2
-    CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
-    SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeARM.cpp
-    SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeThumb2.cpp
+CXXFLAGS += $(CXXFLAGS_THIRD_PARTY)
+LDFLAGS += $(LDFLAGS_THIRD_PARTY)
 
-  endif
-  ####################################
-  # target-dependent settings
-  ####################################
-
-  ifeq ($(MODE), debug)
-    CXXFLAGS += -DDEBUG
-    CXXFLAGS += -D_DEBUG
-    CXXFLAGS += -DNJ_VERBOSE
-  endif
-
-  ####################################
-  # Other features
-  ####################################
-  CXXFLAGS += -DESCARGOT
-  CXXFLAGS += -Ithird_party/nanojit/
-  CXXFLAGS += -DFEATURE_NANOJIT
-
-  #CXXFLAGS += -DAVMPLUS_VERBOSE
-  CXXFLAGS += -Wno-error=narrowing
-
-  ####################################
-  # Makefile flags
-  ####################################
-  curdir=third_party/nanojit
-  include $(curdir)/manifest.mk
-  SRC_NANOJIT = $(avmplus_CXXSRCS)
-  SRC_NANOJIT += $(curdir)/EscargotBridge.cpp
+ifeq ($(TC), 1)
+  CXXFLAGS += $(CXXFLAGS_TC)
 endif
-
-# netlib
-CXXFLAGS += -Ithird_party/netlib/
-
-# v8's fast-dtoa
-CXXFLAGS += -Ithird_party/double_conversion/
-SRC_DTOA =
-SRC_DTOA += $(foreach dir, third_party/double_conversion , $(wildcard $(dir)/*.cc))
-
-# rapidjson
-CXXFLAGS += -Ithird_party/rapidjson/include/
-
-# yarr
-CXXFLAGS += -Ithird_party/yarr/
-SRC_YARR += third_party/yarr/OSAllocatorPosix.cpp
-SRC_YARR += third_party/yarr/PageBlock.cpp
-SRC_YARR += third_party/yarr/YarrCanonicalizeUCS2.cpp
-SRC_YARR += third_party/yarr/YarrInterpreter.cpp
-SRC_YARR += third_party/yarr/YarrPattern.cpp
-
-# Common
-THIRD_PARTY_LIBS= $(GCLIBS)
 
 #######################################################
 # SRCS & OBJS
@@ -292,22 +159,25 @@ SRC += $(foreach dir, src/jit , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, src/runtime , $(wildcard $(dir)/*.cpp))
 ifeq ($(OUTPUT), bin)
-    SRC += $(foreach dir, src/shell , $(wildcard $(dir)/*.cpp))
+  SRC += $(foreach dir, src/shell , $(wildcard $(dir)/*.cpp))
 endif
 SRC += $(foreach dir, src/vm , $(wildcard $(dir)/*.cpp))
 
-SRC += $(SRC_YARR)
-SRC += $(SRC_ESPRIMA_CPP)
-ifeq ($(TYPE), jit)
-  SRC += $(SRC_NANOJIT)
-endif
+SRC += $(foreach dir, third_party/yarr, $(wildcard $(dir)/*.cpp))
 
 SRC_CC =
-SRC_CC += $(SRC_DTOA)
+SRC_CC += $(foreach dir, third_party/double_conversion , $(wildcard $(dir)/*.cc))
 
 OBJS := $(SRC:%.cpp= $(OUTDIR)/%.o)
 OBJS += $(SRC_CC:%.cc= $(OUTDIR)/%.o)
 OBJS += $(SRC_C:%.c= $(OUTDIR)/%.o)
+
+ifeq ($(OUTPUT), bin)
+  OBJS_GC=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE)/.libs/libgc.a
+else
+  OBJS_GC=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE).shared/.libs/libgc.a
+endif
+OBJS_THIRD_PARTY = $(OBJS_GC)
 
 #######################################################
 # Targets
@@ -334,107 +204,102 @@ x64.interpreter.debug: $(OUTDIR)/$(BIN)
 	cp -f $< .
 x64.interpreter.release: $(OUTDIR)/$(BIN)
 	cp -f $< .
-x64.interpreter.debug.shared: $(OUTDIR)/$(LIB)
+x64.interpreter.debug.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-x64.interpreter.release.shared: $(OUTDIR)/$(LIB)
+x64.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-x64.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+x64.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-x64.interpreter.release.static: $(OUTDIR)/$(STATIC)
+x64.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-#tizen_arm.jit.debug: $(OUTDIR)/$(BIN)
+#tizen_mobile_arm.jit.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen_arm.jit.release: $(OUTDIR)/$(BIN)
+#tizen_mobile_arm.jit.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#tizen_mobile_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#tizen_mobile_arm.interpreter.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-tizen_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+tizen_mobile_arm.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-#tizen_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#tizen_mobile_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#tizen_mobile_arm.interpreter.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
 tizen_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
 	cp -f $< .
 tizen_wearable_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 	cp -f $< .
-tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-tizen_wearable_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+tizen_wearable_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-tizen_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC)
+tizen_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-tizen_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(LIB)
+tizen_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-tizen_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+tizen_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC)
+tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
 
 ##### TIZEN3 #####
-#tizen3_arm.jit.debug: $(OUTDIR)/$(BIN)
+#tizen3_mobile_arm.jit.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen3_arm.jit.release: $(OUTDIR)/$(BIN)
+#tizen3_mobile_arm.jit.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen3_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#tizen3_mobile_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen3_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#tizen3_mobile_arm.interpreter.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-tizen3_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+tizen3_mobile_arm.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-#tizen3_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#tizen3_mobile_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
-#tizen3_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#tizen3_mobile_arm.interpreter.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
 tizen3_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
 	cp -f $< .
 tizen3_wearable_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 	cp -f $< .
-tizen3_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+tizen3_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-tizen3_wearable_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+tizen3_wearable_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-tizen3_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC)
+tizen3_wearable_arm.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-tizen3_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(LIB)
+tizen3_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(SHARED_LIB)
 	cp -f $< .
-tizen3_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC)
+tizen3_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
-tizen3_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC)
+tizen3_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
 
+DEPENDENCY_MAKEFILE = Makefile $(BUILDDIR)/Toolchain.mk $(BUILDDIR)/Flags.mk
 
-$(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
+$(OUTDIR)/$(BIN): $(OBJS) $(OBJS_THIRD_PARTY)
 	@echo "[LINK] $@"
-	@$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
+	@$(CXX) -o $@ $(OBJS) $(OBJS_THIRD_PARTY) $(LDFLAGS)
 
-$(OUTDIR)/$(LIB): $(OBJS) $(THIRD_PARTY_LIBS)
+$(OUTDIR)/$(SHARED_LIB): $(OBJS) $(OBJS_THIRD_PARTY)
 	@echo "[LINK] $@"
-	$(CXX) -shared -Wl,-soname,$(LIB) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
+	$(CXX) -shared -Wl,-soname,$(SHARED_LIB) -o $@ $(OBJS) $(OBJS_THIRD_PARTY) $(LDFLAGS)
 
-$(OUTDIR)/$(STATIC): $(OBJS) $(THIRD_PARTY_LIBS)
+$(OUTDIR)/$(STATIC_LIB): $(OBJS)
 	@echo "[LINK] $@"
 	$(AR) rc $@ $(OBJS)
 
-$(OUTDIR)/%.o: %.cpp Makefile
+$(OUTDIR)/%.o: %.cpp $(DEPENDENCY_MAKEFILE)
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
 
-$(OUTDIR)/%.o: %.cc Makefile
+$(OUTDIR)/%.o: %.cc $(DEPENDENCY_MAKEFILE)
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
-
-$(OUTDIR)/%.o: %.c Makefile
-	@echo "[CC] $@"
-	@mkdir -p $(dir $@)
-	@$(CC) -c $(CFLAGS) $< -o $@
-	@$(CC) -MM $(CFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
 
 full:
 	make x64.jit.debug -j$(NPROCS)

@@ -332,10 +332,10 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #define ESCARGOT_LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR, "Escargot", __VA_ARGS__);
 #endif
 
-#ifdef ESCARGOT_TIZEN
+#if defined(ESCARGOT_TIZEN) && !defined(ESCARGOT_STANDALONE)
 #include <dlog/dlog.h>
 #undef ESCARGOT_LOG_ERROR
-#define ESCARGOT_LOG_INFO(...) dlog_print(DLOG_INFO, "Escargot", __VA_ARGS__);
+#define ESCARGOT_LOG_INFO(...)  dlog_print(DLOG_INFO, "Escargot", __VA_ARGS__);
 #define ESCARGOT_LOG_ERROR(...) dlog_print(DLOG_ERROR, "Escargot", __VA_ARGS__);
 #endif
 
