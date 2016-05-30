@@ -16,6 +16,7 @@ NPROCS:=1
 OS:=$(shell uname -s)
 SHELL:=/bin/bash
 OUTPUT=
+LTO=0
 ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
   SHELL:=/bin/bash
@@ -50,19 +51,29 @@ else ifneq (,$(findstring release,$(MAKECMDGOALS)))
 endif
 
 ifneq (,$(findstring tizen_wearable_arm,$(MAKECMDGOALS)))
-  HOST=tizen_wearable_arm
+  HOST=tizen_2.3.1_wearable
+  VERSION=2.3.1
 else ifneq (,$(findstring tizen3_wearable_arm,$(MAKECMDGOALS)))
-  HOST=tizen3_wearable_arm
+  HOST=tizen_3.0_wearable
+  VERSION=3.0
 else ifneq (,$(findstring tizen_mobile_arm,$(MAKECMDGOALS)))
-  HOST=tizen_mobile_arm
+  HOST=tizen_2.3.1_mobile
+  VERSION=2.3.1
 else ifneq (,$(findstring tizen3_mobile_arm,$(MAKECMDGOALS)))
-  HOST=tizen3_mobile_arm
+  HOST=tizen_3.0_mobile
+  VERSION=3.0
 else ifneq (,$(findstring tizen_wearable_emulator,$(MAKECMDGOALS)))
-  HOST=tizen_wearable_emulator
-  ARCH=x86
+  HOST=tizen_2.3.1_wearable
+  VERSION=2.3.1
+  ARCH=i386
 else ifneq (,$(findstring tizen3_wearable_emulator,$(MAKECMDGOALS)))
-  HOST=tizen3_wearable_emulator
-  ARCH=x86
+  HOST=tizen_3.0_wearable
+  VERSION=3.0
+  ARCH=i386
+endif
+
+ifneq (,$(findstring tizen,$(HOST)))
+  #LTO=1
 endif
 
 ifneq (,$(findstring shared,$(MAKECMDGOALS)))
@@ -108,6 +119,9 @@ ifeq ($(ARCH), x64)
 else ifeq ($(ARCH), x86)
   CXXFLAGS += $(CXXFLAGS_X86)
   LDFLAGS += $(LDFLAGS_X86)
+else ifeq ($(ARCH), i386)
+  CXXFLAGS += $(CXXFLAGS_X86)
+  LDFLAGS += $(LDFLAGS_X86)
 else ifeq ($(ARCH), arm)
   CXXFLAGS += $(CXXFLAGS_ARM)
   LDFLAGS += $(LDFLAGS_ARM)
@@ -147,6 +161,14 @@ ifeq ($(TC), 1)
   CXXFLAGS += $(CXXFLAGS_TC)
 endif
 
+ifeq ($(LTO), 1)
+  CXXFLAGS += $(CXXFLAGS_LTO)
+  LDFLAGS += $(LDFLAGS_LTO)
+  ifeq ($(OUTPUT), bin)
+    LDFLAGS += $(CXXFLAGS)
+  endif
+endif
+
 #######################################################
 # SRCS & OBJS
 #######################################################
@@ -173,7 +195,7 @@ OBJS += $(SRC_CC:%.cc= $(OUTDIR)/%.o)
 OBJS += $(SRC_C:%.c= $(OUTDIR)/%.o)
 
 ifeq ($(OUTPUT), bin)
-  OBJS_GC=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE)/.libs/libgc.a
+  OBJS_GC=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE).static/.libs/libgc.a
 else
   OBJS_GC=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE).shared/.libs/libgc.a
 endif
@@ -277,17 +299,17 @@ tizen3_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 
 DEPENDENCY_MAKEFILE = Makefile $(BUILDDIR)/Toolchain.mk $(BUILDDIR)/Flags.mk
 
-$(OUTDIR)/$(BIN): $(OBJS) $(OBJS_THIRD_PARTY)
+$(OUTDIR)/$(BIN): $(OBJS) $(OBJS_THIRD_PARTY) $(DEPENDENCY_MAKEFILE)
 	@echo "[LINK] $@"
 	@$(CXX) -o $@ $(OBJS) $(OBJS_THIRD_PARTY) $(LDFLAGS)
 
-$(OUTDIR)/$(SHARED_LIB): $(OBJS) $(OBJS_THIRD_PARTY)
+$(OUTDIR)/$(SHARED_LIB): $(OBJS) $(OBJS_THIRD_PARTY) $(DEPENDENCY_MAKEFILE)
 	@echo "[LINK] $@"
 	$(CXX) -shared -Wl,-soname,$(SHARED_LIB) -o $@ $(OBJS) $(OBJS_THIRD_PARTY) $(LDFLAGS)
 
-$(OUTDIR)/$(STATIC_LIB): $(OBJS)
+$(OUTDIR)/$(STATIC_LIB): $(OBJS) $(DEPENDENCY_MAKEFILE)
 	@echo "[LINK] $@"
-	$(AR) rc $@ $(OBJS)
+	$(AR) rc $@ $(ARFLAGS) $(OBJS)
 
 $(OUTDIR)/%.o: %.cpp $(DEPENDENCY_MAKEFILE)
 	@echo "[CXX] $@"
@@ -319,18 +341,8 @@ full:
 	make x86.interpreter.release -j$(NPROCS)
 	ln -sf out/x86/interpreter/release/$(BIN) $(BIN).x86.ir
 
-# Targets : miscellaneous
-
 clean:
 	rm -rf out
-
-strip:
-	strip $(BIN)
-
-asm:
-	objdump -d        $(BIN) | c++filt > $(BIN).asm
-	readelf -a --wide $(BIN) | c++filt > $(BIN).elf
-	vi -O $(BIN).asm $(BIN).elf
 
 # Targets : Regression tests
 

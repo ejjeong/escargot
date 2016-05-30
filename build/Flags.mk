@@ -19,9 +19,6 @@ CXXFLAGS_LINUX += -DENABLE_CODECACHE
 # CXXFLAGS_LINUX += -DENABLE_DTOACACHE
 
 CXXFLAGS_TIZEN += -DESCARGOT_SMALL_CONFIG=1 -DESCARGOT_TIZEN
-ifeq ($(MODE), release)
-  CXXFLAGS_TIZEN += -Os -finline-limit=64
-endif
 
 #######################################################
 # flags for $(ARCH) : x64/x86/arm
@@ -49,6 +46,9 @@ CXXFLAGS_DEBUG += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra
 CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
 
 CXXFLAGS_RELEASE += -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
+ifneq (,$(findstring tizen,$(HOST)))
+  CXXFLAGS_RELEASE += -Os -finline-limit=64
+endif
 
 #######################################################
 # flags for $(OUTPUT) : bin/shared_lib/static_lib
@@ -63,24 +63,34 @@ CXXFLAGS_STATICLIB += -fPIC
 LDFLAGS_STATICLIB += -Wl,--gc-sections
 
 #######################################################
+# flags for LTO
+#######################################################
+CXXFLAGS_LTO += -flto -ffat-lto-objects
+LDFLAGS_LTO += -flto
+
+#######################################################
 # flags for $(THIRD_PARTY)
 #######################################################
 # icu
-ifeq ($(ARCH), x64)
-  CXXFLAGS_THIRD_PARTY += $(shell pkg-config --cflags icu-i18n)
-  LDFLAGS_THIRD_PARTY += $(shell pkg-config --libs icu-i18n)
-else ifneq ($(filter $(HOST),tizen_wearable_arm tizen3_wearable_arm), )
-  CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/deps/tizen/include
-  LDFLAGS_THIRD_PARTY += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-target-arm
-  LDFLAGS_THIRD_PARTY += -licuio -licui18n -licuuc -licudata
-else ifneq ($(filter $(HOST),tizen_wearable_emulator tizen3_wearable_emulator), )
-  CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/deps/tizen/include
-  LDFLAGS_THIRD_PARTY += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-emulator-x86
-  LDFLAGS_THIRD_PARTY += -licuio -licui18n -licuuc -licudata
-else ifeq ($(ARCH), x86)
-  CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/deps/x86-linux/include
-  LDFLAGS_THIRD_PARTY += -Ldeps/x86-linux/lib
-  LDFLAGS_THIRD_PARTY += -licuio -licui18n -licuuc -licudata
+ifeq ($(HOST), linux)
+  ifeq ($(ARCH), x64)
+	CXXFLAGS_THIRD_PARTY += $(shell pkg-config --cflags icu-i18n)
+	LDFLAGS_THIRD_PARTY += $(shell pkg-config --libs icu-i18n)
+  else ifeq ($(ARCH), x86)
+	CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/deps/x86-linux/include
+	LDFLAGS_THIRD_PARTY += -Ldeps/x86-linux/lib
+	LDFLAGS_THIRD_PARTY += -licuio -licui18n -licuuc -licudata
+  endif
+else ifneq (,$(findstring tizen_,$(HOST)))
+  ifeq ($(ARCH), arm)
+	CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/deps/tizen/include
+	LDFLAGS_THIRD_PARTY += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-target-arm
+	LDFLAGS_THIRD_PARTY += -licuio -licui18n -licuuc -licudata
+  else ifeq ($(ARCH), i386)
+	CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/deps/tizen/include
+	LDFLAGS_THIRD_PARTY += -Ldeps/tizen/lib/tizen-wearable-$(VERSION)-emulator-x86
+	LDFLAGS_THIRD_PARTY += -licuio -licui18n -licuuc -licudata
+  endif
 endif
 
 # bdwgc

@@ -1,44 +1,11 @@
 #!/bin/bash
-set -x
+#set -x
 
 if [ ! -f /proc/cpuinfo ]; then
-	echo "Is this Linux? Cannot find or read /proc/cpuinfo"
-	exit 1
+    echo "Is this Linux? Cannot find or read /proc/cpuinfo"
+    exit 1
 fi
 NUMPROC=$(grep 'processor' /proc/cpuinfo | wc -l)
-
-TIZEN="1"
-if [ -z "$TIZEN_SDK_HOME" ]; then
-	TIZEN="0"
-fi
-
-TIZEN3="1"
-if [ -z "$TIZEN3_SDK_HOME" ]; then
-	TIZEN3="0"
-fi
-
-function set_variables() {
-	if [ $TIZEN == "1" ]
-	then
-		echo "TIZEN_SDK_HOME env is ...""$TIZEN_SDK_HOME"
-		TIZEN_SYS_ROOT=$TIZEN_SDK_HOME/platforms/tizen-2.4/mobile/rootstraps/mobile-2.4-device.core/
-		TIZEN_WEARABLE_SYS_ROOT=$TIZEN_SDK_HOME/platforms/tizen-2.3.1/wearable/rootstraps/wearable-2.3.1-device.core/
-		TIZEN_WEARABLE_EMULATOR_SYS_ROOT=$TIZEN_SDK_HOME//platforms/tizen-2.3.1/wearable/rootstraps/wearable-2.3.1-emulator.core/
-		TIZEN_TOOLCHAIN=$TIZEN_SDK_HOME/tools/arm-linux-gnueabi-gcc-4.9/
-		TIZEN_EMULATOR_TOOLCHAIN=$TIZEN_SDK_HOME/tools/i386-linux-gnueabi-gcc-4.9/
-	fi
-	if [ $TIZEN3 == "1" ]
-	then
-		echo "TIZEN_SDK3_HOME env is ...""$TIZEN_SDK3_HOME"
-		TIZEN3_SYS_ROOT=$TIZEN3_SDK_HOME/platforms/tizen-3.0/mobile/rootstraps/mobile-3.0-device.core/
-		TIZEN3_WEARABLE_SYS_ROOT=$TIZEN3_SDK_HOME/platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-device.core/
-		TIZEN3_WEARABLE_EMULATOR_SYS_ROOT=$TIZEN3_SDK_HOME//platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-emulator.core/
-		TIZEN3_TOOLCHAIN=$TIZEN3_SDK_HOME/tools/arm-linux-gnueabi-gcc-4.9/
-		TIZEN3_EMULATOR_TOOLCHAIN=$TIZEN3_SDK_HOME/tools/i386-linux-gnueabi-gcc-4.9/
-	fi
-}
-
-set_variables
 
 ###########################################################
 # GC build
@@ -51,170 +18,134 @@ automake --add-missing
 
 rm -rf out
 
-mkdir -p out/linux/x86/release
-mkdir -p out/linux/x86/debug
-mkdir -p out/linux/x64/release
-mkdir -p out/linux/x64/debug
-mkdir -p out/linux/x64/release.shared
-mkdir -p out/linux/x64/debug.shared
+GCCONFFLAGS_COMMON=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
+CFLAGS_COMMON=" -flto -ffat-lto-objects -g3 "
+LDFLAGS_COMMON=" -flto "
 
-function make_tizen_direcotry_with_version() {
-	local version=$1
-	local TIZEN_ARM_DIR="tizen""$version""_arm"
-	local TIZEN_WEARABLE_ARM_DIR="tizen""$version""_wearable_arm"
-	local TIZEN_WEARABLE_EMULATOR_DIR="tizen""$version""_wearable_emulator"
+GCCONFFLAGS_wearable=
+CFLAGS_wearable=" -Os "
+LDFLAGS_wearable=
 
-	mkdir -p out/$TIZEN_ARM_DIR/arm/release.shared
-	mkdir -p out/$TIZEN_ARM_DIR/arm/release
-	mkdir -p out/$TIZEN_WEARABLE_ARM_DIR/arm/debug.shared
-	mkdir -p out/$TIZEN_WEARABLE_ARM_DIR/arm/release.shared
-	mkdir -p out/$TIZEN_WEARABLE_ARM_DIR/arm/release
-	mkdir -p out/$TIZEN_WEARABLE_ARM_DIR/arm/debug
-#	mkdir -p out/$TIZEN_WEARABLE_EMULATOR_DIR/x86/release
-	mkdir -p out/$TIZEN_WEARABLE_EMULATOR_DIR/x86/debug.shared
-	mkdir -p out/$TIZEN_WEARABLE_EMULATOR_DIR/x86/release.shared
+GCCONFFLAGS_x86=
+CFLAGS_x86=" -m32 "
+LDFLAGS_x86=" -m32 "
 
+GCCONFFLAGS_arm=
+CFLAGS_arm=" -march=armv7-a -mthumb -finline-limit=64 "
+LDFLAGS_arm=
 
-}
+GCCONFFLAGS_release=" --disable-debug --disable-gc-debug "
+GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug "
+CFLAGS_release=' -O2 '
+CFLAGS_debug=' -O0 '
 
-function reset_tizen_directories() {
-	if [ $TIZEN == "1" ]
-	then
-		make_tizen_direcotry_with_version
-	fi
-	if [ $TIZEN3 == "1" ]
-	then
-		make_tizen_direcotry_with_version 3
-	fi
-}
+GCCONFFLAGS_static=" --enable-debug --enable-gc-debug "
+GCCONFFLAGS_shared=
+CFLAGS_static=
+CFLAGS_shared=' -fPIC '
 
-reset_tizen_directories
+function build_gc_for_linux() {
 
-GCCONFFLAGS=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
+    for host in linux; do
+    for arch in x86 x64; do
+    for mode in debug release; do
+    for libtype in shared static; do
+        echo =========================================================================
+        echo Building bdwgc for $host $arch $mode $libtype
 
-cd out/linux/x86/release
-../../../../configure $GCCONFFLAGS --disable-gc-debug CFLAGS='-m32' CXXFLAGS='-m32' LDFLAGS='-m32'
-make -j$NUMPROC
-cd -
+        BUILDDIR=out/$host/$arch/$mode.$libtype
+        rm -rf $BUILDDIR
+        mkdir -p $BUILDDIR
+        cd $BUILDDIR
 
-cd out/linux/x86/debug
-../../../../configure $GCCONFFLAGS CFLAGS='-m32 -g3' CXXFLAGS='-m32' LDFLAGS='-m32' --enable-debug
-make -j$NUMPROC
-cd -
+        GCCONFFLAGS_HOST=GCCONFFLAGS_$host CFLAGS_HOST=CFLAGS_$host LDFLAGS_HOST=LDFLAGS_$host
+        GCCONFFLAGS_ARCH=GCCONFFLAGS_$arch CFLAGS_ARCH=CFLAGS_$arch LDFLAGS_ARCH=LDFLAGS_$arch
+        GCCONFFLAGS_MODE=GCCONFFLAGS_$mode CFLAGS_MODE=CFLAGS_$mode LDFLAGS_MODE=LDFLAGS_$mode
+        GCCONFFLAGS_LIBTYPE=GCCONFFLAGS_$libtype CFLAGS_LIBTYPE=CFLAGS_$libtype LDFLAGS_LIBTYPE=LDFLAGS_$libtype
 
-cd out/linux/x64/release
-../../../../configure $GCCONFFLAGS --disable-gc-debug
-make -j$NUMPROC
-cd -
+        GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
+        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE}"
+        LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
 
-cd out/linux/x64/debug
-../../../../configure $GCCONFFLAGS --enable-debug CFLAGS='-g3'
-make -j$NUMPROC
-cd -
+        ../../../../configure $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS $CFLAGS" > /dev/null
+        make -j$NUMPROC > /dev/null
 
-cd out/linux/x64/release.shared
-../../../../configure $GCCONFFLAGS --disable-gc-debug CFLAGS='-fPIC'
-make -j$NUMPROC
-cd -
-
-cd out/linux/x64/debug.shared
-../../../../configure $GCCONFFLAGS --enable-debug CFLAGS='-g3 -fPIC'
-make -j$NUMPROC
-cd -
-
-
-function build_gc_for_tizen_with_version() {
-	local version=$1
-	local TIZEN_ARM_DIR="tizen""$version""_arm"
-	local TIZEN_WEARABLE_ARM_DIR="tizen""$version""_wearable_arm"
-	local TIZEN_WEARABLE_EMULATOR_DIR="tizen""$version""_wearable_emulator"
-	if [ $version == "3" ]
-	then
-		local TIZEN_SYS_ROOT_WITH_VERSION="$TIZEN3_SYS_ROOT"
-		local TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION="$TIZEN3_WEARABLE_SYS_ROOT"
-		local TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION="$TIZEN3_WEARABLE_EMULATOR_SYS_ROOT"
-		local TIZEN_TOOLCHAIN_WITH_VERSION="$TIZEN3_TOOLCHAIN"
-		local TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION="$TIZEN3_EMULATOR_TOOLCHAIN"
-	else
-		local TIZEN_SYS_ROOT_WITH_VERSION="$TIZEN_SYS_ROOT"
-		local TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION="$TIZEN_WEARABLE_SYS_ROOT"
-		local TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION="$TIZEN_WEARABLE_EMULATOR_SYS_ROOT"
-		local TIZEN_TOOLCHAIN_WITH_VERSION="$TIZEN_TOOLCHAIN"
-		local TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION="$TIZEN_EMULATOR_TOOLCHAIN"
-	fi
-
-
-	cd out/$TIZEN_ARM_DIR/arm/release.shared
-	TCF="-fPIC -march=armv7-a -O2 -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT_WITH_VERSION --with-cross-host=arm-linux-gnueabi CFLAGS="$TCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-	cd out/$TIZEN_WEARABLE_ARM_DIR/arm/release.shared
-	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -mthumb -g3 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-	cd out/$TIZEN_WEARABLE_ARM_DIR/arm/debug.shared
-	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-	cd out/$TIZEN_WEARABLE_EMULATOR_DIR/x86/release.shared
-	TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -g3 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION --host=i386-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-	cd out/$TIZEN_WEARABLE_EMULATOR_DIR/x86/debug.shared
-	TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -g3 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION --host=i386-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-	cd out/$TIZEN_ARM_DIR/arm/release
-	TCF="-march=armv7-a -O2 -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT_WITH_VERSION --with-cross-host=arm-linux-gnueabi CFLAGS="$TCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-	cd out/$TIZEN_WEARABLE_ARM_DIR/arm/release
-	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
-  cd out/$TIZEN_WEARABLE_ARM_DIR/arm/debug
-	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
-	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
-	make -j$NUMPROC
-	cd -
-
+        echo Building bdwgc for $host $arch $mode $libtype done
+        cd -
+    done
+    done
+    done
+    done
 }
 
 function build_gc_for_tizen() {
-	if [ $TIZEN == "1" ]
-	then
-		build_gc_for_tizen_with_version
-	fi
-	if [ $TIZEN3 == "1" ]
-	then
-		build_gc_for_tizen_with_version 3
-	fi
+
+    for version in 2.3.1 3.0; do
+    for host in wearable mobile; do
+    for arch in arm i386; do
+    for mode in debug release; do
+    for libtype in shared static; do
+
+        if [[ $arch == arm ]]; then
+            device=device
+        elif [[ $arch == i386 ]]; then
+            device=emulator
+        fi
+
+        TIZEN_SYSROOT=$TIZEN_SDK_HOME/platforms/tizen-$version/$host/rootstraps/$host-$version-$device.core
+        COMPILER_PREFIX=$arch-linux-gnueabi
+        TIZEN_TOOLCHAIN=$TIZEN_SDK_HOME/tools/$COMPILER_PREFIX-gcc-4.9
+
+        echo =========================================================================
+        if [[ -a $TIZEN_SYSROOT ]]; then
+            echo Building bdwgc for tizen $version $host $arch $mode $libtype
+        else
+            echo Skipping bdwgc build for tizen $version $host $arch $mode $libtype
+            continue
+        fi
+
+        BUILDDIR=out/tizen_${version}_${host}/$arch/$mode.$libtype
+        rm -rf $BUILDDIR
+        mkdir -p $BUILDDIR
+        cd $BUILDDIR
+
+        GCCONFFLAGS_HOST=GCCONFFLAGS_$host CFLAGS_HOST=CFLAGS_$host LDFLAGS_HOST=LDFLAGS_$host
+        GCCONFFLAGS_ARCH=GCCONFFLAGS_$arch CFLAGS_ARCH=CFLAGS_$arch LDFLAGS_ARCH=LDFLAGS_$arch
+        GCCONFFLAGS_MODE=GCCONFFLAGS_$mode CFLAGS_MODE=CFLAGS_$mode LDFLAGS_MODE=LDFLAGS_$mode
+        GCCONFFLAGS_LIBTYPE=GCCONFFLAGS_$libtype CFLAGS_LIBTYPE=CFLAGS_$libtype LDFLAGS_LIBTYPE=LDFLAGS_$libtype
+
+        GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
+        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE} --sysroot=$TIZEN_SYSROOT"
+        LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
+
+        ../../../../configure --host=$COMPILER_PREFIX $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
+            ARFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so" \
+            NMFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so" \
+            RANLIBFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so" \
+            CC=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc \
+            CXX=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-g++ \
+            AR=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-ar \
+            NM=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-nm \
+            RANLIB=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-ranlib \
+            LD=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-ld > /dev/null
+        make -j$NUMPROC > /dev/null
+
+        echo Building bdwgc for tizen $version $host $arch $mode $libtype done
+        cd -
+    done
+    done
+    done
+    done
+    done
 }
 
-build_gc_for_tizen
+build_gc_for_linux
+
+if [ -z "$TIZEN_SDK_HOME" ]; then
+    echo "Do not build for Tizen"
+else
+    echo "TIZEN_SDK_HOME env is ...""$TIZEN_SDK_HOME"
+    build_gc_for_tizen
+fi
 
 
-#cd out/arm/release
-#../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT --host=arm-linux-gnueabi CFLAGS='-march=armv7-a'
-#make -j$NUMPROC
-#cd -
-
-
-#cd out/arm/debug
-#../../../configure $GCCONFFLAGS --enable-debug --with-sysroot=$TIZEN_SYS_ROOT --host=arm-linux-gnueabi CFLAGS='-g3 -march=armv7-a'
-#make -j$NUMPROC
-#cd -
