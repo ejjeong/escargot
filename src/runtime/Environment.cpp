@@ -139,7 +139,7 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicStrin
 void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name, bool canDelete)
 {
     ESObject* globalObj = m_objectRecord->bindingObject();
-    bool hasProperty = globalObj->hasOwnProperty(name.string());
+    bool hasProperty = globalObj->hasOwnProperty(name.string(), false);
     bool extensible = globalObj->isExtensible();
     if (!hasProperty) {
         if (extensible) {

@@ -1387,11 +1387,14 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
             return false;
         }
     }
-    if (UNLIKELY(hasPropertyInterceptor())) {
-        ESValue v = readKeyForPropertyInterceptor(key);
-        if (!v.isDeleted())
+
+    if (hasPropertyInterceptor() && isProhibitCreateIndexedProperty()) {
+        size_t idx = key.toIndex();
+        if (ESValue::ESInvalidIndexValue != idx) {
             return false;
+        }
     }
+
 
     escargot::ESString* keyString = key.toString();
     if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
@@ -1475,10 +1478,11 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         }
     }
 
-    if (UNLIKELY(hasPropertyInterceptor())) {
-        ESValue v = readKeyForPropertyInterceptor(key);
-        if (!v.isDeleted())
+    if (hasPropertyInterceptor() && isProhibitCreateIndexedProperty()) {
+        size_t idx = key.toIndex();
+        if (ESValue::ESInvalidIndexValue != idx) {
             return false;
+        }
     }
 
     if (UNLIKELY(m_flags.m_isGlobalObject))
@@ -1552,12 +1556,6 @@ inline bool ESObject::deletePropertyWithException(const ESValue& key, bool force
 
 inline bool ESObject::deletePropertySlowPath(const ESValue& key, bool force)
 {
-    if (UNLIKELY(hasPropertyInterceptor())) {
-        ESValue v = readKeyForPropertyInterceptor(key);
-        if (!v.isDeleted())
-            return false;
-    }
-
     if (m_flags.m_deleteCount == 3) {
         forceNonVectorHiddenClass(true);
     } else {
@@ -1632,7 +1630,7 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
 }
 
 
-ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
+ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key, bool shouldCheckPropertyInterceptor)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
@@ -1657,9 +1655,9 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 
     bool ret = m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
     if (!ret) {
-        if (UNLIKELY(hasPropertyInterceptor())) {
-            ESValue v = readKeyForPropertyInterceptor(key);
-            if (!v.isDeleted())
+        if (UNLIKELY(shouldCheckPropertyInterceptor && hasPropertyInterceptor())) {
+            bool ret = hasOwnPropertyForPropertyInterceptor(key);
+            if (ret)
                 return true;
         }
     }
@@ -1812,6 +1810,13 @@ inline bool ESObject::set(const escargot::ESValue& key, const ESValue& val, esca
         if (idx != ESValue::ESInvalidIndexValue)
             if (idx < asESStringObject()->length())
                 return false;
+    }
+
+    if (hasPropertyInterceptor() && isProhibitCreateIndexedProperty()) {
+        size_t idx = key.toIndex();
+        if (ESValue::ESInvalidIndexValue != idx) {
+            return false;
+        }
     }
 
     return setSlowPath(key, val, receiver);

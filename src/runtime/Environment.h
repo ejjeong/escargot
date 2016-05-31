@@ -465,6 +465,11 @@ public:
         return &m_argumentsObject;
     }
 
+    ESFunctionObject* callee()
+    {
+        return m_callee;
+    }
+
 protected:
     ESValue* m_arguments;
     size_t m_argumentsCount;

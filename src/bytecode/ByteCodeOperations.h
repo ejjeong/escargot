@@ -23,8 +23,19 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
         if (code->m_onlySearchGlobal)
             slot = instance->globalObject()->addressOfProperty(code->m_name.string());
         else {
-            slot = ec->resolveBinding(code->m_name, env);
+            if (UNLIKELY(instance->globalObject()->hasIdentifierInterceptor())) {
+                ESValue v = instance->globalObject()->readIdentifierFromIdentifierInterceptor(code->m_name.string());
+
+                if (v.isDeleted()) {
+                    slot = ec->resolveBinding(code->m_name, env);
+                } else {
+                    return new(GC) ESValue(v);
+                }
+            } else {
+                slot = ec->resolveBinding(code->m_name, env);
+            }
         }
+
         if (LIKELY(slot)) {
             if ((code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) && slot.isDataBinding()) {
                 code->m_cachedSlot = slot.getSlot();
@@ -45,6 +56,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             if (UNLIKELY(code->m_name == strings->arguments))
                 if (ESValue* ret = ec->resolveArgumentsObjectBinding())
                     return ret;
+
             throwUndefinedReferenceError(code->m_name.string());
             RELEASE_ASSERT_NOT_REACHED();
         }

@@ -1759,12 +1759,14 @@ struct ESObjectRareData : public gc {
     ESObjectRareData()
     {
         m_hasPropertyInterceptor = false;
+        m_isProhibitCreateIndexedProperty = false;
         m_propertyEnumerationCallback = nullptr;
         m_propertyCallback = nullptr;
         m_extraPointerData = nullptr;
     }
 
     bool m_hasPropertyInterceptor;
+    bool m_isProhibitCreateIndexedProperty; // only works when m_hasPropertyInterceptor is true
     PropertyEnumerationCallback m_propertyEnumerationCallback;
     PropertyCallback m_propertyCallback;
     void* m_extraPointerData;
@@ -1807,7 +1809,7 @@ public:
     inline bool deletePropertySlowPath(const ESValue& key, bool force = false);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
     inline bool hasProperty(const ESValue& key);
-    inline bool hasOwnProperty(const ESValue& key);
+    inline bool hasOwnProperty(const ESValue& key, bool shouldCheckPropertyInterceptor = true);
 
     bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
     bool defineOwnProperty(const ESValue& key, ESObject* obj, bool throwFlag);
@@ -1924,7 +1926,7 @@ public:
     inline void relocateIndexesForward(double start, double end, unsigned offset);
     inline void relocateIndexesBackward(double start, double end, unsigned offset);
 
-    void setPropertyInterceptor(PropertyCallback readIndex, PropertyEnumerationCallback enumeration)
+    void setPropertyInterceptor(PropertyCallback readIndex, PropertyEnumerationCallback enumeration, bool prohibitCreateIndexedProperty = false)
     {
         ASSERT(!isESArrayObject());
         ensureRareData();
@@ -1932,6 +1934,7 @@ public:
         m_objectRareData->m_hasPropertyInterceptor = true;
         m_objectRareData->m_propertyEnumerationCallback = enumeration;
         m_objectRareData->m_propertyCallback = readIndex;
+        m_objectRareData->m_isProhibitCreateIndexedProperty = prohibitCreateIndexedProperty;
     }
 
     ALWAYS_INLINE bool hasPropertyInterceptor()
@@ -1939,9 +1942,24 @@ public:
         return !isESArrayObject() && m_objectRareData && m_objectRareData->m_hasPropertyInterceptor;
     }
 
+    bool isProhibitCreateIndexedProperty()
+    {
+        ASSERT(hasPropertyInterceptor());
+        return m_objectRareData->m_isProhibitCreateIndexedProperty;
+    }
+
     ESValue readKeyForPropertyInterceptor(const ESValue& key)
     {
         return m_objectRareData->m_propertyCallback(key, this);
+    }
+
+    bool hasOwnPropertyForPropertyInterceptor(const ESValue& key)
+    {
+        ASSERT(hasPropertyInterceptor());
+        ESValue v = readKeyForPropertyInterceptor(key);
+        if (!v.isDeleted())
+            return true;
+        return false;
     }
 
 #ifdef ENABLE_ESJIT

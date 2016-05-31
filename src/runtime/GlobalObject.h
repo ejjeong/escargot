@@ -359,12 +359,23 @@ public:
                 if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject())
                     target = target->__proto__().asESPointer()->asESObject();
                 else
-                    return nullptr;
+                    goto Empty;
         }
         if (target->m_hiddenClassData[ret].isDeleted())
-            return NULL;
-        ESHiddenClassPropertyInfo info = target->m_hiddenClass->propertyInfo(ret);
-        return ESBindingSlot(&target->m_hiddenClassData[ret], info.isDataProperty(), info.isDataProperty() ? info.writable() : true, info.configurable(), true);
+            goto Empty;
+
+        {
+            ESHiddenClassPropertyInfo info = target->m_hiddenClass->propertyInfo(ret);
+            return ESBindingSlot(&target->m_hiddenClassData[ret], info.isDataProperty(), info.isDataProperty() ? info.writable() : true, info.configurable(), true);
+        }
+
+        Empty:
+        if (hasPropertyInterceptor()) {
+            ESValue v = readKeyForPropertyInterceptor(key);
+            if (!v.isDeleted())
+                return new(GC) ESValue(v);
+        }
+        return nullptr;
     }
 
     ALWAYS_INLINE bool didSomePrototypeObjectDefineIndexedProperty()
@@ -378,6 +389,27 @@ public:
 
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);
+
+    void setIdentifierInterceptor(PropertyCallback cb)
+    {
+        m_identifierInterceptor = cb;
+    }
+
+    bool hasIdentifierInterceptor()
+    {
+        return m_identifierInterceptor;
+    }
+
+    ESValue readIdentifierFromIdentifierInterceptor(escargot::ESString* key)
+    {
+        ASSERT(m_identifierInterceptor);
+        return m_identifierInterceptor(key, this);
+    }
+
+    PropertyCallback identifierInterceptor()
+    {
+        return m_identifierInterceptor;
+    }
 
 protected:
     void initGlobalObject();
@@ -466,6 +498,8 @@ protected:
 
     bool m_didSomePrototypeObjectDefineIndexedProperty;
     std::vector<CodeBlock*, pointer_free_allocator<CodeBlock*> > m_codeBlocks;
+
+    PropertyCallback m_identifierInterceptor;
 };
 
 }

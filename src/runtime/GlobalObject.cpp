@@ -13,6 +13,7 @@ namespace escargot {
 
 GlobalObject::GlobalObject()
     : ESObject(ESPointer::Type::ESObject, ESValue())
+    , m_identifierInterceptor(nullptr)
 {
     m_flags.m_isGlobalObject = true;
     m_didSomePrototypeObjectDefineIndexedProperty = false;
