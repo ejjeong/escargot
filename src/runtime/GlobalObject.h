@@ -390,7 +390,7 @@ public:
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);
 
-    void setIdentifierInterceptor(PropertyCallback cb)
+    void setIdentifierInterceptor(PropertyReadCallback cb)
     {
         m_identifierInterceptor = cb;
     }
@@ -406,7 +406,7 @@ public:
         return m_identifierInterceptor(key, this);
     }
 
-    PropertyCallback identifierInterceptor()
+    PropertyReadCallback identifierInterceptor()
     {
         return m_identifierInterceptor;
     }
@@ -499,7 +499,7 @@ protected:
     bool m_didSomePrototypeObjectDefineIndexedProperty;
     std::vector<CodeBlock*, pointer_free_allocator<CodeBlock*> > m_codeBlocks;
 
-    PropertyCallback m_identifierInterceptor;
+    PropertyReadCallback m_identifierInterceptor;
 };
 
 }

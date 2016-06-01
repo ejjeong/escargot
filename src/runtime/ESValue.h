@@ -1753,7 +1753,8 @@ private:
 };
 
 typedef ESValueVector (*PropertyEnumerationCallback)(ESObject* obj);
-typedef ESValue (*PropertyCallback)(const ESValue& key, ESObject* obj);
+typedef ESValue (*PropertyReadCallback)(const ESValue& key, ESObject* obj);
+typedef bool (*PropertyWriteCallback)(const ESValue& key, const ESValue& value, ESObject* obj);
 
 struct ESObjectRareData : public gc {
     ESObjectRareData()
@@ -1761,14 +1762,16 @@ struct ESObjectRareData : public gc {
         m_hasPropertyInterceptor = false;
         m_isProhibitCreateIndexedProperty = false;
         m_propertyEnumerationCallback = nullptr;
-        m_propertyCallback = nullptr;
+        m_propertyReadCallback = nullptr;
+        m_propertyWriteCallback = nullptr;
         m_extraPointerData = nullptr;
     }
 
     bool m_hasPropertyInterceptor;
     bool m_isProhibitCreateIndexedProperty; // only works when m_hasPropertyInterceptor is true
     PropertyEnumerationCallback m_propertyEnumerationCallback;
-    PropertyCallback m_propertyCallback;
+    PropertyReadCallback m_propertyReadCallback;
+    PropertyWriteCallback m_propertyWriteCallback;
     void* m_extraPointerData;
 };
 
@@ -1926,14 +1929,15 @@ public:
     inline void relocateIndexesForward(double start, double end, unsigned offset);
     inline void relocateIndexesBackward(double start, double end, unsigned offset);
 
-    void setPropertyInterceptor(PropertyCallback readIndex, PropertyEnumerationCallback enumeration, bool prohibitCreateIndexedProperty = false)
+    void setPropertyInterceptor(PropertyReadCallback read, PropertyWriteCallback write, PropertyEnumerationCallback enumeration, bool prohibitCreateIndexedProperty = false)
     {
         ASSERT(!isESArrayObject());
         ensureRareData();
         forceNonVectorHiddenClass(true);
         m_objectRareData->m_hasPropertyInterceptor = true;
         m_objectRareData->m_propertyEnumerationCallback = enumeration;
-        m_objectRareData->m_propertyCallback = readIndex;
+        m_objectRareData->m_propertyReadCallback = read;
+        m_objectRareData->m_propertyWriteCallback = write;
         m_objectRareData->m_isProhibitCreateIndexedProperty = prohibitCreateIndexedProperty;
     }
 
@@ -1950,7 +1954,14 @@ public:
 
     ESValue readKeyForPropertyInterceptor(const ESValue& key)
     {
-        return m_objectRareData->m_propertyCallback(key, this);
+        ASSERT(hasPropertyInterceptor());
+        return m_objectRareData->m_propertyReadCallback(key, this);
+    }
+
+    bool writeKeyForPropertyInterceptor(const ESValue& key, const ESValue& val)
+    {
+        ASSERT(hasPropertyInterceptor());
+        return m_objectRareData->m_propertyWriteCallback(key, val, this);
     }
 
     bool hasOwnPropertyForPropertyInterceptor(const ESValue& key)

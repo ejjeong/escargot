@@ -788,6 +788,10 @@ void ESObject::setValueAsProtoType(const ESValue& obj)
 
 NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
+    if (UNLIKELY(hasPropertyInterceptor() && writeKeyForPropertyInterceptor(key, val))) {
+        return true;
+    }
+
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
 
@@ -851,6 +855,7 @@ NEVER_INLINE bool ESObject::setSlowPath(const escargot::ESValue& key, const ESVa
         }
         if (UNLIKELY(!isExtensible()))
             return false;
+
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, Data | PropertyDescriptor::defaultAttributes, foundInPrototype);
         m_hiddenClassData.push_back(val);
 
