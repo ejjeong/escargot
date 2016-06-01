@@ -27,6 +27,8 @@ namespace escargot {
     }
 #endif
 
+
+
 NEVER_INLINE void registerOpcode(ESVMInstance* instance, Opcode opcode, const char* opcodeName, void* opcodeAddress)
 {
     static std::unordered_set<void *> labelAddressChecker;
@@ -993,6 +995,18 @@ TC_COVERAGE_LOG
         {
             ESValue* obj = POP(stack, bp);
             ESValue* key = POP(stack, bp);
+
+#ifdef STARFISH_TC_COVERAGE
+            // printing obj and key names
+            if (!obj->isUndefinedOrNull() && !key->isUndefinedOrNull()) {
+                if (obj->toObject()->__proto__().isESPointer() && obj->toObject()->__proto__().asESPointer()->isESObject()) {
+                ESValue c = obj->toObject()->__proto__().asESPointer()->asESObject()->get(ESString::create("constructor"));
+                    if (c.isESPointer() && c.asESPointer()->isESObject()) {
+                        printf("%s&&&%s\n", c.asESPointer()->asESObject()->get(ESString::create("name")).toString()->utf8Data(), key->toString()->utf8Data());
+                    }
+                }
+            }
+#endif
             PUSH(stack, topOfStack, ESValue(inOperation(obj, key)));
             executeNextCode<StringIn>(programCounter);
             NEXT_INSTRUCTION();
