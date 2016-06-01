@@ -13,12 +13,12 @@ public:
         ESValue* arguments = NULL, size_t argumentsCount = 0)
             : m_environment(varEnv)
             , m_thisValue(ESValue::ESForceUninitialized)
-            , m_tryOrCatchBodyResultOrArgumentsInfo(ESValue::ESForceUninitialized)
+            , m_tryOrCatchBodyResult(ESValue::ESForceUninitialized)
     {
         ASSERT(varEnv);
         m_data.m_isNewExpression = isNewExpression;
         m_data.m_isStrict = isStrictMode;
-        m_tryOrCatchBodyResultOrArgumentsInfo = (ESPointer *)arguments;
+        m_argumentsInfo = arguments;
         m_data.m_argumentCount = argumentsCount;
 #ifdef ENABLE_ESJIT
         m_inOSRExit = false;
@@ -67,7 +67,7 @@ public:
     ALWAYS_INLINE bool isNewExpression() { return m_data.m_isNewExpression; }
 
     // NOTE this argument information is for nativeFunctions. do not use this interpreter of jit
-    ESValue* arguments() { return (ESValue *)m_tryOrCatchBodyResultOrArgumentsInfo.asESPointer(); }
+    ESValue* arguments() { return m_argumentsInfo; }
     size_t argumentCount() { return m_data.m_argumentCount; }
     ESValue readArgument(size_t idx)
     {
@@ -98,8 +98,8 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
-    ESValue& tryOrCatchBodyReturnValue() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
-    ESValueVectorStd& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
+    ESValue& tryOrCatchBodyReturnValue() { return m_tryOrCatchBodyResult; }
+    ESValueVectorStd& tryOrCatchBodyResult() { return m_tryOrCatchBodyResultVector; }
 private:
     struct {
         bool m_isNewExpression;
@@ -113,8 +113,11 @@ private:
     LexicalEnvironment* m_environment;
 
     ESValue m_thisValue;
-    ESValue m_tryOrCatchBodyResultOrArgumentsInfo;
-    ESValueVectorStd m_tryOrCatchBodyResult;
+    union {
+        ESValue m_tryOrCatchBodyResult;
+        ESValue* m_argumentsInfo;
+    };
+    ESValueVectorStd m_tryOrCatchBodyResultVector;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
     bool m_executeNextByteCode;
