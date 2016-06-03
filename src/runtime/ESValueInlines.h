@@ -1105,7 +1105,7 @@ inline ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx
     ASSERT(idx != SIZE_MAX);
     // can not delete __proto__
     ASSERT(idx != 0);
-    ASSERT(m_propertyInfo[idx].configurable());
+    // ASSERT(m_propertyInfo[idx].configurable()); // can be force remove
     ASSERT(m_flags.m_forceNonVectorMode);
     ASSERT(!m_flags.m_isVectorMode);
 
