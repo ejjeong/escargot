@@ -20,7 +20,7 @@ CXXFLAGS_LINUX += -DENABLE_CODECACHE
 
 CXXFLAGS_TIZEN += -DESCARGOT_SMALL_CONFIG=1 -DESCARGOT_TIZEN
 ifeq ($(MODE), release)
-  CXXFLAGS_TIZEN += -Os -g0 -finline-limit=64
+  CXXFLAGS_TIZEN += -Os -finline-limit=64
 endif
 
 #######################################################

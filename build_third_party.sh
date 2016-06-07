@@ -145,13 +145,13 @@ function build_gc_for_tizen_with_version() {
 
 
 	cd out/$TIZEN_ARM_DIR/arm/release.shared
-	TCF="-fPIC -march=armv7-a -O2 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT_WITH_VERSION}
+	TCF="-fPIC -march=armv7-a -O2 -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT_WITH_VERSION}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT_WITH_VERSION --with-cross-host=arm-linux-gnueabi CFLAGS="$TCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
 
 	cd out/$TIZEN_WEARABLE_ARM_DIR/arm/release.shared
-	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
+	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -mthumb -g3 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
@@ -163,7 +163,7 @@ function build_gc_for_tizen_with_version() {
 	cd -
 
 	cd out/$TIZEN_WEARABLE_EMULATOR_DIR/x86/release.shared
-	TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -g0 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION}
+	TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -g3 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION}
 	../../../../configure $GCCONFFLAGS --enable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT_WITH_VERSION --host=i386-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN_WITH_VERSION/bin/i386-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
@@ -175,13 +175,13 @@ function build_gc_for_tizen_with_version() {
 	cd -
 
 	cd out/$TIZEN_ARM_DIR/arm/release
-	TCF="-march=armv7-a -O2 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT_WITH_VERSION}
+	TCF="-march=armv7-a -O2 -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT_WITH_VERSION}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT_WITH_VERSION --with-cross-host=arm-linux-gnueabi CFLAGS="$TCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
 
 	cd out/$TIZEN_WEARABLE_ARM_DIR/arm/release
-	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
+	TWCF="-DTIZEN_WEARABLE -march=armv7-a -Os -g3 -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT_WITH_VERSION --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN_WITH_VERSION/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
