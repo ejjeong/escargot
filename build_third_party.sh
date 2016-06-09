@@ -19,8 +19,8 @@ automake --add-missing
 rm -rf out
 
 GCCONFFLAGS_COMMON=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
-CFLAGS_COMMON=" -flto -ffat-lto-objects -g3 "
-LDFLAGS_COMMON=" -flto "
+CFLAGS_COMMON=" -g3 " #" -flto -ffat-lto-objects -g3 "
+LDFLAGS_COMMON= #" -flto "
 
 GCCONFFLAGS_wearable=
 CFLAGS_wearable=" -Os "
