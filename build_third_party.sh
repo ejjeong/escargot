@@ -19,8 +19,8 @@ automake --add-missing
 rm -rf out
 
 GCCONFFLAGS_COMMON=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
-CFLAGS_COMMON=" -g3 " #" -flto -ffat-lto-objects -g3 "
-LDFLAGS_COMMON= #" -flto "
+CFLAGS_COMMON=" -g3 "
+LDFLAGS_COMMON=
 
 GCCONFFLAGS_wearable=
 CFLAGS_wearable=" -Os "
@@ -39,7 +39,7 @@ GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug "
 CFLAGS_release=' -O2 '
 CFLAGS_debug=' -O0 '
 
-GCCONFFLAGS_static=" --enable-debug --enable-gc-debug "
+GCCONFFLAGS_static=
 GCCONFFLAGS_shared=
 CFLAGS_static=
 CFLAGS_shared=' -fPIC '
@@ -115,7 +115,7 @@ function build_gc_for_tizen() {
         GCCONFFLAGS_LIBTYPE=GCCONFFLAGS_$libtype CFLAGS_LIBTYPE=CFLAGS_$libtype LDFLAGS_LIBTYPE=LDFLAGS_$libtype
 
         GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
-        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE} --sysroot=$TIZEN_SYSROOT"
+        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE} --sysroot=$TIZEN_SYSROOT -flto -ffat-lto-objects"
         LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
 
         ../../../../configure --host=$COMPILER_PREFIX $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \

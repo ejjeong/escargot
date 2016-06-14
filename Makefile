@@ -16,7 +16,7 @@ NPROCS:=1
 OS:=$(shell uname -s)
 SHELL:=/bin/bash
 OUTPUT=
-LTO=0
+LTO=
 ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
   SHELL:=/bin/bash
@@ -73,7 +73,7 @@ else ifneq (,$(findstring tizen3_wearable_emulator,$(MAKECMDGOALS)))
 endif
 
 ifneq (,$(findstring tizen,$(HOST)))
-  #LTO=1
+  LTO=1
 endif
 
 ifneq (,$(findstring shared,$(MAKECMDGOALS)))
