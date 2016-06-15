@@ -1922,10 +1922,12 @@ void GlobalObject::installArray()
         return ESValue(true);
     }, strings->every.string(), 1));
 
+#ifdef USE_ES6_FEATURE
     // $22.1.3.6 Array.prototype.fill
     m_arrayPrototype->ESObject::defineDataProperty(strings->fill, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->fill.string(), 1));
+#endif
 
     // $22.1.3.7 Array.prototype.filter
     m_arrayPrototype->ESObject::defineDataProperty(strings->filter, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1985,6 +1987,7 @@ void GlobalObject::installArray()
         return A;
     }, strings->filter.string(), 1));
 
+#ifdef USE_ES6_FEATURE
     // $22.1.3.8 Array.prototype.find
     m_arrayPrototype->ESObject::defineDataProperty(strings->find, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
@@ -1994,6 +1997,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->findIndex, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->findIndex.string(), 1));
+#endif
 
     // $22.1.3.10 Array.prototype.forEach()
     m_arrayPrototype->ESObject::defineDataProperty(strings->forEach, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2137,10 +2141,12 @@ void GlobalObject::installArray()
         return builder.finalize();
     }, strings->join, 1));
 
+#ifdef USE_ES6_FEATURE
     // $22.1.3.13 Array.prototype.keys ( )
     m_arrayPrototype->ESObject::defineDataProperty(strings->keys, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->keys.string(), 0));
+#endif
 
     // $22.1.3.14 Array.prototype.lastIndexOf(searchElement [,fromIndex])
     m_arrayPrototype->ESObject::defineDataProperty(strings->lastIndexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -3263,10 +3269,12 @@ void GlobalObject::installString()
         return A;
     }, strings->split.string(), 2));
 
+#ifdef USE_ES6_FEATURE
     // $21.1.3.18 String.prototype.startsWith
     m_stringPrototype->defineDataProperty(strings->startsWith, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->startsWith.string(), 1));
+#endif
 
     // $21.1.3.19 String.prototype.substring(start, end)
     m_stringPrototype->defineDataProperty(strings->substring, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -4019,10 +4027,12 @@ void GlobalObject::installMath()
         return ESValue(atan2(x, y));
     }, strings->atan2.string(), 2));
 
+#ifdef USE_ES6_FEATURE
     // initialize math object: $20.2.2.9 Math.cbrt()
     m_math->defineDataProperty(strings->cbrt, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->cbrt.string(), 2));
+#endif
 
     // initialize math object: $20.2.2.10 Math.ceil()
     m_math->defineDataProperty(strings->ceil, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

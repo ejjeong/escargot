@@ -6,7 +6,6 @@ ESCARGOT_CXXFLAGS_COMMON += -std=c++11
 ESCARGOT_CXXFLAGS_COMMON += -fno-rtti -fno-math-errno -I$(ESCARGOT_ROOT)/src/
 ESCARGOT_CXXFLAGS_COMMON += -fdata-sections -ffunction-sections
 ESCARGOT_CXXFLAGS_COMMON += -frounding-math -fsignaling-nans
-ESCARGOT_CXXFLAGS_COMMON += -Wno-invalid-offsetof
 ESCARGOT_CXXFLAGS_COMMON += -DUSE_ES6_FEATURE
 
 ESCARGOT_LDFLAGS_COMMON += -lpthread
@@ -38,6 +37,7 @@ ESCARGOT_LDFLAGS_ARM =
 #######################################################
 ESCARGOT_CXXFLAGS_INTERPRETER =
 ESCARGOT_CXXFLAGS_JIT = -DENABLE_ESJIT=1
+ESCARGOT_CXXFLAGS_JIT += -Wno-invalid-offsetof
 
 #######################################################
 # flags for $(MODE) : debug/release
@@ -48,6 +48,7 @@ ESCARGOT_CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-para
 ESCARGOT_CXXFLAGS_RELEASE += -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 ifneq (,$(findstring tizen,$(HOST)))
   ESCARGOT_CXXFLAGS_RELEASE += -Os -finline-limit=64
+  ESCARGOT_CXXFLAGS_RELEASE += -UUSE_ES6_FEATURE
 endif
 
 #######################################################
