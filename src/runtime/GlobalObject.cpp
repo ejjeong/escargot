@@ -109,11 +109,11 @@ ASCIIString char2hex(char dec)
 {
     char dig1 = (dec & 0xF0) >> 4;
     char dig2 = (dec & 0x0F);
-    if (dig1 <= 9)
+    if (static_cast<unsigned char>(dig1) <= 9)
         dig1 += 48; // 0, 48inascii
     if (10 <= dig1 && dig1 <= 15)
         dig1 += 65 - 10; // a, 97inascii
-    if (dig2 <= 9)
+    if (static_cast<unsigned char>(dig2) <= 9)
         dig2 += 48;
     if (10 <= dig2 && dig2 <= 15)
         dig2 += 65 - 10;
@@ -4365,7 +4365,7 @@ void GlobalObject::installNumber()
             number = -1 * number;
         }
         if (std::isinf(number)) { // 6
-            sprintf(buf, stream.str().c_str(), number, exp);
+            snprintf(buf, sizeof(buf), stream.str().c_str(), number, exp);
             return ESString::concatTwoStrings(ESString::create(buf), strings->Infinity.string());
         }
 
@@ -4397,7 +4397,7 @@ void GlobalObject::installNumber()
         } else {
             stream << "%." << digit << "lf";
         }
-        sprintf(buf, stream.str().c_str(), number);
+        snprintf(buf, sizeof(buf), stream.str().c_str(), number);
 
         // remove trailing zeros
         char* tail = nullptr;
@@ -4424,7 +4424,7 @@ void GlobalObject::installNumber()
             expStream << "+";
         }
         expStream << "%d";
-        sprintf(tail, expStream.str().c_str(), exp);
+        snprintf(tail, 512 - (ptrdiff_t)(buf - tail), expStream.str().c_str(), exp);
 
         return ESValue(ESString::create(buf));
 
@@ -4474,7 +4474,7 @@ void GlobalObject::installNumber()
             stream << "%." << digit << "lf";
             std::string fstr = stream.str();
             char buf[512];
-            sprintf(buf, fstr.c_str(), std::abs(number));
+            snprintf(buf, sizeof(buf), fstr.c_str(), std::abs(number));
             return ESValue(ESString::create(buf));
         }
         return ESValue();
@@ -4537,7 +4537,7 @@ void GlobalObject::installNumber()
             }
             std::string fstr = stream.str();
             char buf[512];
-            sprintf(buf, fstr.c_str(), x);
+            snprintf(buf, sizeof(buf), fstr.c_str(), x);
             return ESValue(ESString::create(buf));
         }
 

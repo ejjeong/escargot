@@ -182,7 +182,7 @@ public:
         size_t len2 = replacer->length();
         if (replacer->isASCIIString()) {
             char buf[len1 + len2 + 1];
-            sprintf(buf, templateString, replacer->asciiData());
+            snprintf(buf, sizeof(buf), templateString, replacer->asciiData());
             errorMessage = ESString::create(buf);
         } else {
             char16_t buf[len1 + 1];

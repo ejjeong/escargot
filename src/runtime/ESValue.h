@@ -629,7 +629,6 @@ inline char32_t readUTF8Sequence(const char*& sequence, bool& valid, int& charle
                     length = 4;
                 else {
                     valid = false;
-                    (*sequence++);
                     return -1;
                 }
             }
@@ -639,12 +638,6 @@ inline char32_t readUTF8Sequence(const char*& sequence, bool& valid, int& charle
     charlen = length;
     char32_t ch = 0;
     switch (length) {
-    case 6:
-        ch += static_cast<unsigned char>(*sequence++);
-        ch <<= 6; // FALLTHROUGH;
-    case 5:
-        ch += static_cast<unsigned char>(*sequence++);
-        ch <<= 6; // FALLTHROUGH;
     case 4:
         ch += static_cast<unsigned char>(*sequence++);
         ch <<= 6; // FALLTHROUGH;
