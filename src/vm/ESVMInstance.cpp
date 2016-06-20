@@ -241,7 +241,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall, CodeBloc
     ParserContextInformation parserContextInformation(strictFromOutside, shouldWorkAroundIdentifier, hasArgumentsBinding, true, isForGlobalScope);
     CodeBlock* block = m_scriptParser->parseScript(this, source, ExecutableType::EvalCode, parserContextInformation);
     bool isStrictCode = block->shouldUseStrictMode();
-    if (!m_currentExecutionContext || !isDirectCall) {
+    if (!isDirectCall) {
         // $ES5 10.4.2.1. Use global execution context
         m_currentExecutionContext = m_globalExecutionContext;
         m_currentExecutionContext->setStrictMode(isStrictCode);

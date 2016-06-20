@@ -240,6 +240,7 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
                     if (iter2 != vector->end()) {
                         finded = true;
 
+                        ASSERT(nearFunctionNode);
                         FunctionNode* fn = nearFunctionNode;
                         for (unsigned j = 0; j < up ; j ++) {
                             fn = fn->outerFunctionNode();
@@ -734,11 +735,11 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
         // printf("esprima takes %lfms\n", (end-start)/1000.0);
     } catch(const EsprimaError& error) {
         char temp[512];
-        sprintf(temp, "%s", error.m_message->utf8Data());
+        snprintf(temp, sizeof(temp), "%s", error.m_message->utf8Data());
         if (type != ExecutableType::EvalCode)
-            sprintf(temp, "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
+            snprintf(temp, sizeof(temp), "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
         else
-            sprintf(temp, "%s", error.m_message->utf8Data());
+            snprintf(temp, sizeof(temp), "%s", error.m_message->utf8Data());
         ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create(temp), error.m_code));
     }
 

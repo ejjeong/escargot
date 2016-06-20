@@ -2355,7 +2355,7 @@ inline ESString* ESRopeString::string()
         while (!queue.empty()) {
             ESString* cur = queue.back();
             queue.pop_back();
-            if (cur && cur->isESRopeString() && cur->asESRopeString()->m_content == nullptr) {
+            if (cur->isESRopeString() && cur->asESRopeString()->m_content == nullptr) {
                 ESRopeString* rs = cur->asESRopeString();
                 ASSERT(rs->m_left);
                 ASSERT(rs->m_right);

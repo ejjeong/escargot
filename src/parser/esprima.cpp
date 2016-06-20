@@ -249,6 +249,7 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
         } else if (first == 'd' && id == u"do") {
             return Do;
         }
+        break;
     case 3:
         if (first == 'v' && id == u"var") {
             return Var;
@@ -263,6 +264,7 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
             return Let;
             */
         }
+        break;
     case 4:
         if (first == 't' && id == u"this") {
             return This;
@@ -277,6 +279,7 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
         } else if (first == 'e' && id == u"enum") {
             return Enum;
         }
+        break;
     case 5:
         if (first == 'w' && id == u"while") {
             return While;
@@ -299,6 +302,7 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
         } else if (first == 's' && id == u"super") {
             return Super;
         }
+        break;
     case 6:
         if (first == 'r' && id == u"return") {
             return Return;
@@ -313,6 +317,7 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
         } else if (first == 'i' && id == u"import") {
             return Import;
         }
+        break;
     case 7:
         if (first == 'd' && id == u"default") {
             return Default;
@@ -321,6 +326,7 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
         } else if (first == 'e' && id == u"extends") {
             return Extends;
         }
+        break;
     case 8:
         if (first == 'f' && id == u"function") {
             return Function;
@@ -329,10 +335,12 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
         } else if (first == 'd' && id == u"debugger") {
             return Debugger;
         }
+        break;
     case 10:
         if (first == 'i' && id == u"instanceof") {
             return InstanceofKeyword;
         }
+        break;
     }
 
     return NotKeyword;
@@ -610,7 +618,7 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix)
     for (i = 0; i < len; ++i) {
         if (ctx->m_index < ctx->m_length && isHexDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
             ch = ctx->m_sourceString->charAt(ctx->m_index++);
-            int c;
+            int c = 0;
             if (ch >= '0' && ch <= '9') {
                 c = ch - '0';
             } else if (ch >= 'a' && ch <= 'f') {
@@ -647,7 +655,7 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
             break;
         }
 
-        int c;
+        int c = 0;
         if (ch >= '0' && ch <= '9') {
             c = ch - '0';
         } else if (ch >= 'a' && ch <= 'f') {
@@ -3429,6 +3437,8 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
         escargot::Node* statement = parseStatementListItem(ctx);
         if (statement)
             body.push_back(statement);
+        else
+            break;
         ASSERT(statement->type() == escargot::NodeType::ExpressionStatement);
         if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
             // this is not directive
@@ -4360,7 +4370,7 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
     */
 
     // return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
-    const escargot::InternalAtomicString& id = (key && key->isIdentifier()) ? ((escargot::IdentifierNode*)key)->name() :
+    const escargot::InternalAtomicString& id = (key->isIdentifier()) ? ((escargot::IdentifierNode*)key)->name() :
         key->isLiteral() ? escargot::InternalAtomicString(((escargot::LiteralNode*)key)->value().toString()->utf8Data()) : escargot::strings->emptyString;
     escargot::FunctionExpressionNode* nd = new escargot::FunctionExpressionNode(id, std::move(vec), body, false, true, ctx->m_strict);
     validateFunctionParamsLazily(ctx, nd, firstRestricted, previousStrict);
@@ -4500,6 +4510,7 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
 
     if (!key) {
         throwEsprimaException();
+        RELEASE_ASSERT_NOT_REACHED();
         // throwUnexpectedToken(lookahead);
     }
 
@@ -5809,6 +5820,8 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         escargot::Node* statement = parseStatementListItem(ctx);
         if (statement)
             body.push_back(statement);
+        else
+            break;
 
         if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
             // this is not directive
