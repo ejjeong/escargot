@@ -107,20 +107,22 @@ UTF16String codePointTo4digitString(int codepoint)
 
 ASCIIString char2hex(char dec)
 {
-    char dig1 = (dec & 0xF0) >> 4;
-    char dig2 = (dec & 0x0F);
-    if (static_cast<unsigned char>(dig1) <= 9)
+    unsigned char dig1 = (dec & 0xF0) >> 4;
+    unsigned char dig2 = (dec & 0x0F);
+    if (dig1 <= 9)
         dig1 += 48; // 0, 48inascii
     if (10 <= dig1 && dig1 <= 15)
         dig1 += 65 - 10; // a, 97inascii
-    if (static_cast<unsigned char>(dig2) <= 9)
+    if (dig2 <= 9)
         dig2 += 48;
     if (10 <= dig2 && dig2 <= 15)
         dig2 += 65 - 10;
 
     ASCIIString r;
-    r.append(&dig1, 1);
-    r.append(&dig2, 1);
+    char dig1_appended = static_cast<char>(dig1);
+    char dig2_appended = static_cast<char>(dig2);
+    r.append(&dig1_appended, 1);
+    r.append(&dig2_appended, 1);
     return r;
 }
 
