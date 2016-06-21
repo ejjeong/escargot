@@ -49,6 +49,9 @@ ESCARGOT_CXXFLAGS_RELEASE += -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-pr
 ifneq (,$(findstring tizen,$(HOST)))
   ESCARGOT_CXXFLAGS_RELEASE += -Os -finline-limit=64
   ESCARGOT_CXXFLAGS_RELEASE += -UUSE_ES6_FEATURE
+  ifeq ($(HOST),tizen_obs)
+    ESCARGOT_CXXFLAGS_DEBUG += -O1 # _FORTIFY_SOURCE requires compiling with optimization
+  endif
 endif
 
 #######################################################

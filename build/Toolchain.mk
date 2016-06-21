@@ -1,8 +1,11 @@
 ifeq ($(HOST), linux)
   CC           = gcc
   CXX          = g++
-  STRIP        = strip
   ARFLAGS      =
+else ifeq ($(HOST), tizen_obs)
+  CC=gcc
+  CXX=g++
+  ARFLAGS=--plugin=/usr/lib/bfd-plugins/liblto_plugin.so
 else ifneq (,$(findstring tizen,$(HOST)))
   ifndef TIZEN_SDK_HOME
     $(error TIZEN_SDK_HOME must be set)

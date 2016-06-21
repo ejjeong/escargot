@@ -70,6 +70,11 @@ else ifneq (,$(findstring tizen3_wearable_emulator,$(MAKECMDGOALS)))
   HOST=tizen_3.0_wearable
   VERSION=3.0
   ARCH=i386
+else ifneq (,$(findstring tizen_obs_arm,$(MAKECMDGOALS)))
+  HOST=tizen_obs
+else ifneq (,$(findstring tizen_obs_i386,$(MAKECMDGOALS)))
+  HOST=tizen_obs
+  ARCH=i386
 endif
 
 ifneq (,$(findstring tizen,$(HOST)))
@@ -199,7 +204,6 @@ ifeq ($(OUTPUT), bin)
 else
   OBJS_GC=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE).shared/.libs/libgc.a
 endif
-OBJS_THIRD_PARTY = $(OBJS_GC)
 
 #######################################################
 # Targets
@@ -265,6 +269,11 @@ tizen_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
 
+tizen_obs_arm.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_i386.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_i386.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
+
 ##### TIZEN3 #####
 #tizen3_mobile_arm.jit.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .
@@ -299,13 +308,13 @@ tizen3_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 
 DEPENDENCY_MAKEFILE = Makefile $(BUILDDIR)/Toolchain.mk $(BUILDDIR)/Flags.mk
 
-$(OUTDIR)/$(BIN): $(OBJS) $(OBJS_THIRD_PARTY) $(DEPENDENCY_MAKEFILE)
+$(OUTDIR)/$(BIN): $(OBJS) $(OBJS_GC) $(DEPENDENCY_MAKEFILE)
 	@echo "[LINK] $@"
-	@$(CXX) -o $@ $(OBJS) $(OBJS_THIRD_PARTY) $(LDFLAGS)
+	@$(CXX) -o $@ $(OBJS) $(OBJS_GC) $(LDFLAGS)
 
-$(OUTDIR)/$(SHARED_LIB): $(OBJS) $(OBJS_THIRD_PARTY) $(DEPENDENCY_MAKEFILE)
+$(OUTDIR)/$(SHARED_LIB): $(OBJS) $(OBJS_GC) $(DEPENDENCY_MAKEFILE)
 	@echo "[LINK] $@"
-	$(CXX) -shared -Wl,-soname,$(SHARED_LIB) -o $@ $(OBJS) $(OBJS_THIRD_PARTY) $(LDFLAGS)
+	$(CXX) -shared -Wl,-soname,$(SHARED_LIB) -o $@ $(OBJS) $(OBJS_GC) $(LDFLAGS)
 
 $(OUTDIR)/$(STATIC_LIB): $(OBJS) $(DEPENDENCY_MAKEFILE)
 	@echo "[LINK] $@"

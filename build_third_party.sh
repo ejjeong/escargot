@@ -117,11 +117,10 @@ function build_gc_for_tizen() {
         GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
         CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE} --sysroot=$TIZEN_SYSROOT -flto -ffat-lto-objects"
         LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
+        PLUGINFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so"
 
         ../../../../configure --host=$COMPILER_PREFIX $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
-            ARFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so" \
-            NMFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so" \
-            RANLIBFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so" \
+            ARFLAGS="$PLUGINFLAGS" NMFLAGS="$PLUGINFLAGS" RANLIBFLAGS="$PLUGINFLAGS" \
             CC=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc \
             CXX=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-g++ \
             AR=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-ar \
@@ -139,6 +138,49 @@ function build_gc_for_tizen() {
     done
 }
 
+function build_gc_for_tizen_obs() {
+
+    for host in tizen_obs; do
+    for arch in $1; do
+    for mode in release debug; do
+    for libtype in shared; do
+        echo =========================================================================
+        echo Building bdwgc for $host $arch $mode $libtype
+
+        BUILDDIR=out/$host/$arch/$mode.$libtype
+        rm -rf $BUILDDIR
+        mkdir -p $BUILDDIR
+        cd $BUILDDIR
+
+        GCCONFFLAGS_HOST=GCCONFFLAGS_$host CFLAGS_HOST=CFLAGS_$host LDFLAGS_HOST=LDFLAGS_$host
+        GCCONFFLAGS_ARCH=GCCONFFLAGS_$arch CFLAGS_ARCH=CFLAGS_$arch LDFLAGS_ARCH=LDFLAGS_$arch
+        GCCONFFLAGS_MODE=GCCONFFLAGS_$mode CFLAGS_MODE=CFLAGS_$mode LDFLAGS_MODE=LDFLAGS_$mode
+        GCCONFFLAGS_LIBTYPE=GCCONFFLAGS_$libtype CFLAGS_LIBTYPE=CFLAGS_$libtype LDFLAGS_LIBTYPE=LDFLAGS_$libtype
+
+        GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
+        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE}"
+        LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
+        PLUGINFLAGS="--plugin=/usr/lib/bfd-plugins/liblto_plugin.so"
+
+        ../../../../configure $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS $CFLAGS" \
+            ARFLAGS="$PLUGINFLAGS" NMFLAGS="$PLUGINFLAGS" RANLIBFLAGS="$PLUGINFLAGS" > /dev/null
+        make -j$NUMPROC
+
+        echo Building bdwgc for $host $arch $mode $libtype done
+        cd -
+    done
+    done
+    done
+    done
+}
+
+
+if [[ $1 == tizen_obs_arm ]]; then
+    build_gc_for_tizen_obs arm
+elif [[ $1 == tizen_obs_i386 ]]; then
+    build_gc_for_tizen_obs i386
+else # full build
+
 build_gc_for_linux
 
 if [ -z "$TIZEN_SDK_HOME" ]; then
@@ -148,4 +190,4 @@ else
     build_gc_for_tizen
 fi
 
-
+fi
