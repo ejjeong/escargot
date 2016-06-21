@@ -629,6 +629,7 @@ inline char32_t readUTF8Sequence(const char*& sequence, bool& valid, int& charle
                     length = 4;
                 else {
                     valid = false;
+                    (*sequence++);
                     return -1;
                 }
             }
