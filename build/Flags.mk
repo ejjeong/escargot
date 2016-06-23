@@ -2,7 +2,7 @@
 # common flags
 #######################################################
 ESCARGOT_CXXFLAGS_COMMON += -DESCARGOT
-ESCARGOT_CXXFLAGS_COMMON += -std=c++11
+ESCARGOT_CXXFLAGS_COMMON += -std=c++0x
 ESCARGOT_CXXFLAGS_COMMON += -fno-rtti -fno-math-errno -I$(ESCARGOT_ROOT)/src/
 ESCARGOT_CXXFLAGS_COMMON += -fdata-sections -ffunction-sections
 ESCARGOT_CXXFLAGS_COMMON += -frounding-math -fsignaling-nans
@@ -44,6 +44,7 @@ ESCARGOT_CXXFLAGS_JIT += -Wno-invalid-offsetof
 #######################################################
 ESCARGOT_CXXFLAGS_DEBUG += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
 ESCARGOT_CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
+ESCARGOT_CXXFLAGS_DEBUG += -Wno-type-limits -Wno-unused-result # TODO: enable these warnings
 
 ESCARGOT_CXXFLAGS_RELEASE += -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 ifneq (,$(findstring tizen,$(HOST)))

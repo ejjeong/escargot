@@ -2753,7 +2753,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
     escargot::Node* test;
     escargot::Node* update;
     escargot::Node* left = NULL;
-    escargot::Node* right;
+    escargot::Node* right = NULL;
     escargot::Node* body;
     bool previousAllowIn = ctx->m_allowIn;
 

@@ -26,7 +26,7 @@ ESVMInstance* currentInstance;
 ESVMInstance::ESVMInstance()
 {
     GC_set_oom_fn([](size_t bytes) -> void* {
-        ESVMInstance::currentInstance()->throwOOMError();
+        ESVMInstanceCurrentInstance()->throwOOMError();
         RELEASE_ASSERT_NOT_REACHED();
     });
 
@@ -89,7 +89,7 @@ ESVMInstance::ESVMInstance()
             // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Object/preventExtensions
             // Calling Object.preventExtensions() on an object will also prevent extensions on its __proto__
             if (!self->isExtensible())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"Attempted to assign to readonly property."))));
+                ESVMInstanceCurrentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"Attempted to assign to readonly property."))));
             self->set__proto__(value.asESPointer()->asESObject());
         } else if (value.isUndefined()) {
             self->set__proto__(ESValue());
@@ -137,7 +137,7 @@ ESVMInstance::ESVMInstance()
     m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) {
         uint32_t newlen = value.toUint32();
         if (value.toNumber() != newlen)
-            ESVMInstance::currentInstance()->throwError((RangeError::create(ESString::create(u"invalid array length"))));
+            ESVMInstanceCurrentInstance()->throwError((RangeError::create(ESString::create(u"invalid array length"))));
         self->asESArrayObject()->setLength(newlen);
     });
 

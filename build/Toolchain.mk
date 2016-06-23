@@ -5,7 +5,11 @@ ifeq ($(HOST), linux)
 else ifeq ($(HOST), tizen_obs)
   CC=gcc
   CXX=g++
-  ARFLAGS=--plugin=/usr/lib/bfd-plugins/liblto_plugin.so
+  ifeq ($(LTO), 1)
+    ARFLAGS=--plugin=/usr/lib/bfd-plugins/liblto_plugin.so
+  else
+    ARFLAGS=
+  endif
 else ifneq (,$(findstring tizen,$(HOST)))
   ifndef TIZEN_SDK_HOME
     $(error TIZEN_SDK_HOME must be set)
@@ -24,13 +28,21 @@ else ifneq (,$(findstring tizen,$(HOST)))
   endif
 
   COMPILER_PREFIX=$(ARCH)-linux-gnueabi
-  CC    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.9/bin/$(COMPILER_PREFIX)-gcc
-  CXX   = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.9/bin/$(COMPILER_PREFIX)-g++
-  LINK  = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.9/bin/$(COMPILER_PREFIX)-g++
-  LD    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.9/bin/$(COMPILER_PREFIX)-ld
-  AR    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.9/bin/$(COMPILER_PREFIX)-gcc-ar
+  CC    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/bin/$(COMPILER_PREFIX)-gcc
+  CXX   = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/bin/$(COMPILER_PREFIX)-g++
+  LINK  = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/bin/$(COMPILER_PREFIX)-g++
+  LD    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/bin/$(COMPILER_PREFIX)-ld
+  ifeq ($(LTO), 1)
+    AR    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/bin/$(COMPILER_PREFIX)-gcc-ar
+  else
+    AR    = $(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/bin/$(COMPILER_PREFIX)-ar
+  endif
 
   CXXFLAGS += --sysroot=$(TIZEN_SYSROOT)
   LDFLAGS  += --sysroot=$(TIZEN_SYSROOT)
-  ARFLAGS  = --plugin=$(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.9/libexec/gcc/$(COMPILER_PREFIX)/4.9.2/liblto_plugin.so
+  ifeq ($(LTO), 1)
+    ARFLAGS  = --plugin=$(TIZEN_SDK_HOME)/tools/$(COMPILER_PREFIX)-gcc-4.6/libexec/gcc/$(COMPILER_PREFIX)/4.6.4/liblto_plugin.so
+  else
+    ARFLAGS  =
+  endif
 endif

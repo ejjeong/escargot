@@ -1065,7 +1065,7 @@ void GlobalObject::installFunction()
             function->initialize(scope, codeBlock);
         } else
             function = ESFunctionObject::create(scope, codeBlock, strings->anonymous.string(), codeBlock->m_argumentCount);
-        ESObject* prototype = ESObject::create();
+        ESObject* prototype = ESObjectCreate();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         return function;
     }, strings->Function, 1, true); // $19.2.2.1 Function.length: This is a data property with a value of 1.
@@ -1165,7 +1165,7 @@ void GlobalObject::installFunction()
         escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, code.m_boundTargetFunction->name(), std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
         function->setBoundFunc();
         function->set__proto__(instance->globalObject()->functionPrototype());
-        ESObject* prototype = ESObject::create();
+        ESObject* prototype = ESObjectCreate();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
 
@@ -1228,10 +1228,11 @@ void GlobalObject::installObject()
     m_object = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue value = instance->currentExecutionContext()->readArgument(0);
         if (value.isUndefined() || value.isNull()) {
-            return ESObject::create();
+            return ESObjectCreate();
         } else {
             return value.toObject();
         }
+        return ESValue();
     }, strings->Object, 1, true);
     m_object->forceNonVectorHiddenClass(true);
     m_object->set__proto__(emptyFunction);
@@ -1335,7 +1336,7 @@ void GlobalObject::installObject()
         if (!proto.isObject() && !proto.isNull()) {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Object, false, strings->create, errorMessage_GlobalObject_FirstArgumentNotObjectAndNotNull);
         }
-        ESObject* obj = ESObject::create();
+        ESObject* obj = ESObjectCreate();
         if (proto.isNull())
             obj->set__proto__(ESValue(ESValue::ESNull));
         else
@@ -1381,7 +1382,7 @@ void GlobalObject::installObject()
             if (UNLIKELY(obj->hasPropertyInterceptor())) {
                 ESValue v = obj->readKeyForPropertyInterceptor(propertyKey);
                 if (!v.isDeleted()) {
-                    ESObject* desc = ESObject::create();
+                    ESObject* desc = ESObjectCreate();
                     desc->set(strings->value.string(), v);
                     desc->set(strings->writable.string(), ESValue(false));
                     desc->set(strings->enumerable.string(), ESValue(false));
@@ -3950,7 +3951,7 @@ void GlobalObject::installJSON()
         };
 
         // 9
-        ESObject* wrapper = ESObject::create();
+        ESObject* wrapper = ESObjectCreate();
         // 10
         wrapper->defineDataProperty(strings->emptyString, true, true, true, value);
         return Str(strings->emptyString.string(), wrapper);

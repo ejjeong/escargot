@@ -7,6 +7,13 @@ if [ ! -f /proc/cpuinfo ]; then
 fi
 NUMPROC=$(grep 'processor' /proc/cpuinfo | wc -l)
 
+#LTO=true
+LTO=false
+#COMPILER_VERSION_MAJOR=4.9
+#COMPILER_VERSION_MINOR=4.9.2
+COMPILER_VERSION_MAJOR=4.6
+COMPILER_VERSION_MINOR=4.6.4
+
 ###########################################################
 # GC build
 ###########################################################
@@ -15,8 +22,6 @@ autoreconf -vif
 automake --add-missing
 #./autogen.sh
 #make distclean
-
-rm -rf out
 
 GCCONFFLAGS_COMMON=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
 CFLAGS_COMMON=" -g3 "
@@ -94,7 +99,7 @@ function build_gc_for_tizen() {
 
         TIZEN_SYSROOT=$TIZEN_SDK_HOME/platforms/tizen-$version/$host/rootstraps/$host-$version-$device.core
         COMPILER_PREFIX=$arch-linux-gnueabi
-        TIZEN_TOOLCHAIN=$TIZEN_SDK_HOME/tools/$COMPILER_PREFIX-gcc-4.9
+        TIZEN_TOOLCHAIN=$TIZEN_SDK_HOME/tools/$COMPILER_PREFIX-gcc-$COMPILER_VERSION_MAJOR
 
         echo =========================================================================
         if [[ -a $TIZEN_SYSROOT ]]; then
@@ -115,17 +120,22 @@ function build_gc_for_tizen() {
         GCCONFFLAGS_LIBTYPE=GCCONFFLAGS_$libtype CFLAGS_LIBTYPE=CFLAGS_$libtype LDFLAGS_LIBTYPE=LDFLAGS_$libtype
 
         GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
-        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE} --sysroot=$TIZEN_SYSROOT -flto -ffat-lto-objects"
+        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE} --sysroot=$TIZEN_SYSROOT "
         LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
-        PLUGINFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/4.9.2/liblto_plugin.so"
+        if [[ $LTO == true ]]; then
+            CFLAGS+= "-flto -ffat-lto-objects"
+            LDFLAGS+= "-flto -ffat-lto-objects"
+            PLUGINFLAGS="--plugin=$TIZEN_TOOLCHAIN/libexec/gcc/$COMPILER_PREFIX/$COMPILER_VERSION_MINOR/liblto_plugin.so"
+            TOOLCHAIN_GCC_WRAPPER=-gcc
+        fi
 
         ../../../../configure --host=$COMPILER_PREFIX $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
             ARFLAGS="$PLUGINFLAGS" NMFLAGS="$PLUGINFLAGS" RANLIBFLAGS="$PLUGINFLAGS" \
             CC=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc \
             CXX=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-g++ \
-            AR=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-ar \
-            NM=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-nm \
-            RANLIB=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-gcc-ranlib \
+            AR=$TIZEN_TOOLCHAIN/bin/${COMPILER_PREFIX}${TOOLCHAIN_GCC_WRAPPER}-ar \
+            NM=$TIZEN_TOOLCHAIN/bin/${COMPILER_PREFIX}${TOOLCHAIN_GCC_WRAPPER}-nm \
+            RANLIB=$TIZEN_TOOLCHAIN/bin/${COMPILER_PREFIX}${TOOLCHAIN_GCC_WRAPPER}-ranlib \
             LD=$TIZEN_TOOLCHAIN/bin/$COMPILER_PREFIX-ld > /dev/null
         make -j$NUMPROC > /dev/null
 
@@ -140,14 +150,14 @@ function build_gc_for_tizen() {
 
 function build_gc_for_tizen_obs() {
 
-    for host in tizen_obs; do
+    for host in wearable; do
     for arch in $1; do
     for mode in release debug; do
     for libtype in shared; do
         echo =========================================================================
         echo Building bdwgc for $host $arch $mode $libtype
 
-        BUILDDIR=out/$host/$arch/$mode.$libtype
+        BUILDDIR=out/tizen_obs/$arch/$mode.$libtype
         rm -rf $BUILDDIR
         mkdir -p $BUILDDIR
         cd $BUILDDIR
@@ -160,7 +170,11 @@ function build_gc_for_tizen_obs() {
         GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
         CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE}"
         LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
-        PLUGINFLAGS="--plugin=/usr/lib/bfd-plugins/liblto_plugin.so"
+        if [[ $LTO == true ]]; then
+            CFLAGS+= "-flto -ffat-lto-objects"
+            LDFLAGS+= "-flto -ffat-lto-objects"
+            PLUGINFLAGS="--plugin=/usr/lib/bfd-plugins/liblto_plugin.so"
+        fi
 
         ../../../../configure $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS $CFLAGS" \
             ARFLAGS="$PLUGINFLAGS" NMFLAGS="$PLUGINFLAGS" RANLIBFLAGS="$PLUGINFLAGS" > /dev/null

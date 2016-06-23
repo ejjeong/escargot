@@ -307,7 +307,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESString());
 #endif
-        return reinterpret_cast<::escargot::ESString *>(this);
+        return reinterpret_cast< ::escargot::ESString *>(this);
     }
 
     ALWAYS_INLINE bool isESRopeString() const
@@ -320,7 +320,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESRopeString());
 #endif
-        return reinterpret_cast<::escargot::ESRopeString *>(this);
+        return reinterpret_cast< ::escargot::ESRopeString *>(this);
     }
 
     ALWAYS_INLINE bool isESObject() const
@@ -333,7 +333,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESObject());
 #endif
-        return reinterpret_cast<::escargot::ESObject *>(this);
+        return reinterpret_cast< ::escargot::ESObject *>(this);
     }
 
     ALWAYS_INLINE bool isESFunctionObject()
@@ -346,7 +346,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESFunctionObject());
 #endif
-        return reinterpret_cast<::escargot::ESFunctionObject *>(this);
+        return reinterpret_cast< ::escargot::ESFunctionObject *>(this);
     }
 
     ALWAYS_INLINE bool isESArrayObject() const
@@ -359,7 +359,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESArrayObject());
 #endif
-        return reinterpret_cast<::escargot::ESArrayObject *>(this);
+        return reinterpret_cast< ::escargot::ESArrayObject *>(this);
     }
 
     ALWAYS_INLINE bool isESStringObject() const
@@ -372,7 +372,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESStringObject());
 #endif
-        return reinterpret_cast<::escargot::ESStringObject *>(this);
+        return reinterpret_cast< ::escargot::ESStringObject *>(this);
     }
 
     ALWAYS_INLINE bool isESNumberObject() const
@@ -385,7 +385,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESNumberObject());
 #endif
-        return reinterpret_cast<::escargot::ESNumberObject *>(this);
+        return reinterpret_cast< ::escargot::ESNumberObject *>(this);
     }
 
     ALWAYS_INLINE bool isESBooleanObject() const
@@ -398,7 +398,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESBooleanObject());
 #endif
-        return reinterpret_cast<::escargot::ESBooleanObject *>(this);
+        return reinterpret_cast< ::escargot::ESBooleanObject *>(this);
     }
 
     ALWAYS_INLINE bool isESRegExpObject() const
@@ -416,7 +416,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESRegExpObject());
 #endif
-        return reinterpret_cast<::escargot::ESRegExpObject *>(this);
+        return reinterpret_cast< ::escargot::ESRegExpObject *>(this);
     }
 
     ALWAYS_INLINE bool isESMathObject() const
@@ -434,7 +434,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESErrorObject());
 #endif
-        return reinterpret_cast<::escargot::ESErrorObject *>(this);
+        return reinterpret_cast< ::escargot::ESErrorObject *>(this);
     }
 
     ALWAYS_INLINE bool isESDateObject() const
@@ -447,7 +447,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESDateObject());
 #endif
-        return reinterpret_cast<::escargot::ESDateObject *>(this);
+        return reinterpret_cast< ::escargot::ESDateObject *>(this);
     }
 
 #ifdef USE_ES6_FEATURE
@@ -461,7 +461,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESArrayBufferObject());
 #endif
-        return reinterpret_cast<::escargot::ESArrayBufferObject *>(this);
+        return reinterpret_cast< ::escargot::ESArrayBufferObject *>(this);
     }
 
     ALWAYS_INLINE bool isESArrayBufferView() const
@@ -474,7 +474,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESArrayBufferView());
 #endif
-        return reinterpret_cast<::escargot::ESArrayBufferView *>(this);
+        return reinterpret_cast< ::escargot::ESArrayBufferView *>(this);
     }
 
     ALWAYS_INLINE bool isESTypedArrayObject() const
@@ -488,7 +488,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESTypedArrayObject());
 #endif
-        return reinterpret_cast<::escargot::ESTypedArrayObject<TypeArg> *>(this);
+        return reinterpret_cast< ::escargot::ESTypedArrayObject<TypeArg> *>(this);
     }
 
     ALWAYS_INLINE ::escargot::ESTypedArrayObjectWrapper* asESTypedArrayObjectWrapper()
@@ -496,7 +496,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESTypedArrayObject());
 #endif
-        return reinterpret_cast<::escargot::ESTypedArrayObjectWrapper *>(this);
+        return reinterpret_cast< ::escargot::ESTypedArrayObjectWrapper *>(this);
     }
 
     ALWAYS_INLINE bool isESDataViewObject() const
@@ -509,7 +509,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESDataViewObject());
 #endif
-        return reinterpret_cast<::escargot::ESDataViewObject *>(this);
+        return reinterpret_cast< ::escargot::ESDataViewObject *>(this);
     }
 #endif
 
@@ -523,7 +523,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESArgumentsObject());
 #endif
-        return reinterpret_cast<::escargot::ESArgumentsObject *>(this);
+        return reinterpret_cast< ::escargot::ESArgumentsObject *>(this);
     }
 
     ALWAYS_INLINE bool isESControlFlowRecord() const
@@ -536,7 +536,7 @@ public:
 #ifndef NDEBUG
         ASSERT(isESControlFlowRecord());
 #endif
-        return reinterpret_cast<::escargot::ESControlFlowRecord *>(this);
+        return reinterpret_cast< ::escargot::ESControlFlowRecord *>(this);
     }
 
 #ifdef ENABLE_ESJIT
@@ -1490,13 +1490,13 @@ private:
     unsigned m_attributes;
 };
 
-typedef std::unordered_map<::escargot::ESString*, size_t,
+typedef std::unordered_map< ::escargot::ESString*, size_t,
     std::hash<ESString*>, std::equal_to<ESString*>,
     gc_allocator<std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
 
 class ESHiddenClassPropertyIndexHashMapInfo : public ESHiddenClassPropertyIndexHashMapInfoStd, public gc { };
 
-typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
+typedef std::vector< ::escargot::ESHiddenClassPropertyInfo, gc_allocator< ::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
 
 class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorStd {
     public:
@@ -1509,7 +1509,7 @@ typedef std::unordered_map<ESString*, ::escargot::ESHiddenClass **,
 std::hash<ESString*>, std::equal_to<ESString*>,
 gc_allocator<std::pair<ESString*, ::escargot::ESHiddenClass **> > > ESHiddenClassTransitionDataStd;
 
-typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESValueVectorStd;
+typedef std::vector< ::escargot::ESValue, gc_allocator< ::escargot::ESValue> > ESValueVectorStd;
 
 class ESValueVector : public ESValueVectorStd {
 public:
@@ -2048,6 +2048,11 @@ protected:
 #endif
 };
 
+ALWAYS_INLINE ESObject* ESObjectCreate()
+{
+    return ESObject::create();
+}
+
 class ESBindingSlot {
 public:
     ALWAYS_INLINE ESBindingSlot()
@@ -2315,7 +2320,7 @@ public:
 protected:
 };
 
-class ESArrayObject final : public ESObject {
+class ESArrayObject : public ESObject {
     friend class ESObject;
 protected:
     ESArrayObject(int length);
@@ -2458,6 +2463,8 @@ public:
         ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length, isConstructor, isBuiltIn);
         return ret;
     }
+
+    void initialize(LexicalEnvironment*, CodeBlock*, escargot::ESString*, unsigned, bool, bool);
 
     void initialize(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock)
     {

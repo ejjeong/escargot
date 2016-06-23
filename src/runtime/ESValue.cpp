@@ -1678,6 +1678,11 @@ ESArrayObject* ESRegExpObject::pushBackToRegExpMatchedArray(escargot::ESArrayObj
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {
+    initialize(outerEnvironment, cb, name, length, hasPrototype, isBuiltIn);
+}
+
+void ESFunctionObject::initialize(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
+{
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
     m_flags.m_nonConstructor = false;
@@ -1713,8 +1718,9 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn)
+    : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {
+    initialize(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn);
     m_codeBlock = CodeBlock::create(ExecutableType::FunctionCode, 0, true);
     m_codeBlock->m_hasCode = true;
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));

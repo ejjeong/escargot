@@ -433,6 +433,11 @@ ALWAYS_INLINE void stackCheck()
     ESVMInstance::currentInstance()->stackCheck();
 }
 
+ALWAYS_INLINE ESVMInstance* ESVMInstanceCurrentInstance()
+{
+    return ESVMInstance::currentInstance();
+}
+
 #define ALLOCA_WRAPPER(instance, ptr, type, size, atomic) \
     instance->stackCheck(); \
     if (size > options::AllocaOnHeapThreshold) { \

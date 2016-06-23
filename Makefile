@@ -78,7 +78,7 @@ else ifneq (,$(findstring tizen_obs_i386,$(MAKECMDGOALS)))
 endif
 
 ifneq (,$(findstring tizen,$(HOST)))
-  LTO=1
+  #LTO=1
 endif
 
 ifneq (,$(findstring shared,$(MAKECMDGOALS)))
