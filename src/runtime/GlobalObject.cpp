@@ -5156,23 +5156,23 @@ void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
         m_codeBlocks.erase(iter);
 }
 
-void GlobalObject::propertyDeleted(size_t idx)
+void GlobalObject::propertyDeleted(size_t deletedIdx)
 {
     for (unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
         if (m_codeBlocks[i]->m_isBuiltInFunction)
             continue;
-        iterateByteCode(m_codeBlocks[i], [&idx](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
+        iterateByteCode(m_codeBlocks[i], [&deletedIdx](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
             switch (opcode) {
             case GetByGlobalIndexOpcode:
                 {
-                    if (((GetByGlobalIndex *)code)->m_index == idx) {
+                    if (((GetByGlobalIndex *)code)->m_index == deletedIdx) {
                         ((GetByGlobalIndex *)code)->m_index = SIZE_MAX;
                     }
                     break;
                 }
             case SetByGlobalIndexOpcode:
                 {
-                    if (((SetByGlobalIndex *)code)->m_index == idx) {
+                    if (((SetByGlobalIndex *)code)->m_index == deletedIdx) {
                         ((SetByGlobalIndex *)code)->m_index = SIZE_MAX;
                     }
                     break;
