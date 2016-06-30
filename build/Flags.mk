@@ -104,9 +104,6 @@ ifeq ($(MODE), debug)
   ESCARGOT_CXXFLAGS_THIRD_PARTY += -DGC_DEBUG
 endif
 
-# netlib
-ESCARGOT_CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/third_party/netlib/
-
 # v8's fast-dtoa
 ESCARGOT_CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/third_party/double_conversion/
 
