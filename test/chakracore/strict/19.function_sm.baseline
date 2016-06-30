@@ -1,6 +1,0 @@
-Exception: function.caller get TypeError
-Exception: function.caller set TypeError
-Exception: function.arguments get TypeError
-Exception: function.arguments set TypeError
-Return: false false: function.arguments and function.caller descriptors are undefined
-Return: true true: arguments.caller and arguments.callee are equal/strictEqual to each other

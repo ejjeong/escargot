@@ -1,7 +1,0 @@
-arguments.callee:configurable : true
-arguments.callee:enumerable   : false
-arguments.callee:writable     : true
-arguments.callee:getter       : undefined
-arguments.callee:setter       : undefined
-arguments.callee:value        : function Test1() {}
-arguments.caller :propDesc undefined

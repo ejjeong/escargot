@@ -1,1 +1,0 @@
-JSON.stringify(require('BatchedBridge').invokeCallbackAndReturnFlushedQueue.apply(null, [75,[0,57,384,510]]));

@@ -1,4 +1,0 @@
-SyntaxError: Unexpected Identifier 'yield'. Future reserved word cannot used as Identifier in strict mode
-No error
-SyntaxError: Cannot use a variable named 'yield' in strict mode.
-No error

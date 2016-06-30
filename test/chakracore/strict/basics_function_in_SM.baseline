@@ -1,3 +1,0 @@
-Only function code is in strict mode
-2
-SyntaxError: Octal numeric literals and escape characters not allowed in strict mode

@@ -1,6 +1,0 @@
-RangeError: invalid array length
-RangeError: invalid array length
-obj1.prop0 = 0
-obj1.prop0 = 0
-TypeError: Attempted to assign to readonly property. 
-obj1.prop0 = 0

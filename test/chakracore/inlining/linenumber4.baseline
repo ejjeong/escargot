@@ -1,2 +1,0 @@
-this.prop2 setter
-Uncaught TypeError: Cannot redefine non-configurable property 'prop1'

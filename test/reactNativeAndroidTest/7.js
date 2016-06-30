@@ -1,1 +1,0 @@
-print(JSON.stringify(require('BatchedBridge').callFunctionReturnFlushedQueue.apply(null, [2,0,[12,"topFocus",{"target":12}]])));
