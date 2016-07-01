@@ -4,7 +4,7 @@ Release:       0
 Summary:       Web Widget Engine
 Source:        %{name}-%{version}.tar.gz
 Group:         Development/Libraries
-License:       Apache License 2.0
+License:       Apache-2.0
 
 # build requirements
 BuildRequires: make
