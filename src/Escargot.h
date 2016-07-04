@@ -452,7 +452,7 @@ typedef double ESValueInDouble;
 extern "C" { typedef ESValueInDouble (*JITFunction)(escargot::ESVMInstance*); }
 #endif
 
-#include "util/CheckedArithmetic.h"
+#include "CheckedArithmetic.h"
 #include "runtime/ESValue.h"
 
 #endif

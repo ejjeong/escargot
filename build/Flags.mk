@@ -104,6 +104,9 @@ ifeq ($(MODE), debug)
   ESCARGOT_CXXFLAGS_THIRD_PARTY += -DGC_DEBUG
 endif
 
+# checked arithmetic
+ESCARGOT_CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/third_party/checked_arithmetic/
+
 # v8's fast-dtoa
 ESCARGOT_CXXFLAGS_THIRD_PARTY += -I$(ESCARGOT_ROOT)/third_party/double_conversion/
 

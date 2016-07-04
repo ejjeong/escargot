@@ -68,9 +68,9 @@ mkdir -p %{buildroot}%{_includedir}/%{name}/src/ast
 mkdir -p %{buildroot}%{_includedir}/%{name}/src/bytecode
 mkdir -p %{buildroot}%{_includedir}/%{name}/src/parser
 mkdir -p %{buildroot}%{_includedir}/%{name}/src/runtime
-mkdir -p %{buildroot}%{_includedir}/%{name}/src/util
 mkdir -p %{buildroot}%{_includedir}/%{name}/src/vm
 mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/bdwgc
+mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/checked_arithmetic
 mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/double_conversion
 mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/rapidjson
 mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/yarr
@@ -80,9 +80,9 @@ cp src/ast/*.h %{buildroot}%{_includedir}/%{name}/src/ast
 cp src/bytecode/*.h %{buildroot}%{_includedir}/%{name}/src/bytecode
 cp src/parser/*.h %{buildroot}%{_includedir}/%{name}/src/parser
 cp src/runtime/*.h %{buildroot}%{_includedir}/%{name}/src/runtime
-cp src/util/*.h %{buildroot}%{_includedir}/%{name}/src/util
 cp src/vm/*.h %{buildroot}%{_includedir}/%{name}/src/vm
 cp -r third_party/bdwgc/include %{buildroot}%{_includedir}/%{name}/third_party/bdwgc
+cp third_party/checked_arithmetic/*.h %{buildroot}%{_includedir}/%{name}/third_party/checked_arithmetic
 cp third_party/double_conversion/*.h %{buildroot}%{_includedir}/%{name}/third_party/double_conversion
 cp -r third_party/rapidjson/include %{buildroot}%{_includedir}/%{name}/third_party/rapidjson
 cp third_party/yarr/*.h %{buildroot}%{_includedir}/%{name}/third_party/yarr
