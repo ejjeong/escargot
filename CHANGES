@@ -1,0 +1,4 @@
+* src/runtime/ESValue.h : Adjustment for our system (160705)
+* src/runtime/ESValueInlines.h : Adjustment for our system (160705)
+* src/runtime/ESValue.cpp : Adjustment for our system (160705)
+* src/runtime/GlobalObject.cpp : Adjustment for our system (160705)
