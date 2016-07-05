@@ -274,6 +274,11 @@ tizen_obs_i386.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_i386.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 
+tizen_obs_arm.interpreter.release: $(OUTDIR)/$(BIN)
+tizen_obs_i386.interpreter.release: $(OUTDIR)/$(BIN)
+tizen_obs_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+tizen_obs_i386.interpreter.debug: $(OUTDIR)/$(BIN)
+
 ##### TIZEN3 #####
 #tizen3_mobile_arm.jit.debug: $(OUTDIR)/$(BIN)
 #	cp -f $< .

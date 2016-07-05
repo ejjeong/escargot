@@ -153,7 +153,7 @@ function build_gc_for_tizen_obs() {
     for host in wearable; do
     for arch in $1; do
     for mode in release debug; do
-    for libtype in shared; do
+    for libtype in shared static; do
         echo =========================================================================
         echo Building bdwgc for $host $arch $mode $libtype
 

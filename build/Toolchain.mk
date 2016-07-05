@@ -5,6 +5,8 @@ ifeq ($(HOST), linux)
 else ifeq ($(HOST), tizen_obs)
   CC=gcc
   CXX=g++
+  CXXFLAGS += $(shell pkg-config --cflags dlog)
+  LDFLAGS += $(shell pkg-config --libs dlog)
   ifeq ($(LTO), 1)
     ARFLAGS=--plugin=/usr/lib/bfd-plugins/liblto_plugin.so
   else
