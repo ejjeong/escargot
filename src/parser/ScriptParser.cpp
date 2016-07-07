@@ -51,11 +51,12 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
     bool shouldWorkAroundIdentifier = parserContextInformation.m_shouldWorkAroundIdentifier;
     bool isForGlobalScope = parserContextInformation.m_isForGlobalScope;
     std::unordered_map<InternalAtomicString, unsigned, std::hash<InternalAtomicString>, std::equal_to<InternalAtomicString> > knownGlobalNames;
+    size_t lastKnownGlobalNameIndex = 0;
 
     // fill GlobalData
     if (isForGlobalScope) {
         const ESHiddenClassPropertyInfoVector& info = instance->globalObject()->hiddenClass()->propertyInfo();
-        for (unsigned i = 0; i < info.size() ; i ++) {
+        for (unsigned i = 0; i < info.size() ; i++) {
             if (!info[i].isDeleted()) {
                 InternalAtomicString as;
                 if (info[i].name()->isASCIIString()) {
@@ -64,16 +65,16 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
                     as = InternalAtomicString(instance, info[i].name()->utf16Data(), info[i].name()->length());
                 }
                 knownGlobalNames.insert(std::make_pair(as, i));
-            } else {
-                knownGlobalNames.insert(std::make_pair(strings->emptyString, i));
+                // ESCARGOT_LOG_INFO("Initialize knownGlobalNames[%d] = %s", i, as.string()->utf8Data());
             }
         }
+        lastKnownGlobalNameIndex = info.size();
     }
 
     std::function<void(Node* currentNode,
     std::vector<InnerIdentifierInfoVector *>& identifierStack,
     FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, &programNode, instance, &markNeedsActivation, &markNeedsHeapAllocatedExecutionContext, &shouldWorkAroundIdentifier, &knownGlobalNames, &isForGlobalScope]
+    postAnalysisFunction = [&postAnalysisFunction, &programNode, instance, &markNeedsActivation, &markNeedsHeapAllocatedExecutionContext, &shouldWorkAroundIdentifier, &knownGlobalNames, &lastKnownGlobalNameIndex, &isForGlobalScope]
     (Node* currentNode,
     std::vector<InnerIdentifierInfoVector *>& identifierStack,
     FunctionNode* nearFunctionNode) {
@@ -124,8 +125,14 @@ void ScriptParser::analyzeAST(ESVMInstance* instance, ParserContextInformation& 
             } else {
                 // global
                 if (isForGlobalScope) {
-                    knownGlobalNames.insert(std::make_pair(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name(), knownGlobalNames.size()));
-                    ((VariableDeclaratorNode *)currentNode)->setIsGlobalScope(true);
+                    auto it = knownGlobalNames.find(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+                    if (it != knownGlobalNames.end()) {
+                        ((VariableDeclaratorNode *)currentNode)->setIsGlobalScope(true);
+                    } else {
+                        // ESCARGOT_LOG_INFO("Update knownGlobalNames[%d] = %s", lastKnownGlobalNameIndex, ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name().string()->utf8Data());
+                        knownGlobalNames.insert(std::make_pair(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name(), lastKnownGlobalNameIndex++));
+                        ((VariableDeclaratorNode *)currentNode)->setIsGlobalScope(true);
+                    }
                 }
             }
         } else if (type == NodeType::FunctionDeclaration) {

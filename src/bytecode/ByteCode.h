@@ -506,16 +506,17 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        if (m_value.isEmpty())
-            printf("Push <Empty>\n");
-        else if (m_value.isESString()) {
+        if (m_value.isEmpty()) {
+            ESCARGOT_LOG_INFO("Push <Empty>\n");
+        } else if (m_value.isESString()) {
             ESString* str = m_value.asESString();
             if (str->length() > 30) {
-                printf("Push <%s>\n", str->substring(0, 30)->utf8Data());
+                ESCARGOT_LOG_INFO("Push <%s>\n", str->substring(0, 30)->utf8Data());
             } else
-                printf("Push <%s>\n", m_value.toString()->utf8Data());
-        } else
-            printf("Push <%s>\n", m_value.toString()->utf8Data());
+                ESCARGOT_LOG_INFO("Push <%s>\n", m_value.toString()->utf8Data());
+        } else {
+            ESCARGOT_LOG_INFO("Push <%s>\n", m_value.toString()->utf8Data());
+        }
     }
 #endif
 };
@@ -530,7 +531,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Pop <>\n");
+        ESCARGOT_LOG_INFO("Pop <>\n");
     }
 #endif
 };
@@ -545,7 +546,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("FakePop <>\n");
+        ESCARGOT_LOG_INFO("FakePop <>\n");
     }
 #endif
 };
@@ -560,7 +561,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PushIntoTempStack <>\n");
+        ESCARGOT_LOG_INFO("PushIntoTempStack <>\n");
     }
 #endif
 };
@@ -575,7 +576,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PopFromTempStack <>\n");
+        ESCARGOT_LOG_INFO("PopFromTempStack <>\n");
     }
 #endif
 
@@ -592,7 +593,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PopExpressionStatement <>\n");
+        ESCARGOT_LOG_INFO("PopExpressionStatement <>\n");
     }
 #endif
 };
@@ -609,7 +610,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LoadStackPointer <%u>\n", (unsigned)m_offsetToBasePointer);
+        ESCARGOT_LOG_INFO("LoadStackPointer <%u>\n", (unsigned)m_offsetToBasePointer);
     }
 #endif
 };
@@ -625,7 +626,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CheckStackPointer <>\n");
+        ESCARGOT_LOG_INFO("CheckStackPointer <>\n");
     }
 #endif
 };
@@ -649,7 +650,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetById <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
+        ESCARGOT_LOG_INFO("GetById <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
     }
 #endif
 };
@@ -674,7 +675,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetByIdWithoutException <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
+        ESCARGOT_LOG_INFO("GetByIdWithoutException <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
     }
 #endif
 };
@@ -694,7 +695,7 @@ public:
     ESString* m_name;
     virtual void dump()
     {
-        printf("GetByIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
+        ESCARGOT_LOG_INFO("GetByIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
 };
@@ -712,7 +713,7 @@ public:
     ESString* m_name;
     virtual void dump()
     {
-        printf("GetByIndexInHeap <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
+        ESCARGOT_LOG_INFO("GetByIndexInHeap <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
 };
@@ -731,7 +732,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetByGlobalIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
+        ESCARGOT_LOG_INFO("GetByGlobalIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
 };
@@ -751,7 +752,7 @@ public:
     ESString* m_name;
     virtual void dump()
     {
-        printf("GetByIndexInUpperContextHeap <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
+        ESCARGOT_LOG_INFO("GetByIndexInUpperContextHeap <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
@@ -766,7 +767,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetArgumentsObject <>\n");
+        ESCARGOT_LOG_INFO("GetArgumentsObject <>\n");
     }
 #endif
 };
@@ -791,7 +792,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetById <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
+        ESCARGOT_LOG_INFO("SetById <%s (%d)>\n", m_name.string()->utf8Data(), m_onlySearchGlobal);
     }
 #endif
 };
@@ -808,7 +809,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetByIndex <%u>\n", (unsigned)m_index);
+        ESCARGOT_LOG_INFO("SetByIndex <%u>\n", (unsigned)m_index);
     }
 #endif
 };
@@ -825,7 +826,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetByIndexInHeap <%u>\n", (unsigned)m_index);
+        ESCARGOT_LOG_INFO("SetByIndexInHeap <%u>\n", (unsigned)m_index);
     }
 #endif
 };
@@ -845,7 +846,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetByGlobalIndex <%u>\n", (unsigned)m_index);
+        ESCARGOT_LOG_INFO("SetByGlobalIndex <%u>\n", (unsigned)m_index);
     }
 #endif
 };
@@ -864,7 +865,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetByIndexInUpperContextHeap <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+        ESCARGOT_LOG_INFO("SetByIndexInUpperContextHeap <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
@@ -879,7 +880,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetArgumentsObject <>\n");
+        ESCARGOT_LOG_INFO("SetArgumentsObject <>\n");
     }
 #endif
 };
@@ -896,7 +897,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateBinding <%s>\n", m_name.string()->utf8Data());
+        ESCARGOT_LOG_INFO("CreateBinding <%s>\n", m_name.string()->utf8Data());
     }
 #endif
 };
@@ -912,7 +913,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Equal <>\n");
+        ESCARGOT_LOG_INFO("Equal <>\n");
     }
 #endif
 };
@@ -928,7 +929,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("NotEqual <>\n");
+        ESCARGOT_LOG_INFO("NotEqual <>\n");
     }
 #endif
 };
@@ -944,7 +945,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("StrictEqual <>\n");
+        ESCARGOT_LOG_INFO("StrictEqual <>\n");
     }
 #endif
 };
@@ -960,7 +961,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("NotStrictEqual <>\n");
+        ESCARGOT_LOG_INFO("NotStrictEqual <>\n");
     }
 #endif
 };
@@ -975,7 +976,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("BitwiseAnd <>\n");
+        ESCARGOT_LOG_INFO("BitwiseAnd <>\n");
     }
 #endif
 };
@@ -991,7 +992,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("BitwiseOr <>\n");
+        ESCARGOT_LOG_INFO("BitwiseOr <>\n");
     }
 #endif
 };
@@ -1007,7 +1008,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("BitwiseXor <>\n");
+        ESCARGOT_LOG_INFO("BitwiseXor <>\n");
     }
 #endif
 };
@@ -1022,7 +1023,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LeftShift <>\n");
+        ESCARGOT_LOG_INFO("LeftShift <>\n");
     }
 #endif
 };
@@ -1038,7 +1039,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SignedRightShift <>\n");
+        ESCARGOT_LOG_INFO("SignedRightShift <>\n");
     }
 #endif
 };
@@ -1054,7 +1055,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("UnsignedRightShift <>\n");
+        ESCARGOT_LOG_INFO("UnsignedRightShift <>\n");
     }
 #endif
 };
@@ -1069,7 +1070,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LessThan <>\n");
+        ESCARGOT_LOG_INFO("LessThan <>\n");
     }
 #endif
 };
@@ -1085,7 +1086,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LessThanOrEqual <>\n");
+        ESCARGOT_LOG_INFO("LessThanOrEqual <>\n");
     }
 #endif
 };
@@ -1101,7 +1102,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GreaterThan <>\n");
+        ESCARGOT_LOG_INFO("GreaterThan <>\n");
     }
 #endif
 };
@@ -1117,7 +1118,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GreaterThanOrEqual <>\n");
+        ESCARGOT_LOG_INFO("GreaterThanOrEqual <>\n");
     }
 #endif
 };
@@ -1132,7 +1133,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Plus <>\n");
+        ESCARGOT_LOG_INFO("Plus <>\n");
     }
 #endif
 };
@@ -1147,7 +1148,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Minus <>\n");
+        ESCARGOT_LOG_INFO("Minus <>\n");
     }
 #endif
 };
@@ -1163,7 +1164,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Multiply <>\n");
+        ESCARGOT_LOG_INFO("Multiply <>\n");
     }
 #endif
 };
@@ -1179,7 +1180,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Division <>\n");
+        ESCARGOT_LOG_INFO("Division <>\n");
     }
 #endif
 };
@@ -1195,7 +1196,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Mod <>\n");
+        ESCARGOT_LOG_INFO("Mod <>\n");
     }
 #endif
 };
@@ -1211,7 +1212,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Increment <>\n");
+        ESCARGOT_LOG_INFO("Increment <>\n");
     }
 #endif
 private:
@@ -1228,7 +1229,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Decrement <>\n");
+        ESCARGOT_LOG_INFO("Decrement <>\n");
     }
 #endif
 };
@@ -1244,7 +1245,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("BitwiseNot <>\n");
+        ESCARGOT_LOG_INFO("BitwiseNot <>\n");
     }
 #endif
 };
@@ -1260,7 +1261,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LogicalNot <>\n");
+        ESCARGOT_LOG_INFO("LogicalNot <>\n");
     }
 #endif
 };
@@ -1276,7 +1277,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("StringIn <>\n");
+        ESCARGOT_LOG_INFO("StringIn <>\n");
     }
 #endif
 };
@@ -1292,7 +1293,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("InstanceOf <>\n");
+        ESCARGOT_LOG_INFO("InstanceOf <>\n");
     }
 #endif
 };
@@ -1308,7 +1309,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("UnaryMinus <>\n");
+        ESCARGOT_LOG_INFO("UnaryMinus <>\n");
     }
 #endif
 };
@@ -1324,7 +1325,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("UnaryPlus <>\n");
+        ESCARGOT_LOG_INFO("UnaryPlus <>\n");
     }
 #endif
 };
@@ -1340,7 +1341,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("UnaryTypeOf <>\n");
+        ESCARGOT_LOG_INFO("UnaryTypeOf <>\n");
     }
 #endif
 };
@@ -1360,7 +1361,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("UnaryDelete <>\n");
+        ESCARGOT_LOG_INFO("UnaryDelete <>\n");
     }
 #endif
 };
@@ -1376,7 +1377,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("UnaryVoid <>\n");
+        ESCARGOT_LOG_INFO("UnaryVoid <>\n");
     }
 #endif
 };
@@ -1392,7 +1393,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ToNumber <>\n");
+        ESCARGOT_LOG_INFO("ToNumber <>\n");
     }
 #endif
 };
@@ -1410,7 +1411,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsFalse <%u>\n", (unsigned)m_jumpPosition);
+        ESCARGOT_LOG_INFO("JumpIfTopOfStackValueIsFalse <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1428,7 +1429,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsTrue <%u>\n", (unsigned)m_jumpPosition);
+        ESCARGOT_LOG_INFO("JumpIfTopOfStackValueIsTrue <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1446,7 +1447,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpAndPopIfTopOfStackValueIsTrue <%u>\n", (unsigned)m_jumpPosition);
+        ESCARGOT_LOG_INFO("JumpAndPopIfTopOfStackValueIsTrue <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1465,7 +1466,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsFalseWithPeeking <%u>\n", (unsigned)m_jumpPosition);
+        ESCARGOT_LOG_INFO("JumpIfTopOfStackValueIsFalseWithPeeking <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1483,7 +1484,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsTrueWithPeeking <%u>\n", (unsigned)m_jumpPosition);
+        ESCARGOT_LOG_INFO("JumpIfTopOfStackValueIsTrueWithPeeking <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1501,7 +1502,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateObject <%u>\n", (unsigned)m_keyCount);
+        ESCARGOT_LOG_INFO("CreateObject <%u>\n", (unsigned)m_keyCount);
     }
 #endif
 };
@@ -1519,7 +1520,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateArray <%u>\n", (unsigned)m_keyCount);
+        ESCARGOT_LOG_INFO("CreateArray <%u>\n", (unsigned)m_keyCount);
     }
 #endif
 };
@@ -1534,7 +1535,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("InitObject <>\n");
+        ESCARGOT_LOG_INFO("InitObject <>\n");
     }
 #endif
 };
@@ -1549,7 +1550,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetObjectPropertyGetter <>\n");
+        ESCARGOT_LOG_INFO("SetObjectPropertyGetter <>\n");
     }
 #endif
 };
@@ -1564,7 +1565,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetObjectPropertyGetter <>\n");
+        ESCARGOT_LOG_INFO("SetObjectPropertyGetter <>\n");
     }
 #endif
 };
@@ -1579,7 +1580,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObject <>\n");
+        ESCARGOT_LOG_INFO("GetObject <>\n");
     }
 #endif
 };
@@ -1594,7 +1595,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectAndPushObject <>\n");
+        ESCARGOT_LOG_INFO("GetObjectAndPushObject <>\n");
     }
 #endif
 };
@@ -1611,7 +1612,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectWithPeeking <>\n");
+        ESCARGOT_LOG_INFO("GetObjectWithPeeking <>\n");
     }
 #endif
 };
@@ -1627,7 +1628,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCase <%s>\n", m_propertyValue->utf8Data());
+        ESCARGOT_LOG_INFO("GetObjectPreComputedCase <%s>\n", m_propertyValue->utf8Data());
     }
 #endif
     ESString* m_propertyValue;
@@ -1645,7 +1646,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCaseAndPushObject <%s>\n", m_propertyValue->utf8Data());
+        ESCARGOT_LOG_INFO("GetObjectPreComputedCaseAndPushObject <%s>\n", m_propertyValue->utf8Data());
     }
 #endif
     ESString* m_propertyValue;
@@ -1663,7 +1664,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCaseSlowMode <>\n");
+        ESCARGOT_LOG_INFO("GetObjectPreComputedCaseSlowMode <>\n");
     }
 #endif
 };
@@ -1677,7 +1678,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCaseAndPushObjectSlowMode <>\n");
+        ESCARGOT_LOG_INFO("GetObjectPreComputedCaseAndPushObjectSlowMode <>\n");
     }
 #endif
 };
@@ -1698,7 +1699,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCaseWithPeeking <>\n");
+        ESCARGOT_LOG_INFO("GetObjectPreComputedCaseWithPeeking <>\n");
     }
 #endif
 };
@@ -1712,7 +1713,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCaseWithPeekingSlowMode <>\n");
+        ESCARGOT_LOG_INFO("GetObjectPreComputedCaseWithPeekingSlowMode <>\n");
     }
 #endif
 };
@@ -1729,7 +1730,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetObject <>\n");
+        ESCARGOT_LOG_INFO("SetObject <>\n");
     }
 #endif
 };
@@ -1747,7 +1748,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetObjectPreComputedCase <>\n");
+        ESCARGOT_LOG_INFO("SetObjectPreComputedCase <>\n");
     }
 #endif
     ESHiddenClassChain m_cachedhiddenClassChain;
@@ -1765,7 +1766,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetObjectPreComputedCaseSlowMode <>\n");
+        ESCARGOT_LOG_INFO("SetObjectPreComputedCaseSlowMode <>\n");
     }
 #endif
 };
@@ -1803,7 +1804,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateFunction <>\n");
+        ESCARGOT_LOG_INFO("CreateFunction <>\n");
     }
 #endif
     InternalAtomicString m_name;
@@ -1826,7 +1827,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ExecuteNativeFunction <>\n");
+        ESCARGOT_LOG_INFO("ExecuteNativeFunction <>\n");
     }
 #endif
 
@@ -1846,7 +1847,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CallFunction <>\n");
+        ESCARGOT_LOG_INFO("CallFunction <>\n");
     }
 #endif
 
@@ -1865,7 +1866,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CallFunctionWithReceiver <>\n");
+        ESCARGOT_LOG_INFO("CallFunctionWithReceiver <>\n");
     }
 #endif
 
@@ -1884,7 +1885,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CallEvalFunction <>\n");
+        ESCARGOT_LOG_INFO("CallEvalFunction <>\n");
     }
 #endif
 };
@@ -1904,7 +1905,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CallBoundFunction <>\n");
+        ESCARGOT_LOG_INFO("CallBoundFunction <>\n");
     }
 #endif
 };
@@ -1921,7 +1922,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("NewFunctionCall <>\n");
+        ESCARGOT_LOG_INFO("NewFunctionCall <>\n");
     }
 #endif
 
@@ -1937,7 +1938,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ReturnFunction <>\n");
+        ESCARGOT_LOG_INFO("ReturnFunction <>\n");
     }
 #endif
 
@@ -1953,7 +1954,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ReturnFunctionWithValue <>\n");
+        ESCARGOT_LOG_INFO("ReturnFunctionWithValue <>\n");
     }
 #endif
 };
@@ -1971,7 +1972,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Jump <%u>\n", (unsigned)m_jumpPosition);
+        ESCARGOT_LOG_INFO("Jump <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1991,7 +1992,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->tryDupCount().asInt32());
+        ESCARGOT_LOG_INFO("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->tryDupCount().asInt32());
     }
 #endif
 
@@ -2011,7 +2012,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("DuplicateTopOfStackValue <>\n");
+        ESCARGOT_LOG_INFO("DuplicateTopOfStackValue <>\n");
     }
 #endif
 };
@@ -2027,7 +2028,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LoopStart <>\n");
+        ESCARGOT_LOG_INFO("LoopStart <>\n");
     }
 #endif
 
@@ -2044,7 +2045,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Try <>\n");
+        ESCARGOT_LOG_INFO("Try <>\n");
     }
 #endif
     size_t m_tryDupCount;
@@ -2064,7 +2065,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("TryBodyEnd <>\n");
+        ESCARGOT_LOG_INFO("TryBodyEnd <>\n");
     }
 #endif
 };
@@ -2081,7 +2082,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("AllocPhi <%zu>\n", m_phiIndex);
+        ESCARGOT_LOG_INFO("AllocPhi <%zu>\n", m_phiIndex);
     }
 #endif
 
@@ -2101,7 +2102,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("StorePhi <%zu>\n", m_phiIndex);
+        ESCARGOT_LOG_INFO("StorePhi <%zu>\n", m_phiIndex);
     }
 #endif
 
@@ -2121,7 +2122,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LoadPhi <%zu>\n", m_phiIndex);
+        ESCARGOT_LOG_INFO("LoadPhi <%zu>\n", m_phiIndex);
     }
 #endif
 
@@ -2139,7 +2140,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("This <>\n");
+        ESCARGOT_LOG_INFO("This <>\n");
     }
 #endif
 
@@ -2157,7 +2158,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("InitRegExpObject <%s>\n", m_body->utf8Data());
+        ESCARGOT_LOG_INFO("InitRegExpObject <%s>\n", m_body->utf8Data());
     }
 #endif
 
@@ -2175,7 +2176,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("EnumerateObject <>\n");
+        ESCARGOT_LOG_INFO("EnumerateObject <>\n");
     }
 #endif
 
@@ -2191,7 +2192,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CheckIfKeyIsLast <>\n");
+        ESCARGOT_LOG_INFO("CheckIfKeyIsLast <>\n");
     }
 #endif
 
@@ -2207,7 +2208,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("EnumerateObjectKey <>\n");
+        ESCARGOT_LOG_INFO("EnumerateObjectKey <>\n");
     }
 #endif
 
@@ -2224,7 +2225,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Throw <>\n");
+        ESCARGOT_LOG_INFO("Throw <>\n");
     }
 #endif
 };
@@ -2241,7 +2242,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ThrowStatic <%s, %d>\n", m_msg->utf8Data(), m_code);
+        ESCARGOT_LOG_INFO("ThrowStatic <%s, %d>\n", m_msg->utf8Data(), m_code);
     }
 #endif
 
@@ -2260,7 +2261,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("FinallyEnd <>\n");
+        ESCARGOT_LOG_INFO("FinallyEnd <>\n");
     }
 #endif
     size_t m_tryDupCount;
@@ -2277,7 +2278,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PrintSpAndBp <>\n");
+        ESCARGOT_LOG_INFO("PrintSpAndBp <>\n");
     }
 #endif
 };
@@ -2293,7 +2294,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("End <>\n");
+        ESCARGOT_LOG_INFO("End <>\n");
     }
 #endif
 };

@@ -357,6 +357,7 @@ public:
 #endif
 
 #ifndef NDEBUG
+    bool m_debug;
     bool m_dumpByteCode;
     bool m_dumpExecuteByteCode;
     bool m_verboseJIT;

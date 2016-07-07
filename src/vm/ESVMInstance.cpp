@@ -54,6 +54,7 @@ ESVMInstance::ESVMInstance()
     });
     */
 #ifndef NDEBUG
+    m_debug = false;
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
     m_verboseJIT = false;

@@ -393,6 +393,24 @@ void GlobalObject::initGlobalObject()
     }, strings->append.string());
     set(strings->append.string(), appendFunction);
 
+#ifndef NDEBUG
+    auto debugOnFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESCARGOT_LOG_INFO("debugOn");
+        instance->m_debug = true;
+        instance->m_dumpExecuteByteCode = true;
+        return ESValue(true);
+    }, strings->debugOn.string());
+    set(strings->debugOn.string(), debugOnFunction);
+
+    auto debugOffFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESCARGOT_LOG_INFO("debugOff");
+        instance->m_debug = false;
+        instance->m_dumpExecuteByteCode = false;
+        return ESValue(false);
+    }, strings->debugOff.string());
+    set(strings->debugOff.string(), debugOffFunction);
+#endif
+
     // Function Properties of the Global Object
     m_eval = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue argument = instance->currentExecutionContext()->readArgument(0);

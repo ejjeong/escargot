@@ -252,7 +252,16 @@ class ESString;
     F(trim) \
     F(unescape) \
     F(unshift) \
+    FOR_EACH_DEBUG_STRING(F) \
     FOR_EACH_ES6_STRING(F)
+
+#ifndef NDEBUG
+#define FOR_EACH_DEBUG_STRING(F) \
+    F(debugOn) \
+    F(debugOff)
+#else
+#define FOR_EACH_DEBUG_STRING(F)
+#endif
 
 #ifdef USE_ES6_FEATURE
 #define FOR_EACH_ES6_STRING(F) \
