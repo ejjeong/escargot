@@ -1019,7 +1019,7 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
 
     // 8, 9, 10, 11
     bool isCurrentDataDescriptor = propertyInfo.isDataProperty() || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
-    bool shouldRemoveOriginalNativeGetterSetter = false;
+    bool shouldRemoveOriginalNativeGetterSetter = true;
     if (isDescGenericDescriptor) { // 8
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.configurable()) { // 9.a
@@ -1044,8 +1044,10 @@ bool ESObject::defineOwnProperty(const ESValue& P, const PropertyDescriptor& des
                     }
                 }
             }
+            shouldRemoveOriginalNativeGetterSetter = false;
         }
         if (UNLIKELY(O->isESArgumentsObject() && !propertyInfo.isDataProperty())) { // ES6.0 $9.4.4.2
+            shouldRemoveOriginalNativeGetterSetter = false;
             if (desc.hasValue())
                 O->set(P, desc.value());
             if ((descHasWritable && !desc.writable()) || (descHasEnumerable && !desc.enumerable()) || (descHasConfigurable && !desc.configurable()))
