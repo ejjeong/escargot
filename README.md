@@ -25,7 +25,7 @@ e.g. $ make x64.interpreter.debug
     make run-sunspider
 
 ## Running octane
-    ./run-octane.sh
+    make run-octane
 
 ## Running test262
     make run-test262 [OPT=**]

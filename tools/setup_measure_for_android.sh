@@ -28,8 +28,8 @@ fi
 
 TARGET_BASE_DIR=/data/local/tmp/escargot
 adb shell mkdir -p $TARGET_BASE_DIR
-adb push ./run-Sunspider.sh $TARGET_BASE_DIR
-adb push ./measure_for_android.sh $TARGET_BASE_DIR
+adb push ./tools/run-Sunspider.sh $TARGET_BASE_DIR
+adb push ./tools/measure_for_android.sh $TARGET_BASE_DIR
 adb push ./test/bin/memps_arm $TARGET_BASE_DIR
 adb shell mkdir -p $TARGET_BASE_DIR/sunspider
 adb push ./test/SunSpiderForAndroid $TARGET_BASE_DIR/sunspider

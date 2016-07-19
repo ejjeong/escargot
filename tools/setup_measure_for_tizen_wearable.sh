@@ -11,7 +11,7 @@ export SDB=$TIZEN_SDK_HOME/tools/sdb
 build-interp
 
 $SDB shell mkdir -p /opt/usr/media/escar
-$SDB push ./measure_for_tizen_wearable.sh /opt/usr/media/escar
+$SDB push ./tools/measure_for_tizen_wearable.sh /opt/usr/media/escar
 $SDB push ./test/bin/memps_tizen_wearable /opt/usr/media/escar
 $SDB shell mkdir -p /opt/usr/media/escar/sunspider
 $SDB push ./test/SunSpiderForAndroid /opt/usr/media/escar/sunspider

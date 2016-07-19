@@ -365,26 +365,26 @@ check-jit-64:
 	make run-sunspider
 	make run-octane
 	make x64.jit.debug -j$(NPROCS)
-	./run-Sunspider.sh -rcf > compiledFunctions.txt
-	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
-	./run-Sunspider.sh -rof > osrExitedFunctions.txt
-	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
+	./tools/run-Sunspider.sh -rcf > compiledFunctions.txt
+	vimdiff compiledFunctions.txt test/SunSpider/escargot/originalCompiledFunctions.txt
+	./tools/run-Sunspider.sh -rof > osrExitedFunctions.txt
+	vimdiff osrExitedFunctions.txt test/SunSpider/escargot/originalOSRExitedFunctions.txt
 
 check-jit-32:
 	make x86.jit.release -j$(NPROCS)
 	make run-sunspider
 	make run-octane
 	make x86.jit.debug -j$(NPROCS)
-	./run-Sunspider.sh -rcf > compiledFunctions.txt
-	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
-	./run-Sunspider.sh -rof > osrExitedFunctions.txt
-	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
+	./tools/run-Sunspider.sh -rcf > compiledFunctions.txt
+	vimdiff compiledFunctions.txt test/SunSpider/escargot/originalCompiledFunctions.txt
+	./tools/run-Sunspider.sh -rof > osrExitedFunctions.txt
+	vimdiff osrExitedFunctions.txt test/SunSpider/escargot/originalOSRExitedFunctions.txt
 
 check-jit-arm:
 	./setup_measure_for_android.sh build-jit
 	#./measure_for_android.sh escargot32.jit time > time.arm32.txt
-	adb shell "cd /data/local/tmp ; ./run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rcf > compiledFunctions.arm32.txt"
-	adb shell "cd /data/local/tmp ; ./run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rof > osrExitedFunctions.arm32.txt"
+	adb shell "cd /data/local/tmp ; ./tools/run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rcf > compiledFunctions.arm32.txt"
+	adb shell "cd /data/local/tmp ; ./tools/run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rof > osrExitedFunctions.arm32.txt"
 	#adb pull /data/local/tmp/time.arm32.txt .
 	adb pull /data/local/tmp/compiledFunctions.arm32.txt .
 	adb pull /data/local/tmp/osrExitedFunctions.arm32.txt .
@@ -398,7 +398,6 @@ check:
 	make check-jit-64
 	cat out/sunspider_result
 	cat out/octane_result
-	./regression_test262
 	make tidy
 
 check-lirasm:
@@ -449,6 +448,9 @@ run-spidermonkey-for-32bit:
 	cd test/SpiderMonkey; \
 	./jstests.py -s --xul-info=x86-gcc3:Linux:false ../../escargot --failure-file=mozilla.x86.interpreter.release.escargot.gen.txt -p "$(OPT)"; \
 	diff mozilla.x86.interpreter.release.escargot.orig.txt mozilla.x64.interpreter.release.escargot.gen.txt
+
+run-jsc-stress:
+	PYTHONPATH=. ./tools/driver.py -s stress;
 
 run-jsc-mozilla:
 	cd test/JavaScriptCore/mozilla/; \
