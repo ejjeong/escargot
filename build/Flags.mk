@@ -46,7 +46,7 @@ ESCARGOT_CXXFLAGS_DEBUG += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wal
 ESCARGOT_CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
 ESCARGOT_CXXFLAGS_DEBUG += -Wno-type-limits -Wno-unused-result # TODO: enable these warnings
 
-ESCARGOT_CXXFLAGS_RELEASE += -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
+ESCARGOT_CXXFLAGS_RELEASE += -O2 -g3 -DNDEBUG -fno-omit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 ifneq (,$(findstring tizen,$(HOST)))
   ESCARGOT_CXXFLAGS_RELEASE += -Os -finline-limit=64
   ESCARGOT_CXXFLAGS_RELEASE += -UUSE_ES6_FEATURE

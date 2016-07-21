@@ -41,13 +41,13 @@ LDFLAGS_arm=
 
 GCCONFFLAGS_release=" --disable-debug --disable-gc-debug "
 GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug "
-CFLAGS_release=' -O2 '
-CFLAGS_debug=' -O0 '
+CFLAGS_release=' -O2 -fno-omit-frame-pointer '
+CFLAGS_debug=' -O0 -fno-omit-frame-pointer '
 
 GCCONFFLAGS_static=
 GCCONFFLAGS_shared=
 CFLAGS_static=
-CFLAGS_shared=' -fPIC '
+CFLAGS_shared=' -fPIC'
 
 function build_gc_for_linux() {
 
