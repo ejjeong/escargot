@@ -41,8 +41,8 @@ LDFLAGS_arm=
 
 GCCONFFLAGS_release=" --disable-debug --disable-gc-debug "
 GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug "
-CFLAGS_release=' -O2 -fno-omit-frame-pointer '
-CFLAGS_debug=' -O0 -fno-omit-frame-pointer '
+CFLAGS_release=' -O2 '
+CFLAGS_debug=' -O0 '
 
 GCCONFFLAGS_static=
 GCCONFFLAGS_shared=

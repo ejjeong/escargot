@@ -6,7 +6,7 @@ ESCARGOT_CXXFLAGS_COMMON += -std=c++0x -g3
 ESCARGOT_CXXFLAGS_COMMON += -fno-rtti -fno-math-errno -I$(ESCARGOT_ROOT)/src/
 ESCARGOT_CXXFLAGS_COMMON += -fdata-sections -ffunction-sections
 ESCARGOT_CXXFLAGS_COMMON += -frounding-math -fsignaling-nans
-ESCARGOT_CXXFLAGS_COMMON += -fno-omit-frame-pointer -fstack-protector
+ESCARGOT_CXXFLAGS_COMMON += -fno-omit-frame-pointer
 ESCARGOT_CXXFLAGS_COMMON += -DUSE_ES6_FEATURE
 
 ESCARGOT_LDFLAGS_COMMON += -lpthread
@@ -47,7 +47,7 @@ ESCARGOT_CXXFLAGS_DEBUG += -O0 -D_GLIBCXX_DEBUG -Wall -Wextra -Werror
 ESCARGOT_CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
 ESCARGOT_CXXFLAGS_DEBUG += -Wno-type-limits -Wno-unused-result # TODO: enable these warnings
 
-ESCARGOT_CXXFLAGS_RELEASE += -O2 -DNDEBUG -funswitch-loops -Wno-deprecated-declarations
+ESCARGOT_CXXFLAGS_RELEASE += -O2 -DNDEBUG -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 ifneq (,$(findstring tizen,$(HOST)))
   ESCARGOT_CXXFLAGS_RELEASE += -Os -finline-limit=64
   ESCARGOT_CXXFLAGS_RELEASE += -UUSE_ES6_FEATURE
