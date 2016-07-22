@@ -17,6 +17,7 @@ OS:=$(shell uname -s)
 SHELL:=/bin/bash
 OUTPUT=
 LTO=
+QUIET=@
 ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
   SHELL:=/bin/bash
@@ -87,6 +88,10 @@ else ifneq (,$(findstring static,$(MAKECMDGOALS)))
   OUTPUT=static_lib
 else
   OUTPUT=bin
+endif
+
+ifeq ($(HOST),tizen_obs)
+  QUIET=
 endif
 
 OUTDIR=out/$(HOST)/$(ARCH)/$(TYPE)/$(MODE)
@@ -328,13 +333,13 @@ $(OUTDIR)/$(STATIC_LIB): $(OBJS) $(DEPENDENCY_MAKEFILE)
 $(OUTDIR)/%.o: %.cpp $(DEPENDENCY_MAKEFILE)
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
-	@$(CXX) -c $(CXXFLAGS) $< -o $@
+	$(QUIET) $(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
 
 $(OUTDIR)/%.o: %.cc $(DEPENDENCY_MAKEFILE)
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
-	@$(CXX) -c $(CXXFLAGS) $< -o $@
+	$(QUIET) @$(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
 
 full:

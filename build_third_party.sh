@@ -177,7 +177,7 @@ function build_gc_for_tizen_obs() {
         fi
 
         ../../../../configure $GCCONFFLAGS CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS $CFLAGS" \
-            ARFLAGS="$PLUGINFLAGS" NMFLAGS="$PLUGINFLAGS" RANLIBFLAGS="$PLUGINFLAGS" > /dev/null
+            ARFLAGS="$PLUGINFLAGS" NMFLAGS="$PLUGINFLAGS" RANLIBFLAGS="$PLUGINFLAGS"
         make -j
 
         echo Building bdwgc for $host $arch $mode $libtype done
