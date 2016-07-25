@@ -52,7 +52,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
         }
 
         if (LIKELY(slot)) {
-            if ((code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) && slot.isDataBinding() && !slot.isVirtual()) {
+            if (!slot.isVirtual() && (code->m_onlySearchGlobal || (env->record()->isGlobalEnvironmentRecord())) && slot.isDataBinding()) {
                 code->m_cachedSlot = slot.getSlot();
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
             } else {
