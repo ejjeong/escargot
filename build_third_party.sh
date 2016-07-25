@@ -162,6 +162,15 @@ function build_gc_for_tizen_obs() {
         mkdir -p $BUILDDIR
         cd $BUILDDIR
 
+        if [[ $2 == only_release ]]; then
+            if [ $mode == debug ] || [ $libtype == static ]; then
+                mkdir .libs/
+                touch .libs/libgc.a
+                cd -
+                continue;
+            fi
+        fi
+
         GCCONFFLAGS_HOST=GCCONFFLAGS_$host CFLAGS_HOST=CFLAGS_$host LDFLAGS_HOST=LDFLAGS_$host
         GCCONFFLAGS_ARCH=GCCONFFLAGS_$arch CFLAGS_ARCH=CFLAGS_$arch LDFLAGS_ARCH=LDFLAGS_$arch
         GCCONFFLAGS_MODE=GCCONFFLAGS_$mode CFLAGS_MODE=CFLAGS_$mode LDFLAGS_MODE=LDFLAGS_$mode
@@ -190,9 +199,9 @@ function build_gc_for_tizen_obs() {
 
 
 if [[ $1 == tizen_obs_arm ]]; then
-    build_gc_for_tizen_obs arm
+    build_gc_for_tizen_obs arm $2
 elif [[ $1 == tizen_obs_i386 ]]; then
-    build_gc_for_tizen_obs i386
+    build_gc_for_tizen_obs i386 $2
 else # full build
 
 build_gc_for_linux
