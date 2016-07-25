@@ -2083,14 +2083,16 @@ public:
         , m_isGlobalBinding(false)
         , m_isDataBinding(true)
         , m_isBindingMutable(true)
-        , m_isBindingConfigurable(false) { }
+        , m_isBindingConfigurable(false)
+        , m_isVirtual(false) { }
 
-    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true, bool isBindingMutable = true, bool isBindingConfigurable = false, bool isGlobalBinding = false)
+    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true, bool isBindingMutable = true, bool isBindingConfigurable = false, bool isGlobalBinding = false, bool isVirtual = false)
         : m_slot(slot)
         , m_isGlobalBinding(isGlobalBinding)
         , m_isDataBinding(isDataBinding)
         , m_isBindingMutable(isBindingMutable)
         , m_isBindingConfigurable(isBindingConfigurable)
+        , m_isVirtual(isVirtual)
     {
 #ifndef NDEBUG
         m_isInitialized = true;
@@ -2119,6 +2121,7 @@ public:
     ALWAYS_INLINE bool isDataBinding() { return m_isDataBinding; }
     ALWAYS_INLINE bool isMutable() { return m_isBindingMutable; }
     ALWAYS_INLINE bool isConfigurable() { return m_isBindingConfigurable; }
+    ALWAYS_INLINE bool isVirtual() { return m_isVirtual; }
 
 private:
     ESValue* m_slot;
@@ -2126,6 +2129,7 @@ private:
     bool m_isDataBinding:1;
     bool m_isBindingMutable:1;
     bool m_isBindingConfigurable:1;
+    bool m_isVirtual:1;
 #ifndef NDEBUG
     bool m_isInitialized:1;
 #endif

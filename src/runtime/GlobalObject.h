@@ -389,7 +389,7 @@ public:
         if (hasPropertyInterceptor()) {
             ESValue v = readKeyForPropertyInterceptor(key);
             if (!v.isDeleted())
-                return new(GC) ESValue(v);
+                return ESBindingSlot(new(GC) ESValue(v), true, true, false, false, true);
         }
         return nullptr;
     }

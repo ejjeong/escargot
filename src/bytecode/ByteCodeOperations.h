@@ -41,11 +41,10 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
         else {
             if (UNLIKELY(instance->globalObject()->hasIdentifierInterceptor())) {
                 ESValue v = instance->globalObject()->readIdentifierFromIdentifierInterceptor(code->m_name.string());
-
                 if (v.isDeleted()) {
                     slot = ec->resolveBinding(code->m_name, env);
                 } else {
-                    return new(GC) ESValue(v);
+                    slot = ESBindingSlot(new(GC) ESValue(v), true, true, false, false, true);
                 }
             } else {
                 slot = ec->resolveBinding(code->m_name, env);
@@ -53,9 +52,11 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
         }
 
         if (LIKELY(slot)) {
-            if ((code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) && slot.isDataBinding()) {
+            if ((code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) && slot.isDataBinding() && !slot.isVirtual()) {
                 code->m_cachedSlot = slot.getSlot();
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+            } else {
+                code->m_identifierCacheInvalidationCheckCount = -1;
             }
 #ifdef ENABLE_ESJIT
             code->m_profile.addProfile(*slot);
