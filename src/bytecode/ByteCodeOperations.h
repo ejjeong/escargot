@@ -65,7 +65,8 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
                 return slot.getSlot();
             } else {
                 // must be global binding
-                ASSERT(!env || env->record()->isGlobalEnvironmentRecord());
+                ASSERT(!env || env->record()->isGlobalEnvironmentRecord()
+                    || (env->record()->isDeclarativeEnvironmentRecordForCatchClause()));
                 instance->m_temporaryAccessorBindingValueHolder = instance->globalObject()->get(code->m_name.string());
                 return &instance->m_temporaryAccessorBindingValueHolder;
             }

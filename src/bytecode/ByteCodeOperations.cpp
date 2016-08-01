@@ -65,7 +65,8 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
                 *slot.getSlot() = *value;
             } else {
                 // must be global binding
-                ASSERT(!env || env->record()->isGlobalEnvironmentRecord());
+                ASSERT(!env || env->record()->isGlobalEnvironmentRecord()
+                    || (env->record()->isDeclarativeEnvironmentRecordForCatchClause()));
                 if (!instance->globalObject()->set(code->m_name.string(), *value))
                     throwObjectWriteError();
             }

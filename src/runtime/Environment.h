@@ -189,6 +189,11 @@ public:
         return false;
     }
 
+    virtual bool isDeclarativeEnvironmentRecordForCatchClause()
+    {
+        return false;
+    }
+
     GlobalEnvironmentRecord* asGlobalEnvironmentRecord()
     {
         ASSERT(isGlobalEnvironmentRecord());
@@ -383,6 +388,11 @@ public:
             DeclarativeEnvironmentRecord::setMutableBinding(m_errorName, V, mustNotThrowTypeErrorExecption);
         else
             m_parentRecord->setMutableBinding(name, V, mustNotThrowTypeErrorExecption);
+    }
+
+    virtual bool isDeclarativeEnvironmentRecordForCatchClause()
+    {
+        return true;
     }
 
 private:
