@@ -39,8 +39,8 @@ GCCONFFLAGS_arm=
 CFLAGS_arm=" -march=armv7-a -mthumb -finline-limit=64 "
 LDFLAGS_arm=
 
-GCCONFFLAGS_release=" --disable-debug --disable-gc-debug "
-GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug "
+GCCONFFLAGS_release=" --disable-debug --disable-gc-debug --enable-munmap"
+GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug --enable-munmap"
 CFLAGS_release=' -O2 '
 CFLAGS_debug=' -O0 '
 

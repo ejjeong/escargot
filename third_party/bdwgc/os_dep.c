@@ -2404,12 +2404,20 @@ GC_INNER void GC_unmap(ptr_t start, size_t bytes)
       /* accidentally grabbing the same address space.                  */
       {
         void * result;
-
+        int adv_result;
         result = mmap(start_addr, len, PROT_NONE,
                       MAP_PRIVATE | MAP_FIXED | OPT_MAP_ANON,
                       zero_fd, 0/* offset */);
         if (result != (void *)start_addr)
           ABORT("mmap(PROT_NONE) failed");
+
+#   ifdef MADV_FREE
+        adv_result = madvise(start_addr, len, MADV_DONTNEED | MADV_FREE);
+#   else
+        adv_result = madvise(start_addr, len, MADV_DONTNEED);
+#   endif
+        if (adv_result != 0)
+          ABORT("madvise failed");
       }
       GC_unmapped_bytes += len;
 #   endif
