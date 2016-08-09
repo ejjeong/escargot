@@ -85,7 +85,7 @@ function build_gc_for_linux() {
 
 function build_gc_for_tizen() {
 
-    for version in 2.3.1 3.0; do
+    for version in 2.3.1 2.4 3.0; do
     for host in wearable mobile; do
     for arch in arm i386; do
     for mode in debug release; do

@@ -71,6 +71,10 @@ else ifneq (,$(findstring tizen3_wearable_emulator,$(MAKECMDGOALS)))
   HOST=tizen_3.0_wearable
   VERSION=3.0
   ARCH=i386
+else ifneq (,$(findstring tizen24_mobile_emulator,$(MAKECMDGOALS)))
+  HOST=tizen_2.4_mobile
+  VERSION=2.4
+  ARCH=i386
 else ifneq (,$(findstring tizen_obs_arm,$(MAKECMDGOALS)))
   HOST=tizen_obs
 else ifneq (,$(findstring tizen_obs_i386,$(MAKECMDGOALS)))
@@ -274,6 +278,7 @@ tizen_wearable_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 	cp -f $< .
 
+##### TIZEN_OBS #####
 tizen_obs_arm.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_i386.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
@@ -283,6 +288,10 @@ tizen_obs_arm.interpreter.release: $(OUTDIR)/$(BIN)
 tizen_obs_i386.interpreter.release: $(OUTDIR)/$(BIN)
 tizen_obs_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 tizen_obs_i386.interpreter.debug: $(OUTDIR)/$(BIN)
+
+##### TIZEN24 #####
+tizen24_mobile_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
+tizen24_mobile_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 
 ##### TIZEN3 #####
 #tizen3_mobile_arm.jit.debug: $(OUTDIR)/$(BIN)

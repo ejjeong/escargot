@@ -20,6 +20,8 @@ else ifneq (,$(findstring tizen,$(HOST)))
   ifneq (,$(findstring mobile,$(HOST)))
     ifeq ($(ARCH), arm)
       TIZEN_SYSROOT=$(TIZEN_SDK_HOME)/platforms/tizen-$(VERSION)/mobile/rootstraps/mobile-$(VERSION)-device.core
+    else ifeq ($(ARCH), i386)
+      TIZEN_SYSROOT=$(TIZEN_SDK_HOME)/platforms/tizen-$(VERSION)/mobile/rootstraps/mobile-$(VERSION)-emulator.core
     endif
   else ifneq (,$(findstring wearable,$(HOST)))
     ifeq ($(ARCH), arm)
