@@ -2791,6 +2791,14 @@ public:
         return false;
     }
 
+    // buffer is must be allocated by bdwgc
+    void attachArrayBuffer(void* buffer, size_t length)
+    {
+        ASSERT(isDetachedBuffer());
+        m_data = buffer;
+        m_bytelength = length;
+    }
+
     void detachArrayBuffer()
     {
         m_data = NULL;
