@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
+#include <list>
 #include <set>
 #include <map>
 #include <unordered_map>

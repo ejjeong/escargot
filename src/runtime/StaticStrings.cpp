@@ -29,6 +29,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     stringProtected = InternalAtomicString(instance, "protected");
     stringPrivate = InternalAtomicString(instance, "private");
     stringStatic = InternalAtomicString(instance, "static");
+    stringCatch = InternalAtomicString(instance, "catch");
     defaultRegExpString = InternalAtomicString(instance, "(?:)");
 
     for (unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {

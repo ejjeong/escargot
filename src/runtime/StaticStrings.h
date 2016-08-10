@@ -275,7 +275,14 @@ class ESString;
     F(Uint8ClampedArray) \
     F(Float32Array) \
     F(Float64Array) \
-    F(ArrayBuffer)
+    F(ArrayBuffer) \
+    F(Promise) \
+    F(alreadyResolved) \
+    F(all) \
+    F(race) \
+    F(reject) \
+    F(resolve) \
+    F(then)
 #else
 #define FOR_EACH_ES6_STRING(F)
 #endif
@@ -290,6 +297,7 @@ public:
     InternalAtomicString stringProtected;
     InternalAtomicString stringPrivate;
     InternalAtomicString stringStatic;
+    InternalAtomicString stringCatch;
     InternalAtomicString defaultRegExpString;
 
 #define ESCARGOT_ASCII_TABLE_MAX 128

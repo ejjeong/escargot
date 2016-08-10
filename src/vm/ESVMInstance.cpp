@@ -21,6 +21,7 @@
 #include "runtime/Environment.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/GlobalObject.h"
+#include "runtime/JobQueue.h"
 #include "bytecode/ByteCode.h"
 #ifdef ENABLE_ESJIT
 #include "nanojit.h"
@@ -189,6 +190,10 @@ ESVMInstance::ESVMInstance()
     m_regexpAccessorData[4].setSetter([](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& index) {
         self->asESRegExpObject()->setLastIndex(index);
     });
+
+#ifdef USE_ES6_FEATURE
+    m_jobQueue = JobQueue::create();
+#endif
 
     m_globalObject = new GlobalObject();
     m_globalObject->initGlobalObject();

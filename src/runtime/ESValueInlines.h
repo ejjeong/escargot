@@ -472,6 +472,11 @@ inline bool ESValue::isObject() const
     return isESPointer() && asESPointer()->isESObject();
 }
 
+inline bool ESValue::isFunction() const
+{
+    return isESPointer() && asESPointer()->isESFunctionObject();
+}
+
 inline double ESValue::toLength() const
 {
     double len = toInteger();
@@ -612,6 +617,18 @@ inline bool ESValue::equalsToByTheSameValueAlgorithm(const ESValue& val)
             return o == o2;
     }
     return false;
+}
+
+inline ESObject* ESValue::asObject() const
+{
+    ASSERT(isObject());
+    return asESPointer()->asESObject();
+}
+
+inline ESFunctionObject* ESValue::asFunction() const
+{
+    ASSERT(isFunction());
+    return asESPointer()->asESFunctionObject();
 }
 
 // ==============================================================================

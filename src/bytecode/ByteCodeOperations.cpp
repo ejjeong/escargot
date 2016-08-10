@@ -532,6 +532,8 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = ESTypedArrayObject<Float64Adaptor>::create();
     } else if (function == globalObject->arrayBuffer()) {
         receiver = ESArrayBufferObject::create();
+    } else if (function == globalObject->promise()) {
+        receiver = ESPromiseObject::create();
 #endif
     } else {
         receiver = ESObject::create();

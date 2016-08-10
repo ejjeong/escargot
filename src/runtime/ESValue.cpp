@@ -28,6 +28,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "runtime/JobQueue.h"
 #include "ast/AST.h"
 #include "jit/ESJIT.h"
 #include "bytecode/ByteCode.h"
@@ -1740,6 +1741,30 @@ void ESFunctionObject::initialize(LexicalEnvironment* outerEnvironment, CodeBloc
         defineAccessorProperty(strings->caller.string(), ESVMInstance::currentInstance()->throwerAccessorData(), false, false, false);
     }
     m_flags.m_isBoundFunction = false;
+}
+
+ESFunctionObject* ESFunctionObject::createBoundFunction(ESVMInstance* instance, escargot::ESFunctionObject* boundTargetFunction, escargot::ESValue boundThis, const escargot::ESValue* boundArgumentsConst, size_t boundArgumentsCount)
+{
+    ESValue* boundArguments = (ESValue *)GC_MALLOC(boundArgumentsCount * sizeof(ESValue));
+    memcpy(boundArguments, boundArgumentsConst, boundArgumentsCount * sizeof(ESValue));
+
+    CodeBlock* cb = CodeBlock::create(ExecutableType::FunctionCode);
+    ParserContextInformation parserContextInformation;
+    ByteCodeGenerateContext context(cb, parserContextInformation);
+    CallBoundFunction code;
+    code.m_boundTargetFunction = boundTargetFunction;
+    code.m_boundThis = boundThis;
+    code.m_boundArgumentsCount = boundArgumentsCount;
+    code.m_boundArguments = boundArguments;
+    cb->pushCode(code, context, NULL);
+    cb->m_hasCode = true;
+    escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, code.m_boundTargetFunction->name(), std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
+    function->setBoundFunc();
+    function->set__proto__(instance->globalObject()->functionPrototype());
+    ESObject* prototype = ESObjectCreate();
+    prototype->set__proto__(instance->globalObject()->object()->protoType());
+    function->setProtoType(prototype);
+    return function;
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
@@ -4031,5 +4056,63 @@ void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj, const ESHiddenC
         return;
     }
 }
+
+#ifdef USE_ES6_FEATURE
+void ESPromiseObject::createResolvingFunctions(escargot::ESVMInstance* instance, escargot::ESFunctionObject*& resolveFunction, escargot::ESFunctionObject*& rejectFunction)
+{
+    ASSERT(!resolveFunction);
+    ASSERT(!rejectFunction);
+
+    resolveFunction = escargot::ESFunctionObject::create(NULL, instance->globalObject()->promiseResolveFunction(), strings->emptyString, 1);
+    rejectFunction = escargot::ESFunctionObject::create(NULL, instance->globalObject()->promiseRejectFunction(), strings->emptyString, 1);
+
+    resolveFunction->deleteProperty(strings->name.string());
+    rejectFunction->deleteProperty(strings->name.string());
+
+    escargot::ESObject* resolveFunctionInternalSlot = ESObject::create(8);
+    escargot::ESObject* rejectFunctionInternalSlot = ESObject::create(8);
+
+    resolveFunctionInternalSlot->defineDataProperty(strings->Promise.string(), false, true, false, ESValue(this));
+    resolveFunctionInternalSlot->defineDataProperty(strings->alreadyResolved.string(), true, true, false, ESValue(false));
+    rejectFunctionInternalSlot->defineDataProperty(strings->Promise.string(), false, true, false, ESValue(this));
+    rejectFunctionInternalSlot->defineDataProperty(strings->alreadyResolved.string(), true, true, false, ESValue(false));
+
+    resolveFunction->setInternalSlot(resolveFunctionInternalSlot);
+    rejectFunction->setInternalSlot(rejectFunctionInternalSlot);
+
+    setCapability(PromiseReaction::Capability(resolveFunction, rejectFunction));
+}
+
+void ESPromiseObject::fulfillPromise(escargot::ESVMInstance* instance, ESValue value)
+{
+    // ESCARGOT_LOG_INFO("Fulfill Promise %p (state %d)\n", this, m_state);
+
+    m_state = PromiseState::FulFilled;
+    m_promiseResult = value;
+    triggerPromiseReactions(instance, m_fulfillReactions);
+    m_fulfillReactions.clear();
+    m_rejectReactions.clear();
+}
+
+int ESPromiseObject::s_counter = 0;
+
+void ESPromiseObject::rejectPromise(escargot::ESVMInstance* instance, ESValue reason)
+{
+    // ESCARGOT_LOG_INFO("Reject Promise %p (state %d)\n", this, m_state);
+
+    m_state = PromiseState::Rejected;
+    m_promiseResult = reason;
+    triggerPromiseReactions(instance, m_rejectReactions);
+
+    m_fulfillReactions.clear();
+    m_rejectReactions.clear();
+}
+
+void ESPromiseObject::triggerPromiseReactions(escargot::ESVMInstance* instance, ESPromiseObject::Reactions& reactions)
+{
+    for (auto it : reactions)
+        instance->jobQueue()->enqueueJob(PromiseReactionJob::create(it, m_promiseResult));
+}
+#endif
 
 }

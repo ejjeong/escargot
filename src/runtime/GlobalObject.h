@@ -358,6 +358,11 @@ public:
     {
         return m_arrayBufferPrototype;
     }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* promise() { return m_promise; }
+    ALWAYS_INLINE escargot::ESObject* promisePrototype() { return m_promisePrototype; }
+    ALWAYS_INLINE escargot::NativeFunctionType promiseResolveFunction() { return m_promiseResolveFunction; }
+    ALWAYS_INLINE escargot::NativeFunctionType promiseRejectFunction() { return m_promiseRejectFunction; }
 #endif
 
     // DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
@@ -445,6 +450,7 @@ protected:
     void installTypedArray();
     template <typename T>
     escargot::ESFunctionObject* installTypedArray(escargot::ESString*);
+    void installPromise();
 #endif
 
     escargot::ESVMInstance* m_instance;
@@ -507,6 +513,11 @@ protected:
     escargot::ESObject* m_Float64ArrayPrototype;
     escargot::ESFunctionObject* m_arrayBuffer;
     escargot::ESObject* m_arrayBufferPrototype;
+
+    escargot::ESFunctionObject* m_promise;
+    escargot::ESObject* m_promisePrototype;
+    escargot::NativeFunctionType m_promiseResolveFunction;
+    escargot::NativeFunctionType m_promiseRejectFunction;
 #endif
 
     escargot::ESFunctionObject* m_eval;

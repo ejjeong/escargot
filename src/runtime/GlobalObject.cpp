@@ -29,6 +29,7 @@
 #include "runtime/Environment.h"
 #include "parser/ScriptParser.h"
 #include "bytecode/ByteCodeOperations.h"
+#include "runtime/JobQueue.h"
 
 #include "parser/esprima.h"
 
@@ -242,6 +243,7 @@ void GlobalObject::initGlobalObject()
 #ifdef USE_ES6_FEATURE
     installArrayBuffer();
     installTypedArray();
+    installPromise();
 #endif
 
     // Value Properties of the Global Object
@@ -1191,26 +1193,12 @@ void GlobalObject::installFunction()
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Function, true, strings->bind, errorMessage_GlobalObject_ThisNotFunctionObject);
         }
-        CodeBlock* cb = CodeBlock::create(ExecutableType::FunctionCode);
-        ParserContextInformation parserContextInformation;
-        ByteCodeGenerateContext context(cb, parserContextInformation);
-        CallBoundFunction code;
-        code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
-        code.m_boundThis = instance->currentExecutionContext()->readArgument(0);
-        if (instance->currentExecutionContext()->argumentCount() >= 2) {
-            code.m_boundArgumentsCount = instance->currentExecutionContext()->argumentCount() - 1;
-        } else
-            code.m_boundArgumentsCount = 0;
-        code.m_boundArguments = (ESValue *)GC_MALLOC(code.m_boundArgumentsCount * sizeof(ESValue));
-        memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
-        cb->pushCode(code, context, NULL);
-        cb->m_hasCode = true;
-        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, code.m_boundTargetFunction->name(), std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
-        function->setBoundFunc();
-        function->set__proto__(instance->globalObject()->functionPrototype());
-        ESObject* prototype = ESObjectCreate();
-        prototype->set__proto__(instance->globalObject()->object()->protoType());
-        function->setProtoType(prototype);
+        escargot::ESFunctionObject* boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
+        escargot::ESValue boundThis = instance->currentExecutionContext()->readArgument(0);
+        size_t boundArgumentsCount = (instance->currentExecutionContext()->argumentCount() >= 2) ? instance->currentExecutionContext()->argumentCount() - 1 : 0;
+        ESValue* boundArguments = instance->currentExecutionContext()->arguments() + 1;
+
+        escargot::ESFunctionObject* function = escargot::ESFunctionObject::createBoundFunction(instance, boundTargetFunction, boundThis, boundArguments, boundArgumentsCount);
 
         function->defineAccessorProperty(strings->caller.string(), instance->throwerAccessorData(), true, false, false);
         function->defineAccessorProperty(strings->arguments.string(), instance->throwerAccessorData(), true, false, false);
@@ -1320,6 +1308,8 @@ void GlobalObject::installObject()
             ret.append(ta_name.toString()->asciiData());
             ret.append("]");
             return ESString::createAtomicString(ret.data());
+        } else if (thisVal->isESPromiseObject()) {
+            return ESString::createAtomicString("[object Promise]");
 #endif
         } else if (thisVal->isESArgumentsObject()) {
             return ESString::createAtomicString("[object Arguments]");
@@ -5185,6 +5175,229 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     defineDataProperty(ta_name, true, false, true, ta_constructor);
     return ta_constructor;
 }
+
+void GlobalObject::installPromise()
+{
+    m_promisePrototype = ESPromiseObject::create(nullptr);
+    m_promisePrototype->forceNonVectorHiddenClass(true);
+    m_promisePrototype->set__proto__(m_objectPrototype);
+    m_promisePrototype->defineDataProperty(strings->constructor, true, false, true, m_promise);
+
+    // $25.4.3 Promise(executor)
+    m_promise = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESPromiseObject* promise;
+        if (instance->currentExecutionContext()->isNewExpression()) {
+            ESValue executor = instance->currentExecutionContext()->readArgument(0);
+            if (!executor.isFunction())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: Promise executor is not a function object");
+            promise = instance->currentExecutionContext()->resolveThisBindingToObject()->asESPromiseObject();
+            promise->setExecutor(executor.asFunction());
+        } else {
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: Promise constructor should be called with new Promise()");
+        }
+
+        escargot::ESFunctionObject* promiseResolveFunction = nullptr;
+        escargot::ESFunctionObject* promiseRejectFunction = nullptr;
+        promise->createResolvingFunctions(instance, promiseResolveFunction, promiseRejectFunction);
+
+        ESValue arguments[] = { promiseResolveFunction, promiseRejectFunction };
+        std::jmp_buf tryPosition;
+        if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
+            ESFunctionObject::call(instance, promise->executor(), ESValue(), arguments, 2, false);
+            instance->unregisterTryPos(&tryPosition);
+            instance->unregisterCheckedObjectAll();
+            return promise;
+        } else {
+            escargot::ESValue err = instance->getCatchedError();
+            escargot::ESObject* internalSlot = promiseResolveFunction->internalSlot();
+            if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+                return promise;
+            // ESCARGOT_LOG_INFO("executor run fail with err %s\n", err.toString()->utf8Data());
+            ESValue reason[] = { err };
+            ESFunctionObject::call(instance, promiseRejectFunction, ESValue(), reason, 1, false);
+            return ESValue();
+        }
+    }, strings->Promise, 1, true);
+    m_promise->forceNonVectorHiddenClass(true);
+    m_promise->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
+
+    m_promisePrototype->defineDataProperty(strings->constructor, true, false, true, m_promise);
+
+    // $25.4.1.3.2 Internal Promise Resolve Function
+    m_promiseResolveFunction = [](ESVMInstance* instance) -> ESValue {
+        escargot::ESFunctionObject* callee = instance->currentExecutionContext()->resolveCallee().asFunction();
+        escargot::ESObject* internalSlot = callee->internalSlot();
+        escargot::ESPromiseObject* promise = internalSlot->get(strings->Promise.string()).asObject()->asESPromiseObject();
+        /*
+        ESCARGOT_LOG_INFO("[Promise %p] Internal promise resolve function %p with arg %s : %s\n",
+            promise, callee, instance->currentExecutionContext()->readArgument(0).toString()->utf8Data(),
+            data->alreadyResolved() ? "DONE" : "RESOLVE");
+        */
+        if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+            return ESValue();
+        internalSlot->set(strings->alreadyResolved.string(), ESValue(true));
+
+        ESValue resolutionValue = instance->currentExecutionContext()->readArgument(0);
+        if (resolutionValue == ESValue(promise)) {
+            promise->rejectPromise(instance, escargot::TypeError::create(escargot::ESString::create("Self resolution error")));
+            return ESValue();
+        }
+
+        if (!resolutionValue.isObject()) {
+            promise->fulfillPromise(instance, resolutionValue);
+            return ESValue();
+        }
+        escargot::ESObject* resolution = resolutionValue.asObject();
+
+        ESValue then;
+        std::jmp_buf tryPosition;
+        if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
+            then = resolution->get(strings->then.string());
+            instance->unregisterTryPos(&tryPosition);
+            instance->unregisterCheckedObjectAll();
+        } else {
+            escargot::ESValue err = instance->getCatchedError();
+            promise->rejectPromise(instance, err);
+            return ESValue();
+        }
+
+        if (then.isFunction()) {
+            instance->jobQueue()->enqueueJob(PromiseResolveThenableJob::create(promise, resolution, then.asFunction()));
+        } else {
+            promise->fulfillPromise(instance, resolution);
+            return ESValue();
+        }
+
+        return ESValue();
+    };
+
+    // $25.4.1.3.1 Internal Promise Reject Function
+    m_promiseRejectFunction = [](ESVMInstance* instance) -> ESValue {
+        escargot::ESFunctionObject* callee = instance->currentExecutionContext()->resolveCallee().asFunction();
+        escargot::ESObject* internalSlot = callee->internalSlot();
+        escargot::ESPromiseObject* promise = internalSlot->get(strings->Promise.string()).asObject()->asESPromiseObject();
+        /*
+        ESCARGOT_LOG_INFO("[Promise %p] Internal promise reject function %p with arg %s : %s\n",
+            promise, callee, instance->currentExecutionContext()->readArgument(0).toString()->utf8Data(),
+            data->alreadyResolved() ? "DONE" : "REJECT");
+        */
+        if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+            return ESValue();
+        internalSlot->set(strings->alreadyResolved.string(), ESValue(true));
+
+        promise->rejectPromise(instance, instance->currentExecutionContext()->readArgument(0));
+        return ESValue();
+    };
+
+    // $25.4.4.1 Promise.all(iterable)
+    m_promise->defineDataProperty(strings->all, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue iterableValue = instance->currentExecutionContext()->readArgument(0);
+        if (!iterableValue.isObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->all, "%s: Promise.all takes iterable object");
+        escargot::ESObject* iterable = iterableValue.asObject();
+
+        escargot::ESValue arguments[] = { instance->globalObject()->functionPrototype() };
+        escargot::ESPromiseObject* newPromise = newOperation(instance, instance->globalObject(), instance->globalObject()->promise(), arguments, 1).asObject()->asESPromiseObject();
+
+        arguments[0] = iterable;
+        escargot::ESFunctionObject::call(instance, newPromise->capability().m_resolveFunction, ESValue(), arguments, 1, false);
+        return newPromise;
+    }, strings->all, 1));
+
+    // $25.4.4.3 Promise.race(iterable)
+    m_promise->defineDataProperty(strings->race, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        return ESValue();
+    }, strings->race, 1));
+
+    // $25.4.4.4 Promise.reject(r)
+    m_promise->defineDataProperty(strings->reject, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue r = instance->currentExecutionContext()->readArgument(0);
+
+        escargot::ESValue arguments[] = { instance->globalObject()->functionPrototype() };
+        escargot::ESPromiseObject* newPromise = newOperation(instance, instance->globalObject(), instance->globalObject()->promise(), arguments, 1).asObject()->asESPromiseObject();
+
+        arguments[0] = r;
+        escargot::ESFunctionObject::call(instance, newPromise->capability().m_rejectFunction, ESValue(), arguments, 1, false);
+        return newPromise;
+    }, strings->reject, 1));
+
+    // $25.4.4.5 Promise.resolve(x)
+    m_promise->defineDataProperty(strings->resolve, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        if (x.isObject() && x.asObject()->isESPromiseObject()) {
+            if (x.asObject()->get(strings->constructor.string()) == ESValue(thisObject))
+                return x;
+        }
+        escargot::ESValue arguments[] = { instance->globalObject()->functionPrototype() };
+        escargot::ESPromiseObject* newPromise = newOperation(instance, instance->globalObject(), instance->globalObject()->promise(), arguments, 1).asObject()->asESPromiseObject();
+
+        arguments[0] = x;
+        escargot::ESFunctionObject::call(instance, newPromise->capability().m_resolveFunction, ESValue(), arguments, 1, false);
+        return newPromise;
+    }, strings->resolve, 1));
+
+    // $25.4.5.1 Promise.prototype.catch(onRejected)
+    m_promisePrototype->defineDataProperty(strings->stringCatch, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (!thisValue.isESPointer() || !thisValue.asESPointer()->isESPromiseObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: not a Promise object");
+
+        escargot::ESValue onRejected = instance->currentExecutionContext()->readArgument(0);
+        escargot::ESValue then = thisValue.asObject()->get(strings->then.string());
+        escargot::ESValue arguments[] = { ESValue(), onRejected };
+        return escargot::ESFunctionObject::call(instance, then, thisValue, arguments, 2, false);
+    }, strings->stringCatch, 1));
+
+    // $25.4.5.1 Promise.prototype.then(onFulfilled, onRejected)
+    m_promisePrototype->defineDataProperty(strings->then, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (!thisValue.isESPointer() || !thisValue.asESPointer()->isESPromiseObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: not a Promise object");
+        escargot::ESPromiseObject* promise = thisValue.asESPointer()->asESPromiseObject();
+
+        ESValue onFulfilledValue = instance->currentExecutionContext()->readArgument(0);
+        ESValue onRejectedValue = instance->currentExecutionContext()->readArgument(1);
+
+        escargot::ESFunctionObject* onFulfilled = onFulfilledValue.isFunction() ? onFulfilledValue.asFunction() : (escargot::ESFunctionObject*)(1);
+        escargot::ESFunctionObject* onRejected = onRejectedValue.isFunction() ? onRejectedValue.asFunction() : (escargot::ESFunctionObject*)(2);
+
+        escargot::ESValue arguments[] = { instance->globalObject()->functionPrototype() };
+        escargot::ESPromiseObject* newPromise = newOperation(instance, instance->globalObject(), instance->globalObject()->promise(), arguments, 1).asObject()->asESPromiseObject();
+
+        switch (promise->state()) {
+        case ESPromiseObject::PromiseState::Pending:
+        {
+            // ESCARGOT_LOG_INFO("then: Pending case\n");
+            promise->appendReaction(onFulfilled, onRejected, newPromise->capability());
+            break;
+        }
+        case ESPromiseObject::PromiseState::FulFilled:
+        {
+            // ESCARGOT_LOG_INFO("then: FulFilled case\n");
+            Job* job = PromiseReactionJob::create(PromiseReaction(onFulfilled, newPromise->capability()), promise->promiseResult());
+            instance->jobQueue()->enqueueJob(job);
+            break;
+        }
+        case ESPromiseObject::PromiseState::Rejected:
+        {
+            // ESCARGOT_LOG_INFO("then: Rejected case\n");
+            Job* job = PromiseReactionJob::create(PromiseReaction(onRejected, newPromise->capability()), promise->promiseResult());
+            instance->jobQueue()->enqueueJob(job);
+            break;
+        }
+        default:
+            break;
+        }
+        return newPromise;
+    }, strings->then, 2));
+
+    m_promise->set__proto__(m_functionPrototype); // empty Function
+    m_promise->setProtoType(m_promisePrototype);
+    defineDataProperty(strings->Promise, true, false, true, m_promise);
+}
+
 #endif
 
 void GlobalObject::registerCodeBlock(CodeBlock* cb)

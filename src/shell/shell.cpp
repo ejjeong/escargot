@@ -17,6 +17,7 @@
 #include "Escargot.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
+#include "shell/DefaultJobQueue.h"
 #include "ast/AST.h"
 
 #ifdef ESCARGOT_PROFILE
@@ -146,6 +147,14 @@ bool evaluate(escargot::ESVMInstance* instance, escargot::ESString* str, bool pr
         if (printValue) {
             instance->printValue(ret);
         }
+#ifdef USE_ES6_FEATURE
+        escargot::DefaultJobQueue* jobQueue = escargot::DefaultJobQueue::get(instance->jobQueue());
+        while (jobQueue->hasNextJob()) {
+            ret = jobQueue->nextJob()->run(instance);
+            if (printValue)
+                instance->printValue(ret);
+        }
+#endif
         instance->unregisterTryPos(&tryPosition);
         instance->unregisterCheckedObjectAll();
     } else {

@@ -40,6 +40,7 @@ class OpcodeTable;
 class Try;
 class ScriptParser;
 class ESIdentifierVector;
+class JobQueue;
 struct ESSimpleAllocatorMemoryFragment;
 
 #ifndef ANDROID
@@ -73,6 +74,9 @@ public:
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
     ALWAYS_INLINE ExecutionContext* globalExecutionContext() { return m_globalExecutionContext; }
     ALWAYS_INLINE GlobalObject* globalObject() { return m_globalObject; }
+#ifdef USE_ES6_FEATURE
+    ALWAYS_INLINE JobQueue* jobQueue() { return m_jobQueue; }
+#endif
 
     ALWAYS_INLINE void enter()
     {
@@ -379,6 +383,10 @@ protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
+
+#ifdef USE_ES6_FEATURE
+    JobQueue* m_jobQueue;
+#endif
 
     OpcodeTable* m_opcodeTable;
     std::unordered_map<void *, unsigned char> m_opcodeReverseTable;
