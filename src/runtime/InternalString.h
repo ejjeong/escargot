@@ -76,43 +76,6 @@ inline const char * utf16ToUtf8(const char16_t *t, const size_t& len, size_t* bu
     return result;
 }
 
-// http://egloos.zum.com/profrog/v/1177107
-ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, char16_t& uc)
-{
-    size_t tRequiredSize = 0;
-
-    uc = 0x0000;
-
-    // ASCII byte
-    if (0 == (UTF8[0] & 0x80)) {
-        uc = UTF8[0];
-        tRequiredSize = 1;
-    } else {
-        // Start byte for 2byte
-        if (0xC0 == (UTF8[0] & 0xE0)
-            && 0x80 == (UTF8[1] & 0xC0) ) {
-            uc += (UTF8[0] & 0x1F) << 6;
-            uc += (UTF8[1] & 0x3F) << 0;
-            tRequiredSize = 2;
-        } else { // Start byte for 3byte
-            if (0xE0 == (UTF8[0] & 0xE0)
-                && 0x80 == (UTF8[1] & 0xC0)
-                && 0x80 == (UTF8[2] & 0xC0)) {
-                uc += (UTF8[0] & 0x1F) << 12;
-                uc += (UTF8[1] & 0x3F) << 6;
-                uc += (UTF8[2] & 0x3F) << 0;
-                tRequiredSize = 3;
-            } else {
-                // Invalid case
-                tRequiredSize = 1;
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-        }
-    }
-
-    return tRequiredSize;
-}
-
 }
 
 #endif
