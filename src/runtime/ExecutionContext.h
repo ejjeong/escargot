@@ -26,9 +26,9 @@ class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
     ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool isNewExpression, bool isStrictMode,
-        ESValue* arguments = NULL, size_t argumentsCount = 0)
+        ESValue* callStackInformation, ESValue* arguments = NULL, size_t argumentsCount = 0)
             : m_environment(varEnv)
-            , m_thisValue(ESValue::ESForceUninitialized)
+            , m_callStackInformation((CallStackInformation*)callStackInformation)
             , m_tryOrCatchBodyResult(ESValue::ESForceUninitialized)
     {
         ASSERT(varEnv);
@@ -64,17 +64,27 @@ public:
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     void setThisBinding(const ESValue& v)
     {
-        m_thisValue = v;
+        m_callStackInformation->m_thisValue = v;
     }
 
-    ESValue resolveThisBinding()
+    void setCallee(const ESValue& callee)
     {
-        return m_thisValue;
+        m_callStackInformation->m_callee = callee;
+    }
+
+    ESValue& resolveThisBinding()
+    {
+        return m_callStackInformation->m_thisValue;
     }
 
     ESObject* resolveThisBindingToObject()
     {
-        return m_thisValue.toObject();
+        return m_callStackInformation->m_thisValue.toObject();
+    }
+
+    ESValue& resolveCallee()
+    {
+        return m_callStackInformation->m_callee;
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
@@ -128,7 +138,13 @@ private:
     // LexicalEnvironment* m_variableEnvironment;
     LexicalEnvironment* m_environment;
 
-    ESValue m_thisValue;
+    struct CallStackInformation {
+        ESValue m_thisValue;
+        ESValue m_callee;
+    };
+
+    CallStackInformation* m_callStackInformation;
+
     union {
         ESValue m_tryOrCatchBodyResult;
         ESValue* m_argumentsInfo;

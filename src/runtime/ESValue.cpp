@@ -2118,6 +2118,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         }
     }
 
+    newEC->setCallee(fn);
+
     // if FunctionExpressionNode has own name, should bind own function object
     if (cb->m_isFunctionExpression && cb->m_functionExpressionNameIndex != SIZE_MAX) {
         if (cb->m_isFunctionExpressionNameHeapAllocated) {
@@ -2166,11 +2168,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 
         ESValue* stackStorage;
         ALLOCA_WRAPPER(instance, stackStorage, ESValue*, sizeof(ESValue) * cb->m_stackAllocatedIdentifiersCount, false);
+        ESValue* callStackInformation;
+        ALLOCA_WRAPPER(instance, callStackInformation, ESValue*, sizeof(ESValue) * 2, false);
+
         bool outerFENameRegistered = false;
         if (cb->m_needsHeapAllocatedExecutionContext) {
             auto FE = LexicalEnvironment::newFunctionEnvironment(cb->m_needsToPrepareGenerateArgumentsObject,
                 stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, arguments, argumentCount, fn, cb->m_needsActivation, cb->m_functionExpressionNameIndex);
-            instance->m_currentExecutionContext = new ExecutionContext(FE, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
+            instance->m_currentExecutionContext = new ExecutionContext(FE, isNewExpression, cb->shouldUseStrictMode(), callStackInformation, arguments, argumentCount);
             FunctionEnvironmentRecord* record = (FunctionEnvironmentRecord *)FE->record();
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, cb, record, stackStorage, receiver, arguments, argumentCount, instance, &outerFENameRegistered);
 
@@ -2185,7 +2190,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     arguments, argumentCount, fn,
                     stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, cb->m_needsActivation, cb->m_functionExpressionNameIndex);
                 LexicalEnvironment env(&envRec, fn->outerEnvironment());
-                ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
+                ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), callStackInformation, arguments, argumentCount);
                 instance->m_currentExecutionContext = &ec;
                 functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance, &outerFENameRegistered);
 #ifdef ENABLE_ESJIT
@@ -2197,7 +2202,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 FunctionEnvironmentRecord envRec(
                     stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, cb->m_needsActivation, cb->m_functionExpressionNameIndex);
                 LexicalEnvironment env(&envRec, fn->outerEnvironment());
-                ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
+                ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), callStackInformation, arguments, argumentCount);
                 instance->m_currentExecutionContext = &ec;
                 functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance, &outerFENameRegistered);
 #ifdef ENABLE_ESJIT
