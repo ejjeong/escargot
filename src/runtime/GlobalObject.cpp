@@ -249,6 +249,13 @@ void GlobalObject::initGlobalObject()
     defineDataProperty(strings->NaN, false, false, false, ESValue(std::numeric_limits<double>::quiet_NaN()));
     defineDataProperty(strings->undefined, false, false, false, ESValue());
 
+    auto gcFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        GC_gcollect();
+        return ESValue();
+    }, strings->gc.string());
+    set(strings->gc.string(), gcFunction);
+
+#ifdef ESCARGOT_STANDALONE
     auto brkFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         printf("dbgBreak\n");
         return ESValue();
@@ -265,12 +272,6 @@ void GlobalObject::initGlobalObject()
         return ESValue();
     }, strings->print.string());
     set(strings->print.string(), printFunction);
-
-    auto gcFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        GC_gcollect();
-        return ESValue();
-    }, strings->gc.string());
-    set(strings->gc.string(), gcFunction);
 
     auto gcHeapSizeFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         unsigned size = GC_get_heap_size();
@@ -392,6 +393,7 @@ void GlobalObject::initGlobalObject()
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->append.string());
     set(strings->append.string(), appendFunction);
+#endif
 
 #ifndef NDEBUG
     auto debugOnFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
