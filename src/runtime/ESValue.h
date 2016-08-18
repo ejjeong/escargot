@@ -2871,6 +2871,11 @@ public:
         return true;
     }
 
+    void copyDataFrom(ESArrayBufferObject* other, unsigned start, unsigned length)
+    {
+        memcpy((int8_t*)other->m_data + start, m_data, length);
+    }
+
 private:
     void* m_data;
     unsigned m_bytelength;

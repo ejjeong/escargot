@@ -4915,11 +4915,11 @@ void GlobalObject::installArrayBuffer()
             obj->allocateArrayBuffer(0);
         else if (len >= 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            int numlen = val.toNumber();
-            int elemlen = val.toLength();
-            if (numlen != elemlen)
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, false, strings->emptyString, errorMessage_GlobalObject_FirstArgumentInvalidLength);
-            obj->allocateArrayBuffer(elemlen);
+            double numberLength = val.toNumber();
+            double byteLength = val.toLength();
+            if (numberLength != byteLength)
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->ArrayBuffer, false, strings->emptyString, errorMessage_GlobalObject_FirstArgumentInvalidLength);
+            obj->allocateArrayBuffer(byteLength);
         }
         return obj;
     }, strings->ArrayBuffer, 1, true);
@@ -4927,11 +4927,47 @@ void GlobalObject::installArrayBuffer()
     m_arrayBuffer->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
-    // $22.2.3.2
+
+    // $24.1.4.1
     m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         // FIXME find right object from originalObj
+        ESVMInstance* instance = ESVMInstance::currentInstance();
+        if (originalObj == instance->globalObject()->arrayBufferPrototype())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->byteLength, "%s: this object should be ArrayBuffer object");
         return ESValue(originalObj->asESArrayBufferObject()->bytelength());
     }, nullptr, true, false, false);
+
+    // $24.1.4.3 ArrayBuffer.prototype.slice(start, end)
+    m_arrayBufferPrototype->defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue end = instance->currentExecutionContext()->readArgument(1);
+        if (!thisObject->isESArrayBufferObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->slice, "%s: this object is not an ArrayBuffer object");
+        escargot::ESArrayBufferObject* obj = thisObject->asESArrayBufferObject();
+        if (obj->isDetachedBuffer())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->slice, "%s: ArrayBuffer is detached buffer");
+
+        double len = obj->bytelength();
+        double relativeStart = instance->currentExecutionContext()->readArgument(0).toInteger();
+        unsigned first = (relativeStart < 0) ? std::max(len + relativeStart, 0.0) : std::min(relativeStart, len);
+        double relativeEnd = end.isUndefined() ? len : end.toInteger();
+        unsigned final_ = (relativeEnd < 0) ? std::max(len + relativeEnd, 0.0) : std::min(relativeEnd, len);
+        unsigned newLen = std::max((int)final_ - (int)first, 0);
+
+        escargot::ESArrayBufferObject* newObject = ESArrayBufferObject::createAndAllocate(newLen);
+        if (newObject->isDetachedBuffer()) // 18
+            RELEASE_ASSERT_NOT_REACHED();
+        if (newObject == obj) // 19
+            RELEASE_ASSERT_NOT_REACHED();
+        if (newObject->bytelength() < newLen) // 20
+            RELEASE_ASSERT_NOT_REACHED();
+        if (newObject->isDetachedBuffer()) // 22
+            RELEASE_ASSERT_NOT_REACHED();
+
+        newObject->copyDataFrom(obj, first, newLen);
+
+        return newObject;
+    }, strings->slice, 2));
 
     m_arrayBuffer->set__proto__(m_functionPrototype); // empty Function
     m_arrayBuffer->setProtoType(m_arrayBufferPrototype);
