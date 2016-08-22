@@ -75,6 +75,10 @@ else ifneq (,$(findstring tizen24_mobile_emulator,$(MAKECMDGOALS)))
   HOST=tizen_2.4_mobile
   VERSION=2.4
   ARCH=i386
+else ifneq (,$(findstring tizen24_mobile_arm,$(MAKECMDGOALS)))
+  HOST=tizen_2.4_mobile
+  VERSION=2.4
+  ARCH=arm
 else ifneq (,$(findstring tizen_obs_arm,$(MAKECMDGOALS)))
   HOST=tizen_obs
 else ifneq (,$(findstring tizen_obs_i386,$(MAKECMDGOALS)))
@@ -292,6 +296,8 @@ tizen_obs_i386.interpreter.debug: $(OUTDIR)/$(BIN)
 ##### TIZEN24 #####
 tizen24_mobile_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 tizen24_mobile_emulator.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
+tizen24_mobile_arm.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
+tizen24_mobile_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 
 ##### TIZEN3 #####
 #tizen3_mobile_arm.jit.debug: $(OUTDIR)/$(BIN)
