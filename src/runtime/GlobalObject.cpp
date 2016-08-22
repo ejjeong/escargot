@@ -5194,6 +5194,7 @@ void GlobalObject::installPromise()
             promise->setExecutor(executor.asFunction());
         } else {
             throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: Promise constructor should be called with new Promise()");
+            RELEASE_ASSERT_NOT_REACHED();
         }
 
         escargot::ESFunctionObject* promiseResolveFunction = nullptr;
