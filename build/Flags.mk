@@ -31,11 +31,17 @@ ESCARGOT_CXXFLAGS_X64 += -DESCARGOT_64=1
 ESCARGOT_LDFLAGS_X64 =
 
 # https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
-ESCARGOT_CXXFLAGS_X86 += -DESCARGOT_32=1 -m32 -mfpmath=sse -msse -msse2
+ESCARGOT_CXXFLAGS_X86 += -DESCARGOT_32=1
+ifneq ($(HOST),tizen_obs)
+ESCARGOT_CXXFLAGS_X86 += -m32 -mfpmath=sse -msse -msse2
 ESCARGOT_LDFLAGS_X86 += -m32
+endif
 
-ESCARGOT_CXXFLAGS_ARM += -DESCARGOT_32=1 -march=armv7-a -mthumb
+ESCARGOT_CXXFLAGS_ARM += -DESCARGOT_32=1
+ifneq ($(HOST),tizen_obs)
+ESCARGOT_CXXFLAGS_ARM += -march=armv7-a -mthumb
 ESCARGOT_LDFLAGS_ARM =
+endif
 
 #######################################################
 # flags for $(TYPE) : jit/interpreter

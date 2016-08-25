@@ -23,13 +23,20 @@ automake --add-missing
 #./autogen.sh
 #make distclean
 
+# Common flags --------------------------------------------
+
 GCCONFFLAGS_COMMON=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
 CFLAGS_COMMON=" -g3 "
 LDFLAGS_COMMON=
 
+# HOST flags : linux / wearable / mobile / tv -------------
+
 GCCONFFLAGS_wearable=
 CFLAGS_wearable=" -Os "
 LDFLAGS_wearable=
+
+# ARCH flags : x86 / arm ----------------------------------
+# CAUTION: these flags are NOT used when building for tizen_obs
 
 GCCONFFLAGS_x86=
 CFLAGS_x86=" -m32 "
@@ -39,10 +46,14 @@ GCCONFFLAGS_arm=
 CFLAGS_arm=" -march=armv7-a -mthumb -finline-limit=64 "
 LDFLAGS_arm=
 
+# MODE flags : debug / release ----------------------------
+
 GCCONFFLAGS_release=" --disable-debug --disable-gc-debug --enable-munmap"
 GCCONFFLAGS_debug=" --enable-debug --enable-gc-debug --enable-munmap"
 CFLAGS_release=' -O2 '
 CFLAGS_debug=' -O0 '
+
+# LIBTYPE flags : shared / static -------------------------
 
 GCCONFFLAGS_static=
 GCCONFFLAGS_shared=
@@ -172,13 +183,12 @@ function build_gc_for_tizen_obs() {
         fi
 
         GCCONFFLAGS_HOST=GCCONFFLAGS_$host CFLAGS_HOST=CFLAGS_$host LDFLAGS_HOST=LDFLAGS_$host
-        GCCONFFLAGS_ARCH=GCCONFFLAGS_$arch CFLAGS_ARCH=CFLAGS_$arch LDFLAGS_ARCH=LDFLAGS_$arch
         GCCONFFLAGS_MODE=GCCONFFLAGS_$mode CFLAGS_MODE=CFLAGS_$mode LDFLAGS_MODE=LDFLAGS_$mode
         GCCONFFLAGS_LIBTYPE=GCCONFFLAGS_$libtype CFLAGS_LIBTYPE=CFLAGS_$libtype LDFLAGS_LIBTYPE=LDFLAGS_$libtype
 
-        GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_ARCH} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
-        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_ARCH} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE}"
-        LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_ARCH} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
+        GCCONFFLAGS="$GCCONFFLAGS_COMMON ${!GCCONFFLAGS_HOST} ${!GCCONFFLAGS_MODE} ${!GCCONFFLAGS_LIBTYPE}"
+        CFLAGS="$CFLAGS_COMMON ${!CFLAGS_HOST} ${!CFLAGS_MODE} ${!CFLAGS_LIBTYPE}"
+        LDFLAGS="$LDFLAGS_COMMON ${!LDFLAGS_HOST} ${!LDFLAGS_MODE} ${!LDFLAGS_LIBTYPE}"
         if [[ $LTO == true ]]; then
             CFLAGS+= "-flto -ffat-lto-objects"
             LDFLAGS+= "-flto -ffat-lto-objects"
