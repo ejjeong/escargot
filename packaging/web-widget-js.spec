@@ -59,8 +59,8 @@ export ESCARGOT_ARCH=i386
 rm -rf %{buildroot}
 
 # License
-mkdir -p %{buildroot}%{_datadir}/license/%{name}
-cp LICENSE* %{buildroot}%{_datadir}/license/%{name}
+mkdir -p %{buildroot}%{_datadir}/license
+cat LICENSE* COPYING.LIB > %{buildroot}%{_datadir}/license/%{name}
 
 # Archive
 mkdir -p %{buildroot}%{_libdir}/%{name}/release
