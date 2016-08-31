@@ -4916,7 +4916,7 @@ void GlobalObject::installArrayBuffer()
         else if (len >= 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             double numberLength = val.toNumber();
-            double byteLength = val.toLength();
+            double byteLength = ESValue(numberLength).toLength();
             if (numberLength != byteLength)
                 throwBuiltinError(instance, ErrorCode::RangeError, strings->ArrayBuffer, false, strings->emptyString, errorMessage_GlobalObject_FirstArgumentInvalidLength);
             obj->allocateArrayBuffer(byteLength);
@@ -4929,13 +4929,15 @@ void GlobalObject::installArrayBuffer()
     m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
 
     // $24.1.4.1
-    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        // FIXME find right object from originalObj
-        ESVMInstance* instance = ESVMInstance::currentInstance();
-        if (originalObj == instance->globalObject()->arrayBufferPrototype())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->byteLength, "%s: this object should be ArrayBuffer object");
-        return ESValue(originalObj->asESArrayBufferObject()->bytelength());
-    }, nullptr, true, false, false);
+    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength.string(), new ESPropertyAccessorData(
+        ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
+            ESObject* originalObj = instance->currentExecutionContext()->resolveThisBindingToObject();
+            // FIXME find right object from originalObj
+            if (originalObj == instance->globalObject()->arrayBufferPrototype())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->byteLength, "%s: this object should be ArrayBuffer object");
+            return ESValue(originalObj->asESArrayBufferObject()->bytelength());
+        }, ESString::create("get byteLength")), NULL)
+    , false, false, true);
 
     // $24.1.4.3 ArrayBuffer.prototype.slice(start, end)
     m_arrayBufferPrototype->defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -4954,7 +4956,21 @@ void GlobalObject::installArrayBuffer()
         unsigned final_ = (relativeEnd < 0) ? std::max(len + relativeEnd, 0.0) : std::min(relativeEnd, len);
         unsigned newLen = std::max((int)final_ - (int)first, 0);
 
-        escargot::ESArrayBufferObject* newObject = ESArrayBufferObject::createAndAllocate(newLen);
+        escargot::ESArrayBufferObject* newObject;
+
+        ESValue constructor = thisObject->get(strings->constructor.string());
+        if (constructor.isUndefined()) {
+            newObject = ESArrayBufferObject::createAndAllocate(newLen);
+        } else {
+            if (!constructor.isObject() || !constructor.asObject()->isESFunctionObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->slice, "%s: constructor of ArrayBuffer is not a function");
+
+            ESValue arguments[] = { ESValue(newLen) };
+            escargot::ESValue newValue = newOperation(instance, instance->globalObject(), constructor, arguments, 1);
+            // TODO : newValue could be non-ArrayBuffer value
+            newObject = newValue.asObject()->asESArrayBufferObject();
+        }
+
         if (newObject->isDetachedBuffer()) // 18
             RELEASE_ASSERT_NOT_REACHED();
         if (newObject == obj) // 19
@@ -5405,25 +5421,25 @@ void GlobalObject::installPromise()
 
         switch (promise->state()) {
         case ESPromiseObject::PromiseState::Pending:
-        {
-            // ESCARGOT_LOG_INFO("then: Pending case\n");
-            promise->appendReaction(onFulfilled, onRejected, newPromise->capability());
-            break;
-        }
+            {
+                // ESCARGOT_LOG_INFO("then: Pending case\n");
+                promise->appendReaction(onFulfilled, onRejected, newPromise->capability());
+                break;
+            }
         case ESPromiseObject::PromiseState::FulFilled:
-        {
-            // ESCARGOT_LOG_INFO("then: FulFilled case\n");
-            Job* job = PromiseReactionJob::create(PromiseReaction(onFulfilled, newPromise->capability()), promise->promiseResult());
-            instance->jobQueue()->enqueueJob(job);
-            break;
-        }
+            {
+                // ESCARGOT_LOG_INFO("then: FulFilled case\n");
+                Job* job = PromiseReactionJob::create(PromiseReaction(onFulfilled, newPromise->capability()), promise->promiseResult());
+                instance->jobQueue()->enqueueJob(job);
+                break;
+            }
         case ESPromiseObject::PromiseState::Rejected:
-        {
-            // ESCARGOT_LOG_INFO("then: Rejected case\n");
-            Job* job = PromiseReactionJob::create(PromiseReaction(onRejected, newPromise->capability()), promise->promiseResult());
-            instance->jobQueue()->enqueueJob(job);
-            break;
-        }
+            {
+                // ESCARGOT_LOG_INFO("then: Rejected case\n");
+                Job* job = PromiseReactionJob::create(PromiseReaction(onRejected, newPromise->capability()), promise->promiseResult());
+                instance->jobQueue()->enqueueJob(job);
+                break;
+            }
         default:
             break;
         }
