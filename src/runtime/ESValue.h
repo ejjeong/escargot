@@ -3253,6 +3253,7 @@ public:
     void setCapability(escargot::PromiseReaction::Capability capability) { m_capability = capability; }
 
     void createResolvingFunctions(escargot::ESVMInstance* instance, escargot::ESFunctionObject*& resolveFunction, escargot::ESFunctionObject*& rejectFunction);
+    static escargot::ESObject* resolvingFunctionAlreadyResolved(escargot::ESFunctionObject* callee);
 
     escargot::ESFunctionObject* executor() { return m_executor; }
     PromiseState state() { return m_state; }

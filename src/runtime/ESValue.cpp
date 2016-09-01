@@ -4072,15 +4072,25 @@ void ESPromiseObject::createResolvingFunctions(escargot::ESVMInstance* instance,
     escargot::ESObject* resolveFunctionInternalSlot = ESObject::create(8);
     escargot::ESObject* rejectFunctionInternalSlot = ESObject::create(8);
 
+    escargot::ESObject* alreadyResolved = ESObject::create();
+    alreadyResolved->defineDataProperty(strings->value.string(), true, true, true, ESValue(false));
+
     resolveFunctionInternalSlot->defineDataProperty(strings->Promise.string(), false, true, false, ESValue(this));
-    resolveFunctionInternalSlot->defineDataProperty(strings->alreadyResolved.string(), true, true, false, ESValue(false));
+    resolveFunctionInternalSlot->defineDataProperty(strings->alreadyResolved.string(), true, true, false, alreadyResolved);
     rejectFunctionInternalSlot->defineDataProperty(strings->Promise.string(), false, true, false, ESValue(this));
-    rejectFunctionInternalSlot->defineDataProperty(strings->alreadyResolved.string(), true, true, false, ESValue(false));
+    rejectFunctionInternalSlot->defineDataProperty(strings->alreadyResolved.string(), true, true, false, alreadyResolved);
 
     resolveFunction->setInternalSlot(resolveFunctionInternalSlot);
     rejectFunction->setInternalSlot(rejectFunctionInternalSlot);
 
     setCapability(PromiseReaction::Capability(resolveFunction, rejectFunction));
+}
+
+escargot::ESObject* ESPromiseObject::resolvingFunctionAlreadyResolved(escargot::ESFunctionObject* callee)
+{
+    escargot::ESObject* internalSlot = callee->internalSlot();
+    ESValue alreadyResolved = internalSlot->get(strings->alreadyResolved.string());
+    return alreadyResolved.asObject();
 }
 
 void ESPromiseObject::fulfillPromise(escargot::ESVMInstance* instance, ESValue value)

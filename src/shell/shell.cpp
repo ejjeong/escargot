@@ -297,7 +297,7 @@ int main(int argc, char* argv[])
     if (argc == 1) {
         while (true) {
             char buf[512];
-            printf("shell> ");
+            printf("escargot> ");
             if (!fgets(buf, sizeof buf, stdin)) {
                 printf("ERROR: Cannot read interactive shell input\n");
                 ES->exit();
@@ -369,7 +369,7 @@ int main(int argc, char* argv[])
             if (strcmp(argv[i], "--shell") == 0) {
                 while (true) {
                     char buf[512];
-                    printf("shell> ");
+                    printf("escargot> ");
                     if (!fgets(buf, sizeof buf, stdin)) {
                         printf("ERROR: Cannot read interactive shell input\n");
                         ES->exit();

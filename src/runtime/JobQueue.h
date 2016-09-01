@@ -144,10 +144,10 @@ public:
         } else {
             escargot::ESValue err = instance->getCatchedError();
 
-            escargot::ESObject* internalSlot = promiseResolveFunction->internalSlot();
-            if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+            escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(promiseResolveFunction);
+            if (alreadyResolved->get(strings->value.string()).asBoolean())
                 return ESValue();
-            internalSlot->set(strings->alreadyResolved.string(), ESValue(true));
+            alreadyResolved->set(strings->value.string(), ESValue(true));
 
             ESValue reason[] = { err };
             return ESFunctionObject::call(instance, promiseRejectFunction, ESValue(), reason, 1, false);

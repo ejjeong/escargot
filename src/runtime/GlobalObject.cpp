@@ -5262,8 +5262,8 @@ void GlobalObject::installPromise()
             return promise;
         } else {
             escargot::ESValue err = instance->getCatchedError();
-            escargot::ESObject* internalSlot = promiseResolveFunction->internalSlot();
-            if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+            escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(promiseResolveFunction);
+            if (alreadyResolved->get(strings->value.string()).asBoolean())
                 return promise;
             // ESCARGOT_LOG_INFO("executor run fail with err %s\n", err.toString()->utf8Data());
             ESValue reason[] = { err };
@@ -5279,16 +5279,17 @@ void GlobalObject::installPromise()
     // $25.4.1.3.2 Internal Promise Resolve Function
     m_promiseResolveFunction = [](ESVMInstance* instance) -> ESValue {
         escargot::ESFunctionObject* callee = instance->currentExecutionContext()->resolveCallee().asFunction();
+        escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(callee);
         escargot::ESObject* internalSlot = callee->internalSlot();
         escargot::ESPromiseObject* promise = internalSlot->get(strings->Promise.string()).asObject()->asESPromiseObject();
         /*
         ESCARGOT_LOG_INFO("[Promise %p] Internal promise resolve function %p with arg %s : %s\n",
             promise, callee, instance->currentExecutionContext()->readArgument(0).toString()->utf8Data(),
-            data->alreadyResolved() ? "DONE" : "RESOLVE");
+            alreadyResolved->get(strings->value.string()).asBoolean() ? "DONE" : "RESOLVE");
         */
-        if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+        if (alreadyResolved->get(strings->value.string()).asBoolean())
             return ESValue();
-        internalSlot->set(strings->alreadyResolved.string(), ESValue(true));
+        alreadyResolved->set(strings->value.string(), ESValue(true));
 
         ESValue resolutionValue = instance->currentExecutionContext()->readArgument(0);
         if (resolutionValue == ESValue(promise)) {
@@ -5327,16 +5328,17 @@ void GlobalObject::installPromise()
     // $25.4.1.3.1 Internal Promise Reject Function
     m_promiseRejectFunction = [](ESVMInstance* instance) -> ESValue {
         escargot::ESFunctionObject* callee = instance->currentExecutionContext()->resolveCallee().asFunction();
+        escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(callee);
         escargot::ESObject* internalSlot = callee->internalSlot();
         escargot::ESPromiseObject* promise = internalSlot->get(strings->Promise.string()).asObject()->asESPromiseObject();
         /*
         ESCARGOT_LOG_INFO("[Promise %p] Internal promise reject function %p with arg %s : %s\n",
             promise, callee, instance->currentExecutionContext()->readArgument(0).toString()->utf8Data(),
-            data->alreadyResolved() ? "DONE" : "REJECT");
+            alreadyResolved->get(strings->value.string()).asBoolean() ? "DONE" : "RESOLVE");
         */
-        if (internalSlot->get(strings->alreadyResolved.string()).asBoolean())
+        if (alreadyResolved->get(strings->value.string()).asBoolean())
             return ESValue();
-        internalSlot->set(strings->alreadyResolved.string(), ESValue(true));
+        alreadyResolved->set(strings->value.string(), ESValue(true));
 
         promise->rejectPromise(instance, instance->currentExecutionContext()->readArgument(0));
         return ESValue();
@@ -5420,26 +5422,23 @@ void GlobalObject::installPromise()
         escargot::ESPromiseObject* newPromise = newOperation(instance, instance->globalObject(), instance->globalObject()->promise(), arguments, 1).asObject()->asESPromiseObject();
 
         switch (promise->state()) {
-        case ESPromiseObject::PromiseState::Pending:
-            {
-                // ESCARGOT_LOG_INFO("then: Pending case\n");
-                promise->appendReaction(onFulfilled, onRejected, newPromise->capability());
-                break;
-            }
-        case ESPromiseObject::PromiseState::FulFilled:
-            {
-                // ESCARGOT_LOG_INFO("then: FulFilled case\n");
-                Job* job = PromiseReactionJob::create(PromiseReaction(onFulfilled, newPromise->capability()), promise->promiseResult());
-                instance->jobQueue()->enqueueJob(job);
-                break;
-            }
-        case ESPromiseObject::PromiseState::Rejected:
-            {
-                // ESCARGOT_LOG_INFO("then: Rejected case\n");
-                Job* job = PromiseReactionJob::create(PromiseReaction(onRejected, newPromise->capability()), promise->promiseResult());
-                instance->jobQueue()->enqueueJob(job);
-                break;
-            }
+        case ESPromiseObject::PromiseState::Pending: {
+            // ESCARGOT_LOG_INFO("then: Pending case\n");
+            promise->appendReaction(onFulfilled, onRejected, newPromise->capability());
+            break;
+        }
+        case ESPromiseObject::PromiseState::FulFilled: {
+            // ESCARGOT_LOG_INFO("then: FulFilled case\n");
+            Job* job = PromiseReactionJob::create(PromiseReaction(onFulfilled, newPromise->capability()), promise->promiseResult());
+            instance->jobQueue()->enqueueJob(job);
+            break;
+        }
+        case ESPromiseObject::PromiseState::Rejected: {
+            // ESCARGOT_LOG_INFO("then: Rejected case\n");
+            Job* job = PromiseReactionJob::create(PromiseReaction(onRejected, newPromise->capability()), promise->promiseResult());
+            instance->jobQueue()->enqueueJob(job);
+            break;
+        }
         default:
             break;
         }
