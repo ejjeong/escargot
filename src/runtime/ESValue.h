@@ -190,6 +190,9 @@ public:
     bool isGetterSetter() const;
     bool isCustomGetterSetter() const;
     bool isObject() const;
+#ifdef USE_ES6_FEATURE
+    bool isIterable() const;
+#endif
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
     ALWAYS_INLINE ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; // $7.1.1 ToPrimitive

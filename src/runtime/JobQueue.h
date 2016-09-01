@@ -135,10 +135,9 @@ public:
         std::jmp_buf tryPosition;
         if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
             ESValue arguments[] = { promiseResolveFunction, promiseRejectFunction };
-            ESValue thenCallResult = escargot::ESFunctionObject::call(instance, m_then, m_thenable, arguments, 1, false);
+            ESValue thenCallResult = escargot::ESFunctionObject::call(instance, m_then, m_thenable, arguments, 2, false);
             instance->unregisterTryPos(&tryPosition);
             instance->unregisterCheckedObjectAll();
-
             ESValue value[] = { thenCallResult };
             return ESValue();
         } else {
@@ -157,7 +156,7 @@ public:
 private:
     escargot::ESPromiseObject* m_promise;
     escargot::ESObject* m_thenable;
-    escargot::ESObject* m_then;
+    escargot::ESFunctionObject* m_then;
 };
 
 

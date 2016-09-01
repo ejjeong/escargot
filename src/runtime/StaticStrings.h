@@ -278,6 +278,9 @@ class ESString;
     F(ArrayBuffer) \
     F(Promise) \
     F(alreadyResolved) \
+    F(alreadyCalled) \
+    F(values) \
+    F(remainingElements) \
     F(all) \
     F(race) \
     F(reject) \

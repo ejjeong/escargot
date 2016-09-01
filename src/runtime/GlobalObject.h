@@ -363,6 +363,7 @@ public:
     ALWAYS_INLINE escargot::ESObject* promisePrototype() { return m_promisePrototype; }
     ALWAYS_INLINE escargot::NativeFunctionType promiseResolveFunction() { return m_promiseResolveFunction; }
     ALWAYS_INLINE escargot::NativeFunctionType promiseRejectFunction() { return m_promiseRejectFunction; }
+    ALWAYS_INLINE escargot::NativeFunctionType promiseAllResolveElementFunction() { return m_promiseAllResolveElementFunction; }
 #endif
 
     // DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
@@ -518,6 +519,7 @@ protected:
     escargot::ESObject* m_promisePrototype;
     escargot::NativeFunctionType m_promiseResolveFunction;
     escargot::NativeFunctionType m_promiseRejectFunction;
+    escargot::NativeFunctionType m_promiseAllResolveElementFunction;
 #endif
 
     escargot::ESFunctionObject* m_eval;

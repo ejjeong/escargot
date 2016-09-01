@@ -89,6 +89,26 @@ unsigned ESHiddenClassPropertyInfo::hiddenClassPopretyInfoVecIndex(bool isData, 
     return ESHiddenClassPropertyInfo::buildAttributes(None, writable, enumerable, configurable) | isData;
 }
 
+#ifdef USE_ES6_FEATURE
+bool ESValue::isIterable() const
+{
+    if (isESString())
+        return true;
+
+    if (!isObject())
+        return false;
+
+    escargot::ESObject* object = asObject();
+
+    if (object->isESArrayObject())
+        return true;
+    if (object->isESTypedArrayObject())
+        return true;
+
+    return false;
+}
+#endif
+
 ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
 {
     ASSERT(!isPrimitive());
