@@ -5519,7 +5519,78 @@ void GlobalObject::installPromise()
 
     // $25.4.4.3 Promise.race(iterable)
     m_promise->defineDataProperty(strings->race, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        return ESValue();
+        escargot::ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue iterableValue = instance->currentExecutionContext()->readArgument(0);
+
+        PromiseReaction::Capability capability = ESPromiseObject::newPromiseCapability(instance, thisObject);
+
+        if (!iterableValue.isIterable()) {
+            ESValue arguments[] = { escargot::TypeError::create() };
+            escargot::ESFunctionObject::call(instance, capability.m_rejectFunction, ESValue(), arguments, 1, false);
+        } else {
+            escargot::ESObject* iterable = iterableValue.toObject();
+            bool done = false;
+
+            // 25.4.4.1.1 Runtime Semantics: PerformPromiseRace (iteratorRecord, promiseCapability, C)
+
+            escargot::ESArrayObject* values = escargot::ESArrayObject::create();
+            uint32_t index = 0;
+
+            ASSERT(iterable->isESArrayObject()); // TODO
+            escargot::ESArrayObject* iterableArray = iterable->asESArrayObject();
+
+            // 6. Repeat
+            uint32_t len = iterableArray->length();
+            uint32_t k = 0;
+            ESValue error(ESValue::ESEmptyValue);
+            while (k < len) {
+                bool kPresent = iterableArray->hasProperty(ESValue(k));
+                if (kPresent) {
+                    ESValue nextValue = iterableArray->get(k);
+
+                    ESValue nextPromise;
+                    std::jmp_buf tryPositionH;
+                    if (setjmp(instance->registerTryPos(&tryPositionH)) == 0) {
+                        ESValue resolve = thisObject->get(strings->resolve.string());
+                        escargot::ESValue arguments[] = { nextValue };
+                        nextPromise = escargot::ESFunctionObject::call(instance, resolve, thisObject, arguments, 1, false);
+                        instance->unregisterTryPos(&tryPositionH);
+                        instance->unregisterCheckedObjectAll();
+                    } else {
+                        error = instance->getCatchedError();
+                        break;
+                    }
+
+                    std::jmp_buf tryPositionJ;
+                    if (setjmp(instance->registerTryPos(&tryPositionJ)) == 0) {
+                        ESValue then = nextPromise.toObject()->get(strings->then.string());
+                        escargot::ESValue arguments[] = { capability.m_resolveFunction, capability.m_rejectFunction };
+                        ESValue result = escargot::ESFunctionObject::call(instance, then, nextPromise, arguments, 2, false);
+                        instance->unregisterTryPos(&tryPositionJ);
+                        instance->unregisterCheckedObjectAll();
+                    } else {
+                        error = instance->getCatchedError();
+                        break;
+                    }
+
+                    k++;
+                } else {
+                    k = ESArrayObject::nextIndexForward(iterableArray, k, len, true);
+                }
+            }
+
+            // 1.d. If next is false
+            if (error.isEmpty())
+                done = true;
+
+            // If result is an abrupt completion && If iteratorRecord.[[done]] is false
+            if (!error.isEmpty() && !done) {
+                // ESCARGOT_LOG_INFO("12.a\n");
+                ESValue arguments[] = { error };
+                escargot::ESFunctionObject::call(instance, capability.m_rejectFunction, ESValue(), arguments, 1, false);
+            }
+        }
+        return capability.m_promise;
     }, strings->race, 1));
 
     // $25.4.4.4 Promise.reject(r)
