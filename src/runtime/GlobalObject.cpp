@@ -5342,6 +5342,7 @@ void GlobalObject::installPromise()
     // $25.4.1.5.1 Internal GetCapabilitiesExecutor Function
     m_getCapabilitiesExecutorFunction = [](ESVMInstance* instance) -> ESValue {
         escargot::ESFunctionObject* executor = instance->currentExecutionContext()->resolveCallee().asFunction();
+        executor->deleteProperty(strings->name.string());
         escargot::ESObject* executorInternalSlot = executor->ensureInternalSlot();
         if (!executorInternalSlot->get(strings->resolve.string()).isUndefined()
             || !executorInternalSlot->get(strings->reject.string()).isUndefined())
@@ -5549,9 +5550,6 @@ void GlobalObject::installPromise()
     // $25.4.5.1 Promise.prototype.catch(onRejected)
     m_promisePrototype->defineDataProperty(strings->stringCatch, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
-        if (!thisValue.isESPointer() || !thisValue.asESPointer()->isESPromiseObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: not a Promise object");
-
         escargot::ESValue onRejected = instance->currentExecutionContext()->readArgument(0);
         escargot::ESValue then = thisValue.asObject()->get(strings->then.string());
         escargot::ESValue arguments[] = { ESValue(), onRejected };
@@ -5562,7 +5560,7 @@ void GlobalObject::installPromise()
     m_promisePrototype->defineDataProperty(strings->then, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisValue.isESPointer() || !thisValue.asESPointer()->isESPromiseObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->emptyString, "%s: not a Promise object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->Promise, false, strings->then, "%s: not a Promise object");
         escargot::ESPromiseObject* promise = thisValue.asESPointer()->asESPromiseObject();
 
         ESValue onFulfilledValue = instance->currentExecutionContext()->readArgument(0);
@@ -5571,7 +5569,7 @@ void GlobalObject::installPromise()
         escargot::ESFunctionObject* onFulfilled = onFulfilledValue.isFunction() ? onFulfilledValue.asFunction() : (escargot::ESFunctionObject*)(1);
         escargot::ESFunctionObject* onRejected = onRejectedValue.isFunction() ? onRejectedValue.asFunction() : (escargot::ESFunctionObject*)(2);
 
-        PromiseReaction::Capability capability = ESPromiseObject::newPromiseCapability(instance, instance->globalObject()->promise());
+        PromiseReaction::Capability capability = ESPromiseObject::newPromiseCapability(instance, promise->get(strings->constructor.string()).toObject());
 
         switch (promise->state()) {
         case ESPromiseObject::PromiseState::Pending: {
