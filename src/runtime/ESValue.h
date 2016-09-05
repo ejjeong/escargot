@@ -1802,7 +1802,9 @@ struct ESObjectRareData : public gc {
         m_propertyReadCallback = nullptr;
         m_propertyWriteCallback = nullptr;
         m_extraPointerData = nullptr;
+#ifdef USE_ES6_FEATURE
         m_internalSlot = nullptr;
+#endif
     }
 
     bool m_hasPropertyInterceptor;
@@ -1811,7 +1813,9 @@ struct ESObjectRareData : public gc {
     PropertyReadCallback m_propertyReadCallback;
     PropertyWriteCallback m_propertyWriteCallback;
     void* m_extraPointerData;
+#ifdef USE_ES6_FEATURE
     ESObject* m_internalSlot; // Use this with caution: many internal slots are already implemented implicitly in source code.
+#endif
 };
 
 class ESObject : public ESPointer {
@@ -1905,6 +1909,15 @@ public:
         m_objectRareData->m_extraPointerData = e;
     }
 
+#ifdef USE_ES6_FEATURE
+    ESObject* ensureInternalSlot()
+    {
+        ensureRareData();
+        if (!internalSlot())
+            setInternalSlot(ESObject::create());
+        return internalSlot();
+    }
+
     escargot::ESObject* internalSlot()
     {
         ASSERT(m_objectRareData);
@@ -1916,6 +1929,7 @@ public:
         ensureRareData();
         m_objectRareData->m_internalSlot = object;
     }
+#endif
 
     void forceNonVectorHiddenClass(bool forceFillHiddenClassInfo = false)
     {
@@ -3170,18 +3184,21 @@ public:
     struct Capability {
     public:
         Capability()
-            : m_resolveFunction(nullptr)
+            : m_promise()
+            , m_resolveFunction(nullptr)
             , m_rejectFunction(nullptr) { }
 
-        Capability(escargot::ESFunctionObject* resolveFunction, escargot::ESFunctionObject* rejectFunction)
-            : m_resolveFunction(resolveFunction)
+        Capability(escargot::ESValue promise, escargot::ESFunctionObject* resolveFunction, escargot::ESFunctionObject* rejectFunction)
+            : m_promise(promise)
+            , m_resolveFunction(resolveFunction)
             , m_rejectFunction(rejectFunction) { }
 
         Capability(const Capability& other)
-            : m_resolveFunction(other.m_resolveFunction)
+            : m_promise(other.m_promise)
+            , m_resolveFunction(other.m_resolveFunction)
             , m_rejectFunction(other.m_rejectFunction) { }
 
-
+        escargot::ESValue m_promise;
         escargot::ESFunctionObject* m_resolveFunction;
         escargot::ESFunctionObject* m_rejectFunction;
     };
@@ -3189,10 +3206,6 @@ public:
     PromiseReaction()
         : m_capability()
         , m_handler(nullptr) { }
-
-    PromiseReaction(escargot::ESFunctionObject* handler, escargot::ESFunctionObject* resolveFunction, escargot::ESFunctionObject* rejectFunction)
-        : m_capability(resolveFunction, rejectFunction)
-        , m_handler(handler) { }
 
     PromiseReaction(escargot::ESFunctionObject* handler, const Capability& capability)
         : m_capability(capability)
@@ -3217,11 +3230,7 @@ protected:
         , m_executor(executor)
         , m_state(PromiseState::Pending)
     {
-        m_counter = (s_counter++);
     }
-
-    static int s_counter;
-    int m_counter;
 
 public:
     static ESPromiseObject* create()
@@ -3246,22 +3255,21 @@ public:
     typedef std::vector<escargot::PromiseReaction, gc_allocator<escargot::PromiseReaction> > Reactions;
     void triggerPromiseReactions(escargot::ESVMInstance* instance, Reactions& reactions);
 
-    void appendReaction(escargot::ESFunctionObject* onFulfilled, escargot::ESFunctionObject* onRejected, escargot::PromiseReaction::Capability capability)
+    void appendReaction(escargot::ESFunctionObject* onFulfilled, escargot::ESFunctionObject* onRejected, escargot::PromiseReaction::Capability& capability)
     {
         // ESCARGOT_LOG_INFO("appendReaction into %p\n", this);
         m_fulfillReactions.push_back(PromiseReaction(onFulfilled, capability));
         m_rejectReactions.push_back(PromiseReaction(onRejected, capability));
     }
 
-    void setCapability(escargot::PromiseReaction::Capability capability) { m_capability = capability; }
+    PromiseReaction::Capability createResolvingFunctions(escargot::ESVMInstance* instance);
+    static PromiseReaction::Capability newPromiseCapability(escargot::ESVMInstance* instance, escargot::ESObject* constructor);
 
-    void createResolvingFunctions(escargot::ESVMInstance* instance, escargot::ESFunctionObject*& resolveFunction, escargot::ESFunctionObject*& rejectFunction);
     static escargot::ESObject* resolvingFunctionAlreadyResolved(escargot::ESFunctionObject* callee);
 
     escargot::ESFunctionObject* executor() { return m_executor; }
     PromiseState state() { return m_state; }
     escargot::ESValue promiseResult() { ASSERT(m_state != PromiseState::Pending); return m_promiseResult; }
-    escargot::PromiseReaction::Capability capability() { return m_capability; }
 
 protected:
     escargot::ESFunctionObject* m_executor;
@@ -3269,7 +3277,6 @@ protected:
     escargot::ESValue m_promiseResult;
     Reactions m_fulfillReactions;
     Reactions m_rejectReactions;
-    escargot::PromiseReaction::Capability m_capability;
 };
 #endif
 

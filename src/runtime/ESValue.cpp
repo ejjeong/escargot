@@ -32,6 +32,7 @@
 #include "ast/AST.h"
 #include "jit/ESJIT.h"
 #include "bytecode/ByteCode.h"
+#include "bytecode/ByteCodeOperations.h"
 
 #include "Yarr.h"
 
@@ -4078,13 +4079,10 @@ void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj, const ESHiddenC
 }
 
 #ifdef USE_ES6_FEATURE
-void ESPromiseObject::createResolvingFunctions(escargot::ESVMInstance* instance, escargot::ESFunctionObject*& resolveFunction, escargot::ESFunctionObject*& rejectFunction)
+PromiseReaction::Capability ESPromiseObject::createResolvingFunctions(escargot::ESVMInstance* instance)
 {
-    ASSERT(!resolveFunction);
-    ASSERT(!rejectFunction);
-
-    resolveFunction = escargot::ESFunctionObject::create(NULL, instance->globalObject()->promiseResolveFunction(), strings->emptyString, 1);
-    rejectFunction = escargot::ESFunctionObject::create(NULL, instance->globalObject()->promiseRejectFunction(), strings->emptyString, 1);
+    escargot::ESFunctionObject* resolveFunction = escargot::ESFunctionObject::create(NULL, instance->globalObject()->promiseResolveFunction(), strings->emptyString, 1);
+    escargot::ESFunctionObject* rejectFunction = escargot::ESFunctionObject::create(NULL, instance->globalObject()->promiseRejectFunction(), strings->emptyString, 1);
 
     resolveFunction->deleteProperty(strings->name.string());
     rejectFunction->deleteProperty(strings->name.string());
@@ -4103,7 +4101,28 @@ void ESPromiseObject::createResolvingFunctions(escargot::ESVMInstance* instance,
     resolveFunction->setInternalSlot(resolveFunctionInternalSlot);
     rejectFunction->setInternalSlot(rejectFunctionInternalSlot);
 
-    setCapability(PromiseReaction::Capability(resolveFunction, rejectFunction));
+    return PromiseReaction::Capability(this, resolveFunction, rejectFunction);
+}
+
+PromiseReaction::Capability ESPromiseObject::newPromiseCapability(escargot::ESVMInstance* instance, escargot::ESObject* constructor)
+{
+    if (!constructor->isESFunctionObject())
+        instance->throwError(TypeError::create());
+
+    escargot::ESFunctionObject* executor = escargot::ESFunctionObject::create(NULL, instance->globalObject()->getCapabilitiesExecutorFunction(), strings->emptyString, 2);
+    escargot::ESObject* internalSlot = executor->ensureInternalSlot();
+
+    ESValue arguments[] = { executor };
+    ESValue promise = newOperation(instance, instance->globalObject(), constructor, arguments, 1);
+    ASSERT(internalSlot == executor->internalSlot());
+
+    ESValue resolveFunction = internalSlot->get(strings->resolve.string());
+    ESValue rejectFunction = internalSlot->get(strings->reject.string());
+
+    if (!resolveFunction.isFunction() || !rejectFunction.isFunction())
+        instance->throwError(TypeError::create(ESString::create("Promise resolve or reject function is not callable")));
+
+    return PromiseReaction::Capability(promise, resolveFunction.asFunction(), rejectFunction.asFunction());
 }
 
 escargot::ESObject* ESPromiseObject::resolvingFunctionAlreadyResolved(escargot::ESFunctionObject* callee)
@@ -4123,8 +4142,6 @@ void ESPromiseObject::fulfillPromise(escargot::ESVMInstance* instance, ESValue v
     m_fulfillReactions.clear();
     m_rejectReactions.clear();
 }
-
-int ESPromiseObject::s_counter = 0;
 
 void ESPromiseObject::rejectPromise(escargot::ESVMInstance* instance, ESValue reason)
 {

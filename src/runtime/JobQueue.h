@@ -128,13 +128,11 @@ public:
     {
         // ESCARGOT_LOG_INFO("=== [Promise %p] Running PromiseResolveThenableJob %p\n", m_promise, this);
 
-        escargot::ESFunctionObject* promiseResolveFunction = nullptr;
-        escargot::ESFunctionObject* promiseRejectFunction = nullptr;
-        m_promise->createResolvingFunctions(instance, promiseResolveFunction, promiseRejectFunction);
+        PromiseReaction::Capability capability = m_promise->createResolvingFunctions(instance);
 
         std::jmp_buf tryPosition;
         if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
-            ESValue arguments[] = { promiseResolveFunction, promiseRejectFunction };
+            ESValue arguments[] = { capability.m_resolveFunction, capability.m_rejectFunction };
             ESValue thenCallResult = escargot::ESFunctionObject::call(instance, m_then, m_thenable, arguments, 2, false);
             instance->unregisterTryPos(&tryPosition);
             instance->unregisterCheckedObjectAll();
@@ -143,13 +141,13 @@ public:
         } else {
             escargot::ESValue err = instance->getCatchedError();
 
-            escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(promiseResolveFunction);
+            escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(capability.m_resolveFunction);
             if (alreadyResolved->get(strings->value.string()).asBoolean())
                 return ESValue();
             alreadyResolved->set(strings->value.string(), ESValue(true));
 
             ESValue reason[] = { err };
-            return ESFunctionObject::call(instance, promiseRejectFunction, ESValue(), reason, 1, false);
+            return ESFunctionObject::call(instance, capability.m_rejectFunction, ESValue(), reason, 1, false);
         }
     }
 
