@@ -41,7 +41,6 @@ public:
 
     size_t enqueueJob(Job* job)
     {
-        // ESCARGOT_LOG_INFO("=== enqueue job %p\n", job);
         m_jobs.push_back(job);
         return 0;
     }

@@ -4134,8 +4134,6 @@ escargot::ESObject* ESPromiseObject::resolvingFunctionAlreadyResolved(escargot::
 
 void ESPromiseObject::fulfillPromise(escargot::ESVMInstance* instance, ESValue value)
 {
-    // ESCARGOT_LOG_INFO("Fulfill Promise %p (state %d)\n", this, m_state);
-
     m_state = PromiseState::FulFilled;
     m_promiseResult = value;
     triggerPromiseReactions(instance, m_fulfillReactions);
@@ -4145,8 +4143,6 @@ void ESPromiseObject::fulfillPromise(escargot::ESVMInstance* instance, ESValue v
 
 void ESPromiseObject::rejectPromise(escargot::ESVMInstance* instance, ESValue reason)
 {
-    // ESCARGOT_LOG_INFO("Reject Promise %p (state %d)\n", this, m_state);
-
     m_state = PromiseState::Rejected;
     m_promiseResult = reason;
     triggerPromiseReactions(instance, m_rejectReactions);

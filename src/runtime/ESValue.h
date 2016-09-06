@@ -3257,7 +3257,6 @@ public:
 
     void appendReaction(escargot::ESFunctionObject* onFulfilled, escargot::ESFunctionObject* onRejected, escargot::PromiseReaction::Capability& capability)
     {
-        // ESCARGOT_LOG_INFO("appendReaction into %p\n", this);
         m_fulfillReactions.push_back(PromiseReaction(onFulfilled, capability));
         m_rejectReactions.push_back(PromiseReaction(onRejected, capability));
     }

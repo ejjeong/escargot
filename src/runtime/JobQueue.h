@@ -71,18 +71,14 @@ public:
 
     ESValue run(ESVMInstance* instance)
     {
-        // ESCARGOT_LOG_INFO("=== Running PromiseReactionJob %p\n", this);
-
         /* 25.4.2.1.4 Handler is "Identity" case */
         if (m_reaction.m_handler == (escargot::ESFunctionObject*)1) {
-            // ESCARGOT_LOG_INFO("Identity case\n");
             ESValue value[] = { m_argument };
             return ESFunctionObject::call(instance, m_reaction.m_capability.m_resolveFunction, ESValue(), value, 1, false);
         }
 
         /* 25.4.2.1.5 Handler is "Thrower" case */
         if (m_reaction.m_handler == (escargot::ESFunctionObject*)2) {
-            // ESCARGOT_LOG_INFO("Thrower case\n");
             ESValue value[] = { m_argument };
             return ESFunctionObject::call(instance, m_reaction.m_capability.m_rejectFunction, ESValue(), value, 1, false);
         }
@@ -126,8 +122,6 @@ public:
 
     ESValue run(ESVMInstance* instance)
     {
-        // ESCARGOT_LOG_INFO("=== [Promise %p] Running PromiseResolveThenableJob %p\n", m_promise, this);
-
         PromiseReaction::Capability capability = m_promise->createResolvingFunctions(instance);
 
         std::jmp_buf tryPosition;

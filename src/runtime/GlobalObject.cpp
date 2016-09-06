@@ -5260,7 +5260,6 @@ void GlobalObject::installPromise()
             instance->unregisterCheckedObjectAll();
         } else {
             escargot::ESValue err = instance->getCatchedError();
-            // ESCARGOT_LOG_INFO("executor run fail with err %s\n", err.toString()->utf8Data());
             ESValue arguments[] = { err };
             return ESFunctionObject::call(instance, capability.m_rejectFunction, ESValue(), arguments, 1, false);
         }
@@ -5277,11 +5276,6 @@ void GlobalObject::installPromise()
         escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(callee);
         escargot::ESObject* internalSlot = callee->internalSlot();
         escargot::ESPromiseObject* promise = internalSlot->get(strings->Promise.string()).asObject()->asESPromiseObject();
-        /*
-        ESCARGOT_LOG_INFO("[Promise %p] Internal promise resolve function %p with arg %s : %s\n",
-            promise, callee, instance->currentExecutionContext()->readArgument(0).toString()->utf8Data(),
-            alreadyResolved->get(strings->value.string()).asBoolean() ? "DONE" : "RESOLVE");
-        */
         if (alreadyResolved->get(strings->value.string()).asBoolean())
             return ESValue();
         alreadyResolved->set(strings->value.string(), ESValue(true));
@@ -5326,11 +5320,6 @@ void GlobalObject::installPromise()
         escargot::ESObject* alreadyResolved = ESPromiseObject::resolvingFunctionAlreadyResolved(callee);
         escargot::ESObject* internalSlot = callee->internalSlot();
         escargot::ESPromiseObject* promise = internalSlot->get(strings->Promise.string()).asObject()->asESPromiseObject();
-        /*
-        ESCARGOT_LOG_INFO("[Promise %p] Internal promise reject function %p with arg %s : %s\n",
-            promise, callee, instance->currentExecutionContext()->readArgument(0).toString()->utf8Data(),
-            alreadyResolved->get(strings->value.string()).asBoolean() ? "DONE" : "RESOLVE");
-        */
         if (alreadyResolved->get(strings->value.string()).asBoolean())
             return ESValue();
         alreadyResolved->set(strings->value.string(), ESValue(true));
@@ -5414,21 +5403,17 @@ void GlobalObject::installPromise()
             while (k < len) {
                 bool kPresent = iterableArray->hasProperty(ESValue(k));
                 if (kPresent) {
-                    // ESCARGOT_LOG_INFO("Promise.all %u / len %u\n", k, len);
 
                     // 6.e. Let nextValue be IteratorValue(next).
-                    // ESCARGOT_LOG_INFO("6.e ");
                     ESValue nextValue = iterableArray->get(k);
 
                     // 6.h. Append undefined to values
-                    // ESCARGOT_LOG_INFO("6.h\n");
                     values->defineDataProperty(ESValue(index), true, true, true, ESValue());
 
                     // 6.i Let nextPromise be Invoke(constructor, "resolve", «nextValue»).
                     escargot::ESObject* nextPromise = nullptr;
                     std::jmp_buf tryPositionI;
                     if (setjmp(instance->registerTryPos(&tryPositionI)) == 0) {
-                        // ESCARGOT_LOG_INFO("6.i\n");
                         ESValue resolveFunction = thisObject->get(strings->resolve.string());
                         ESValue arguments[] = { nextValue };
                         ESValue nextPromiseValue = escargot::ESFunctionObject::call(instance, resolveFunction, thisObject, arguments, 1, false);
@@ -5441,7 +5426,6 @@ void GlobalObject::installPromise()
                     }
 
                     // 6.k
-                    // ESCARGOT_LOG_INFO("6.k\n");
                     escargot::NativeFunctionType promiseAllResolveElementFunction = instance->globalObject()->promiseAllResolveElementFunction();
                     escargot::ESFunctionObject* resolveElement = escargot::ESFunctionObject::create(NULL, promiseAllResolveElementFunction, strings->emptyString, 1);
                     resolveElement->deleteProperty(strings->name.string());
@@ -5449,7 +5433,6 @@ void GlobalObject::installPromise()
                     resolveElement->setInternalSlot(internalSlot);
 
                     // 6.l ~ 6.p
-                    // ESCARGOT_LOG_INFO("6.l~p\n");
                     escargot::ESObject* alreadyCalled = escargot::ESObject::create();
                     alreadyCalled->defineDataProperty(strings->value, true, true, true, ESValue(false));
 
@@ -5461,14 +5444,12 @@ void GlobalObject::installPromise()
                     internalSlot->defineDataProperty(strings->remainingElements, true, true, true, ESValue(remainingElementsCount));
 
                     // 6.q
-                    // ESCARGOT_LOG_INFO("6.q\n");
                     uint32_t remainingElements = remainingElementsCount->get(strings->value.string()).asUInt32();
                     remainingElementsCount->set(strings->value.string(), ESValue(remainingElements + 1));
 
                     // 6.r
                     std::jmp_buf tryPositionR;
                     if (setjmp(instance->registerTryPos(&tryPositionR)) == 0) {
-                        // ESCARGOT_LOG_INFO("6.r (%s)\n", ESValue(capability.m_rejectFunction).toString()->utf8Data());
                         ESValue then = nextPromise->get(strings->then.string());
                         ESValue arguments[] = { resolveElement, capability.m_rejectFunction };
                         escargot::ESFunctionObject::call(instance, then, nextPromise, arguments, 2, false);
@@ -5480,7 +5461,6 @@ void GlobalObject::installPromise()
                     }
 
                     // 6.t
-                    // ESCARGOT_LOG_INFO("6.t\n");
                     index++;
                     k++;
                 } else {
@@ -5490,7 +5470,6 @@ void GlobalObject::installPromise()
 
             // 6.d. If next is false
             if (error.isEmpty()) {
-                // ESCARGOT_LOG_INFO("6.d\n");
                 done = true;
                 uint32_t remainingElements = remainingElementsCount->get(strings->value.string()).asUInt32();
                 remainingElementsCount->set(strings->value.string(), ESValue(remainingElements - 1));
@@ -5509,7 +5488,6 @@ void GlobalObject::installPromise()
 
             // If result is an abrupt completion && If iteratorRecord.[[done]] is false
             if (!error.isEmpty() && !done) {
-                // ESCARGOT_LOG_INFO("12.a\n");
                 ESValue arguments[] = { error };
                 escargot::ESFunctionObject::call(instance, capability.m_rejectFunction, ESValue(), arguments, 1, false);
             }
@@ -5585,7 +5563,6 @@ void GlobalObject::installPromise()
 
             // If result is an abrupt completion && If iteratorRecord.[[done]] is false
             if (!error.isEmpty() && !done) {
-                // ESCARGOT_LOG_INFO("12.a\n");
                 ESValue arguments[] = { error };
                 escargot::ESFunctionObject::call(instance, capability.m_rejectFunction, ESValue(), arguments, 1, false);
             }
@@ -5644,18 +5621,15 @@ void GlobalObject::installPromise()
 
         switch (promise->state()) {
         case ESPromiseObject::PromiseState::Pending: {
-            // ESCARGOT_LOG_INFO("then: Pending case\n");
             promise->appendReaction(onFulfilled, onRejected, capability);
             break;
         }
         case ESPromiseObject::PromiseState::FulFilled: {
-            // ESCARGOT_LOG_INFO("then: FulFilled case\n");
             Job* job = PromiseReactionJob::create(PromiseReaction(onFulfilled, capability), promise->promiseResult());
             instance->jobQueue()->enqueueJob(job);
             break;
         }
         case ESPromiseObject::PromiseState::Rejected: {
-            // ESCARGOT_LOG_INFO("then: Rejected case\n");
             Job* job = PromiseReactionJob::create(PromiseReaction(onRejected, capability), promise->promiseResult());
             instance->jobQueue()->enqueueJob(job);
             break;
