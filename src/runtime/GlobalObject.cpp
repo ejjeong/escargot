@@ -5391,7 +5391,7 @@ void GlobalObject::installPromise()
             // 25.4.4.1.1 Runtime Semantics: PerformPromiseAll (iteratorRecord, constructor, resultCapability)
 
             escargot::ESArrayObject* values = escargot::ESArrayObject::create();
-            escargot::ESObject* remainingElementsCount = escargot::ESObject::create();
+            escargot::ESObject* remainingElementsCount = ESObjectCreate();
             remainingElementsCount->defineDataProperty(strings->value, true, true, true, ESValue(1));
             uint32_t index = 0;
 
@@ -5431,11 +5431,11 @@ void GlobalObject::installPromise()
                     escargot::NativeFunctionType promiseAllResolveElementFunction = instance->globalObject()->promiseAllResolveElementFunction();
                     escargot::ESFunctionObject* resolveElement = escargot::ESFunctionObject::create(NULL, promiseAllResolveElementFunction, strings->emptyString, 1);
                     resolveElement->deleteProperty(strings->name.string());
-                    escargot::ESObject* internalSlot = escargot::ESObject::create();
+                    escargot::ESObject* internalSlot = ESObjectCreate();
                     resolveElement->setInternalSlot(internalSlot);
 
                     // 6.l ~ 6.p
-                    escargot::ESObject* alreadyCalled = escargot::ESObject::create();
+                    escargot::ESObject* alreadyCalled = ESObjectCreate();
                     alreadyCalled->defineDataProperty(strings->value, true, true, true, ESValue(false));
 
                     internalSlot->defineDataProperty(strings->alreadyCalled, true, true, true, alreadyCalled);
