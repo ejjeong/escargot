@@ -5230,6 +5230,23 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     return ta_constructor;
 }
 
+static ESValue tryCallMethodAndCatchError(ESVMInstance* instance, const InternalAtomicString& name, ESValue receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression, ESValue& error)
+{
+    ASSERT(error.isEmpty());
+
+    ESValue ret;
+    std::jmp_buf tryPosition;
+    if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
+        ESValue callee = receiver.toObject()->get(name.string());
+        ret = escargot::ESFunctionObject::call(instance, callee, receiver, arguments, argumentCount, isNewExpression);
+        instance->unregisterTryPos(&tryPosition);
+        instance->unregisterCheckedObjectAll();
+    } else {
+        error = instance->getCatchedError();
+    }
+    return ret;
+}
+
 void GlobalObject::installPromise()
 {
     m_promisePrototype = ESPromiseObject::create(nullptr);
@@ -5413,19 +5430,10 @@ void GlobalObject::installPromise()
                     values->defineDataProperty(ESValue(index), true, true, true, ESValue());
 
                     // 6.i Let nextPromise be Invoke(constructor, "resolve", «nextValue»).
-                    escargot::ESObject* nextPromise = nullptr;
-                    std::jmp_buf tryPositionI;
-                    if (setjmp(instance->registerTryPos(&tryPositionI)) == 0) {
-                        ESValue resolveFunction = thisObject->get(strings->resolve.string());
-                        ESValue arguments[] = { nextValue };
-                        ESValue nextPromiseValue = escargot::ESFunctionObject::call(instance, resolveFunction, thisObject, arguments, 1, false);
-                        nextPromise = nextPromiseValue.asObject();
-                        instance->unregisterTryPos(&tryPositionI);
-                        instance->unregisterCheckedObjectAll();
-                    } else {
-                        error = instance->getCatchedError();
+                    ESValue argumentsI[] = { nextValue };
+                    ESValue nextPromise = tryCallMethodAndCatchError(instance, strings->resolve, thisObject, argumentsI, 1, false, error);
+                    if (!error.isEmpty())
                         break;
-                    }
 
                     // 6.k
                     escargot::NativeFunctionType promiseAllResolveElementFunction = instance->globalObject()->promiseAllResolveElementFunction();
@@ -5450,17 +5458,10 @@ void GlobalObject::installPromise()
                     remainingElementsCount->set(strings->value.string(), ESValue(remainingElements + 1));
 
                     // 6.r
-                    std::jmp_buf tryPositionR;
-                    if (setjmp(instance->registerTryPos(&tryPositionR)) == 0) {
-                        ESValue then = nextPromise->get(strings->then.string());
-                        ESValue arguments[] = { resolveElement, capability.m_rejectFunction };
-                        escargot::ESFunctionObject::call(instance, then, nextPromise, arguments, 2, false);
-                        instance->unregisterTryPos(&tryPositionR);
-                        instance->unregisterCheckedObjectAll();
-                    } else {
-                        error = instance->getCatchedError();
+                    ESValue argumentsR[] = { resolveElement, capability.m_rejectFunction };
+                    tryCallMethodAndCatchError(instance, strings->then, nextPromise, argumentsR, 2, false, error);
+                    if (!error.isEmpty())
                         break;
-                    }
 
                     // 6.t
                     index++;
@@ -5528,30 +5529,15 @@ void GlobalObject::installPromise()
                 if (kPresent) {
                     ESValue nextValue = iterableArray->get(k);
 
-                    ESValue nextPromise;
-                    std::jmp_buf tryPositionH;
-                    if (setjmp(instance->registerTryPos(&tryPositionH)) == 0) {
-                        ESValue resolve = thisObject->get(strings->resolve.string());
-                        escargot::ESValue arguments[] = { nextValue };
-                        nextPromise = escargot::ESFunctionObject::call(instance, resolve, thisObject, arguments, 1, false);
-                        instance->unregisterTryPos(&tryPositionH);
-                        instance->unregisterCheckedObjectAll();
-                    } else {
-                        error = instance->getCatchedError();
+                    escargot::ESValue argumentsH[] = { nextValue };
+                    ESValue nextPromise = tryCallMethodAndCatchError(instance, strings->resolve, thisObject, argumentsH, 1, false, error);
+                    if (!error.isEmpty())
                         break;
-                    }
 
-                    std::jmp_buf tryPositionJ;
-                    if (setjmp(instance->registerTryPos(&tryPositionJ)) == 0) {
-                        ESValue then = nextPromise.toObject()->get(strings->then.string());
-                        escargot::ESValue arguments[] = { capability.m_resolveFunction, capability.m_rejectFunction };
-                        ESValue result = escargot::ESFunctionObject::call(instance, then, nextPromise, arguments, 2, false);
-                        instance->unregisterTryPos(&tryPositionJ);
-                        instance->unregisterCheckedObjectAll();
-                    } else {
-                        error = instance->getCatchedError();
+                    escargot::ESValue argumentsJ[] = { capability.m_resolveFunction, capability.m_rejectFunction };
+                    ESValue result = tryCallMethodAndCatchError(instance, strings->then, nextPromise, argumentsJ, 2, false, error);
+                    if (!error.isEmpty())
                         break;
-                    }
 
                     k++;
                 } else {
