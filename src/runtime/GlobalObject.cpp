@@ -4886,10 +4886,12 @@ void GlobalObject::installRegExp()
         return ret;
     }, strings->toString, 0));
 
+#ifdef USE_ES6_FEATURE
     // $21.2.5.14 RegExp.prototype.compile
     m_regexpPrototype->defineDataProperty(strings->compile, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->compile, 2));
+#endif
 
     // add regexp to global object
     defineDataProperty(strings->RegExp, true, false, true, m_regexp);
