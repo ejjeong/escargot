@@ -1346,6 +1346,8 @@ void GlobalObject::installObject()
             ret.append(ta_name.toString()->asciiData());
             ret.append("]");
             return ESString::createAtomicString(ret.data());
+        } else if (thisVal->isESArrayBufferObject()) {
+            return ESString::createAtomicString("[object ArrayBuffer]");
         } else if (thisVal->isESPromiseObject()) {
             return ESString::createAtomicString("[object Promise]");
 #endif
