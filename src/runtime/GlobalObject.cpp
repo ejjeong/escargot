@@ -5022,7 +5022,7 @@ void GlobalObject::installArrayBuffer()
         if (newObject->isDetachedBuffer()) // 22
             RELEASE_ASSERT_NOT_REACHED();
 
-        newObject->copyDataFrom(obj, first, newLen);
+        newObject->fillData(obj->data() + first, newLen);
 
         return newObject;
     }, strings->slice, 2));

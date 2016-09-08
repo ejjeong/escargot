@@ -3995,6 +3995,12 @@ ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
     set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
 }
 
+void ESArrayBufferObject::fillData(const uint8_t* data, unsigned length)
+{
+    ASSERT(m_bytelength <= length);
+    memcpy(m_data, data, length);
+}
+
 ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)
     : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type), __proto__)
     , m_buffer(nullptr)

@@ -2834,7 +2834,7 @@ public:
     void allocateArrayBuffer(unsigned bytelength)
     {
         m_bytelength = bytelength;
-        m_data = GC_MALLOC_ATOMIC(bytelength);
+        m_data = (uint8_t*) GC_MALLOC_ATOMIC(bytelength);
         memset(m_data, 0, bytelength);
     }
 
@@ -2849,7 +2849,7 @@ public:
     void attachArrayBuffer(void* buffer, size_t length)
     {
         ASSERT(isDetachedBuffer());
-        m_data = buffer;
+        m_data = (uint8_t*)buffer;
         m_bytelength = length;
     }
 
@@ -2859,7 +2859,7 @@ public:
         m_bytelength = 0;
     }
 
-    ALWAYS_INLINE void* data() { return m_data; }
+    ALWAYS_INLINE uint8_t* data() { return m_data; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
 
     // $24.1.1.5
@@ -2873,7 +2873,7 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
         }
         // If isLittleEndian is not present, set isLittleEndian to either true or false.
-        void* rawStart = (int8_t*)m_data + byteindex;
+        void* rawStart = m_data + byteindex;
         return ESValue( *((Type*) rawStart) );
     }
     // $24.1.1.6
@@ -2887,18 +2887,15 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
         }
         // If isLittleEndian is not present, set isLittleEndian to either true or false.
-        void* rawStart = (int8_t*)m_data + byteindex;
+        void* rawStart = m_data + byteindex;
         *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
         return true;
     }
 
-    void copyDataFrom(ESArrayBufferObject* other, unsigned start, unsigned length)
-    {
-        memcpy((int8_t*)other->m_data + start, m_data, length);
-    }
+    void fillData(const uint8_t* data, unsigned length);
 
 private:
-    void* m_data;
+    uint8_t* m_data;
     unsigned m_bytelength;
 };
 
