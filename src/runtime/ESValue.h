@@ -2859,8 +2859,10 @@ public:
         m_bytelength = 0;
     }
 
-    ALWAYS_INLINE uint8_t* data() { return m_data; }
+    ALWAYS_INLINE const uint8_t* data() { return m_data; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
+
+    void fillData(const uint8_t* data, unsigned length);
 
     // $24.1.1.5
     template<typename Type>
@@ -2891,8 +2893,6 @@ public:
         *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
         return true;
     }
-
-    void fillData(const uint8_t* data, unsigned length);
 
 private:
     uint8_t* m_data;

@@ -3997,7 +3997,7 @@ ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
 
 void ESArrayBufferObject::fillData(const uint8_t* data, unsigned length)
 {
-    ASSERT(m_bytelength <= length);
+    ASSERT(m_bytelength == length);
     memcpy(m_data, data, length);
 }
 
