@@ -98,6 +98,7 @@ const char* errorMessage_GlobalObject_ThisNotBoolean = "%s: this value is not Bo
 const char* errorMessage_GlobalObject_ThisNotNumber = "%s: this value is not Number nor Number object";
 const char* errorMessage_GlobalObject_ThisNotString = "%s: this value is not String nor String object";
 const char* errorMessage_GlobalObject_ThisNotTypedArrayObject = "%s: this value is not a Typed Array object";
+const char* errorMessage_GlobalObject_ThisNotArrayBufferObject = "%s: this value is not an ArrayBuffer object";
 const char* errorMessage_GlobalObject_ThisNotDataViewObject = "%s: this value is not a DataView object";
 const char* errorMessage_GlobalObject_MalformedURI = "%s: malformed URI";
 const char* errorMessage_GlobalObject_RangeError = "%s: invalid range";
@@ -4975,13 +4976,23 @@ void GlobalObject::installArrayBuffer()
 
     m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
 
+    // $24.1.3.1 ArrayBuffer.isView (arg)
+    m_arrayBuffer->defineDataProperty(strings->isView, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue arg = instance->currentExecutionContext()->readArgument(0);
+        if (arg.isESPointer() && (arg.asESPointer()->isESTypedArrayObject() || arg.asESPointer()->isESDataViewObject()))
+            return ESValue(true);
+
+        return ESValue(false);
+    }, strings->isView, 1));
+
     // $24.1.4.1
     m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength.string(), new ESPropertyAccessorData(
         ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
             ESObject* originalObj = instance->currentExecutionContext()->resolveThisBindingToObject();
-            // FIXME find right object from originalObj
+            if (UNLIKELY(!originalObj->isESArrayBufferObject()))
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->byteLength, errorMessage_GlobalObject_ThisNotArrayBufferObject);
             if (originalObj == instance->globalObject()->arrayBufferPrototype())
-                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->byteLength, "%s: this object should be ArrayBuffer object");
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->byteLength, errorMessage_GlobalObject_ThisNotArrayBufferObject);
             return ESValue(originalObj->asESArrayBufferObject()->bytelength());
         }, ESString::create("get byteLength")), NULL)
     , false, false, true);
@@ -4991,7 +5002,7 @@ void GlobalObject::installArrayBuffer()
         escargot::ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         ESValue end = instance->currentExecutionContext()->readArgument(1);
         if (!thisObject->isESArrayBufferObject())
-            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->slice, "%s: this object is not an ArrayBuffer object");
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->slice, errorMessage_GlobalObject_ThisNotArrayBufferObject);
         escargot::ESArrayBufferObject* obj = thisObject->asESArrayBufferObject();
         if (obj->isDetachedBuffer())
             throwBuiltinError(instance, ErrorCode::TypeError, strings->ArrayBuffer, true, strings->slice, "%s: ArrayBuffer is detached buffer");

@@ -276,6 +276,7 @@ class ESString;
     F(Float32Array) \
     F(Float64Array) \
     F(ArrayBuffer) \
+    F(isView) \
     F(DataView) \
     F(byteOffset) \
     F(getFloat32) \
