@@ -276,6 +276,24 @@ class ESString;
     F(Float32Array) \
     F(Float64Array) \
     F(ArrayBuffer) \
+    F(DataView) \
+    F(byteOffset) \
+    F(getFloat32) \
+    F(getFloat64) \
+    F(getInt8) \
+    F(getInt16) \
+    F(getInt32) \
+    F(getUint8) \
+    F(getUint16) \
+    F(getUint32) \
+    F(setFloat32) \
+    F(setFloat64) \
+    F(setInt8) \
+    F(setInt16) \
+    F(setInt32) \
+    F(setUint8) \
+    F(setUint16) \
+    F(setUint32) \
     F(Promise) \
     F(alreadyResolved) \
     F(alreadyCalled) \

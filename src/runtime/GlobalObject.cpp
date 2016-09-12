@@ -98,6 +98,7 @@ const char* errorMessage_GlobalObject_ThisNotBoolean = "%s: this value is not Bo
 const char* errorMessage_GlobalObject_ThisNotNumber = "%s: this value is not Number nor Number object";
 const char* errorMessage_GlobalObject_ThisNotString = "%s: this value is not String nor String object";
 const char* errorMessage_GlobalObject_ThisNotTypedArrayObject = "%s: this value is not a Typed Array object";
+const char* errorMessage_GlobalObject_ThisNotDataViewObject = "%s: this value is not a DataView object";
 const char* errorMessage_GlobalObject_MalformedURI = "%s: malformed URI";
 const char* errorMessage_GlobalObject_RangeError = "%s: invalid range";
 const char* errorMessage_GlobalObject_FileNotExist = "%s: cannot load file";
@@ -121,6 +122,7 @@ const char* errorMessage_GlobalObject_FirstArgumentInvalidLength = "%s: first ar
 const char* errorMessage_GlobalObject_InvalidArrayBufferOffset = "%s: ArrayBuffer length minus the byteOffset is not a multiple of the element size";
 const char* errorMessage_GlobalObject_NotExistNewInArrayBufferConstructor = "%s: Constructor ArrayBuffer requires \'new\'";
 const char* errorMessage_GlobalObject_NotExistNewInTypedArrayConstructor = "%s: Constructor TypedArray requires \'new\'";
+const char* errorMessage_GlobalObject_NotExistNewInDataViewConstructor = "%s: Constructor DataView requires \'new\'";
 const char* errorMessage_GlobalObject_InvalidArrayLength = "%s: Invalid array length";
 
 NEVER_INLINE void throwBuiltinError(ESVMInstance* instance, ESErrorObject::Code code,
@@ -281,6 +283,7 @@ void GlobalObject::initGlobalObject()
 #ifdef USE_ES6_FEATURE
     installArrayBuffer();
     installTypedArray();
+    installDataView();
     installPromise();
 #endif
 
@@ -1348,6 +1351,8 @@ void GlobalObject::installObject()
             return ESString::createAtomicString(ret.data());
         } else if (thisVal->isESArrayBufferObject()) {
             return ESString::createAtomicString("[object ArrayBuffer]");
+        } else if (thisVal->isESDataViewObject()) {
+            return ESString::createAtomicString("[object DataView]");
         } else if (thisVal->isESPromiseObject()) {
             return ESString::createAtomicString("[object Promise]");
 #endif
@@ -5285,6 +5290,355 @@ static ESValue tryCallMethodAndCatchError(ESVMInstance* instance, const Internal
         error = instance->getCatchedError();
     }
     return ret;
+}
+
+void GlobalObject::installDataView()
+{
+    m_dataViewPrototype = ESDataViewObject::create();
+    m_dataViewPrototype->forceNonVectorHiddenClass(true);
+    m_dataViewPrototype->set__proto__(m_objectPrototype);
+
+    // $24.2.2.1 DataView(buffer[, byteOffset[, byteLength]])
+    m_dataView = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        if (!instance->currentExecutionContext()->isNewExpression())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, false, strings->emptyString, errorMessage_GlobalObject_NotExistNewInDataViewConstructor);
+
+        ASSERT(instance->currentExecutionContext()->resolveThisBindingToObject()->isESDataViewObject());
+        escargot::ESDataViewObject* obj = instance->currentExecutionContext()->resolveThisBindingToObject()->asESDataViewObject();
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue bufval = instance->currentExecutionContext()->readArgument(0);
+        if (!bufval.isESPointer() || !bufval.asESPointer()->isESObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, false, strings->emptyString, errorMessage_GlobalObject_FirstArgumentNotObject);
+        if (!bufval.asESPointer()->isESArrayBufferObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, false, strings->emptyString, "%s: first argument is not an ArrayBuffer object");
+
+        escargot::ESArrayBufferObject* buffer = bufval.asESPointer()->asESArrayBufferObject();
+
+        double numberOffset = 0, offset = 0;
+        if (arglen >= 2) {
+            ESValue byteOffset = instance->currentExecutionContext()->readArgument(1);
+            numberOffset = byteOffset.toNumber();
+            offset = ESValue(numberOffset).toInteger();
+        }
+        // 7.
+        if (numberOffset != offset || offset < 0)
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->DataView, false, strings->emptyString, errorMessage_GlobalObject_RangeError);
+
+        // 8.
+        // check detached buffer
+        if (buffer->isDetachedBuffer())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, false, strings->emptyString, "%s: ArrayBuffer as argument is detached");
+
+        // 9.
+        unsigned bufferByteLength = buffer->bytelength();
+
+        if (offset > bufferByteLength)
+            throwBuiltinError(instance, ErrorCode::RangeError, strings->DataView, false, strings->emptyString, errorMessage_GlobalObject_RangeError);
+        double viewByteLength;
+        if (arglen < 3 || instance->currentExecutionContext()->readArgument(2).isUndefined()) {
+            viewByteLength = bufferByteLength - offset;
+        } else {
+            ESValue byteLength = instance->currentExecutionContext()->readArgument(2);
+            viewByteLength = byteLength.toLength();
+            if (offset + viewByteLength > bufferByteLength)
+                throwBuiltinError(instance, ErrorCode::RangeError, strings->DataView, false, strings->emptyString, errorMessage_GlobalObject_RangeError);
+        }
+
+        obj->setBuffer(buffer);
+        obj->setBytelength(viewByteLength);
+        obj->setByteoffset(offset);
+        obj->setDataview(true);
+
+        return obj;
+    }, strings->DataView, 3, true);
+    m_dataView->forceNonVectorHiddenClass(true);
+    m_dataView->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
+
+    m_dataViewPrototype->defineDataProperty(strings->constructor, true, false, true, m_dataView);
+
+    m_dataView->set__proto__(m_functionPrototype); // empty Function
+    m_dataView->setProtoType(m_dataViewPrototype);
+    defineDataProperty(strings->DataView, true, false, true, m_dataView);
+
+    m_dataViewPrototype->defineAccessorProperty(strings->buffer.string(), new ESPropertyAccessorData(
+        ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
+            RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, buffer);
+            if (!thisObject->isESDataViewObject() || !thisObject->asESDataViewObject()->buffer())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->buffer, "%s: this object can not have a buffer");
+            return ESValue(thisObject->asESDataViewObject()->buffer());
+        }, ESString::create("get buffer")), NULL)
+    , false, false, true);
+
+    m_dataViewPrototype->defineAccessorProperty(strings->byteLength.string(), new ESPropertyAccessorData(
+        ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
+            RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, byteLength);
+            if (!thisObject->isESDataViewObject() || !thisObject->asESDataViewObject()->buffer())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->byteLength, "%s: this object can not have a buffer");
+            if (thisObject->asESDataViewObject()->buffer()->isDetachedBuffer())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->byteLength, "%s: ArrayBuffer is detached");
+            return ESValue(thisObject->asESDataViewObject()->bytelength());
+        }, ESString::create("get byteLength")), NULL)
+    , false, false, true);
+
+    m_dataViewPrototype->defineAccessorProperty(strings->byteOffset.string(), new ESPropertyAccessorData(
+        ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
+            RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, byteOffset);
+            if (!thisObject->isESDataViewObject() || !thisObject->asESDataViewObject()->buffer())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->byteOffset, "%s: this object can not have a buffer");
+            if (thisObject->asESDataViewObject()->buffer()->isDetachedBuffer())
+                throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->byteOffset, "%s: ArrayBuffer is detached");
+            return ESValue(thisObject->asESDataViewObject()->byteoffset());
+        }, ESString::create("get byteOffset")), NULL)
+    , false, false, true);
+
+    // 24.2.4.5 DataView.prototype.getFloat32 ( byteOffset [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->getFloat32, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getFloat32);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getFloat32, errorMessage_GlobalObject_ThisNotDataViewObject);
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Float32Array);
+    }, strings->getFloat32, 1));
+    // 24.2.4.6 DataView.prototype.getFloat64 ( byteOffset [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->getFloat64, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getFloat64);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getFloat64, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Float64Array);
+    }, strings->getFloat64, 1));
+    // 24.2.4.7 DataView.prototype.getInt8 ( byteOffset )
+    m_dataViewPrototype->defineDataProperty(strings->getInt8, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getInt8);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getInt8, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Int8Array);
+    }, strings->getInt8, 1));
+    // 24.2.4.8 DataView.prototype.getInt16 ( byteOffset [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->getInt16, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getInt16);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getInt16, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Int16Array);
+    }, strings->getInt16, 1));
+    // 24.2.4.9 DataView.prototype.getInt32 ( byteOffset [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->getInt32, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getInt32);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getInt32, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Int32Array);
+    }, strings->getInt32, 1));
+    // 24.2.4.10 DataView.prototype.getUint8 ( byteOffset )
+    m_dataViewPrototype->defineDataProperty(strings->getUint8, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getUint8);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getUint8, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Uint8Array);
+    }, strings->getUint8, 1));
+    // 24.2.4.11 DataView.prototype.getUint16 ( byteOffset [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->getUint16, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getUint16);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getUint16, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Uint16Array);
+    }, strings->getUint16, 1));
+    // 24.2.4.12 DataView.prototype.getUint32 ( byteOffset [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->getUint32, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, getUint32);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->getUint32, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 1) {
+            littleEndian = instance->currentExecutionContext()->readArgument(1);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->getViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Uint32Array);
+    }, strings->getUint32, 1));
+    // 24.2.4.13 DataView.prototype.setFloat32 ( byteOffset, value [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->setFloat32, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setFloat32);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setFloat32, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Float32Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setFloat32, 2));
+    // 24.2.4.14 DataView.prototype.setFloat64 ( byteOffset, value [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->setFloat64, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setFloat64);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setFloat64, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Float64Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setFloat64, 2));
+    // 24.2.4.15 DataView.prototype.setInt8 ( byteOffset, value )
+    m_dataViewPrototype->defineDataProperty(strings->setInt8, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setInt8);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setInt8, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Int8Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setInt8, 2));
+    // 24.2.4.16 DataView.prototype.setInt16 ( byteOffset, value [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->setInt16, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setInt16);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setInt16, errorMessage_GlobalObject_ThisNotDataViewObject);
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Int16Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setInt16, 2));
+    // 24.2.4.17 DataView.prototype.setInt32 ( byteOffset, value [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->setInt32, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setInt32);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setInt32, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Int32Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setInt32, 2));
+    // 24.2.4.18 DataView.prototype.setUint8 ( byteOffset, value )
+    m_dataViewPrototype->defineDataProperty(strings->setUint8, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setUint8);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setUint8, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Uint8Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setUint8, 2));
+    // 24.2.4.19 DataView.prototype.setUint16 ( byteOffset, value [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->setUint16, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setUint16);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setUint16, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Uint16Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setUint16, 2));
+    // 24.2.4.20 DataView.prototype.setUint32 ( byteOffset, value [ , littleEndian ] )
+    m_dataViewPrototype->defineDataProperty(strings->setUint32, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RESOLVE_THIS_BINDING_TO_OBJECT(thisObject, DataView, setUint32);
+        if (!thisObject->isESDataViewObject())
+            throwBuiltinError(instance, ErrorCode::TypeError, strings->DataView, true, strings->setUint32, errorMessage_GlobalObject_ThisNotDataViewObject);
+
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue littleEndian;
+        if (arglen > 2) {
+            littleEndian = instance->currentExecutionContext()->readArgument(2);
+        } else {
+            littleEndian = ESValue(false);
+        }
+        return thisObject->asESDataViewObject()->setViewValue(instance->currentExecutionContext()->readArgument(0), littleEndian, escargot::Uint32Array
+            , instance->currentExecutionContext()->readArgument(1));
+    }, strings->setUint32, 2));
+
 }
 
 void GlobalObject::installPromise()

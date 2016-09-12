@@ -2866,31 +2866,42 @@ public:
 
     // $24.1.1.5
     template<typename Type>
-    ESValue getValueFromBuffer(unsigned byteindex, TypedArrayType typeVal, int isLittleEndian = -1)
+    ESValue getValueFromBuffer(unsigned byteindex, TypedArrayType typeVal, int isLittleEndian = 1)
     {
-        ASSERT(!isDetachedBuffer());
-        ASSERT(byteindex >= 0 && byteindex + sizeof(Type) <= m_bytelength);
-        if (isLittleEndian != -1) {
-            // TODO
-            RELEASE_ASSERT_NOT_REACHED();
-        }
         // If isLittleEndian is not present, set isLittleEndian to either true or false.
-        void* rawStart = m_data + byteindex;
-        return ESValue( *((Type*) rawStart) );
+        ASSERT(!isDetachedBuffer());
+        size_t elementSize = sizeof(Type);
+        ASSERT(byteindex >= 0 && byteindex + elementSize <= m_bytelength);
+
+        uint8_t* rawStart = m_data + byteindex;
+        Type res;
+        if (isLittleEndian != 1) { // bigEndian
+            for (size_t i = 0; i < elementSize; i++) {
+                ((uint8_t*)&res)[elementSize - i - 1] = rawStart[i];
+            }
+        } else { // littleEndian
+            res = *((Type*) rawStart);
+        }
+        return ESValue(res);
     }
     // $24.1.1.6
     template<typename TypeAdaptor>
-    bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = -1)
+    bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = 1)
     {
-        ASSERT(!isDetachedBuffer());
-        ASSERT(byteindex >= 0 && byteindex + sizeof(typename TypeAdaptor::Type) <= m_bytelength);
-        if (isLittleEndian != -1) {
-            // TODO
-            RELEASE_ASSERT_NOT_REACHED();
-        }
         // If isLittleEndian is not present, set isLittleEndian to either true or false.
-        void* rawStart = m_data + byteindex;
-        *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
+        ASSERT(!isDetachedBuffer());
+        size_t elementSize = sizeof(typename TypeAdaptor::Type);
+        ASSERT(byteindex >= 0 && byteindex + elementSize <= m_bytelength);
+
+        uint8_t* rawStart = m_data + byteindex;
+        typename TypeAdaptor::Type littleEndianVal = TypeAdaptor::toNative(val);
+        if (isLittleEndian != 1) {
+            for (size_t i = 0; i < elementSize; i++) {
+                rawStart[i] = ((uint8_t*)&littleEndianVal)[elementSize - i - 1];
+            }
+        } else {
+            *((typename TypeAdaptor::Type*) rawStart) = littleEndianVal;
+        }
         return true;
     }
 
@@ -3078,18 +3089,46 @@ typedef ESTypedArrayObject<Float64Adaptor> ESFloat64Array;
 
 class ESDataViewObject : public ESArrayBufferView {
 protected:
-    ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESDataViewObject)
-        : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESValue()) // TODO set __proto__ properly
-    {
-        // TODO
-        RELEASE_ASSERT_NOT_REACHED();
-    }
+    ESDataViewObject(bool dataview, escargot::ESArrayBufferObject* buffer, unsigned byteOffset, unsigned byteLength);
 
 public:
     static ESDataViewObject* create()
     {
-        return new ESDataViewObject();
+        return new ESDataViewObject(false, nullptr, 0, 0);
     }
+    static ESDataViewObject* create(bool dataview, escargot::ESArrayBufferObject* buffer, unsigned byteOffset, unsigned byteLength)
+    {
+        return new ESDataViewObject(dataview, buffer, byteOffset, byteLength);
+    }
+
+    ALWAYS_INLINE void setDataview(bool dataview) { m_dataview = dataview; }
+    ALWAYS_INLINE bool dataview() { return m_dataview; }
+
+    static unsigned elementSize(TypedArrayType t)
+    {
+        switch (t) {
+        case TypedArrayType::Int8Array:
+        case TypedArrayType::Uint8Array:
+            return 1;
+        case TypedArrayType::Int16Array:
+        case TypedArrayType::Uint16Array:
+            return 2;
+        case TypedArrayType::Int32Array:
+        case TypedArrayType::Uint32Array:
+        case TypedArrayType::Float32Array:
+            return 4;
+        case TypedArrayType::Float64Array:
+            return 8;
+        default:
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    ESValue getViewValue(ESValue requestIndex, ESValue _isLittleEndian, TypedArrayType type);
+    ESValue setViewValue(ESValue requestIndex, ESValue _isLittleEndian, TypedArrayType type, ESValue value);
+private:
+    bool m_dataview;
 };
 #endif
 

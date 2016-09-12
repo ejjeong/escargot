@@ -4056,6 +4056,116 @@ bool ESTypedArrayObjectWrapper::set(uint32_t key, ESValue val)
     }
     RELEASE_ASSERT_NOT_REACHED();
 }
+
+ESDataViewObject::ESDataViewObject(bool dataview, escargot::ESArrayBufferObject* buffer, unsigned byteoffset, unsigned bytelength)
+    : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESVMInstance::currentInstance()->globalObject()->dataViewPrototype())
+    , m_dataview(dataview)
+{
+    setBuffer(buffer);
+    setByteoffset(byteoffset);
+    setBytelength(bytelength);
+}
+
+ESValue ESDataViewObject::getViewValue(ESValue requestIndex, ESValue _isLittleEndian, TypedArrayType type)
+{
+    double numberIndex = requestIndex.toNumber();
+    double getIndex = ESValue(numberIndex).toInteger();
+
+    if (numberIndex != getIndex || getIndex < 0)
+        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create(u"DataView: invalid index")));
+
+    bool isLittleEndian = _isLittleEndian.toBoolean();
+
+    escargot::ESArrayBufferObject* buffer = this->buffer();
+    if (buffer->isDetachedBuffer())
+        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"DataView: this DataView object has a detached buffer")));
+
+    unsigned viewOffset = byteoffset();
+    unsigned viewSize = bytelength();
+
+    unsigned elementSize = this->elementSize(type);
+
+    if (getIndex + elementSize > viewSize)
+        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create(u"DataView: invalid range")));
+
+    unsigned bufferIndex = getIndex + viewOffset;
+    switch (type) {
+    case TypedArrayType::Float32Array:
+        return buffer->getValueFromBuffer<float>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Float64Array:
+        return buffer->getValueFromBuffer<double>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Int8Array:
+        return buffer->getValueFromBuffer<int8_t>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Int16Array:
+        return buffer->getValueFromBuffer<int16_t>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Int32Array:
+        return buffer->getValueFromBuffer<int32_t>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Uint8Array:
+        return buffer->getValueFromBuffer<uint8_t>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Uint16Array:
+        return buffer->getValueFromBuffer<uint16_t>(bufferIndex, type, isLittleEndian);
+    case TypedArrayType::Uint32Array:
+        return buffer->getValueFromBuffer<uint32_t>(bufferIndex, type, isLittleEndian);
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+ESValue ESDataViewObject::setViewValue(ESValue requestIndex, ESValue _isLittleEndian, TypedArrayType type, ESValue value)
+{
+    double numberIndex = requestIndex.toNumber();
+    double getIndex = ESValue(numberIndex).toInteger();
+
+    if (numberIndex != getIndex || getIndex < 0)
+        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create(u"DataView: invalid index")));
+
+    bool isLittleEndian = _isLittleEndian.toBoolean();
+
+    escargot::ESArrayBufferObject* buffer = this->buffer();
+    if (buffer->isDetachedBuffer())
+        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"DataView: this DataView object has a detached buffer")));
+
+    unsigned viewOffset = byteoffset();
+    unsigned viewSize = bytelength();
+
+    unsigned elementSize = this->elementSize(type);
+
+    if (getIndex + elementSize > viewSize)
+        ESVMInstance::currentInstance()->throwError(RangeError::create(ESString::create(u"DataView: invalid range")));
+
+    unsigned bufferIndex = getIndex + viewOffset;
+    switch (type) {
+    case TypedArrayType::Float32Array:
+        buffer->setValueInBuffer<Float32Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Float64Array:
+        buffer->setValueInBuffer<Float64Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Int8Array:
+        buffer->setValueInBuffer<Int8Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Int16Array:
+        buffer->setValueInBuffer<Int16Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Int32Array:
+        buffer->setValueInBuffer<Int32Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Uint8Array:
+        buffer->setValueInBuffer<Uint8Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Uint16Array:
+        buffer->setValueInBuffer<Uint16Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    case TypedArrayType::Uint32Array:
+        buffer->setValueInBuffer<Uint32Adaptor>(bufferIndex, type, value, isLittleEndian);
+        break;
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    return ESValue();
+}
+
 #endif
 
 ESArgumentsObject::ESArgumentsObject(FunctionEnvironmentRecordWithArgumentsObject* environment)
