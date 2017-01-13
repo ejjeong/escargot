@@ -25,7 +25,7 @@ ESCARGOT_CXXFLAGS_LINUX += -DENABLE_CODECACHE
 ESCARGOT_CXXFLAGS_TIZEN += -DESCARGOT_SMALL_CONFIG=1 -DESCARGOT_TIZEN
 
 #######################################################
-# flags for $(ARCH) : x64/x86/arm
+# flags for $(ARCH) : x64/x86/arm/arm64
 #######################################################
 ESCARGOT_CXXFLAGS_X64 += -DESCARGOT_64=1
 ESCARGOT_LDFLAGS_X64 =
@@ -42,6 +42,8 @@ ifneq ($(HOST),tizen_obs)
 ESCARGOT_CXXFLAGS_ARM += -march=armv7-a -mthumb
 ESCARGOT_LDFLAGS_ARM =
 endif
+
+ESCARGOT_CXXFLAGS_ARM64 += -DESCARGOT_64=1
 
 #######################################################
 # flags for $(TYPE) : jit/interpreter

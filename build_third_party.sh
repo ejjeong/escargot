@@ -210,8 +210,12 @@ function build_gc_for_tizen_obs() {
 
 if [[ $1 == tizen_obs_arm ]]; then
     build_gc_for_tizen_obs arm $2
+elif [[ $1 == tizen_obs_arm64 ]]; then
+    build_gc_for_tizen_obs arm64 $2
 elif [[ $1 == tizen_obs_i386 ]]; then
     build_gc_for_tizen_obs i386 $2
+elif [[ $1 == tizen_obs_x64 ]]; then
+    build_gc_for_tizen_obs x64 $2
 else # full build
 
 build_gc_for_linux

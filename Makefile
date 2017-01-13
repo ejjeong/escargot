@@ -33,6 +33,8 @@ ifneq (,$(findstring x86,$(MAKECMDGOALS)))
   ARCH=x86
 else ifneq (,$(findstring x64,$(MAKECMDGOALS)))
   ARCH=x64
+else ifneq (,$(findstring arm64,$(MAKECMDGOALS)))
+  ARCH=arm64
 else ifneq (,$(findstring arm,$(MAKECMDGOALS)))
   ARCH=arm
 endif
@@ -81,9 +83,14 @@ else ifneq (,$(findstring tizen24_mobile_arm,$(MAKECMDGOALS)))
   ARCH=arm
 else ifneq (,$(findstring tizen_obs_arm,$(MAKECMDGOALS)))
   HOST=tizen_obs
+else ifneq (,$(findstring tizen_obs_arm64,$(MAKECMDGOALS)))
+  HOST=tizen_obs
 else ifneq (,$(findstring tizen_obs_i386,$(MAKECMDGOALS)))
   HOST=tizen_obs
   ARCH=i386
+else ifneq (,$(findstring tizen_obs_x64,$(MAKECMDGOALS)))
+  HOST=tizen_obs
+  ARCH=x64
 endif
 
 ifneq (,$(findstring tizen,$(HOST)))
@@ -143,6 +150,9 @@ else ifeq ($(ARCH), i386)
 else ifeq ($(ARCH), arm)
   CXXFLAGS += $(ESCARGOT_CXXFLAGS_ARM)
   LDFLAGS += $(ESCARGOT_LDFLAGS_ARM)
+else ifeq ($(ARCH), arm64)
+  CXXFLAGS += $(ESCARGOT_CXXFLAGS_ARM64)
+  LDFLAGS += $(ESCARGOT_LDFLAGS_ARM64)
 endif
 
 # TYPE flags
@@ -285,13 +295,21 @@ tizen_wearable_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 ##### TIZEN_OBS #####
 tizen_obs_arm.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_i386.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_x64.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_arm64.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_arm.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 tizen_obs_i386.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_x64.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
+tizen_obs_arm64.interpreter.debug.static: $(OUTDIR)/$(STATIC_LIB)
 
 tizen_obs_arm.interpreter.release: $(OUTDIR)/$(BIN)
 tizen_obs_i386.interpreter.release: $(OUTDIR)/$(BIN)
+tizen_obs_x64.interpreter.release: $(OUTDIR)/$(BIN)
+tizen_obs_arm64.interpreter.release: $(OUTDIR)/$(BIN)
 tizen_obs_arm.interpreter.debug: $(OUTDIR)/$(BIN)
 tizen_obs_i386.interpreter.debug: $(OUTDIR)/$(BIN)
+tizen_obs_x64.interpreter.debug: $(OUTDIR)/$(BIN)
+tizen_obs_arm64.interpreter.debug: $(OUTDIR)/$(BIN)
 
 ##### TIZEN24 #####
 tizen24_mobile_emulator.interpreter.release.static: $(OUTDIR)/$(STATIC_LIB)

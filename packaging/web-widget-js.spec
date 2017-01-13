@@ -28,32 +28,36 @@ Web Widget JS Engine headers & archives
 
 %build
 
+export ESCARGOT_ARCH=i386
 %ifarch %{arm}
 export ESCARGOT_ARCH=arm
-%else
-export ESCARGOT_ARCH=i386
+%endif
+%ifarch aarch64
+echo aarch64
+export ESCARGOT_ARCH=arm64
+%endif
+%ifarch x86_64
+echo x86_64
+export ESCARGOT_ARCH=x64
 %endif
 
 ./build_third_party.sh tizen_obs_${ESCARGOT_ARCH} %{?only_release:only_release}
 make tizen_obs_${ESCARGOT_ARCH}.interpreter.release.static %{?jobs:-j%jobs}
-%if 0%{?only_release}
-mkdir -p out/tizen_obs/${ESCARGOT_ARCH}/interpreter/release
-mkdir -p out/tizen_obs/${ESCARGOT_ARCH}/interpreter/debug
-touch out/tizen_obs/${ESCARGOT_ARCH}/interpreter/debug/libescargot.a
-touch out/tizen_obs/${ESCARGOT_ARCH}/interpreter/release/escargot
-touch out/tizen_obs/${ESCARGOT_ARCH}/interpreter/debug/escargot
-%else
-make tizen_obs_${ESCARGOT_ARCH}.interpreter.debug.static %{?jobs:-j%jobs}
 make tizen_obs_${ESCARGOT_ARCH}.interpreter.release %{?jobs:-j%jobs}
-make tizen_obs_${ESCARGOT_ARCH}.interpreter.debug %{?jobs:-j%jobs}
-%endif
 
 %install
 
+export ESCARGOT_ARCH=i386
 %ifarch %{arm}
 export ESCARGOT_ARCH=arm
-%else
-export ESCARGOT_ARCH=i386
+%endif
+%ifarch aarch64
+echo aarch64
+export ESCARGOT_ARCH=arm64
+%endif
+%ifarch x86_64
+echo x86_64
+export ESCARGOT_ARCH=x64
 %endif
 
 rm -rf %{buildroot}
@@ -64,17 +68,12 @@ cat LICENSE* COPYING.LIB > %{buildroot}%{_datadir}/license/%{name}
 
 # Archive
 mkdir -p %{buildroot}%{_libdir}/%{name}/release
-mkdir -p %{buildroot}%{_libdir}/%{name}/debug
 cp out/tizen_obs/${ESCARGOT_ARCH}/interpreter/release/libescargot.a              %{buildroot}%{_libdir}/%{name}/release
-cp out/tizen_obs/${ESCARGOT_ARCH}/interpreter/debug/libescargot.a                %{buildroot}%{_libdir}/%{name}/debug
 cp third_party/bdwgc/out/tizen_obs/${ESCARGOT_ARCH}/release.shared/.libs/libgc.a %{buildroot}%{_libdir}/%{name}/release
-cp third_party/bdwgc/out/tizen_obs/${ESCARGOT_ARCH}/debug.shared/.libs/libgc.a   %{buildroot}%{_libdir}/%{name}/debug
 
 # Binary
 mkdir -p %{buildroot}%{_bindir}/%{name}/release
-mkdir -p %{buildroot}%{_bindir}/%{name}/debug
 cp out/tizen_obs/${ESCARGOT_ARCH}/interpreter/release/escargot                   %{buildroot}%{_bindir}/%{name}/release
-cp out/tizen_obs/${ESCARGOT_ARCH}/interpreter/debug/escargot                     %{buildroot}%{_bindir}/%{name}/debug
 
 # Headers & Build Configurations
 LIST=("build" "src/ast" "src/bytecode")
