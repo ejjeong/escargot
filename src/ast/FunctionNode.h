@@ -47,6 +47,8 @@ public:
         m_isExpression = false;
         m_functionIdIndex = SIZE_MAX;
         m_functionIdIndexNeedsHeapAllocation = true;
+        m_stackAllocatedIdentifiersCount = 0;
+        m_usesEval = false;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }

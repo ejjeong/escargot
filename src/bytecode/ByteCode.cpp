@@ -45,6 +45,9 @@ CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, b
     m_needsActivation = false;
     m_functionExpressionNameIndex = SIZE_MAX;
     m_forceDenyStrictMode = false;
+#ifndef NDEBUG
+    m_nonAtomicId = nullptr;
+#endif
 #ifdef ENABLE_ESJIT
     m_cachedJITFunction = nullptr;
     m_executeCount = 0;

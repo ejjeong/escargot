@@ -234,6 +234,7 @@ public:
     {
         m_buffer = NULL;
         m_length = 0;
+        m_isASCIIString = false;
     }
 
     ParserString(char16_t ch)
@@ -241,6 +242,7 @@ public:
         m_buffer = NULL;
         m_length = 0;
         m_stdString = ch;
+        m_isASCIIString = false;
     }
 
     ParserString(const ParserString& ps)
@@ -264,6 +266,7 @@ public:
         m_buffer = 0;
         m_length = 0;
         m_stdString = ps;
+        m_isASCIIString = false;
     }
 
     static const size_t npos = static_cast<size_t>(-1);
@@ -444,11 +447,18 @@ struct ParseStatus : public JSC::Yarr::RefCounted<ParseStatus> {
     }
 
     ParseStatus()
-        : m_octal(false)
+        : m_type(BooleanLiteralToken)
+        , m_octal(false)
+        , m_lineNumber(0)
+        , m_lineStart(0)
+        , m_start(0)
+        , m_end(0)
         , m_prec(-1)
         , m_head(false)
         , m_tail(false)
         , m_valueNumber(0)
+        , m_punctuatorsKind(LeftParenthesis)
+        , m_keywordKind(NotKeyword)
     {
     }
 
@@ -463,6 +473,8 @@ struct ParseStatus : public JSC::Yarr::RefCounted<ParseStatus> {
         , m_head(false)
         , m_tail(false)
         , m_valueNumber(0)
+        , m_punctuatorsKind(LeftParenthesis)
+        , m_keywordKind(NotKeyword)
     {
     }
 
@@ -480,6 +492,8 @@ struct ParseStatus : public JSC::Yarr::RefCounted<ParseStatus> {
         m_tail = false;
         m_prec = -1;
         m_octal = false;
+        m_punctuatorsKind = LeftParenthesis;
+        m_keywordKind = NotKeyword;
     }
 
     ParseStatus(Token t, ParserString&& data, bool octal, size_t a, size_t b, size_t c, size_t d)
@@ -496,6 +510,8 @@ struct ParseStatus : public JSC::Yarr::RefCounted<ParseStatus> {
         m_head = false;
         m_tail = false;
         m_prec = -1;
+        m_punctuatorsKind = LeftParenthesis;
+        m_keywordKind = NotKeyword;
     }
 
     void* operator new(size_t, void* p) { return p; }
@@ -535,8 +551,12 @@ struct ParseContext {
         , m_startIndex(m_index)
         , m_startLineNumber(m_lineNumber)
         , m_startLineStart(m_lineStart)
+        , m_lastIndex(0)
+        , m_lastLineNumber(0)
+        , m_lastLineStart(0)
         , m_length(src->length())
         , m_allowIn(true)
+        , m_allowYield(false)
         , m_inFunctionBody(false)
         , m_inIteration(false)
         , m_inSwitch(false)
@@ -544,6 +564,7 @@ struct ParseContext {
         , m_lastCommentStart(-1)
         , m_strict(strict)
         , m_scanning(false)
+        , m_hasLineTerminator(false)
         , m_isBindingElement(false)
         , m_isAssignmentTarget(false)
         , m_isFunctionIdentifier(false)

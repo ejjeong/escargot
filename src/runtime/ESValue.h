@@ -753,6 +753,8 @@ class ESString : public ESPointer {
 protected:
     ESString(ESPointer::Type type = Type::ESString)
         : ESPointer(type)
+        , m_asciiString(nullptr)
+        , m_utf16String(nullptr)
     { }
     ESString* data() const;
 public:
@@ -2984,6 +2986,7 @@ class ESTypedArrayObjectWrapper : public ESArrayBufferView {
 protected:
     ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type, ESValue __proto__)
         : ESArrayBufferView(type, __proto__)
+        , m_arraylength(0)
         , m_arraytype(arraytype)
     {
     }

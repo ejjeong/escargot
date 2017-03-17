@@ -403,7 +403,7 @@ ASCIIString dtoa(double number)
     }*/
 
     const int bufferLength = 128;
-    char buffer[bufferLength];
+    char buffer[bufferLength] = {0};
     double_conversion::StringBuilder builder(buffer, bufferLength);
 
     int exponent = decimal_point - 1;
@@ -1724,6 +1724,8 @@ ESArrayObject* ESRegExpObject::pushBackToRegExpMatchedArray(escargot::ESArrayObj
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
+    , m_outerEnvironment(nullptr)
+    , m_codeBlock(nullptr)
 {
     initialize(outerEnvironment, cb, name, length, hasPrototype, isBuiltIn);
 }
@@ -1790,6 +1792,7 @@ ESFunctionObject* ESFunctionObject::createBoundFunction(ESVMInstance* instance, 
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
+    , m_outerEnvironment(nullptr)
 {
     initialize(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn);
     m_codeBlock = CodeBlock::create(ExecutableType::FunctionCode, 0, true);
@@ -2274,6 +2277,8 @@ ESDateObject::ESDateObject(ESPointer::Type type)
 {
     m_isCacheDirty = true;
     m_hasValidDate = false;
+    m_primitiveValue = 0; 
+    m_timezone = 0;
 }
 
 void ESDateObject::setTimeValue()
@@ -3992,6 +3997,8 @@ ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
 
 ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)
     : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type), __proto__)
+    , m_buffer(nullptr)
+    , m_bytelength(0)
 {
 }
 

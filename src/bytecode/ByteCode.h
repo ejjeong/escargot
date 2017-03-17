@@ -228,6 +228,7 @@ struct ByteCodeGenerateContext {
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_hasArgumentsBinding(contextBefore.m_hasArgumentsBinding)
         , m_offsetToBasePointer(contextBefore.m_offsetToBasePointer)
+        , m_positionToContinue(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
 #ifdef ENABLE_ESJIT
         , m_phiIndex(contextBefore.m_phiIndex)
@@ -688,6 +689,9 @@ public:
         : ByteCode(GetByIndexOpcode)
     {
         m_index = index;
+#ifndef NDEBUG
+        m_name = nullptr;
+#endif
     }
     size_t m_index;
 
@@ -706,6 +710,9 @@ public:
         : ByteCode(GetByIndexInHeapOpcode)
     {
         m_index = index;
+#ifndef NDEBUG
+        m_name = nullptr;
+#endif
     }
     size_t m_index;
 
@@ -744,6 +751,9 @@ public:
     {
         m_index = fastAccessIndex;
         m_upIndex = fastAccessUpIndex;
+#ifndef NDEBUG
+        m_name = nullptr;
+#endif
     }
     size_t m_index;
     size_t m_upIndex;
@@ -1775,6 +1785,8 @@ ASSERT_STATIC(sizeof(SetObjectPreComputedCase) == sizeof(SetObjectPreComputedCas
 
 struct EnumerateObjectData : public gc {
     EnumerateObjectData()
+        : m_object(nullptr)
+        , m_hasNonIntKey(false)
     {
         m_idx = 0;
     }
@@ -1894,6 +1906,9 @@ class CallBoundFunction : public ByteCode {
 public:
     CallBoundFunction()
         : ByteCode(CallBoundFunctionOpcode)
+        , m_boundTargetFunction(nullptr)
+        , m_boundArguments(nullptr)
+        , m_boundArgumentsCount(0)
     {
     }
 
@@ -2038,6 +2053,9 @@ class Try : public ByteCode {
 public:
     Try()
         : ByteCode(TryOpcode)
+        , m_tryDupCount(0)
+        , m_catchPosition(0)
+        , m_statementEndPosition(0)
     {
 
     }
@@ -2254,6 +2272,7 @@ class FinallyEnd : public ByteCode {
 public:
     FinallyEnd()
         : ByteCode(FinallyEndOpcode)
+        , m_tryDupCount(0)
     {
 
     }
