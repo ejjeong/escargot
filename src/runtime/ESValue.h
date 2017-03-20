@@ -753,8 +753,10 @@ class ESString : public ESPointer {
 protected:
     ESString(ESPointer::Type type = Type::ESString)
         : ESPointer(type)
+#ifndef NDEBUG
         , m_asciiString(nullptr)
         , m_utf16String(nullptr)
+#endif
     { }
     ESString* data() const;
 public:

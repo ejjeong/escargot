@@ -55,11 +55,6 @@ ESVMInstance::ESVMInstance()
     });
     */
     m_profile = false;
-    m_reportCompiledFunction = false;
-    m_reportOSRExitedFunction = false;
-    m_useVerboseWriter = false;
-    m_compiledFunctions = 0;
-    m_osrExitedFunctions = 0;
 
 #ifndef NDEBUG
     m_debug = false;
@@ -67,6 +62,11 @@ ESVMInstance::ESVMInstance()
     m_dumpExecuteByteCode = false;
     m_verboseJIT = false;
     m_reportUnsupportedOpcode = false;
+    m_reportCompiledFunction = false;
+    m_reportOSRExitedFunction = false;
+    m_useVerboseWriter = false;
+    m_compiledFunctions = 0;
+    m_osrExitedFunctions = 0;
 #endif
     m_useExprFilter = false;
     m_useCseFilter = false;
