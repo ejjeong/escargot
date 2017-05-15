@@ -32,7 +32,7 @@ LDFLAGS_COMMON=
 # HOST flags : linux / wearable / mobile / tv -------------
 
 GCCONFFLAGS_wearable=
-CFLAGS_wearable=" -Os "
+CFLAGS_wearable=" -Os -DTIZEN_WEARABLE"
 LDFLAGS_wearable=
 
 # ARCH flags : x86 / arm ----------------------------------
