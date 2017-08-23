@@ -70,10 +70,6 @@ export ESCARGOT_ARCH=x64
 
 rm -rf %{buildroot}
 
-# License
-mkdir -p %{buildroot}%{_datadir}/license
-cat LICENSE* COPYING.LIB > %{buildroot}%{_datadir}/license/%{name}
-
 # Archive
 mkdir -p %{buildroot}%{_libdir}/%{name}/release
 cp out/tizen_obs/${ESCARGOT_ARCH}/interpreter/release/libescargot.a              %{buildroot}%{_libdir}/%{name}/release
@@ -120,7 +116,7 @@ cp -r third_party/rapidjson/include %{buildroot}%{_includedir}/%{name}/third_par
 cp third_party/yarr/*.h %{buildroot}%{_includedir}/%{name}/third_party/yarr
 
 %files
-%{_datadir}/license/%{name}
+%license LICENSE LICENSE.BSD-2.0 LICENSE.ICU LICENSE.LGPL-2.1+ LICENSE.MIT COPYING.LIB
 
 %files devel
 %{_includedir}/%{name}
