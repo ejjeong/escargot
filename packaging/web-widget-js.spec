@@ -26,6 +26,12 @@ Web Widget JS Engine headers & archives
 %prep
 %setup -q
 
+# bdwgc fails to compile with 'asan' due to -fcommon flag.
+# We exclude this option (as stated in the guide)
+%if 0%{?asan:1}
+%restore_fcommon
+%endif
+
 %build
 
 export ESCARGOT_ARCH=i386
